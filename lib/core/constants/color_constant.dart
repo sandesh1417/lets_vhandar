@@ -14,7 +14,8 @@ class AppColor {
   /////
   // static Color primary = const Color(0xFFBB86FC).withOpacity(0.8);
   // static Color primary = const Color.fromARGB(255, 16, 102, 16);
-  static Color primary = const Color(0xFF075E54);
+  // static Color primary = const Color(0xFF075E54);
+  static Color primary = const Color(0xFF0A754E);
   static Color primaryBright = const Color.fromARGB(255, 36, 112, 36);
   static Color primary02 = primary.withOpacity(0.2);
   static Color primary05 = primary.withOpacity(0.5);
