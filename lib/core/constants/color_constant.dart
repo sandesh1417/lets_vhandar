@@ -23,7 +23,7 @@ class AppColor {
   static Color secondary = const Color(0xFFFCF686).withOpacity(1);
   static Color secondary1 = const Color(0xFFF2F7A1).withOpacity(1);
   static Color error = const Color(0xFFCF6679);
-  static Color white = Colors.white;
+  static Color white = const Color(0xFFFFFFFF);
   static Color white07 = Colors.white.withOpacity(0.7);
   static Color white05 = Colors.white.withOpacity(0.5);
   static Color white03 = Colors.white.withOpacity(0.3);

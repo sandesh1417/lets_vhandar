@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 
-class AppStyle {
+class KTextStyle {
   static TextStyle roboto16white7W = TextStyle(
     fontSize: 16.sp,
     color: AppColor.white,
@@ -113,6 +113,12 @@ class AppStyle {
     fontSize: 16.sp,
     color: Colors.black,
     fontWeight: FontWeight.w500,
+    fontFamily: 'Roboto',
+  );
+  static TextStyle roboto22black8W = TextStyle(
+    fontSize: 22.sp,
+    color: Colors.black,
+    fontWeight: FontWeight.w800,
     fontFamily: 'Roboto',
   );
 }
