@@ -54,19 +54,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.r),
-              color: AppColor.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12.r),
+              // color: AppColor.white.withOpacity(0.2),
               border: Border.all(
                 color: (widget.errorText == null)
-                    ? AppColor.primary
+                    ? AppColor.border
                     : AppColor.error,
               ),
-              boxShadow: [
-                BoxShadow(
-                    offset: const Offset(2, 6),
-                    blurRadius: 6,
-                    color: Colors.black.withOpacity(0.07))
-              ],
+              // boxShadow: [
+              //   BoxShadow(
+              //       offset: const Offset(2, 6),
+              //       blurRadius: 6,
+              //       color: Colors.black.withOpacity(0.07))
+              // ],
             ),
             height: 50.h,
             child: Center(
@@ -87,7 +87,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       : null,
                   isDense: true,
                   hintText: widget.hintText,
-                  hintStyle: TextStyle(color: AppColor.white),
+                  hintStyle: TextStyle(color: AppColor.hintText),
                   prefixIcon: widget.prefixIcon != null
                       ? SizedBox(child: widget.prefixIcon)
                       : null,
@@ -96,13 +96,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           onTap: widget.onObscurePressed ?? () {},
                           child: !widget.obscureText!
                               ? Icon(
-                                  Icons.visibility,
-                                  color: AppColor.primary,
+                                  Icons.visibility_off_outlined,
+                                  color: AppColor.icon,
                                   size: 16.sp,
                                 )
                               : Icon(
-                                  Icons.visibility_off,
-                                  color: AppColor.primary,
+                                  Icons.visibility_outlined,
+                                  color: AppColor.icon,
                                   size: 16.sp,
                                 ),
                         )
@@ -116,22 +116,24 @@ class _CustomTextFieldState extends State<CustomTextField> {
           // SizedBox(
           //   height: 4.h,
           // ),
-          SizedBox(
-            width: double.maxFinite,
-            child: Padding(
-              padding: EdgeInsets.only(left: 8.h, top: 2.h, bottom: 2.h),
-              child: Text(
-                (widget.errorText == null)
-                    ? widget.labelText
-                    : widget.errorText ?? "error",
-                style: TextStyle(
-                    color: (widget.errorText == null)
-                        ? AppColor.white
-                        : AppColor.error,
-                    fontSize: 10.sp),
-              ),
-            ),
-          ),
+          (widget.errorText == null)
+              ? const SizedBox()
+              : SizedBox(
+                  width: double.maxFinite,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.h, top: 2.h, bottom: 2.h),
+                    child: Text(
+                      (widget.errorText == null)
+                          ? widget.labelText
+                          : widget.errorText ?? "error",
+                      style: TextStyle(
+                          color: (widget.errorText == null)
+                              ? AppColor.white
+                              : AppColor.error,
+                          fontSize: 10.sp),
+                    ),
+                  ),
+                ),
         ],
       ),
     );

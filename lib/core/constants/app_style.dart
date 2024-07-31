@@ -16,6 +16,12 @@ class KTextStyle {
     fontWeight: FontWeight.w400,
     fontFamily: 'Roboto',
   );
+  static TextStyle roboto14hintTxt4W = TextStyle(
+    fontSize: 14.sp,
+    color: AppColor.hintText,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'Roboto',
+  );
   static TextStyle roboto14BlackD5W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.text,
@@ -28,15 +34,21 @@ class KTextStyle {
     fontWeight: FontWeight.w700,
     fontFamily: 'Roboto',
   );
-  static TextStyle roboto12Oranger4W = TextStyle(
+  static TextStyle roboto12sec4W = TextStyle(
     fontSize: 12.sp,
-    color: AppColor.primary,
+    color: AppColor.secondary,
     fontWeight: FontWeight.w400,
     fontFamily: 'Roboto',
   );
   static TextStyle roboto14black7W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.primary,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Roboto',
+  );
+  static TextStyle roboto14sec7W = TextStyle(
+    fontSize: 14.sp,
+    color: AppColor.secondary,
     fontWeight: FontWeight.w700,
     fontFamily: 'Roboto',
   );
@@ -109,6 +121,12 @@ class KTextStyle {
     fontWeight: FontWeight.w500,
     fontFamily: 'Roboto',
   );
+  static TextStyle roboto16sec5W = TextStyle(
+    fontSize: 16.sp,
+    color: AppColor.secondary,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'Roboto',
+  );
   static TextStyle roboto16black5W = TextStyle(
     fontSize: 16.sp,
     color: Colors.black,
@@ -119,6 +137,12 @@ class KTextStyle {
     fontSize: 22.sp,
     color: Colors.black,
     fontWeight: FontWeight.w800,
+    fontFamily: 'Roboto',
+  );
+  static TextStyle roboto12lGray3W = TextStyle(
+    fontSize: 12.sp,
+    color: AppColor.lgrayTxt,
+    fontWeight: FontWeight.w300,
     fontFamily: 'Roboto',
   );
 }

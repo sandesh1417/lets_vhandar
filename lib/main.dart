@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/login_screen.dart';
+import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 

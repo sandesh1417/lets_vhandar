@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 
 class AppColor {
+  static Color primary = const Color(0xFF0A754E);
+  static Color secondary = const Color(0xFFF5B237);
+  static Color border = const Color(0xFFD9DDDC);
+  static Color insideTF = const Color(0xFFD9DDDC);
+  static Color white = const Color(0xFFFFFFFF);
+  static Color hintText = const Color(0xFF8C9A95);
+  static Color icon = const Color(0xFF455B53);
+  static Color greenTxt = const Color(0xFF264136);
+  static Color lgrayTxt = const Color(0xFF696969);
+
+///////////////=====================/////////////
+///////////////=====================/////////////
+///////////////=====================/////////////
+///////////////=====================/////////////
+///////////////=====================/////////////
+///////////////=====================/////////////
+
   // static Color bg = const Color(0xFF121212).withOpacity(1);
   // static Color btn = const Color(0xFF242A38).withOpacity(1);
   static Color btn = white02;
@@ -15,15 +32,13 @@ class AppColor {
   // static Color primary = const Color(0xFFBB86FC).withOpacity(0.8);
   // static Color primary = const Color.fromARGB(255, 16, 102, 16);
   // static Color primary = const Color(0xFF075E54);
-  static Color primary = const Color(0xFF0A754E);
   static Color primaryBright = const Color.fromARGB(255, 36, 112, 36);
   static Color primary02 = primary.withOpacity(0.2);
   static Color primary05 = primary.withOpacity(0.5);
   static Color primary01 = primary.withOpacity(1);
-  static Color secondary = const Color(0xFFFCF686).withOpacity(1);
+  // static Color secondary = const Color(0xFFFCF686).withOpacity(1);
   static Color secondary1 = const Color(0xFFF2F7A1).withOpacity(1);
   static Color error = const Color(0xFFCF6679);
-  static Color white = const Color(0xFFFFFFFF);
   static Color white07 = Colors.white.withOpacity(0.7);
   static Color white05 = Colors.white.withOpacity(0.5);
   static Color white03 = Colors.white.withOpacity(0.3);
