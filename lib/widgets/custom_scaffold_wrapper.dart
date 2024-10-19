@@ -7,8 +7,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final Widget child;
   final double? horizontalPadding;
   final PreferredSizeWidget? appBar;
-  const CustomScaffoldWrapper(
-      {super.key, required this.child, this.appBar, this.horizontalPadding});
+  const CustomScaffoldWrapper({super.key, required this.child, this.appBar, this.horizontalPadding});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +20,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
               // textScaler: const TextScaler.linear(0.4),
               textScaler: const TextScaler.linear(1),
             ),
-            child: Container(
-                height: 844.h,
-                width: double.infinity,
-                padding:
-                    EdgeInsets.symmetric(horizontal: horizontalPadding ?? 24.w),
-                child: child)),
+            child: Container(height: 844.h, width: double.infinity, padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 24.w), child: SingleChildScrollView(child: child))),
       ),
     );
   }

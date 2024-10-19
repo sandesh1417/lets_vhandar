@@ -44,11 +44,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       // clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-          color: (widget.errorText == null)
-              ? Colors.transparent
-              : AppColor.error.withOpacity(0),
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(4.r), topRight: Radius.circular(4.r))),
+          color: (widget.errorText == null) ? Colors.transparent : AppColor.error.withOpacity(0), borderRadius: BorderRadius.only(topLeft: Radius.circular(4.r), topRight: Radius.circular(4.r))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -57,9 +53,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderRadius: BorderRadius.circular(12.r),
               // color: AppColor.white.withOpacity(0.2),
               border: Border.all(
-                color: (widget.errorText == null)
-                    ? AppColor.border
-                    : AppColor.error,
+                color: (widget.errorText == null) ? AppColor.border : AppColor.error,
               ),
               // boxShadow: [
               //   BoxShadow(
@@ -76,21 +70,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 controller: widget.controller,
                 obscureText: widget.obscureText ?? false,
                 keyboardType: widget.keyBoardType,
-                inputFormatters: widget.textInputFormatter != null
-                    ? [widget.textInputFormatter!]
-                    : null,
+                inputFormatters: widget.textInputFormatter != null ? [widget.textInputFormatter!] : null,
                 onChanged: widget.onChanged ?? (v) {},
-                style: TextStyle(color: AppColor.white),
+                style: TextStyle(color: AppColor.grey95),
                 decoration: InputDecoration(
-                  contentPadding: widget.prefixIcon == null
-                      ? EdgeInsets.symmetric(horizontal: 12.w)
-                      : null,
+                  contentPadding: widget.prefixIcon == null ? EdgeInsets.symmetric(horizontal: 12.w) : null,
                   isDense: true,
                   hintText: widget.hintText,
                   hintStyle: TextStyle(color: AppColor.hintText),
-                  prefixIcon: widget.prefixIcon != null
-                      ? SizedBox(child: widget.prefixIcon)
-                      : null,
+                  prefixIcon: widget.prefixIcon != null ? SizedBox(child: widget.prefixIcon) : null,
                   suffixIcon: widget.obscureText != null
                       ? GestureDetector(
                           onTap: widget.onObscurePressed ?? () {},
@@ -123,14 +111,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   child: Padding(
                     padding: EdgeInsets.only(left: 8.h, top: 2.h, bottom: 2.h),
                     child: Text(
-                      (widget.errorText == null)
-                          ? widget.labelText
-                          : widget.errorText ?? "error",
-                      style: TextStyle(
-                          color: (widget.errorText == null)
-                              ? AppColor.white
-                              : AppColor.error,
-                          fontSize: 10.sp),
+                      (widget.errorText == null) ? widget.labelText : widget.errorText ?? "error",
+                      style: TextStyle(color: (widget.errorText == null) ? AppColor.white : AppColor.error, fontSize: 10.sp),
                     ),
                   ),
                 ),
