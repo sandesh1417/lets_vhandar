@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
@@ -37,7 +38,8 @@ class LoginScreen extends StatelessWidget {
                 style: KTextStyle.roboto16black5W,
               ),
             ),
-            // errorText: '',
+            keyBoardType: const TextInputType.numberWithOptions(),
+            textInputFormatter: TenDigitInputFormatter(),
           ),
           // SizedBox(height: 16.h),
           const CustomTextField(
