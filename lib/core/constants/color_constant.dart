@@ -5,7 +5,7 @@ class AppColor {
   static Color secondary = const Color(0xFFF5B237);
   //
   static Color border = const Color(0xFFD9DDDC);
-  static Color insideTF = const Color(0xFFD9DDDC);
+  // static Color insideTF = const Color(0xFFD9DDDC);
   static Color white = const Color(0xFFFFFFFF);
   static Color hintText = const Color(0xFF8C9A95);
   static Color icon = const Color(0xFF455B53);
@@ -25,7 +25,7 @@ class AppColor {
   static Color white03 = Colors.white.withOpacity(0.3);
   static Color white02 = Colors.white.withOpacity(0.2);
   static Color text = Colors.white;
-  static Color btn = white02;
+  // static Color btn = white02;
 
   // static Color bg = const Color(0xFF121212).withOpacity(1);
   // static Color btn = const Color(0xFF242A38).withOpacity(1);

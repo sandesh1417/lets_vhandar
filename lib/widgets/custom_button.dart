@@ -56,18 +56,14 @@ class CustomCardBtn extends StatelessWidget {
   final void Function()? onPress;
   final String buttonTitle;
   final TextStyle? textStyle;
-  const CustomCardBtn(
-      {super.key,
-      required this.buttonTitle,
-      required this.onPress,
-      this.textStyle});
+  const CustomCardBtn({super.key, required this.buttonTitle, required this.onPress, this.textStyle});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.circular(10.r),
-      color: AppColor.btn,
+      color: AppColor.white02,
       child: InkWell(
         onTap: onPress,
         child: SizedBox(
@@ -80,8 +76,7 @@ class CustomCardBtn extends StatelessWidget {
             ),
             child: Text(
               buttonTitle,
-              style: textStyle ??
-                  KTextStyle.roboto14white4W.copyWith(color: AppColor.white),
+              style: textStyle ?? KTextStyle.roboto14white4W.copyWith(color: AppColor.white),
             ),
           ),
         ),
@@ -130,12 +125,9 @@ class CustomButtonOutline extends StatelessWidget {
       child: !isLoading!
           ? Text(
               buttonTitle,
-              style: txtStyle ??
-                  KTextStyle.roboto14white5W.copyWith(color: Colors.white),
+              style: txtStyle ?? KTextStyle.roboto14white5W.copyWith(color: Colors.white),
             )
-          : SizedBox(
-              width: btnWidth ?? double.infinity,
-              child: const CircularLoader()),
+          : SizedBox(width: btnWidth ?? double.infinity, child: const CircularLoader()),
     );
   }
 }
