@@ -14,11 +14,15 @@ class AppTheme {
     // scaffoldBackgroundColor: ,
 
     textTheme: TextTheme(
-      displayLarge: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
-      displayMedium: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
-      bodyLarge: TextStyle(fontSize: 24.sp, color: Colors.black87),
-      bodyMedium: TextStyle(fontSize: 18.sp, color: Colors.black87),
-      bodySmall: TextStyle(fontSize: 12.sp, color: Colors.black87),
+      // displayLarge: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+      displaySmall: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(fontSize: 24.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      titleMedium: TextStyle(fontSize: 20.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      titleSmall: TextStyle(fontSize: 16.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      labelLarge: TextStyle(fontSize: 16.sp, color: Colors.black87),
+      labelMedium: TextStyle(fontSize: 14.sp, color: Colors.black87),
+      labelSmall: TextStyle(fontSize: 12.sp, color: Colors.black87),
     ),
 // appBarTheme: const AppBarTheme(
 // iconTheme: IconThemeData(color: Colors.white),
