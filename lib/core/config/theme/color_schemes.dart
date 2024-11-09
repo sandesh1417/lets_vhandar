@@ -146,6 +146,7 @@ class AppColors {
       onSecondaryFixedVariant: Color(0xFF696969), //lGreyText
       surfaceDim: Colors.white70, //white03
       secondaryFixedDim: Colors.white30 //white07
+
       );
   // Dark Theme Colors
   static const ColorScheme darkColorScheme = ColorScheme.dark(

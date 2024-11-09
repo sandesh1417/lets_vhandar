@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/config/theme/color_schemes.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -8,8 +9,9 @@ class AppTheme {
     // fontFamily: GoogleFonts.rubik().fontFamily,
     brightness: Brightness.light,
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff80DEEA)),
-    primaryColor: AppColor.primary,
+    colorScheme: AppColors.lightColorScheme,
+    fontFamily: "Volte",
+    // scaffoldBackgroundColor: ,
 
     textTheme: TextTheme(
       displayLarge: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
@@ -36,7 +38,6 @@ class AppTheme {
       iconTheme: IconThemeData(color: AppColor.white),
       backgroundColor: AppColor.bg,
     ),
-    colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColor.primary, secondary: AppColor.secondary),
+    colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary, secondary: AppColor.secondary),
   );
 }

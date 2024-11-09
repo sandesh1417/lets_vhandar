@@ -21,10 +21,17 @@ class MyApp extends StatelessWidget {
                   appBarTheme: AppBarTheme(
                     backgroundColor: AppColor.bg,
                   ),
-                  colorScheme: ColorScheme.fromSeed(
-                      // seedColor: const Color.fromRGBO(10, 117, 78, 1)
-                      seedColor: AppColor.primary),
+                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
                   useMaterial3: true,
+                  // textTheme: TextTheme()
+                ),
+                darkTheme: ThemeData(
+                  appBarTheme: AppBarTheme(
+                    backgroundColor: AppColor.bg,
+                  ),
+                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
+                  useMaterial3: true,
+                  // textTheme: TextTheme()
                 ),
                 home: const SplashScreen()),
           );
