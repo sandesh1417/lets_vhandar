@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/core/utils/navigator_services.dart';
-import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +18,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      navigateAndPushReplacement(context: context, screen: const LoginScreen());
+      context.pushReplacement(LVRoute.login.route);
+      // navigateAndPushReplacement(context: context, screen: const LoginScreen());
     });
   }
 

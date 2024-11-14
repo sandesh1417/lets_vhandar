@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/utils/navigator_services.dart';
 
 import '../core/constants/app_style.dart';
 
@@ -32,7 +32,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 borderRadius: BorderRadius.circular(100),
                 onTap: backBtnFx ??
                     () {
-                      navigatePop(context);
+                      context.pop();
+                      // navigatePop(context);
                     },
                 child: Padding(
                   padding: EdgeInsets.only(left: 24.w),

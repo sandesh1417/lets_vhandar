@@ -1,9 +1,9 @@
 import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-
-import '../../core/utils/navigator_services.dart';
 
 class LoadingOverlay {
   LoadingOverlay();
@@ -27,8 +27,7 @@ class LoadingOverlay {
               child: Container(
                 height: 150,
                 width: 150,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15))),
                 child: const SizedBox(
                   height: 150,
                   width: 150,
@@ -50,7 +49,8 @@ class LoadingOverlay {
   void hide(BuildContext context) {
     if (_dialogIsOpen) {
       _dialogIsOpen = false;
-      popDialog(context: context);
+      // popDialog(context: context);
+      context.pop();
     }
   }
 }

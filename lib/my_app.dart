@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,25 +16,27 @@ class MyApp extends StatelessWidget {
         builder: (_, child) {
           return GestureDetector(
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: MaterialApp(
-                title: 'Lets Vhandar',
-                theme: ThemeData(
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: AppColor.bg,
-                  ),
-                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
-                  useMaterial3: true,
-                  // textTheme: TextTheme()
+            child: MaterialApp.router(
+              title: 'Lets Vhandar',
+              routerConfig: GetIt.instance<LVGoRouter>().getGoRouter,
+              theme: ThemeData(
+                appBarTheme: AppBarTheme(
+                  backgroundColor: AppColor.bg,
                 ),
-                darkTheme: ThemeData(
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: AppColor.bg,
-                  ),
-                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
-                  useMaterial3: true,
-                  // textTheme: TextTheme()
+                // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
+                useMaterial3: true,
+                // textTheme: TextTheme()
+              ),
+              darkTheme: ThemeData(
+                appBarTheme: AppBarTheme(
+                  backgroundColor: AppColor.bg,
                 ),
-                home: const SplashScreen()),
+                // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
+                useMaterial3: true,
+                // textTheme: TextTheme()
+              ),
+              // home: const SplashScreen(),
+            ),
           );
         });
   }
