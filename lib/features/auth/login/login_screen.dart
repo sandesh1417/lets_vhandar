@@ -1,94 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/utils/clog.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  late TextEditingController phoneController;
+  late TextEditingController passwordController;
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    phoneController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isPasswordVisible = ref.watch(passwordVisibilityProvider);
+
     return CustomScaffoldWrapper(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 50.h,
-          ),
-          SvgPicture.asset(KImageConstant.vandharIcon),
-          SizedBox(
-            height: 15.h,
-          ),
-          Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
-          SizedBox(height: 4.h),
-          Text('Log in or Sign up', style: KTextStyle.roboto16black5W),
-          SizedBox(height: 30.h),
-          CustomTextField(
-            hintText: 'Enter Mobile Number',
-            labelText: 'Number',
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            SizedBox(height: 50.h),
+            SvgPicture.asset(KImageConstant.vandharIcon),
+            SizedBox(height: 15.h),
+            Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
+            SizedBox(height: 4.h),
+            Text('Log in or Sign up', style: KTextStyle.roboto16black5W),
+            SizedBox(height: 30.h),
+            CustomTextField(
+              controller: phoneController,
+              hintText: 'Enter Mobile Number',
+              labelText: 'Number',
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
+                child: Text(
+                  '+ 977',
+                  style: KTextStyle.roboto16black5W,
+                ),
+              ),
+              keyBoardType: const TextInputType.numberWithOptions(),
+              textInputFormatter: TenDigitInputFormatter(),
+            ),
+            CustomTextField(
+              controller: passwordController,
+              hintText: 'Enter Password',
+              labelText: 'Number',
+              obscureText: isPasswordVisible,
+              onObscurePressed: () {
+                ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+                cLog('hidepass$isPasswordVisible');
+              },
+            ),
+            CustomButton(onPress: () {}, buttonTitle: 'Continue'),
+            SizedBox(height: 16.h),
+            GestureDetector(
               child: Text(
-                '+ 977',
-                style: KTextStyle.roboto16black5W,
+                'Forget Password ?',
+                style: KTextStyle.roboto14sec7W,
+              ),
+              onTap: () {},
+            ),
+            SizedBox(height: 16.h),
+            RichText(
+              text: TextSpan(
+                text: 'Dont have an Account? ',
+                style: TextStyle(color: AppColor.greenTxt),
+                children: <TextSpan>[
+                  TextSpan(text: 'Sign Up', style: KTextStyle.roboto16sec5W),
+                  const TextSpan(
+                    text: '.',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ],
               ),
             ),
-            keyBoardType: const TextInputType.numberWithOptions(),
-            textInputFormatter: TenDigitInputFormatter(),
-          ),
-          // SizedBox(height: 16.h),
-          const CustomTextField(
-            hintText: 'Enter Password',
-            labelText: 'Number',
-            obscureText: true,
-          ),
-          CustomButton(onPress: () {}, buttonTitle: 'Continue'),
-          SizedBox(height: 16.h),
-          GestureDetector(
-            child: Text(
-              'Forget Password ?',
-              style: KTextStyle.roboto14sec7W,
+            SizedBox(height: 245.h),
+            Text(
+              'By continuing, you agree to our ',
+              style: KTextStyle.roboto12lGray3W,
             ),
-            onTap: () {},
-          ),
-          SizedBox(height: 16.h),
-          RichText(
-            text: TextSpan(
-              text: 'Dont have an Account? ',
-              style: TextStyle(color: AppColor.greenTxt),
-              children: <TextSpan>[
-                TextSpan(text: 'Sign Up', style: KTextStyle.roboto16sec5W),
-                const TextSpan(
-                  text: '.',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
+            RichText(
+              text: TextSpan(
+                text: 'Privacy Policy',
+                style: KTextStyle.roboto12sec4W,
+                children: <TextSpan>[
+                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
+                  TextSpan(
+                    text: 'Terms of Use',
+                    style: KTextStyle.roboto12sec4W,
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 245.h),
-          Text(
-            'By continuing, you agree to our ',
-            style: KTextStyle.roboto12lGray3W,
-          ),
-          RichText(
-            text: TextSpan(
-              text: 'Privacy Policy',
-              style: KTextStyle.roboto12sec4W,
-              children: <TextSpan>[
-                TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
-                TextSpan(
-                  text: 'Terms of Use',
-                  style: KTextStyle.roboto12sec4W,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
