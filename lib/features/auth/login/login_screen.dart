@@ -5,8 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/core/utils/clog.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
+import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -20,21 +20,21 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  late TextEditingController phoneController;
-  late TextEditingController passwordController;
-  final formKey = GlobalKey<FormState>();
+  late TextEditingController _phoneController;
+  late TextEditingController _passwordController;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    phoneController = TextEditingController();
-    passwordController = TextEditingController();
+    _phoneController = TextEditingController();
+    _passwordController = TextEditingController();
   }
 
   @override
   void dispose() {
-    phoneController.dispose();
-    passwordController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -44,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return CustomScaffoldWrapper(
       child: Form(
-        key: formKey,
+        key: _formKey,
         child: Column(
           children: [
             SizedBox(height: 50.h),
@@ -55,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Text('Log in or Sign up', style: KTextStyle.roboto16black5W),
             SizedBox(height: 30.h),
             CustomTextField(
-              controller: phoneController,
+              controller: _phoneController,
               hintText: 'Enter Mobile Number',
               labelText: 'Number',
               prefixIcon: Padding(
@@ -67,18 +67,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
+              validator: LoginValidators.validatePhone,
             ),
+            SizedBox(height: 10.h),
             CustomTextField(
-              controller: passwordController,
+              controller: _passwordController,
               hintText: 'Enter Password',
               labelText: 'Number',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
-                cLog('hidepass$isPasswordVisible');
               },
+              validator: LoginValidators.validatePassword,
             ),
-            CustomButton(onPress: () {}, buttonTitle: 'Continue'),
+            SizedBox(height: 20.h),
+            CustomButton(
+                onPress: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    // ref.read(authStateProvider.notifier).login(
+                    //       _emailController.text,
+                    //       __passwordController.text,
+                    //     );
+                  }
+                },
+                buttonTitle: 'Continue'),
             SizedBox(height: 16.h),
             GestureDetector(
               child: Text(
