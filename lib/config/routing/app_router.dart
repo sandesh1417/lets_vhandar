@@ -6,6 +6,7 @@ import 'package:lets_vhandar/config/routing/fade_extension.dart';
 import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
 import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
+import 'package:lets_vhandar/features/auth/register/register_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
@@ -13,7 +14,8 @@ enum LVRoute {
   loginScreen,
   dashboardScreen,
   oTPScreen,
-  forgetPasswordScreen;
+  forgetPasswordScreen,
+  registerScreen;
 
   // String get route => '/${toString().replaceAll('LVRoute.', '')}';
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
@@ -41,6 +43,11 @@ class LVGoRouter {
         path: LVRoute.forgetPasswordScreen.route,
         name: LVRoute.forgetPasswordScreen.route,
         builder: (BuildContext context, GoRouterState state) => const ForgetPasswordScreen(),
+      ).fade(),
+      GoRoute(
+        path: LVRoute.registerScreen.route,
+        name: LVRoute.registerScreen.route,
+        builder: (BuildContext context, GoRouterState state) => const RegisterScreen(),
       ).fade(),
     ],
   );

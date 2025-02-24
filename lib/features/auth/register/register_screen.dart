@@ -14,16 +14,19 @@ import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _phoneController;
+  late TextEditingController _nameController;
   late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswprdController;
+  late TextEditingController _refferalCodeController;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -31,12 +34,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
+    _nameController = TextEditingController();
+    _confirmPasswprdController = TextEditingController();
+    _refferalCodeController = TextEditingController();
   }
 
   @override
   void dispose() {
     _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswprdController.dispose();
+    _refferalCodeController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -54,7 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             SizedBox(height: 15.h),
             Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
             SizedBox(height: 4.h),
-            Text('Log in or Sign up', style: KTextStyle.roboto16black5W),
+            Text('Create an Account', style: KTextStyle.roboto16black5W),
             SizedBox(height: 30.h),
             CustomTextField(
               controller: _phoneController,
@@ -73,6 +82,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             SizedBox(height: 10.h),
             CustomTextField(
+              suffixIcon: const SizedBox(),
+              controller: _nameController,
+              hintText: 'Enter Name',
+              labelText: 'Name',
+              onObscurePressed: () {
+                // ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+              },
+            ),
+            SizedBox(height: 10.h),
+            CustomTextField(
               controller: _passwordController,
               hintText: 'Enter Password',
               labelText: 'Number',
@@ -81,6 +100,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
               validator: LoginValidators.validatePassword,
+            ),
+            SizedBox(height: 10.h),
+            CustomTextField(
+              controller: _confirmPasswprdController,
+              hintText: 'Confirm Password',
+              labelText: 'Number',
+              obscureText: isPasswordVisible,
+              onObscurePressed: () {
+                ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+              },
+              validator: LoginValidators.validatePassword,
+            ),
+            SizedBox(height: 10.h),
+            CustomTextField(
+              controller: _refferalCodeController,
+              hintText: 'Refferal Code',
+              labelText: 'Number',
+              onObscurePressed: () {},
+              suffixIcon: const SizedBox(),
             ),
             SizedBox(height: 20.h),
             CustomButton(
@@ -93,35 +131,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     //     );
                   }
                 },
-                buttonTitle: 'Continue'),
+                buttonTitle: 'Join Vhandar'),
             SizedBox(height: 16.h),
-            GestureDetector(
-              child: Text(
-                'Forget Password ?',
-                style: KTextStyle.roboto14sec7W,
-              ),
-              onTap: () {
-                context.push(LVRoute.forgetPasswordScreen.route);
-              },
-            ),
-            SizedBox(height: 16.h),
-            GestureDetector(
-              onTap: () => context.push(LVRoute.registerScreen.route),
-              child: RichText(
-                text: TextSpan(
-                  text: 'Dont have an Account? ',
-                  style: TextStyle(color: AppColor.greenTxtColor),
-                  children: <TextSpan>[
-                    TextSpan(text: 'Sign Up', style: KTextStyle.roboto16sec5W),
-                    const TextSpan(
-                      text: '.',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: Divider(color: AppColor.border, thickness: 1)),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    border: Border.all(color: AppColor.border),
+                  ),
+                  child: Text(
+                    "OR",
+                    style: TextStyle(color: AppColor.greenTxtColor, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+              ],
             ),
-            SizedBox(height: 245.h),
+            SizedBox(height: 16.h),
+            CustomButton(onPress: () {}, buttonTitle: 'Create a Business Account'),
+            SizedBox(height: 50.h),
             Text(
               'By continuing, you agree to our ',
               style: KTextStyle.roboto12lGray3W,
@@ -139,6 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ],
               ),
             ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
