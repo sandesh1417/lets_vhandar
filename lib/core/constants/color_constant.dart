@@ -9,11 +9,12 @@ class AppColor {
   static Color white = const Color(0xFFFFFFFF);
   static Color hintText = const Color(0xFF8C9A95);
   static Color icon = const Color(0xFF455B53);
-  static Color greenTxt = const Color(0xFF264136);
+  // static Color greenTxt = const Color(0xFF264136);
   static Color lgrayTxt = const Color(0xFF696969);
   static Color error = const Color(0xFFCF6679);
   static Color black = Colors.black;
   static Color grey95 = const Color(0xFF8C9A95);
+  static Color greenTxtColor = const Color(0xFF1F3A2F);
 
 ///////////////=====================/////////////
 ///////////////=====================/////////////
@@ -37,7 +38,8 @@ class AppColor {
   // static Color bg = const Color.fromARGB(255, 41, 36, 69).withOpacity(1);
 
   /////
-  static Color bg = const Color(0xFF1E2834).withOpacity(1);
+  // static Color bg = const Color(0xFF1E2834).withOpacity(1);
+  static Color bg = Colors.white;
   // static Color primary = const Color(0xFFBB86FC).withOpacity(0.8);
   // static Color primary = const Color.fromARGB(255, 16, 102, 16);
   // static Color primary = const Color(0xFF075E54);

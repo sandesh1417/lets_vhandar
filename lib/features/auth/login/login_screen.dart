@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
@@ -83,6 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             SizedBox(height: 20.h),
             CustomButton(
                 onPress: () {
+                  context.push(LVRoute.otp.route); //    /otp    otp
                   if (_formKey.currentState?.validate() ?? false) {
                     // ref.read(authStateProvider.notifier).login(
                     //       _emailController.text,
@@ -103,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             RichText(
               text: TextSpan(
                 text: 'Dont have an Account? ',
-                style: TextStyle(color: AppColor.greenTxt),
+                style: TextStyle(color: AppColor.greenTxtColor),
                 children: <TextSpan>[
                   TextSpan(text: 'Sign Up', style: KTextStyle.roboto16sec5W),
                   const TextSpan(

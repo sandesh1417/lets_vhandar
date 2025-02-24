@@ -20,29 +20,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        centerTitle: true,
-        title: Text(
-          title,
-          style: KTextStyle.roboto16white7W,
-        ),
-        leading: hideBackBtn
-            ? const SizedBox()
-            : InkWell(
-                radius: 10.r,
-                borderRadius: BorderRadius.circular(100),
-                onTap: backBtnFx ??
-                    () {
-                      context.pop();
-                      // navigatePop(context);
-                    },
-                child: Padding(
-                  padding: EdgeInsets.only(left: 24.w),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: AppColor.white,
-                  ),
+      centerTitle: true,
+      title: Text(
+        title,
+        style: KTextStyle.roboto16white7W,
+      ),
+      leading: hideBackBtn
+          ? const SizedBox()
+          : InkWell(
+              radius: 10.r,
+              borderRadius: BorderRadius.circular(100),
+              onTap: backBtnFx ??
+                  () {
+                    context.pop();
+                    // navigatePop(context);
+                  },
+              child: Padding(
+                padding: EdgeInsets.only(left: 24.w),
+                child: Icon(
+                  Icons.arrow_back,
+                  color: AppColor.black,
                 ),
-              ));
+              ),
+            ),
+    );
   }
 
   @override
