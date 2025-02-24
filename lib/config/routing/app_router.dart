@@ -3,15 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/config/routing/fade_extension.dart';
+import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
 import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
-  splash,
-  login,
-  dashboard,
-  otp;
+  splashScreen,
+  loginScreen,
+  dashboardScreen,
+  oTPScreen,
+  forgetPasswordScreen;
 
   // String get route => '/${toString().replaceAll('LVRoute.', '')}';
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
@@ -20,23 +22,25 @@ enum LVRoute {
 
 class LVGoRouter {
   final GoRouter goRoute = GoRouter(
-    initialLocation: LVRoute.login.route,
+    initialLocation: LVRoute.loginScreen.route,
     routes: <GoRoute>[
       GoRoute(
-        path: LVRoute.splash.route,
-        // name: LVRoute.splash.name,
+        path: LVRoute.splashScreen.route,
         builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
       ).fade(),
       GoRoute(
-        path: LVRoute.login.route,
-        // name: LVRoute.login.name,
+        path: LVRoute.loginScreen.route,
         builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
       ).fade(),
       GoRoute(
-        path: LVRoute.otp.route, // This will be '/otp'
-        name: LVRoute.otp.route, // This will be '/otp'
-        // name: '/otp', // This will be 'otp'
+        path: LVRoute.oTPScreen.route,
+        name: LVRoute.oTPScreen.route,
         builder: (BuildContext context, GoRouterState state) => const OTPScreen(),
+      ).fade(),
+      GoRoute(
+        path: LVRoute.forgetPasswordScreen.route,
+        name: LVRoute.forgetPasswordScreen.route,
+        builder: (BuildContext context, GoRouterState state) => const ForgetPasswordScreen(),
       ).fade(),
     ],
   );

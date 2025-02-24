@@ -85,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             SizedBox(height: 20.h),
             CustomButton(
                 onPress: () {
-                  context.push(LVRoute.otp.route); //    /otp    otp
+                  context.push(LVRoute.oTPScreen.route); //    /otp    otp
                   if (_formKey.currentState?.validate() ?? false) {
                     // ref.read(authStateProvider.notifier).login(
                     //       _emailController.text,
@@ -100,7 +100,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 'Forget Password ?',
                 style: KTextStyle.roboto14sec7W,
               ),
-              onTap: () {},
+              onTap: () {
+                  context.push(LVRoute.forgetPasswordScreen.route); 
+              },
             ),
             SizedBox(height: 16.h),
             RichText(
