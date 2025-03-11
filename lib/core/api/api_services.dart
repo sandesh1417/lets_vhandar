@@ -5,22 +5,8 @@ import 'interceptor.dart';
 
 late Dio _dio;
 
-class RestApi {
-  RestApi() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: ApiUrl.baseUrl,
-        connectTimeout: const Duration(seconds: 60),
-      ),
-    );
-    dio.interceptors.add(ApiInterceptor());
-  }
-
-  Dio get dio => _dio;
-}
-
-class RestApiBaseLess {
-  RestApiBaseLess() {
+class ApiService {
+  ApiService() {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiUrl.baseUrl,

@@ -70,11 +70,14 @@ mixin _$LoginState {
 
 /// @nodoc
 abstract class $LoginStateCopyWith<$Res> {
-  factory $LoginStateCopyWith(LoginState value, $Res Function(LoginState) then) = _$LoginStateCopyWithImpl<$Res, LoginState>;
+  factory $LoginStateCopyWith(
+          LoginState value, $Res Function(LoginState) then) =
+      _$LoginStateCopyWithImpl<$Res, LoginState>;
 }
 
 /// @nodoc
-class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState> implements $LoginStateCopyWith<$Res> {
+class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
+    implements $LoginStateCopyWith<$Res> {
   _$LoginStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -88,12 +91,18 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState> implements $LoginS
 
 /// @nodoc
 abstract class _$$InitialImplCopyWith<$Res> {
-  factory _$$InitialImplCopyWith(_$InitialImpl value, $Res Function(_$InitialImpl) then) = __$$InitialImplCopyWithImpl<$Res>;
+  factory _$$InitialImplCopyWith(
+          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
+      __$$InitialImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InitialImplCopyWithImpl<$Res> extends _$LoginStateCopyWithImpl<$Res, _$InitialImpl> implements _$$InitialImplCopyWith<$Res> {
-  __$$InitialImplCopyWithImpl(_$InitialImpl _value, $Res Function(_$InitialImpl) _then) : super(_value, _then);
+class __$$InitialImplCopyWithImpl<$Res>
+    extends _$LoginStateCopyWithImpl<$Res, _$InitialImpl>
+    implements _$$InitialImplCopyWith<$Res> {
+  __$$InitialImplCopyWithImpl(
+      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -111,7 +120,8 @@ class _$InitialImpl implements _Initial {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType && other is _$InitialImpl);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$InitialImpl);
   }
 
   @override
@@ -198,12 +208,18 @@ abstract class _Initial implements LoginState {
 
 /// @nodoc
 abstract class _$$LoadingImplCopyWith<$Res> {
-  factory _$$LoadingImplCopyWith(_$LoadingImpl value, $Res Function(_$LoadingImpl) then) = __$$LoadingImplCopyWithImpl<$Res>;
+  factory _$$LoadingImplCopyWith(
+          _$LoadingImpl value, $Res Function(_$LoadingImpl) then) =
+      __$$LoadingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$LoadingImplCopyWithImpl<$Res> extends _$LoginStateCopyWithImpl<$Res, _$LoadingImpl> implements _$$LoadingImplCopyWith<$Res> {
-  __$$LoadingImplCopyWithImpl(_$LoadingImpl _value, $Res Function(_$LoadingImpl) _then) : super(_value, _then);
+class __$$LoadingImplCopyWithImpl<$Res>
+    extends _$LoginStateCopyWithImpl<$Res, _$LoadingImpl>
+    implements _$$LoadingImplCopyWith<$Res> {
+  __$$LoadingImplCopyWithImpl(
+      _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -221,7 +237,8 @@ class _$LoadingImpl implements _Loading {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType && other is _$LoadingImpl);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$LoadingImpl);
   }
 
   @override
@@ -308,24 +325,30 @@ abstract class _Loading implements LoginState {
 
 /// @nodoc
 abstract class _$$LoginenticatedImplCopyWith<$Res> {
-  factory _$$LoginenticatedImplCopyWith(_$LoginenticatedImpl value, $Res Function(_$LoginenticatedImpl) then) = __$$LoginenticatedImplCopyWithImpl<$Res>;
+  factory _$$LoginenticatedImplCopyWith(_$LoginenticatedImpl value,
+          $Res Function(_$LoginenticatedImpl) then) =
+      __$$LoginenticatedImplCopyWithImpl<$Res>;
   @useResult
   $Res call({UserModel user});
 }
 
 /// @nodoc
-class __$$LoginenticatedImplCopyWithImpl<$Res> extends _$LoginStateCopyWithImpl<$Res, _$LoginenticatedImpl> implements _$$LoginenticatedImplCopyWith<$Res> {
-  __$$LoginenticatedImplCopyWithImpl(_$LoginenticatedImpl _value, $Res Function(_$LoginenticatedImpl) _then) : super(_value, _then);
+class __$$LoginenticatedImplCopyWithImpl<$Res>
+    extends _$LoginStateCopyWithImpl<$Res, _$LoginenticatedImpl>
+    implements _$$LoginenticatedImplCopyWith<$Res> {
+  __$$LoginenticatedImplCopyWithImpl(
+      _$LoginenticatedImpl _value, $Res Function(_$LoginenticatedImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user = freezed,
+    Object? user = null,
   }) {
     return _then(_$LoginenticatedImpl(
-      freezed == user
+      null == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserModel,
@@ -348,18 +371,23 @@ class _$LoginenticatedImpl implements _Loginenticated {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType && other is _$LoginenticatedImpl && const DeepCollectionEquality().equals(other.user, user));
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LoginenticatedImpl &&
+            (identical(other.user, user) || other.user == user));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, const DeepCollectionEquality().hash(user));
+  int get hashCode => Object.hash(runtimeType, user);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$LoginenticatedImplCopyWith<_$LoginenticatedImpl> get copyWith => __$$LoginenticatedImplCopyWithImpl<_$LoginenticatedImpl>(this, _$identity);
+  _$$LoginenticatedImplCopyWith<_$LoginenticatedImpl> get copyWith =>
+      __$$LoginenticatedImplCopyWithImpl<_$LoginenticatedImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -444,19 +472,26 @@ abstract class _Loginenticated implements LoginState {
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LoginenticatedImplCopyWith<_$LoginenticatedImpl> get copyWith => throw _privateConstructorUsedError;
+  _$$LoginenticatedImplCopyWith<_$LoginenticatedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class _$$ErrorImplCopyWith<$Res> {
-  factory _$$ErrorImplCopyWith(_$ErrorImpl value, $Res Function(_$ErrorImpl) then) = __$$ErrorImplCopyWithImpl<$Res>;
+  factory _$$ErrorImplCopyWith(
+          _$ErrorImpl value, $Res Function(_$ErrorImpl) then) =
+      __$$ErrorImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String message});
 }
 
 /// @nodoc
-class __$$ErrorImplCopyWithImpl<$Res> extends _$LoginStateCopyWithImpl<$Res, _$ErrorImpl> implements _$$ErrorImplCopyWith<$Res> {
-  __$$ErrorImplCopyWithImpl(_$ErrorImpl _value, $Res Function(_$ErrorImpl) _then) : super(_value, _then);
+class __$$ErrorImplCopyWithImpl<$Res>
+    extends _$LoginStateCopyWithImpl<$Res, _$ErrorImpl>
+    implements _$$ErrorImplCopyWith<$Res> {
+  __$$ErrorImplCopyWithImpl(
+      _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -489,7 +524,10 @@ class _$ErrorImpl implements _Error {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType && other is _$ErrorImpl && (identical(other.message, message) || other.message == message));
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ErrorImpl &&
+            (identical(other.message, message) || other.message == message));
   }
 
   @override
@@ -500,7 +538,8 @@ class _$ErrorImpl implements _Error {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith => __$$ErrorImplCopyWithImpl<_$ErrorImpl>(this, _$identity);
+  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
+      __$$ErrorImplCopyWithImpl<_$ErrorImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -585,5 +624,6 @@ abstract class _Error implements LoginState {
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith => throw _privateConstructorUsedError;
+  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
