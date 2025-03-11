@@ -153,7 +153,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ],
             ),
             SizedBox(height: 16.h),
-            CustomButton(onPress: () {}, buttonTitle: 'Create a Business Account'),
+            CustomButton(
+                onPress: () {
+                  context.push(LVRoute.v4BRegistrationScreen.route);
+                },
+                buttonTitle: 'Create a Business Account'),
             SizedBox(height: 50.h),
             Text(
               'By continuing, you agree to our ',
