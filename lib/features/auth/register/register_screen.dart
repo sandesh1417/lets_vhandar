@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
@@ -22,37 +21,36 @@ class RegisterScreen extends ConsumerStatefulWidget {
 }
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   late TextEditingController _phoneController;
   late TextEditingController _nameController;
   late TextEditingController _passwordController;
-  late TextEditingController _confirmPasswprdController;
-  late TextEditingController _refferalCodeController;
-  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _confirmPasswordController;
+  late TextEditingController _referalCodeController;
+  bool isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
     _phoneController = TextEditingController();
-    _passwordController = TextEditingController();
     _nameController = TextEditingController();
-    _confirmPasswprdController = TextEditingController();
-    _refferalCodeController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+    _referalCodeController = TextEditingController();
   }
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _passwordController.dispose();
-    _confirmPasswprdController.dispose();
-    _refferalCodeController.dispose();
     _nameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _referalCodeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isPasswordVisible = ref.watch(passwordVisibilityProvider);
-
     return CustomScaffoldWrapper(
       child: Form(
         key: _formKey,
@@ -82,101 +80,74 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
             SizedBox(height: 10.h),
             CustomTextField(
-              suffixIcon: const SizedBox(),
               controller: _nameController,
               hintText: 'Enter Name',
               labelText: 'Name',
-              onObscurePressed: () {
-                // ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
-              },
+              onObscurePressed: () {},
+              suffixIcon: const SizedBox(),
+              validator: LoginValidators.validateName,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
               controller: _passwordController,
               hintText: 'Enter Password',
-              labelText: 'Number',
+              labelText: 'Password',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
-                ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+                setState(() {
+                  isPasswordVisible = !isPasswordVisible;
+                });
               },
               validator: LoginValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
-              controller: _confirmPasswprdController,
+              controller: _confirmPasswordController,
               hintText: 'Confirm Password',
-              labelText: 'Number',
+              labelText: 'Confirm Password',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
-                ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+                setState(() {
+                  isPasswordVisible = !isPasswordVisible;
+                });
               },
               validator: LoginValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
-              controller: _refferalCodeController,
-              hintText: 'Refferal Code',
-              labelText: 'Number',
+              controller: _referalCodeController,
+              hintText: 'Referral Code',
+              labelText: 'Referral Code',
               onObscurePressed: () {},
               suffixIcon: const SizedBox(),
             ),
             SizedBox(height: 20.h),
             CustomButton(
-                onPress: () {
-                  context.push(LVRoute.oTPScreen.route); //    /otp    otp
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // ref.read(authStateProvider.notifier).login(
-                    //       _emailController.text,
-                    //       __passwordController.text,
-                    //     );
-                  }
-                },
-                buttonTitle: 'Join Vhandar'),
-            SizedBox(height: 16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(child: Divider(color: AppColor.border, thickness: 1)),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: AppColor.border),
-                  ),
-                  child: Text(
-                    "OR",
-                    style: TextStyle(color: AppColor.greenTxtColor, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
-              ],
+              onPress: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  // Save user data to the state
+                  ref.read(registrationProvider.notifier).sendOtp(_phoneController.text, "+977");
+                  context.push(
+                    LVRoute.oTPScreen.route,
+                    extra: {
+                      'phoneNumber': _phoneController.text,
+                      'phoneCode': '+977',
+                      'name': _nameController.text,
+                      'referalCode': _referalCodeController.text,
+                      'password': _passwordController.text,
+                      'confirmPassword': _confirmPasswordController.text,
+                    },
+                  );
+
+                  // Navigate to OTP screen
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => const OTPScreen(phoneNumber: '')),
+                  // );
+                }
+              },
+              buttonTitle: 'Join Vhandar',
             ),
-            SizedBox(height: 16.h),
-            CustomButton(
-                onPress: () {
-                  context.push(LVRoute.v4BRegistrationScreen.route);
-                },
-                buttonTitle: 'Create a Business Account'),
-            SizedBox(height: 50.h),
-            Text(
-              'By continuing, you agree to our ',
-              style: KTextStyle.roboto12lGray3W,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Privacy Policy',
-                style: KTextStyle.roboto12sec4W,
-                children: <TextSpan>[
-                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
-                  TextSpan(
-                    text: 'Terms of Use',
-                    style: KTextStyle.roboto12sec4W,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20.h),
           ],
         ),
       ),

@@ -19,14 +19,13 @@ enum LVRoute {
   registerScreen,
   v4BRegistrationScreen;
 
-  // String get route => '/${toString().replaceAll('LVRoute.', '')}';
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
-  // String get name => toString().replaceAll('LVRoute.', '');
 }
 
 class LVGoRouter {
   final GoRouter goRoute = GoRouter(
     initialLocation: LVRoute.loginScreen.route,
+    debugLogDiagnostics: true, // Enable debugging
     routes: <GoRoute>[
       GoRoute(
         path: LVRoute.splashScreen.route,
@@ -36,10 +35,26 @@ class LVGoRouter {
         path: LVRoute.loginScreen.route,
         builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
       ).fade(),
+      // GoRoute(
+      //   path: LVRoute.oTPScreen.route,
+      //   name: LVRoute.oTPScreen.route,
+      //   builder: (BuildContext context, GoRouterState state) => const OTPScreen(phoneNumber: '',),
+      // ).fade(),
       GoRoute(
         path: LVRoute.oTPScreen.route,
         name: LVRoute.oTPScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const OTPScreen(),
+        builder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+
+          return OTPScreen(
+            phoneNumber: extra['phoneNumber'] ?? '',
+            phoneCode: extra['phoneCode'],
+            name: extra['name'] ?? '',
+            referalCode: extra['referalCode'] ?? '',
+            password: extra['password'] ?? '',
+            confirmPassword: extra['confirmPassword'] ?? '',
+          );
+        },
       ).fade(),
       GoRoute(
         path: LVRoute.forgetPasswordScreen.route,
@@ -60,7 +75,6 @@ class LVGoRouter {
   );
   GoRouter get getGoRouter => goRoute;
 }
-
 
 // final String? Function(BuildContext context, GoRouterState state) _authGuard = (BuildContext context, GoRouterState state) {
 //   if (!(getStoreHelper.getToken() != null)) {

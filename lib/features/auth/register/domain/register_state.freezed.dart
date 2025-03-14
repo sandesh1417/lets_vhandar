@@ -19,7 +19,10 @@ mixin _$RegistrationState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isOtpSent => throw _privateConstructorUsedError;
   bool get isVerified => throw _privateConstructorUsedError;
+  bool get isRegistered => throw _privateConstructorUsedError;
+  RegisterModal? get newUserRegisterInfo => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
+  String? get message => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
   String? get phoneCode =>
       throw _privateConstructorUsedError; // OtpData? otpData,
@@ -43,7 +46,10 @@ abstract class $RegistrationStateCopyWith<$Res> {
       {bool isLoading,
       bool isOtpSent,
       bool isVerified,
+      bool isRegistered,
+      RegisterModal? newUserRegisterInfo,
       String? errorMessage,
+      String? message,
       String? phoneNumber,
       String? phoneCode,
       String? authToken});
@@ -67,7 +73,10 @@ class _$RegistrationStateCopyWithImpl<$Res, $Val extends RegistrationState>
     Object? isLoading = null,
     Object? isOtpSent = null,
     Object? isVerified = null,
+    Object? isRegistered = null,
+    Object? newUserRegisterInfo = freezed,
     Object? errorMessage = freezed,
+    Object? message = freezed,
     Object? phoneNumber = freezed,
     Object? phoneCode = freezed,
     Object? authToken = freezed,
@@ -85,9 +94,21 @@ class _$RegistrationStateCopyWithImpl<$Res, $Val extends RegistrationState>
           ? _value.isVerified
           : isVerified // ignore: cast_nullable_to_non_nullable
               as bool,
+      isRegistered: null == isRegistered
+          ? _value.isRegistered
+          : isRegistered // ignore: cast_nullable_to_non_nullable
+              as bool,
+      newUserRegisterInfo: freezed == newUserRegisterInfo
+          ? _value.newUserRegisterInfo
+          : newUserRegisterInfo // ignore: cast_nullable_to_non_nullable
+              as RegisterModal?,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      message: freezed == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
               as String?,
       phoneNumber: freezed == phoneNumber
           ? _value.phoneNumber
@@ -117,7 +138,10 @@ abstract class _$$RegistrationStateImplCopyWith<$Res>
       {bool isLoading,
       bool isOtpSent,
       bool isVerified,
+      bool isRegistered,
+      RegisterModal? newUserRegisterInfo,
       String? errorMessage,
+      String? message,
       String? phoneNumber,
       String? phoneCode,
       String? authToken});
@@ -139,7 +163,10 @@ class __$$RegistrationStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? isOtpSent = null,
     Object? isVerified = null,
+    Object? isRegistered = null,
+    Object? newUserRegisterInfo = freezed,
     Object? errorMessage = freezed,
+    Object? message = freezed,
     Object? phoneNumber = freezed,
     Object? phoneCode = freezed,
     Object? authToken = freezed,
@@ -157,9 +184,21 @@ class __$$RegistrationStateImplCopyWithImpl<$Res>
           ? _value.isVerified
           : isVerified // ignore: cast_nullable_to_non_nullable
               as bool,
+      isRegistered: null == isRegistered
+          ? _value.isRegistered
+          : isRegistered // ignore: cast_nullable_to_non_nullable
+              as bool,
+      newUserRegisterInfo: freezed == newUserRegisterInfo
+          ? _value.newUserRegisterInfo
+          : newUserRegisterInfo // ignore: cast_nullable_to_non_nullable
+              as RegisterModal?,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      message: freezed == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
               as String?,
       phoneNumber: freezed == phoneNumber
           ? _value.phoneNumber
@@ -184,7 +223,10 @@ class _$RegistrationStateImpl implements _RegistrationState {
       {this.isLoading = false,
       this.isOtpSent = false,
       this.isVerified = false,
+      this.isRegistered = false,
+      this.newUserRegisterInfo,
       this.errorMessage,
+      this.message,
       this.phoneNumber,
       this.phoneCode,
       this.authToken});
@@ -199,7 +241,14 @@ class _$RegistrationStateImpl implements _RegistrationState {
   @JsonKey()
   final bool isVerified;
   @override
+  @JsonKey()
+  final bool isRegistered;
+  @override
+  final RegisterModal? newUserRegisterInfo;
+  @override
   final String? errorMessage;
+  @override
+  final String? message;
   @override
   final String? phoneNumber;
   @override
@@ -211,7 +260,7 @@ class _$RegistrationStateImpl implements _RegistrationState {
 
   @override
   String toString() {
-    return 'RegistrationState(isLoading: $isLoading, isOtpSent: $isOtpSent, isVerified: $isVerified, errorMessage: $errorMessage, phoneNumber: $phoneNumber, phoneCode: $phoneCode, authToken: $authToken)';
+    return 'RegistrationState(isLoading: $isLoading, isOtpSent: $isOtpSent, isVerified: $isVerified, isRegistered: $isRegistered, newUserRegisterInfo: $newUserRegisterInfo, errorMessage: $errorMessage, message: $message, phoneNumber: $phoneNumber, phoneCode: $phoneCode, authToken: $authToken)';
   }
 
   @override
@@ -225,8 +274,13 @@ class _$RegistrationStateImpl implements _RegistrationState {
                 other.isOtpSent == isOtpSent) &&
             (identical(other.isVerified, isVerified) ||
                 other.isVerified == isVerified) &&
+            (identical(other.isRegistered, isRegistered) ||
+                other.isRegistered == isRegistered) &&
+            (identical(other.newUserRegisterInfo, newUserRegisterInfo) ||
+                other.newUserRegisterInfo == newUserRegisterInfo) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
+            (identical(other.message, message) || other.message == message) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
             (identical(other.phoneCode, phoneCode) ||
@@ -236,8 +290,18 @@ class _$RegistrationStateImpl implements _RegistrationState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading, isOtpSent, isVerified,
-      errorMessage, phoneNumber, phoneCode, authToken);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isLoading,
+      isOtpSent,
+      isVerified,
+      isRegistered,
+      newUserRegisterInfo,
+      errorMessage,
+      message,
+      phoneNumber,
+      phoneCode,
+      authToken);
 
   /// Create a copy of RegistrationState
   /// with the given fields replaced by the non-null parameter values.
@@ -254,7 +318,10 @@ abstract class _RegistrationState implements RegistrationState {
       {final bool isLoading,
       final bool isOtpSent,
       final bool isVerified,
+      final bool isRegistered,
+      final RegisterModal? newUserRegisterInfo,
       final String? errorMessage,
+      final String? message,
       final String? phoneNumber,
       final String? phoneCode,
       final String? authToken}) = _$RegistrationStateImpl;
@@ -266,7 +333,13 @@ abstract class _RegistrationState implements RegistrationState {
   @override
   bool get isVerified;
   @override
+  bool get isRegistered;
+  @override
+  RegisterModal? get newUserRegisterInfo;
+  @override
   String? get errorMessage;
+  @override
+  String? get message;
   @override
   String? get phoneNumber;
   @override

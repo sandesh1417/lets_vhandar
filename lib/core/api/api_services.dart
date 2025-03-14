@@ -34,3 +34,7 @@ dynamic handleResponseDio(Response response) {
   }
   // return null;
 }
+
+parseErrorMessage(DioException e) {
+  return e.response?.data["message"] ?? "Something went wrong";
+}

@@ -10,30 +10,74 @@ class RegisterServices {
 
   RegisterServices(this._apiService);
 
-  Future<GenericResponseModal> sendOtp(String phoneNumber, String phoneCode) async {
+  Future<GenericResponseModal> sendOtp(String phoneNumber, String? phoneCode) async {
     try {
       final response = await _apiService.dio.post(
         ApiUrl.sendOTP,
         data: {
           'phoneNumber': phoneNumber,
-          'phoneCode': phoneCode,
+          'phoneCode': phoneCode ?? "+977",
         },
       );
 
-      // Parse the response to GenericResponseModal model
+      if (response.data != null) {
+        return GenericResponseModal.fromMap(response.data);
+      } else {
+        return GenericResponseModal(
+          success: "false",
+          message: "Invalid response from server",
+        );
+      }
+    } on DioException catch (e) {
+      return GenericResponseModal(
+        success: "false",
+        message: e.response?.data?['message'] ?? "Network error occurred",
+      );
+    } catch (e) {
+      return GenericResponseModal(
+        success: "false",
+        message: "An unexpected error occurred",
+      );
+    }
+  }
+
+  Future<GenericResponseModal> register({
+    required String phoneNumber,
+    String? phoneCode,
+    required String otp,
+    required String password,
+    required String confirmPassword,
+    required String name,
+    String? referalCode,
+  }) async {
+    try {
+      final response = await _apiService.dio.post(
+        ApiUrl.register,
+        data: {
+          'phoneNumber': phoneNumber,
+          'phoneCode': phoneCode ?? '+977',
+          'otp': otp,
+          'password': password,
+          'confirmPassword': confirmPassword,
+          'name': name,
+          'referalCode': referalCode ?? '',
+        },
+      );
+
+      // Parse the response
       return GenericResponseModal.fromMap(response.data);
     } catch (e) {
       if (e is DioException) {
         // Handle Dio specific errors
         return GenericResponseModal(
-          status: e.response?.statusCode.toString() ?? "500",
-          message: e.message ?? "Something went wrong",
+          // status: e.response?.statusCode ?? 500,
+          message: parseErrorMessage(e),
           success: "false",
         );
       }
       // Handle general errors
       return GenericResponseModal(
-        status: "500",
+        status: "501",
         message: "An unexpected error occurred",
         success: "false",
       );
