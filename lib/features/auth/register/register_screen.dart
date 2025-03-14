@@ -126,7 +126,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   // Save user data to the state
-                  ref.read(registrationProvider.notifier).sendOtp(_phoneController.text, "+977");
+                  ref.read(registrationProvider.notifier).sendOtp(context, phoneNumber: _phoneController.text, phoneCode: "+977");
                   context.push(
                     LVRoute.oTPScreen.route,
                     extra: {
@@ -138,11 +138,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       'confirmPassword': _confirmPasswordController.text,
                     },
                   );
-
-                  // Navigate to OTP screen
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => const OTPScreen(phoneNumber: '')),
+                  // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
+                  //   phoneNumber: _phoneController.text,
+                  //   phoneCode: "+977",
+                  //   name: _nameController.text,
+                  //   referalCode: _referalCodeController.text,
+                  //   password: _passwordController.text,
+                  //   confirmPassword: _confirmPasswordController.text,
                   // );
                 }
               },

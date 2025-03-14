@@ -10,38 +10,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-        designSize: const Size(390, 844),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (_, child) {
-          return GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: HeroControllerScope(
-              controller: HeroController(),
-              child: MaterialApp.router(
-                title: 'Lets Vhandar',
-                routerConfig: locator<LVGoRouter>().getGoRouter, // Using the locator instance
-                // navigatorKey: locator<LVGoRouter>().navigatorKey, // Ensuring the same key is used
-                theme: ThemeData(
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: AppColor.bg,
-                  ),
-                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
-                  useMaterial3: true,
-                  // textTheme: TextTheme()
-                ),
-                darkTheme: ThemeData(
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: AppColor.bg,
-                  ),
-                  // colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary),
-                  useMaterial3: true,
-                  // textTheme: TextTheme()
-                ),
-                // home: const SplashScreen(),
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (_, child) {
+        return GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: MaterialApp.router(
+            title: 'Lets Vhandar',
+            routerConfig: locator<LVGoRouter>().getGoRouter,
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: AppColor.bg,
+              ),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: AppColor.bg,
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

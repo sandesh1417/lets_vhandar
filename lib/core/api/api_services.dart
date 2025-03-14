@@ -19,12 +19,12 @@ class ApiService {
   Dio get dio => _dio;
 }
 
-dynamic handleResponseDio(Response response) {
+dynamic addResponseStatus(Response response) {
   try {
     Map<String, dynamic> result = {};
     result = response.data;
-    if (result['status'] == null) {
-      result['status'] = response.statusCode;
+    if (result['statusCode'] == null) {
+      result['statusCode'] = response.statusCode;
     }
     return result;
   } catch (e) {

@@ -3,22 +3,26 @@ import 'dart:convert';
 class GenericResponseModal {
   final String? message;
   final String? status;
+  final int? statusCode;
   final String? success;
 
   GenericResponseModal({
     this.message,
     this.status,
+    this.statusCode,
     this.success,
   });
 
   GenericResponseModal copyWith({
     String? message,
     String? status,
+    int? statusCode,
     String? success,
   }) =>
       GenericResponseModal(
         message: message ?? this.message,
         status: status ?? this.status,
+        statusCode: statusCode ?? this.statusCode,
         success: success ?? this.success,
       );
 
@@ -29,6 +33,7 @@ class GenericResponseModal {
   factory GenericResponseModal.fromMap(Map<String, dynamic> json) => GenericResponseModal(
         message: json["message"],
         status: json["status"],
+        statusCode: json["statusCode"],
         success: json["success"],
       );
 

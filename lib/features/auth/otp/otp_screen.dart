@@ -33,11 +33,7 @@ class OTPScreen extends ConsumerStatefulWidget {
 class _OTPScreenState extends ConsumerState<OTPScreen> {
   late final FocusNode focusNode;
   late final GlobalKey<FormState> formKey;
-  late final TextEditingController _otpController;
-  // late final TextEditingController _passwordController;
-  // late final TextEditingController _confirmPasswordController;
-  // late final TextEditingController _nameController;
-
+  final TextEditingController _otpController = TextEditingController();
   int _timerSeconds = 30;
   bool _canResendOTP = false;
 
@@ -46,23 +42,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     super.initState();
     formKey = GlobalKey<FormState>();
     focusNode = FocusNode();
-    _otpController = TextEditingController();
-    // _passwordController = TextEditingController();
-    // _confirmPasswordController = TextEditingController();
-    // _nameController = TextEditingController();
     _startOTPTimer();
   }
 
-  // void _startOTPTimer() {
-  //   Future.delayed(const Duration(seconds: 1), () {
-  //     if (_timerSeconds > 0) {
-  //       setState(() => _timerSeconds--);
-  //       _startOTPTimer();
-  //     } else {
-  //       setState(() => _canResendOTP = true);
-  //     }
-  //   });
-  // }
   void _startOTPTimer() {
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
@@ -76,18 +58,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   focusNode.dispose();
-  //   _otpController.dispose();
-  //   // _passwordController.dispose();
-  //   // _confirmPasswordController.dispose();
-  //   // _nameController.dispose();
-  //   super.dispose();
-  // }
   @override
   void dispose() {
-    // _timer?.cancel(); // Cancel the timer when the widget is disposed
     focusNode.dispose();
     _otpController.dispose();
     super.dispose();
@@ -96,10 +68,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   void _verifyOTP() async {
     if (formKey.currentState?.validate() ?? false) {
       final otp = _otpController.text;
-      // final password = _passwordController.text;
-      // final confirmPassword = _confirmPasswordController.text;
-      // final name = _nameController.text;
-
       final registrationNotifier = ref.read(registrationProvider.notifier);
 
       // Call registerWithOtp API
@@ -114,26 +82,25 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         phoneCode: widget.phoneCode,
       );
 
-      // Read the latest registration state
-      final registrationState = ref.read(registrationProvider);
+      // final registrationState = ref.read(registrationProvider);
 
-      if (registrationState.isRegistered) {
-        // Save user details in the state
-        // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
-        //   phoneNumber: widget.phoneNumber,
-        //   phoneCode: widget.phoneCode,
-        //   name: name,
-        //   password: password,
-        // );
+      // if (registrationState.isRegistered) {
+      //   // Save user details in the state
+      //   // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
+      //   //   phoneNumber: widget.phoneNumber,
+      //   //   phoneCode: widget.phoneCode,
+      //   //   name: name,
+      //   //   password: password,
+      //   // );
 
-        // Navigate to the next screen (e.g., home screen)
-        // Navigator.pushReplacementNamed(context, '/home'); // Adjust route as needed
-      } else {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(registrationState.errorMessage ?? "Registration failed")),
-        );
-      }
+      //   // Navigate to the next screen (e.g., home screen)
+      //   // Navigator.pushReplacementNamed(context, '/home'); // Adjust route as needed
+      // } else {
+      //   // Show error message
+      //   // ScaffoldMessenger.of(context).showSnackBar(
+      //   //   SnackBar(content: Text(registrationState.errorMessage ?? "Registration failed")),
+      //   // )
+      // }
     }
   }
 
@@ -144,7 +111,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         _canResendOTP = false;
       });
       _startOTPTimer();
-      // TODO: Call the resend OTP API
+      ref.read(registrationProvider.notifier).sendOtp(context,phoneNumber:widget.phoneNumber, phoneCode: "+977");
     }
   }
 

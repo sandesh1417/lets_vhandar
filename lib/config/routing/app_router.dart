@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/config/routing/fade_extension.dart';
 import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
 import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
@@ -30,16 +29,16 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.splashScreen.route,
         builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
-      ).fade(),
+      ),
       GoRoute(
         path: LVRoute.loginScreen.route,
         builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
-      ).fade(),
+      ),
       // GoRoute(
       //   path: LVRoute.oTPScreen.route,
       //   name: LVRoute.oTPScreen.route,
       //   builder: (BuildContext context, GoRouterState state) => const OTPScreen(phoneNumber: '',),
-      // ).fade(),
+      // ),
       GoRoute(
         path: LVRoute.oTPScreen.route,
         name: LVRoute.oTPScreen.route,
@@ -55,22 +54,22 @@ class LVGoRouter {
             confirmPassword: extra['confirmPassword'] ?? '',
           );
         },
-      ).fade(),
+      ),
       GoRoute(
         path: LVRoute.forgetPasswordScreen.route,
         name: LVRoute.forgetPasswordScreen.route,
         builder: (BuildContext context, GoRouterState state) => const ForgetPasswordScreen(),
-      ).fade(),
+      ),
       GoRoute(
         path: LVRoute.registerScreen.route,
         name: LVRoute.registerScreen.route,
         builder: (BuildContext context, GoRouterState state) => const RegisterScreen(),
-      ).fade(),
+      ),
       GoRoute(
         path: LVRoute.v4BRegistrationScreen.route,
         name: LVRoute.v4BRegistrationScreen.route,
         builder: (BuildContext context, GoRouterState state) => const V4BRegistrationScreen(),
-      ).fade(),
+      ),
     ],
   );
   GoRouter get getGoRouter => goRoute;

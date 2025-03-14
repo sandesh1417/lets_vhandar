@@ -1,28 +1,28 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/api/api_services.dart';
 import 'package:lets_vhandar/features/auth/register/domain/register_state.dart';
 import 'package:lets_vhandar/features/auth/register/modals/register_modal.dart';
 import 'package:lets_vhandar/features/auth/register/services/register_service.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
-// Provider for the API service
-final apiServiceProvider = Provider<ApiService>((ref) {
-  return ApiService();
-});
+// API Provider
+final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
 
-// Provider for the registration service
+// Register Service Provider
 final registerServiceProvider = Provider<RegisterServices>((ref) {
   final apiService = ref.watch(apiServiceProvider);
   return RegisterServices(apiService);
 });
 
-// Provider for the registration state
+// Registration Provider
 final registrationProvider = StateNotifierProvider<RegistrationNotifier, RegistrationState>((ref) {
   final registerService = ref.watch(registerServiceProvider);
   return RegistrationNotifier(registerService);
 });
-
 final newUserInfoProvider = StateProvider<RegisterModal?>((ref) => null);
 
 class RegistrationNotifier extends StateNotifier<RegistrationState> {
@@ -30,47 +30,45 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
 
   RegistrationNotifier(this._registerService) : super(const RegistrationState());
 
-  // Step 1: Send OTP
-  Future<void> sendOtp(String phoneNumber, String phoneCode) async {
+  /// **Send OTP**
+  Future<void> sendOtp(BuildContext context, {required String phoneNumber, required String phoneCode}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final response = await _registerService.sendOtp(phoneNumber, phoneCode);
+    final result = await _registerService.sendOtp(phoneNumber, phoneCode);
 
-    if (response.status == "SUCCESS" || response.success == "true") {
+    if (result.statusCode == 200) {
       state = state.copyWith(
         isLoading: false,
         isOtpSent: true,
         phoneNumber: phoneNumber,
         phoneCode: phoneCode,
-        // otpData: response.data,
       );
+      CustomSnackbar.success(context, message: result.message ?? 'OPT successfully send');
     } else {
+      CustomSnackbar.error(context, message: result.message ?? 'OPT sending failed');
+
+      context.pop();
       state = state.copyWith(
         isLoading: false,
-        errorMessage: response.message ?? 'Failed to send OTP',
+        errorMessage: "Error (${result.statusCode}): ${result.message}",
       );
     }
   }
 
-  // Step 2: Register with OTP
+  /// **Register User**
   Future<void> registerWithOtp(
     BuildContext context, {
     required String otp,
     required String password,
     required String confirmPassword,
     required String name,
-    String? phoneCode,
     required String phoneNumber,
+    String? phoneCode,
     String? referalCode,
   }) async {
-    // if (state.phoneNumber == null || state.phoneCode == null) {
-    //   state = state.copyWith(errorMessage: 'Phone details not available');
-    //   return;
-    // }
-
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final response = await _registerService.register(
+    final result = await _registerService.register(
       phoneNumber: phoneNumber,
       phoneCode: phoneCode,
       otp: otp,
@@ -80,21 +78,19 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
       referalCode: referalCode,
     );
 
-    if (response.status == "SUCCESS" || response.success == "true") {
+    if (result.statusCode == 200 || result.statusCode == 201) {
       state = state.copyWith(
         isLoading: false,
         isRegistered: true,
-        message: response.message ?? 'Registration successful',
       );
+      CustomSnackbar.success(context, message: result.message ?? 'Registration successful');
     } else {
-      final errorMessage = response.message ?? 'Registration failed';
-
-      // Show the error message in a snackbar
+      final errorMessage = result.message ?? 'Registration failed';
       CustomSnackbar.error(context, message: errorMessage);
 
       state = state.copyWith(
         isLoading: false,
-        errorMessage: errorMessage,
+        // errorMessage: "Error (${result.statusCode}): ${result.message}",
       );
     }
   }
