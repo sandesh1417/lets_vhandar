@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
@@ -64,12 +63,12 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
         key: _formKey,
         child: Column(
           children: [
-            SizedBox(height: 50.h),
+            SizedBox(height: 30.h),
             SvgPicture.asset(KImageConstant.vandharIcon),
             SizedBox(height: 15.h),
             Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
             SizedBox(height: 4.h),
-            Text('Create an Account', style: KTextStyle.roboto16black5W),
+            Text('Create an Business Account', style: KTextStyle.roboto16black5W),
             SizedBox(height: 30.h),
             CustomTextField(
               controller: _phoneController,
@@ -84,7 +83,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               ),
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
-              validator: LoginValidators.validatePhone,
+              validator: TFValidators.validatePhone,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -95,6 +94,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               onObscurePressed: () {
                 // ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
+              validator: TFValidators.validateEmail,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -105,7 +105,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
-              validator: LoginValidators.validatePassword,
+              validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -116,7 +116,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
-              validator: LoginValidators.validatePassword,
+              validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -133,6 +133,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               labelText: 'Business Name',
               onObscurePressed: () {},
               suffixIcon: const SizedBox(),
+              validator: TFValidators.validateBusinessName,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -141,12 +142,13 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               labelText: 'PAN Number',
               onObscurePressed: () {},
               suffixIcon: const SizedBox(),
+              validator: TFValidators.validatePanNumber,
             ),
             SizedBox(height: 20.h),
             CustomButton(
                 onPress: () {
-                  context.push(LVRoute.oTPScreen.route); //    /otp    otp
                   if (_formKey.currentState?.validate() ?? false) {
+                    // context.push(LVRoute.oTPScreen.route); //    /otp    otp
                     // ref.read(authStateProvider.notifier).login(
                     //       _emailController.text,
                     //       __passwordController.text,
@@ -154,29 +156,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                   }
                 },
                 buttonTitle: 'Join Vhandar'),
-            SizedBox(height: 16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(child: Divider(color: AppColor.border, thickness: 1)),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: AppColor.border),
-                  ),
-                  child: Text(
-                    "OR",
-                    style: TextStyle(color: AppColor.greenTxtColor, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
-              ],
-            ),
-            SizedBox(height: 16.h),
-            CustomButton(onPress: () {}, buttonTitle: 'Create a Business Account'),
-            SizedBox(height: 50.h),
+            SizedBox(height: 20.h),
             Text(
               'By continuing, you agree to our ',
               style: KTextStyle.roboto12lGray3W,

@@ -42,7 +42,7 @@ class ForgetPasswordScreen extends StatelessWidget {
           ),
           keyBoardType: const TextInputType.numberWithOptions(),
           textInputFormatter: TenDigitInputFormatter(),
-          validator: LoginValidators.validatePhone,
+          validator: TFValidators.validatePhone,
         ),
         SizedBox(height: 24.h),
         CustomButton(

@@ -6,13 +6,13 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import '../core/constants/app_style.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String? title;
   final bool hideBackBtn;
   final void Function()? backBtnFx;
 
   const CustomAppBar({
     super.key,
-    required this.title,
+    this.title,
     this.backBtnFx,
     this.hideBackBtn = false,
   });
@@ -21,10 +21,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: Text(
-        title,
-        style: KTextStyle.roboto16white7W,
-      ),
+      title: title == null
+          ? const SizedBox()
+          : Text(
+              title!,
+              style: KTextStyle.roboto16white7W,
+            ),
       leading: hideBackBtn
           ? const SizedBox()
           : InkWell(

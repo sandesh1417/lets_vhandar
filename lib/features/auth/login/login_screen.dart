@@ -69,7 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
-              validator: LoginValidators.validatePhone,
+              validator: TFValidators.validatePhone,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -80,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
-              validator: LoginValidators.validatePassword,
+              validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 20.h),
             CustomButton(

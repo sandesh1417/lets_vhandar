@@ -5,10 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
+import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
@@ -52,11 +54,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffoldWrapper(
+      appBar: const CustomAppBar(),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
-            SizedBox(height: 50.h),
+            SizedBox(height: 30.h),
             SvgPicture.asset(KImageConstant.vandharIcon),
             SizedBox(height: 15.h),
             Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
@@ -76,7 +79,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
-              validator: LoginValidators.validatePhone,
+              validator: TFValidators.validatePhone,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -85,7 +88,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               labelText: 'Name',
               onObscurePressed: () {},
               suffixIcon: const SizedBox(),
-              validator: LoginValidators.validateName,
+              validator: TFValidators.validateName,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -98,7 +101,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isPasswordVisible = !isPasswordVisible;
                 });
               },
-              validator: LoginValidators.validatePassword,
+              validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -111,7 +114,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isPasswordVisible = !isPasswordVisible;
                 });
               },
-              validator: LoginValidators.validatePassword,
+              validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
             CustomTextField(
@@ -150,6 +153,51 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               },
               buttonTitle: 'Join Vhandar',
             ),
+            SizedBox(height: 16.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: Divider(color: AppColor.border, thickness: 1)),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    border: Border.all(color: AppColor.border),
+                  ),
+                  child: Text(
+                    "OR",
+                    style: TextStyle(color: AppColor.greenTxtColor, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+              ],
+            ),
+            SizedBox(height: 16.h),
+            CustomButton(
+                onPress: () {
+                  context.push(LVRoute.v4BRegistrationScreen.route);
+                },
+                buttonTitle: 'Create a Business Account'),
+            SizedBox(height: 50.h),
+            Text(
+              'By continuing, you agree to our ',
+              style: KTextStyle.roboto12lGray3W,
+            ),
+            RichText(
+              text: TextSpan(
+                text: 'Privacy Policy',
+                style: KTextStyle.roboto12sec4W,
+                children: <TextSpan>[
+                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
+                  TextSpan(
+                    text: 'Terms of Use',
+                    style: KTextStyle.roboto12sec4W,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),

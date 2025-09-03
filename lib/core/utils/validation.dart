@@ -9,16 +9,24 @@ extension ValidateExtension on String {
 // final MaskTextInputFormatter dateFormatter =
 //     MaskTextInputFormatter(mask: '####-##-##', filter: {"#": RegExp(r'[0-9]')});
 
-class LoginValidators {
+class TFValidators {
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone is required';
     }
-
     if (value.length < 10) {
       return 'Please enter 10 digits';
     }
+    return null;
+  }
 
+  static String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!value.isEmailValid) {
+      return 'Enter a valid email address';
+    }
     return null;
   }
 
@@ -26,11 +34,33 @@ class LoginValidators {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
-
     if (value.length < 6) {
       return 'Password must be at least 6 characters';
     }
+    return null;
+  }
 
+  static String? validateConfirmPassword(String? value, String password) {
+    if (value == null || value.isEmpty) {
+      return 'Confirm Password is required';
+    }
+    if (value != password) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
+  static String? validateBusinessName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Business Name is required';
+    }
+    return null;
+  }
+
+  static String? validatePanNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'PAN Number is required';
+    }
     return null;
   }
 
