@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/auth/domain/repositories/auth_repository.dart';
@@ -24,7 +23,9 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
 
   /// **Send OTP**
   Future<void> sendOtp(BuildContext context,
-      {required String phoneNumber, required String phoneCode}) async {
+      {required String phoneNumber,
+      required String phoneCode,
+      VoidCallback? onSuccess}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     final result = await _authRepository.sendOtp(phoneNumber, phoneCode);
@@ -39,11 +40,11 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
         );
         CustomSnackbar.success(context,
             message: data.message ?? 'OPT successfully send');
+        onSuccess?.call();
         break;
       case Error(failure: final failure):
         CustomSnackbar.error(context,
             message: failure.message ?? 'OPT sending failed');
-        context.pop();
         state = state.copyWith(
           isLoading: false,
           errorMessage: failure.message,

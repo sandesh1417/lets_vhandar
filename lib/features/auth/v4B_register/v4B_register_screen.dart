@@ -9,6 +9,7 @@ import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class V4BRegistrationScreen extends ConsumerStatefulWidget {
@@ -156,12 +157,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     // Additional check for password match
                     if (_passwordController.text !=
                         _confirmPasswprdController.text) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Passwords do not match'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
+                      CustomSnackbar.error(context,
+                          message: 'Passwords do not match');
                       return;
                     }
 

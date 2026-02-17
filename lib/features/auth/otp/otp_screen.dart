@@ -97,10 +97,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       //   // Navigator.pushReplacementNamed(context, '/home'); // Adjust route as needed
       // } else {
       //   // Show error message
-      //   // ScaffoldMessenger.of(context).showSnackBar(
-      //   //   SnackBar(content: Text(registrationState.errorMessage ?? "Registration failed")),
-      //   // )
-      // }
     }
   }
 
@@ -111,7 +107,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         _canResendOTP = false;
       });
       _startOTPTimer();
-      ref.read(registrationProvider.notifier).sendOtp(context,phoneNumber:widget.phoneNumber, phoneCode: "+977");
+      ref
+          .read(registrationProvider.notifier)
+          .sendOtp(context, phoneNumber: widget.phoneNumber, phoneCode: "+977");
     }
   }
 
@@ -123,7 +121,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         children: [
           Text('OTP Verification', style: KTextStyle.roboto24blackD7W),
           SizedBox(height: 8.h),
-          Text('OTP has been sent to ${widget.phoneNumber}', style: KTextStyle.roboto14Green4W),
+          Text('OTP has been sent to ${widget.phoneNumber}',
+              style: KTextStyle.roboto14Green4W),
           SizedBox(height: 24.h),
           PinputExample(
             controller: _otpController,
@@ -145,7 +144,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           ),
           SizedBox(height: 16.h),
           Text(
-            _timerSeconds > 0 ? '00:${_timerSeconds.toString().padLeft(2, '0')}' : '',
+            _timerSeconds > 0
+                ? '00:${_timerSeconds.toString().padLeft(2, '0')}'
+                : '',
             style: KTextStyle.roboto24GreenD4W,
           ),
           SizedBox(height: 8.h),

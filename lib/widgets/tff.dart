@@ -86,7 +86,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.r)),
             borderSide: BorderSide(color: AppColor.border)),
-        labelStyle: TextStyle(color: AppColor.error),
+        labelText: widget.labelText,
+        labelStyle: TextStyle(color: AppColor.hintText),
       ),
       autovalidateMode:
           widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,

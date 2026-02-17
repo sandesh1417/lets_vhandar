@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/auth/register/providers/register_provider.
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -53,6 +54,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final registrationState = ref.watch(registrationProvider);
+
     return CustomScaffoldWrapper(
       appBar: const CustomAppBar(),
       child: Form(
@@ -128,32 +131,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
             SizedBox(height: 20.h),
             CustomButton(
+              isLoading: registrationState.isLoading,
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   // Additional check for password match
                   if (_passwordController.text !=
                       _confirmPasswordController.text) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Passwords do not match'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                    CustomSnackbar.error(context,
+                        message: 'Passwords do not match');
                     return;
                   }
 
                   // Save user data to the state
-                  ref.read(registrationProvider.notifier).sendOtp(context,
-                      phoneNumber: _phoneController.text, phoneCode: "+977");
-                  context.push(
-                    LVRoute.oTPScreen.route,
-                    extra: {
-                      'phoneNumber': _phoneController.text,
-                      'phoneCode': '+977',
-                      'name': _nameController.text,
-                      'referalCode': _referalCodeController.text,
-                      'password': _passwordController.text,
-                      'confirmPassword': _confirmPasswordController.text,
+                  ref.read(registrationProvider.notifier).sendOtp(
+                    context,
+                    phoneNumber: _phoneController.text,
+                    phoneCode: "+977",
+                    onSuccess: () {
+                      context.push(
+                        LVRoute.oTPScreen.route,
+                        extra: {
+                          'phoneNumber': _phoneController.text,
+                          'phoneCode': '+977',
+                          'name': _nameController.text,
+                          'referalCode': _referalCodeController.text,
+                          'password': _passwordController.text,
+                          'confirmPassword': _confirmPasswordController.text,
+                        },
+                      );
                     },
                   );
                   // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
