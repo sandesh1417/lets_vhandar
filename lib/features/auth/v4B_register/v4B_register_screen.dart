@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
@@ -29,6 +27,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   late TextEditingController _categoryController;
   late TextEditingController _panNumberController;
   final _formKey = GlobalKey<FormState>();
+  bool _passwordsMatch = false;
+  bool _confirmPasswordTouched = false;
 
   @override
   void initState() {
@@ -40,6 +40,18 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     _confirmPasswprdController = TextEditingController();
     _categoryController = TextEditingController();
     _panNumberController = TextEditingController();
+
+    // Add listeners for real-time password validation
+    _passwordController.addListener(_validatePasswords);
+    _confirmPasswprdController.addListener(_validatePasswords);
+  }
+
+  void _validatePasswords() {
+    if (_confirmPasswordTouched) {
+      setState(() {
+        _passwordsMatch = TFValidators.doPasswordsMatch(_passwordController.text, _confirmPasswprdController.text);
+      });
+    }
   }
 
   @override
@@ -100,10 +112,16 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
             CustomTextField(
               controller: _passwordController,
               hintText: 'Enter Password',
-              labelText: 'Number',
+              labelText: 'Password',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+              },
+              onChanged: (value) {
+                // If confirm password has been touched and has content, validate immediately
+                if (_confirmPasswordTouched && _confirmPasswprdController.text.isNotEmpty) {
+                  _validatePasswords();
+                }
               },
               validator: TFValidators.validatePassword,
             ),
@@ -111,13 +129,53 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
             CustomTextField(
               controller: _confirmPasswprdController,
               hintText: 'Confirm Password',
-              labelText: 'Number',
+              labelText: 'Confirm Password',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
               },
-              validator: TFValidators.validatePassword,
+              onChanged: (value) {
+                if (!_confirmPasswordTouched) {
+                  setState(() {
+                    _confirmPasswordTouched = true;
+                  });
+                }
+                _validatePasswords();
+              },
+              validator: (value) => TFValidators.validateConfirmPasswordRealTime(value, _passwordController.text, _confirmPasswordTouched),
+              suffixIcon: _confirmPasswordTouched && _confirmPasswprdController.text.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.only(right: 12.w),
+                      child: Icon(
+                        _passwordsMatch ? Icons.check_circle : Icons.error,
+                        color: _passwordsMatch ? Colors.green : Colors.red,
+                        size: 20,
+                      ),
+                    )
+                  : const SizedBox(),
             ),
+            // Show password match status
+            if (_confirmPasswordTouched && _confirmPasswprdController.text.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: 4.h, left: 12.w),
+                child: Row(
+                  children: [
+                    Icon(
+                      _passwordsMatch ? Icons.check_circle : Icons.error,
+                      color: _passwordsMatch ? Colors.green : Colors.red,
+                      size: 16,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      _passwordsMatch ? 'Passwords match' : 'Passwords do not match',
+                      style: TextStyle(
+                        color: _passwordsMatch ? Colors.green : Colors.red,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             SizedBox(height: 10.h),
             CustomTextField(
               controller: _categoryController,
@@ -148,6 +206,17 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
             CustomButton(
                 onPress: () {
                   if (_formKey.currentState?.validate() ?? false) {
+                    // Additional check for password match
+                    if (_passwordController.text != _confirmPasswprdController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Passwords do not match'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
                     // context.push(LVRoute.oTPScreen.route); //    /otp    otp
                     // ref.read(authStateProvider.notifier).login(
                     //       _emailController.text,

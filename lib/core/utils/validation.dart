@@ -50,6 +50,23 @@ class TFValidators {
     return null;
   }
 
+  static bool doPasswordsMatch(String password, String confirmPassword) {
+    return password == confirmPassword && confirmPassword.isNotEmpty;
+  }
+
+  static String? validateConfirmPasswordRealTime(String? value, String password, bool isConfirmPasswordTouched) {
+    if (!isConfirmPasswordTouched) {
+      return null; // Don't show validation until user starts typing in confirm password
+    }
+    if (value == null || value.isEmpty) {
+      return 'Confirm Password is required';
+    }
+    if (value != password) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
   static String? validateBusinessName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Business Name is required';

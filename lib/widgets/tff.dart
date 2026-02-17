@@ -51,7 +51,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       keyboardType: widget.keyBoardType ?? TextInputType.emailAddress,
       inputFormatters: widget.textInputFormatter != null ? [widget.textInputFormatter!] : null,
       onChanged: widget.onChanged ?? (v) {},
-      style: TextStyle(color: AppColor.grey95),
+      style: TextStyle(color: AppColor.black),
       decoration: InputDecoration(
         contentPadding: widget.prefixIcon == null ? EdgeInsets.symmetric(horizontal: 12.w) : null,
         isDense: true,
