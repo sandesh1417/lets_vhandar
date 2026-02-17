@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -78,19 +78,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               labelText: 'Number',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
-                ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
+                ref
+                    .read(passwordVisibilityProvider.notifier)
+                    .update((state) => !isPasswordVisible);
               },
               validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 20.h),
             CustomButton(
                 onPress: () {
-                  context.push(LVRoute.oTPScreen.route); //    /otp    otp
+                  // context.push(LVRoute.oTPScreen.route); //    /otp    otp
                   if (_formKey.currentState?.validate() ?? false) {
-                    // ref.read(authStateProvider.notifier).login(
-                    //       _emailController.text,
-                    //       __passwordController.text,
-                    //     );
+                    ref.read(loginProvider.notifier).login(
+                          context,
+                          _phoneController.text,
+                          _passwordController.text,
+                        );
                   }
                 },
                 buttonTitle: 'Continue'),

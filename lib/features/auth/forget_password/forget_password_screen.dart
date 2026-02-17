@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/config/routing/app_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
@@ -27,7 +27,8 @@ class ForgetPasswordScreen extends StatelessWidget {
           style: KTextStyle.roboto24blackD7W,
         ),
         SizedBox(height: 8.h),
-        Text('OTP has been sent to +9779851357358', style: KTextStyle.roboto14Green4W),
+        Text('OTP has been sent to +9779851357358',
+            style: KTextStyle.roboto14Green4W),
         SizedBox(height: 32.h),
         CustomTextField(
           controller: phoneController,
