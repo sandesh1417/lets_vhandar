@@ -30,8 +30,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _confirmPasswordController;
   late TextEditingController _referalCodeController;
   bool isPasswordVisible = false;
-  bool _passwordsMatch = false;
-  bool _confirmPasswordTouched = false;
 
   @override
   void initState() {
@@ -41,18 +39,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _referalCodeController = TextEditingController();
-
-    // Add listeners for real-time password validation
-    _passwordController.addListener(_validatePasswords);
-    _confirmPasswordController.addListener(_validatePasswords);
-  }
-
-  void _validatePasswords() {
-    if (_confirmPasswordTouched) {
-      setState(() {
-        _passwordsMatch = TFValidators.doPasswordsMatch(_passwordController.text, _confirmPasswordController.text);
-      });
-    }
   }
 
   @override
@@ -115,12 +101,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isPasswordVisible = !isPasswordVisible;
                 });
               },
-              onChanged: (value) {
-                // If confirm password has been touched and has content, validate immediately
-                if (_confirmPasswordTouched && _confirmPasswordController.text.isNotEmpty) {
-                  _validatePasswords();
-                }
-              },
               validator: TFValidators.validatePassword,
             ),
             SizedBox(height: 10.h),
@@ -134,48 +114,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isPasswordVisible = !isPasswordVisible;
                 });
               },
-              onChanged: (value) {
-                if (!_confirmPasswordTouched) {
-                  setState(() {
-                    _confirmPasswordTouched = true;
-                  });
-                }
-                _validatePasswords();
-              },
-              validator: (value) => TFValidators.validateConfirmPasswordRealTime(value, _passwordController.text, _confirmPasswordTouched),
-              suffixIcon: _confirmPasswordTouched && _confirmPasswordController.text.isNotEmpty
-                  ? Padding(
-                      padding: EdgeInsets.only(right: 12.w),
-                      child: Icon(
-                        _passwordsMatch ? Icons.check_circle : Icons.error,
-                        color: _passwordsMatch ? Colors.green : Colors.red,
-                        size: 20,
-                      ),
-                    )
-                  : const SizedBox(),
+              validator: (value) => TFValidators.validateConfirmPassword(
+                  value, _passwordController.text),
+              suffixIcon: const SizedBox(),
             ),
-            // Show password match status
-            if (_confirmPasswordTouched && _confirmPasswordController.text.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.only(top: 4.h, left: 12.w),
-                child: Row(
-                  children: [
-                    Icon(
-                      _passwordsMatch ? Icons.check_circle : Icons.error,
-                      color: _passwordsMatch ? Colors.green : Colors.red,
-                      size: 16,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      _passwordsMatch ? 'Passwords match' : 'Passwords do not match',
-                      style: TextStyle(
-                        color: _passwordsMatch ? Colors.green : Colors.red,
-                        fontSize: 12.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             SizedBox(height: 10.h),
             CustomTextField(
               controller: _referalCodeController,
@@ -189,7 +131,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   // Additional check for password match
-                  if (_passwordController.text != _confirmPasswordController.text) {
+                  if (_passwordController.text !=
+                      _confirmPasswordController.text) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Passwords do not match'),
@@ -200,7 +143,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   }
 
                   // Save user data to the state
-                  ref.read(registrationProvider.notifier).sendOtp(context, phoneNumber: _phoneController.text, phoneCode: "+977");
+                  ref.read(registrationProvider.notifier).sendOtp(context,
+                      phoneNumber: _phoneController.text, phoneCode: "+977");
                   context.push(
                     LVRoute.oTPScreen.route,
                     extra: {
@@ -238,10 +182,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   child: Text(
                     "OR",
-                    style: TextStyle(color: AppColor.greenTxtColor, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: AppColor.greenTxtColor,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
-                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+                Expanded(
+                    child: Divider(color: Colors.grey.shade300, thickness: 1)),
               ],
             ),
             SizedBox(height: 16.h),

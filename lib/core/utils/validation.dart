@@ -1,9 +1,13 @@
 // import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 extension ValidateExtension on String {
-  bool get isEmailValid => RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z][a-zA-Z]+").hasMatch(this);
+  bool get isEmailValid => RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z][a-zA-Z]+")
+      .hasMatch(this);
 
-  bool get isPasswordValid => RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$').hasMatch(this);
+  bool get isPasswordValid =>
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+          .hasMatch(this);
 }
 
 // final MaskTextInputFormatter dateFormatter =
@@ -41,23 +45,6 @@ class TFValidators {
   }
 
   static String? validateConfirmPassword(String? value, String password) {
-    if (value == null || value.isEmpty) {
-      return 'Confirm Password is required';
-    }
-    if (value != password) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
-
-  static bool doPasswordsMatch(String password, String confirmPassword) {
-    return password == confirmPassword && confirmPassword.isNotEmpty;
-  }
-
-  static String? validateConfirmPasswordRealTime(String? value, String password, bool isConfirmPasswordTouched) {
-    if (!isConfirmPasswordTouched) {
-      return null; // Don't show validation until user starts typing in confirm password
-    }
     if (value == null || value.isEmpty) {
       return 'Confirm Password is required';
     }
