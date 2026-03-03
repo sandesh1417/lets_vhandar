@@ -7,6 +7,7 @@ import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
 import 'package:lets_vhandar/features/auth/register/register_screen.dart';
 import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart';
+import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
@@ -28,11 +29,13 @@ class LVGoRouter {
     routes: <GoRoute>[
       GoRoute(
         path: LVRoute.splashScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            const SplashScreen(),
       ),
       GoRoute(
         path: LVRoute.loginScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            const LoginScreen(),
       ),
       // GoRoute(
       //   path: LVRoute.oTPScreen.route,
@@ -58,17 +61,26 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.forgetPasswordScreen.route,
         name: LVRoute.forgetPasswordScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const ForgetPasswordScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            const ForgetPasswordScreen(),
       ),
       GoRoute(
         path: LVRoute.registerScreen.route,
         name: LVRoute.registerScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const RegisterScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            const RegisterScreen(),
       ),
       GoRoute(
         path: LVRoute.v4BRegistrationScreen.route,
         name: LVRoute.v4BRegistrationScreen.route,
-        builder: (BuildContext context, GoRouterState state) => const V4BRegistrationScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            const V4BRegistrationScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.dashboardScreen.route,
+        name: LVRoute.dashboardScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const DashboardScreen(),
       ),
     ],
   );
