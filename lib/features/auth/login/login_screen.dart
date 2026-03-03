@@ -75,7 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             CustomTextField(
               controller: _passwordController,
               hintText: 'Enter Password',
-              labelText: 'Number',
+              labelText: 'Password',
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 ref
