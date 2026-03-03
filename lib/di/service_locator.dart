@@ -2,9 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:lets_vhandar/features/auth/domain/repositories/auth_repository.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {
@@ -21,16 +19,9 @@ void setUpDependenciesInjection() {
         () => ApiClient(locator<DioClient>()));
   }
 
-  // Auth Dependencies
-  if (!locator.isRegistered<AuthRemoteDataSource>()) {
-    locator.registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(locator<ApiClient>()),
-    );
-  }
-
-  if (!locator.isRegistered<AuthRepository>()) {
-    locator.registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(locator<AuthRemoteDataSource>()),
+  if (!locator.isRegistered<AuthRepositoryImpl>()) {
+    locator.registerLazySingleton<AuthRepositoryImpl>(
+      () => AuthRepositoryImpl(locator<ApiClient>()),
     );
   }
 }

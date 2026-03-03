@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/auth/domain/repositories/auth_repository.dart';
+import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/features/auth/register/domain/register_state.dart';
 import 'package:lets_vhandar/features/auth/register/modals/register_modal.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -12,12 +12,12 @@ import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 // Registration Provider
 final registrationProvider =
     StateNotifierProvider<RegistrationNotifier, RegistrationState>((ref) {
-  return RegistrationNotifier(locator<AuthRepository>());
+  return RegistrationNotifier(locator<AuthRepositoryImpl>());
 });
 final newUserInfoProvider = StateProvider<RegisterModal?>((ref) => null);
 
 class RegistrationNotifier extends StateNotifier<RegistrationState> {
-  final AuthRepository _authRepository;
+  final AuthRepositoryImpl _authRepository;
 
   RegistrationNotifier(this._authRepository) : super(const RegistrationState());
 
