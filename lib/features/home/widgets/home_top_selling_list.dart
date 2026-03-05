@@ -1,26 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 
-class HomeFeaturedProductsList extends StatelessWidget {
+class HomeFeaturedProductsList extends ConsumerWidget {
   const HomeFeaturedProductsList({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180.h,
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 0.w),
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return const ProductItemCard(
-            name: 'Product Name',
-            price: '₹99',
-            save: '₹10',
-          );
-        },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productsAsync = ref.watch(featuredProductsProvider);
+
+    return productsAsync.when(
+      data: (products) {
+        if (products.isEmpty) return const SizedBox.shrink();
+
+        return SizedBox(
+          height: 250.h,
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            scrollDirection: Axis.horizontal,
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ProductItemCard(
+                product: product,
+                onTap: () {
+                  context.pushNamed(
+                    LVRoute.productDetailScreen.route,
+                    extra: product,
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
+      loading: () => SizedBox(
+        height: 250.h,
+        child: const Center(child: CircularProgressIndicator()),
       ),
+      error: (err, stack) => const SizedBox.shrink(),
     );
   }
 }

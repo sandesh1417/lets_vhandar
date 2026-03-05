@@ -8,6 +8,8 @@ import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
 import 'package:lets_vhandar/features/auth/register/register_screen.dart';
 import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart';
 import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
+import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
@@ -17,7 +19,8 @@ enum LVRoute {
   oTPScreen,
   forgetPasswordScreen,
   registerScreen,
-  v4BRegistrationScreen;
+  v4BRegistrationScreen,
+  productDetailScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -81,6 +84,14 @@ class LVGoRouter {
         name: LVRoute.dashboardScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const DashboardScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.productDetailScreen.route,
+        name: LVRoute.productDetailScreen.route,
+        builder: (BuildContext context, GoRouterState state) {
+          final product = state.extra as ProductData;
+          return ProductDetailScreen(product: product);
+        },
       ),
     ],
   );

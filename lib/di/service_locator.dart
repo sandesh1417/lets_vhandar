@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/features/home/data/repositories/banner_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/category_repository.dart';
+import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {
@@ -36,6 +37,12 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<CategoryRepository>()) {
     locator.registerLazySingleton<CategoryRepository>(
       () => CategoryRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<ProductRepository>()) {
+    locator.registerLazySingleton<ProductRepository>(
+      () => ProductRepository(locator<ApiClient>()),
     );
   }
 }
