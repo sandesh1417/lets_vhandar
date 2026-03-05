@@ -42,6 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loginState = ref.watch(loginProvider);
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
     return CustomScaffoldWrapper(
@@ -86,6 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             SizedBox(height: 20.h),
             CustomButton(
+                isLoading: loginState.isLoading,
                 onPress: () {
                   // context.push(LVRoute.oTPScreen.route); //    /otp    otp
                   if (_formKey.currentState?.validate() ?? false) {

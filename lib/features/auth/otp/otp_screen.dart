@@ -115,6 +115,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final registrationState = ref.watch(registrationProvider);
+
     return CustomScaffoldWrapper(
       appBar: const CustomAppBar(title: ''),
       body: Column(
@@ -135,10 +137,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
               return value != null && value.length == 5 ? null : "Invalid OTP";
             },
           ),
-
-          // PinputExample(controller: _otpController, focusNode: focusNode, formKey: formKey),
           SizedBox(height: 32.h),
           CustomButton(
+            isLoading: registrationState.isLoading,
             onPress: _verifyOTP,
             buttonTitle: 'Verify',
           ),
