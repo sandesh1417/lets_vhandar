@@ -20,13 +20,10 @@ class HomeSectionTitle extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: EdgeInsets.only(left: 16.w),
-            child: Text(
-              title,
-              style: KTextStyle.roboto16black5W
-                  .copyWith(fontSize: 18.sp, fontWeight: FontWeight.w600),
-            ),
+          Text(
+            title,
+            style: KTextStyle.roboto16black5W
+                .copyWith(fontSize: 18.sp, fontWeight: FontWeight.w600),
           ),
           TextButton(
             onPressed: onSeeAll,

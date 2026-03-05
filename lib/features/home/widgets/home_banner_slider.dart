@@ -43,14 +43,11 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                 },
                 itemBuilder: (context, index) {
                   final banner = banners[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: CustomImageViewer(
-                      path: banner.images?.first.url,
-                      borderRadius: 16.r,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  return CustomImageViewer(
+                    path: banner.images?.first.url,
+                    borderRadius: 16.r,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   );
                 },
               ),

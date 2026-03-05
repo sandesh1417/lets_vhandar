@@ -5,4 +5,5 @@ class ApiUrl {
   static String sendOTP = 'send-otp/register';
   static String register = 'customer/register';
   static String banners = 'banners';
+  static String categories = 'categories';
 }
