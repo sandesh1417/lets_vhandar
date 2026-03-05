@@ -15,9 +15,9 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(),
-          SizedBox(height: 20.h),
+          SizedBox(height: 40.h),
           _buildBanner(),
-          SizedBox(height: 10.h),
+          SizedBox(height: 24.h),
           _buildSectionTitle('Explore By Categories'),
           _buildCategoriesGrid(),
           SizedBox(height: 20.h),
@@ -131,7 +131,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBanner() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
       height: 140.h,
       width: double.infinity,
       decoration: BoxDecoration(
@@ -193,7 +193,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -218,7 +218,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildCategoriesGrid() {
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 0.w),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -258,7 +258,7 @@ class HomeScreen extends StatelessWidget {
     return SizedBox(
       height: 180.h,
       child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 0.w),
         scrollDirection: Axis.horizontal,
         itemCount: 5,
         itemBuilder: (context, index) {
