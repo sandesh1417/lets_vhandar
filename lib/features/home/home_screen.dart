@@ -28,12 +28,12 @@ class HomeScreen extends StatelessWidget {
           const HomeCategoriesGrid(),
           SizedBox(height: 20.h),
           HomeSectionTitle(
-            title: 'Top Selling',
+            title: 'Featured Products',
             onSeeAll: () {
               // Handle See All Top Selling
             },
           ),
-          const HomeTopSellingList(),
+          const HomeFeaturedProductsList(),
           SizedBox(height: 20.h),
         ],
       ),
