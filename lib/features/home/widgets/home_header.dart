@@ -16,7 +16,7 @@ class HomeHeader extends StatelessWidget {
         Container(
           height: 140.h,
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(
             color: AppColor.primary,
             borderRadius: BorderRadius.only(
@@ -77,8 +77,8 @@ class HomeHeader extends StatelessWidget {
         // Search Bar
         Positioned(
           bottom: -25.h,
-          left: 0,
-          right: 0,
+          left: 16.w,
+          right: 16.w,
           child: Container(
             height: 50.h,
             decoration: BoxDecoration(

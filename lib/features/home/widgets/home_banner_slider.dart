@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,9 +17,35 @@ class HomeBannerSlider extends ConsumerStatefulWidget {
 class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      final banners = ref.read(bannerProvider).value;
+      if (banners != null && banners.isNotEmpty) {
+        if (_currentPage < banners.length - 1) {
+          _currentPage++;
+        } else {
+          _currentPage = 0;
+        }
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -47,7 +75,7 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                     path: banner.images?.first.url,
                     borderRadius: 16.r,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   );
                 },
               ),
