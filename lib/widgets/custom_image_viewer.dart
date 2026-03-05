@@ -1,0 +1,122 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+enum ImageType { network, asset, file, svg }
+
+class CustomImageViewer extends StatelessWidget {
+  final String? path;
+  final double? height;
+  final double? width;
+  final BoxFit fit;
+  final String placeholder;
+  final Color? color;
+  final double? borderRadius;
+  final Widget? errorWidget;
+
+  const CustomImageViewer({
+    super.key,
+    required this.path,
+    this.height,
+    this.width,
+    this.fit = BoxFit.cover,
+    this.placeholder = 'assets/images/placeholder.png',
+    this.color,
+    this.borderRadius,
+    this.errorWidget,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildBorderRadius(
+      child: _buildImageWidget(),
+    );
+  }
+
+  Widget _buildBorderRadius({required Widget child}) {
+    if (borderRadius != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius!),
+        child: child,
+      );
+    }
+    return child;
+  }
+
+  Widget _buildImageWidget() {
+    if (path == null || path!.isEmpty) {
+      return _buildPlaceholder();
+    }
+
+    if (path!.startsWith('http') || path!.startsWith('https')) {
+      return CachedNetworkImage(
+        imageUrl: path!,
+        height: height,
+        width: width,
+        fit: fit,
+        placeholder: (context, url) => _buildLoadingWidget(),
+        errorWidget: (context, url, error) =>
+            errorWidget ?? _buildErrorWidget(),
+      );
+    } else if (path!.endsWith('.svg')) {
+      return SvgPicture.asset(
+        path!,
+        height: height,
+        width: width,
+        fit: fit,
+        colorFilter:
+            color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+      );
+    } else if (path!.startsWith('/') || path!.contains('users/')) {
+      return Image.file(
+        File(path!),
+        height: height,
+        width: width,
+        fit: fit,
+      );
+    } else {
+      return Image.asset(
+        path!,
+        height: height,
+        width: width,
+        fit: fit,
+        color: color,
+        errorBuilder: (context, error, stackTrace) =>
+            errorWidget ?? _buildErrorWidget(),
+      );
+    }
+  }
+
+  Widget _buildPlaceholder() {
+    return Image.asset(
+      placeholder,
+      height: height,
+      width: width,
+      fit: fit,
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: SizedBox(
+        height: 20.h,
+        width: 20.h,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      height: height,
+      width: width,
+      color: Colors.grey[200],
+      child: const Icon(Icons.error_outline, color: Colors.grey),
+    );
+  }
+}

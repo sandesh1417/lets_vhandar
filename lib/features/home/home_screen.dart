@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
+import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,64 +147,68 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildBanner() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-      height: 140.h,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1F3A2F), // Dark green banner bg
-        borderRadius: BorderRadius.circular(16.r),
-        image: const DecorationImage(
-          image: NetworkImage(
-              "https://via.placeholder.com/350x150"), // Placeholder banner image
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Simulated content based on image
-          Positioned(
-            left: 20.w,
-            top: 20.h,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1F3A2F),
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
-                  child: Text(
-                    'Best deals',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                SizedBox(
-                  width: 150.w,
-                  child: Text(
-                    'Get 1 Tender Coconut at ₹19',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  'Valid on Fruits & Veggies\norders over ₹99',
-                  style: TextStyle(color: Colors.white70, fontSize: 10.sp),
-                ),
-              ],
+    final bannerAsync = ref.watch(bannerProvider);
+
+    return bannerAsync.when(
+      data: (banners) {
+        if (banners.isEmpty) return const SizedBox.shrink();
+        return Column(
+          children: [
+            SizedBox(
+              height: 140.h,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: banners.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final banner = banners[index];
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: CustomImageViewer(
+                      path: banner.images?.first.url,
+                      borderRadius: 16.r,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          // Coconut image placeholder would be part of the background or positioned image
-        ],
+            SizedBox(height: 8.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                banners.length,
+                (index) => Container(
+                  width: 8.w,
+                  height: 8.w,
+                  margin: EdgeInsets.symmetric(horizontal: 4.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentPage == index
+                        ? AppColor.primary
+                        : Colors.grey.shade300,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => Container(
+        height: 140.h,
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
       ),
+      error: (err, stack) => const SizedBox.shrink(),
     );
   }
 
@@ -197,19 +218,17 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1F3A2F)),
+          Padding(
+            padding: EdgeInsets.only(left: 16.w),
+            child: Text(
+              title,
+              style: KTextStyle.roboto16black5W
+                  .copyWith(fontSize: 18.sp, fontWeight: FontWeight.w600),
+            ),
           ),
-          Text(
-            'See All >',
-            style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange),
+          TextButton(
+            onPressed: () {},
+            child: Text('See All', style: TextStyle(color: AppColor.primary)),
           ),
         ],
       ),
@@ -223,30 +242,31 @@ class HomeScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
-        mainAxisSpacing: 16.h,
-        crossAxisSpacing: 16.w,
         childAspectRatio: 0.8,
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 15.h,
       ),
       itemCount: 8,
       itemBuilder: (context, index) {
         return Column(
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9), // Light green bg
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Center(
-                  child: Icon(Icons.category,
-                      color: AppColor.primary.withOpacity(0.5), size: 30.sp),
-                ),
+            Container(
+              height: 60.h,
+              width: 60.h,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Center(
+                child: Icon(Icons.category_outlined,
+                    color: Colors.grey, size: 24.sp),
               ),
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: 5.h),
             Text(
-              'Category',
+              'Cat $index',
               style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             ),
           ],
         );
@@ -263,12 +283,18 @@ class HomeScreen extends StatelessWidget {
         itemCount: 5,
         itemBuilder: (context, index) {
           return Container(
-            width: 120.w,
-            margin: EdgeInsets.only(right: 16.w),
+            width: 140.w,
+            margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

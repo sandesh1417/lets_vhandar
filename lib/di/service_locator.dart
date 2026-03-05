@@ -3,6 +3,7 @@ import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:lets_vhandar/features/home/data/repositories/banner_repository_impl.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {
@@ -22,6 +23,12 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<AuthRepositoryImpl>()) {
     locator.registerLazySingleton<AuthRepositoryImpl>(
       () => AuthRepositoryImpl(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<BannerRepositoryImpl>()) {
+    locator.registerLazySingleton<BannerRepositoryImpl>(
+      () => BannerRepositoryImpl(locator<ApiClient>()),
     );
   }
 }
