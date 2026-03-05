@@ -21,7 +21,7 @@ class ForgetPasswordScreen extends StatelessWidget {
       appBar: const CustomAppBar(
         title: '',
       ),
-      child: Column(children: [
+      body: Column(children: [
         Text(
           'OTP Verification',
           style: KTextStyle.roboto24blackD7W,

@@ -58,7 +58,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
     return CustomScaffoldWrapper(
-      child: Form(
+      body: Form(
         key: _formKey,
         child: Column(
           children: [

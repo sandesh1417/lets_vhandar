@@ -38,7 +38,6 @@ class LoginNotifier extends StateNotifier<LoginState> {
         CustomSnackbar.success(context, message: "Login Successful");
         // Navigate using GoRouter
         context.go(LVRoute.dashboardScreen.route);
-        // For now just showing success, navigation should be handled in UI listener or here if context available
         break;
       case Error(failure: final failure):
         state = state.copyWith(isLoading: false, errorMessage: failure.message);

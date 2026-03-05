@@ -58,7 +58,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return CustomScaffoldWrapper(
       appBar: const CustomAppBar(),
-      child: Form(
+      body: Form(
         key: _formKey,
         child: Column(
           children: [

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -22,7 +23,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,

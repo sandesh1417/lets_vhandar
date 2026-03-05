@@ -117,7 +117,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   Widget build(BuildContext context) {
     return CustomScaffoldWrapper(
       appBar: const CustomAppBar(title: ''),
-      child: Column(
+      body: Column(
         children: [
           Text('OTP Verification', style: KTextStyle.roboto24blackD7W),
           SizedBox(height: 8.h),

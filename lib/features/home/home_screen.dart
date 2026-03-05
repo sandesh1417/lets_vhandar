@@ -10,26 +10,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              SizedBox(height: 20.h),
-              _buildBanner(),
-              SizedBox(height: 20.h),
-              _buildSectionTitle('Explore By Categories'),
-              _buildCategoriesGrid(),
-              SizedBox(height: 20.h),
-              _buildSectionTitle('Top Selling'),
-              _buildTopSellingList(),
-              SizedBox(height: 20.h),
-            ],
-          ),
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          SizedBox(height: 20.h),
+          _buildBanner(),
+          SizedBox(height: 10.h),
+          _buildSectionTitle('Explore By Categories'),
+          _buildCategoriesGrid(),
+          SizedBox(height: 20.h),
+          _buildSectionTitle('Top Selling'),
+          _buildTopSellingList(),
+          SizedBox(height: 20.h),
+        ],
       ),
     );
   }
