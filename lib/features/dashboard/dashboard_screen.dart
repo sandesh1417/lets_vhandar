@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -16,8 +17,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  int _currentIndex = 0;
-
   final List<Widget> _screens = [
     const HomeScreen(),
     const CategoryScreen(),
@@ -29,18 +28,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final cartItemCount = ref.watch(totalCartItemsProvider);
+    final currentIndex = ref.watch(dashboardIndexProvider);
 
     return CustomScaffoldWrapper(
       isScrollable: false,
-      floatingActionButton: cartItemCount > 0 && _currentIndex != 3
+      floatingActionButton: cartItemCount > 0 && currentIndex != 3
           ? SizedBox(
               width: 60.w,
               height: 60.h,
               child: FloatingActionButton(
                 onPressed: () {
-                  setState(() {
-                    _currentIndex = 3; // Switch to Cart tab
-                  });
+                  ref.read(dashboardIndexProvider.notifier).state = 3;
                 },
                 backgroundColor: AppColor.primary,
                 shape: RoundedRectangleBorder(
@@ -64,15 +62,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             )
           : null,
       body: IndexedStack(
-        index: _currentIndex,
+        index: currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          ref.read(dashboardIndexProvider.notifier).state = index;
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColor.primary,

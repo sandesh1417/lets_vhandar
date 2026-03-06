@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_summary_bar.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
@@ -92,114 +94,130 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           ),
         ],
       ),
-      body: Row(
+      body: Stack(
         children: [
-          // Sidebar
-          Container(
-            width: 85.w,
-            color: const Color(0xFFF8F9FA),
-            child: subCategoriesAsync.when(
-              data: (subs) {
-                return ListView.builder(
-                  itemCount: subs.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      final isSelected = selectedSubSlug == null;
-                      return _buildSidebarItem(
-                        'All',
-                        null,
-                        isSelected,
-                        null,
-                      );
-                    }
-                    final sub = subs[index - 1];
-                    final isSelected = selectedSubSlug == sub.slug;
-                    return _buildSidebarItem(
-                      sub.name ?? '',
-                      sub.slug!,
-                      isSelected,
-                      sub.images?.isNotEmpty == true
-                          ? sub.images!.first.url
-                          : null,
-                    );
-                  },
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) =>
-                  Center(child: Icon(Icons.error_outline, size: 24.sp)),
-            ),
-          ),
-          // Product Grid Area
-          Expanded(
-            child: Column(
-              children: [
-                // Sort Bar
-                _buildSortBar(),
-                Expanded(
-                  child: Container(
-                    color: const Color(0xFFF5F6F8),
-                    child: productsAsync.when(
-                      data: (products) {
-                        if (products.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.inventory_2_outlined,
-                                    size: 48.sp, color: Colors.grey),
-                                SizedBox(height: 12.h),
-                                Text('No products found',
-                                    style: TextStyle(
-                                        color: AppColor.textMuted,
-                                        fontSize: 14.sp)),
-                              ],
-                            ),
+          Row(
+            children: [
+              // Sidebar
+              Container(
+                width: 85.w,
+                color: const Color(0xFFF8F9FA),
+                child: subCategoriesAsync.when(
+                  data: (subs) {
+                    return ListView.builder(
+                      itemCount: subs.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          final isSelected = selectedSubSlug == null;
+                          return _buildSidebarItem(
+                            'All',
+                            null,
+                            isSelected,
+                            null,
                           );
                         }
-                        return GridView.builder(
-                          padding: EdgeInsets.all(12.w),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.55,
-                            crossAxisSpacing: 10.w,
-                            mainAxisSpacing: 10.h,
-                          ),
-                          itemCount: products.length,
-                          itemBuilder: (context, index) {
-                            final product = products[index];
-                            return ProductItemCard(
-                              key:
-                                  ValueKey(product.id), // Added key for sorting
-                              product: product,
-                              width: double.infinity,
-                              margin: EdgeInsets.zero,
-                              onTap: () {
-                                context.push('/productDetailScreen',
-                                    extra: product);
+                        final sub = subs[index - 1];
+                        final isSelected = selectedSubSlug == sub.slug;
+                        return _buildSidebarItem(
+                          sub.name ?? '',
+                          sub.slug!,
+                          isSelected,
+                          sub.images?.isNotEmpty == true
+                              ? sub.images!.first.url
+                              : null,
+                        );
+                      },
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, _) =>
+                      Center(child: Icon(Icons.error_outline, size: 24.sp)),
+                ),
+              ),
+              // Product Grid Area
+              Expanded(
+                child: Column(
+                  children: [
+                    // Sort Bar
+                    _buildSortBar(),
+                    Expanded(
+                      child: Container(
+                        color: const Color(0xFFF5F6F8),
+                        child: productsAsync.when(
+                          data: (products) {
+                            if (products.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.inventory_2_outlined,
+                                        size: 48.sp, color: Colors.grey),
+                                    SizedBox(height: 12.h),
+                                    Text('No products found',
+                                        style: TextStyle(
+                                            color: AppColor.textMuted,
+                                            fontSize: 14.sp)),
+                                  ],
+                                ),
+                              );
+                            }
+                            return GridView.builder(
+                              padding: EdgeInsets.all(12.w),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.55,
+                                crossAxisSpacing: 10.w,
+                                mainAxisSpacing: 10.h,
+                              ),
+                              itemCount: products.length,
+                              itemBuilder: (context, index) {
+                                final product = products[index];
+                                return ProductItemCard(
+                                  key: ValueKey(
+                                      product.id), // Added key for sorting
+                                  product: product,
+                                  width: double.infinity,
+                                  margin: EdgeInsets.zero,
+                                  onTap: () {
+                                    context.push('/productDetailScreen',
+                                        extra: product);
+                                  },
+                                );
                               },
                             );
                           },
-                        );
-                      },
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (err, _) => Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w),
-                          child: Text(
-                            'Error: $err',
-                            textAlign: TextAlign.center,
-                            style:
-                                TextStyle(color: Colors.red, fontSize: 12.sp),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (err, _) => Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.w),
+                              child: Text(
+                                'Error: $err',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.red, fontSize: 12.sp),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: CartSummaryBar(
+              onTap: () {
+                ref.read(dashboardIndexProvider.notifier).state = 3;
+                context.go('/dashboardScreen');
+              },
             ),
           ),
         ],
