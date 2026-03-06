@@ -31,7 +31,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return CustomScaffoldWrapper(
       isScrollable: false,
-      floatingActionButton: cartItemCount > 0
+      floatingActionButton: cartItemCount > 0 && _currentIndex != 3
           ? SizedBox(
               width: 60.w,
               height: 60.h,

@@ -63,6 +63,19 @@ final totalCartItemsProvider = Provider<int>((ref) {
   return cartItems.fold(0, (sum, item) => sum + item.quantity);
 });
 
+final totalCartMrpProvider = Provider<double>((ref) {
+  final cartItems = ref.watch(cartProvider);
+  return cartItems.fold(0, (sum, item) {
+    // Attempt to use pricePerUnit (MRP) if available, otherwise just use actualPrice
+    final hasDiscount = item.product.discount != null &&
+        (item.product.discount?.value ?? 0) > 0;
+    final mrpPrice = (hasDiscount && item.product.pricePerUnit != null)
+        ? item.product.pricePerUnit!
+        : item.product.actualPrice;
+    return sum + (mrpPrice * item.quantity);
+  });
+});
+
 final totalCartPriceProvider = Provider<double>((ref) {
   final cartItems = ref.watch(cartProvider);
   return cartItems.fold(0, (sum, item) => sum + item.totalPrice);
