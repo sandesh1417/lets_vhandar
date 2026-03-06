@@ -95,7 +95,7 @@ class ProductItemCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black87,
+                        color: AppColor.textBlack87,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis),
@@ -103,7 +103,7 @@ class ProductItemCard extends StatelessWidget {
                   Text('${product.unitValue?.toInt()}${product.unit}',
                       style: TextStyle(
                         fontSize: 10.sp,
-                        color: Colors.black54,
+                        color: AppColor.textBlack54,
                         fontWeight: FontWeight.w500,
                       )),
                   SizedBox(height: 8.h),
@@ -117,16 +117,16 @@ class ProductItemCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: AppColor.textBlack,
                               )),
                           if (hasDiscount)
                             Text('MRP ${product.pricePerUnit?.toInt()}',
                                 style: TextStyle(
                                     fontSize: 10.sp,
-                                    color: Colors.black87,
+                                    color: AppColor.textBlack87,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
-                                    decorationColor: Colors.black38,
+                                    decorationColor: AppColor.textStrikeThrough,
                                     decorationThickness: 2.0)),
                         ],
                       ),

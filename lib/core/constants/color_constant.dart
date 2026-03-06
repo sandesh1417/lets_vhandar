@@ -16,6 +16,15 @@ class AppColor {
   static Color grey95 = const Color(0xFF8C9A95);
   static Color greenTxtColor = const Color(0xFF1F3A2F);
 
+  // Semantic UI Colors (Prepare for Dark Theme)
+  static Color textBlack = Colors.black;
+  static Color textBlack87 = Colors.black87;
+  static Color textBlack54 = Colors.black54;
+  static Color textBlack45 = Colors.black45;
+  static Color textMuted = Colors.grey.shade600;
+  static Color textStrikeThrough = Colors.black38;
+  static Color discountBadge = const Color(0xFF5A8DEE);
+
 ///////////////=====================/////////////
 ///////////////=====================/////////////
 ///////////////=====================/////////////

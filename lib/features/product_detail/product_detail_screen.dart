@@ -102,11 +102,11 @@ class ProductDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name ?? '',
+                    product.name ?? 'Product Name',
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColor.textBlack,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -114,7 +114,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     '${product.unitValue?.toInt()}${product.unit}',
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: Colors.grey.shade600,
+                      color: AppColor.textMuted,
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -125,7 +125,7 @@ class ProductDetailScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: AppColor.textBlack,
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -134,10 +134,10 @@ class ProductDetailScreen extends ConsumerWidget {
                           'MRP ${product.pricePerUnit?.toInt()}',
                           style: TextStyle(
                             fontSize: 16.sp,
-                            color: Colors.black54,
+                            color: AppColor.textBlack54,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.lineThrough,
-                            decorationColor: Colors.black38,
+                            decorationColor: AppColor.textStrikeThrough,
                             decorationThickness: 2.0,
                           ),
                         ),
@@ -146,7 +146,7 @@ class ProductDetailScreen extends ConsumerWidget {
                           padding: EdgeInsets.symmetric(
                               horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF5A8DEE), // Blue from image
+                            color: AppColor.discountBadge,
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Text(
@@ -163,7 +163,10 @@ class ProductDetailScreen extends ConsumerWidget {
                   ),
                   Text(
                     '(Inclusive of all taxes)',
-                    style: TextStyle(fontSize: 10.sp, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: AppColor.textMuted,
+                    ),
                   ),
                   SizedBox(height: 24.h),
 
@@ -204,7 +207,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColor.textBlack,
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -232,7 +235,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColor.textBlack,
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -252,7 +255,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColor.textBlack,
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -337,14 +340,14 @@ class ProductDetailScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: AppColor.textBlack,
                   ),
                 ),
                 Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: Colors.black87,
+                    color: AppColor.textBlack87,
                   ),
                 ),
               ],
@@ -367,7 +370,7 @@ class ProductDetailScreen extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: AppColor.textBlack,
             ),
           ),
           SizedBox(height: 2.h),
@@ -375,7 +378,7 @@ class ProductDetailScreen extends ConsumerWidget {
             value,
             style: TextStyle(
               fontSize: 13.sp,
-              color: Colors.black87,
+              color: AppColor.textBlack87,
             ),
           ),
           SizedBox(height: 8.h),
