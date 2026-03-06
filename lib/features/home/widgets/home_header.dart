@@ -73,45 +73,7 @@ class HomeHeader extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  SizedBox(width: 8.w),
                   // Cart Icon with Badge
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: AppColor.secondary,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Icon(
-                          Icons.shopping_cart_outlined,
-                          color: Colors.white,
-                          size: 20.sp,
-                        ),
-                      ),
-                      if (cartItemCount > 0)
-                        Positioned(
-                          top: -5.h,
-                          right: -5.w,
-                          child: Container(
-                            padding: EdgeInsets.all(4.w),
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '$cartItemCount',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
                 ],
               ),
             ],

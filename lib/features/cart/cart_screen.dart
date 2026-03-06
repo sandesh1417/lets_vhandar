@@ -14,71 +14,78 @@ class CartScreen extends ConsumerWidget {
     final totalPrice = ref.watch(totalCartPriceProvider);
     final totalMrp = ref.watch(totalCartMrpProvider);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F6F8), // Light grey background
-      appBar: AppBar(
-        title: Text(
-          'My Cart',
-          style: TextStyle(
-            color: AppColor.primary,
-            fontWeight: FontWeight.bold,
-            fontSize: 20.sp,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: Colors.black12,
-        actions: [
-          if (cartItems.isNotEmpty)
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    ref.read(cartProvider.notifier).clearCart();
-                  },
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                    decoration: BoxDecoration(
-                      color: AppColor.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Text(
-                      'Clear Cart',
-                      style: TextStyle(
-                        color: AppColor.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.sp,
+    return Container(
+      color: const Color(0xFFF5F6F8), // Light grey background
+      child: Column(
+        children: [
+          // Custom Header
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'My Cart',
+                  style: TextStyle(
+                    color: AppColor.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
+                  ),
+                ),
+                if (cartItems.isNotEmpty)
+                  InkWell(
+                    onTap: () {
+                      ref.read(cartProvider.notifier).clearCart();
+                    },
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: AppColor.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        'Clear Cart',
+                        style: TextStyle(
+                          color: AppColor.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+              ],
             ),
-        ],
-      ),
-      body: cartItems.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined,
-                      size: 80.sp, color: Colors.grey.shade400),
-                  SizedBox(height: 16.h),
-                  Text('Your cart is empty',
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColor.textBlack54,
-                          fontWeight: FontWeight.w500)),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView(
+          ),
+          Expanded(
+            child: cartItems.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_cart_outlined,
+                            size: 80.sp, color: Colors.grey.shade400),
+                        SizedBox(height: 16.h),
+                        Text('Your cart is empty',
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColor.textBlack54,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  )
+                : ListView(
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     children: [
                       // Apply Coupons Banner (Mockup)
@@ -294,80 +301,78 @@ class CartScreen extends ConsumerWidget {
                       SizedBox(height: 32.h), // Some bottom padding
                     ],
                   ),
-                ),
-                // Bottom Fixed Checkout Bar
-                Container(
+          ),
+          // Bottom Fixed Checkout Bar
+          if (cartItems.isNotEmpty)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(12.r),
+                child: Container(
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, -5),
+                    color: AppColor.primary,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Rs. ${totalPrice.toInt()}',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'TOTAL',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Proceed to Pay',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Icon(Icons.arrow_forward_ios,
+                              size: 14.sp, color: Colors.white),
+                        ],
                       ),
                     ],
                   ),
-                  child: SafeArea(
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 12.h),
-                        decoration: BoxDecoration(
-                          color: AppColor.primary,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Rs. ${totalPrice.toInt()}',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  'TOTAL',
-                                  style: TextStyle(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  'Proceed to Pay',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(width: 8.w),
-                                Icon(Icons.arrow_forward_ios,
-                                    size: 14.sp, color: Colors.white),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
-              ],
+              ),
             ),
+        ],
+      ),
     );
   }
 

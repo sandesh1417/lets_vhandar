@@ -57,48 +57,51 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
     return bannerAsync.when(
       data: (banners) {
         if (banners.isEmpty) return const SizedBox.shrink();
-        return Column(
-          children: [
-            SizedBox(
-              height: 140.h,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: banners.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final banner = banners[index];
-                  return CustomImageViewer(
-                    path: banner.images?.first.url,
-                    borderRadius: 16.r,
-                    width: double.infinity,
-                    fit: BoxFit.fill,
-                  );
-                },
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 140.h,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: banners.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final banner = banners[index];
+                    return CustomImageViewer(
+                      path: banner.images?.first.url,
+                      borderRadius: 16.r,
+                      width: double.infinity,
+                      fit: BoxFit.fill,
+                    );
+                  },
+                ),
               ),
-            ),
-            SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                banners.length,
-                (index) => Container(
-                  width: 8.w,
-                  height: 8.w,
-                  margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentPage == index
-                        ? AppColor.primary
-                        : Colors.grey.shade300,
+              SizedBox(height: 8.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  banners.length,
+                  (index) => Container(
+                    width: 8.w,
+                    height: 8.w,
+                    margin: EdgeInsets.symmetric(horizontal: 4.w),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentPage == index
+                          ? AppColor.primary
+                          : Colors.grey.shade300,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
       loading: () => Container(

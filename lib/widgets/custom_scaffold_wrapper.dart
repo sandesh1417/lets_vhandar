@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../core/constants/color_constant.dart';
 
@@ -33,10 +32,8 @@ class CustomScaffoldWrapper extends StatelessWidget {
             textScaler: const TextScaler.linear(1),
           ),
           child: Container(
-            height: 844.h,
             width: double.infinity,
-            padding:
-                EdgeInsets.symmetric(horizontal: horizontalPadding ?? 16.w),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 0),
             child: isScrollable ? SingleChildScrollView(child: body) : body,
           ),
         ),

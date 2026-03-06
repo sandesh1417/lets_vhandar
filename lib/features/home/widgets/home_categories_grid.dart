@@ -16,48 +16,51 @@ class HomeCategoriesGrid extends ConsumerWidget {
       data: (categories) {
         if (categories.isEmpty) return const SizedBox.shrink();
 
-        return GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 0.65,
-            crossAxisSpacing: 10.w,
-            mainAxisSpacing: 15.h,
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: GridView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 0.65,
+              crossAxisSpacing: 10.w,
+              mainAxisSpacing: 15.h,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return Column(
+                children: [
+                  Container(
+                    height: 64.h,
+                    width: 64.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: CustomImageViewer(
+                      path: category.images?.first.url,
+                      borderRadius: 12.r,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    category.name ?? '',
+                    style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.greenTxtColor),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              );
+            },
           ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return Column(
-              children: [
-                Container(
-                  height: 64.h,
-                  width: 64.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: CustomImageViewer(
-                    path: category.images?.first.url,
-                    borderRadius: 12.r,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(height: 5.h),
-                Text(
-                  category.name ?? '',
-                  style: TextStyle(
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColor.greenTxtColor),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            );
-          },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
