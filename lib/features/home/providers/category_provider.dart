@@ -15,3 +15,15 @@ final homeCategoryProvider = FutureProvider<List<CategoryData>>((ref) async {
       throw failure;
   }
 });
+
+final allCategoryProvider = FutureProvider<List<CategoryData>>((ref) async {
+  final categoryRepository = locator<CategoryRepository>();
+  final result = await categoryRepository.getCategories();
+
+  switch (result) {
+    case Success(value: final categoryModal):
+      return categoryModal.data ?? [];
+    case Error(failure: final failure):
+      throw failure;
+  }
+});

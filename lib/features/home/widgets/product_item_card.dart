@@ -10,11 +10,15 @@ import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 class ProductItemCard extends ConsumerStatefulWidget {
   final ProductData product;
   final VoidCallback? onTap;
+  final double? width;
+  final EdgeInsetsGeometry? margin;
 
   const ProductItemCard({
     super.key,
     required this.product,
     this.onTap,
+    this.width,
+    this.margin,
   });
 
   @override
@@ -242,8 +246,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        width: 140.w,
-        margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
+        width: widget.width ?? 140.w,
+        margin: widget.margin ?? EdgeInsets.only(right: 12.w, bottom: 8.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
@@ -261,7 +265,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             Stack(
               children: [
                 Container(
-                  height: 120.h,
+                  height: 100.h, // Reduced from 120.h
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
@@ -312,7 +316,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                 children: [
                   Text(product.name ?? 'Product Name',
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: 11.sp, // Reduced from 12.sp
                         fontWeight: FontWeight.w700,
                         color: AppColor.textBlack87,
                       ),
@@ -362,14 +366,14 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                         children: [
                           Text('Rs. ${product.actualPrice.toInt()}',
                               style: TextStyle(
-                                fontSize: 13.sp,
+                                fontSize: 12.sp, // Reduced from 13.sp
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.textBlack,
                               )),
                           if (hasDiscount)
                             Text('MRP ${product.pricePerUnit?.toInt()}',
                                 style: TextStyle(
-                                    fontSize: 10.sp,
+                                    fontSize: 9.sp, // Reduced from 10.sp
                                     color: AppColor.textBlack87,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
@@ -402,7 +406,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   'ADD',
                                   style: TextStyle(
                                       color: AppColor.primary,
-                                      fontSize: 12.sp,
+                                      fontSize: 11.sp, // Reduced from 12.sp
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),

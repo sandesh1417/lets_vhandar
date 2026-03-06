@@ -84,4 +84,47 @@ class ProductRepository {
       return Error(NetworkFailure(e.toString()));
     }
   }
+
+  Future<Result<List<ProductData>, Failure>> getProducts({
+    String? categoryId,
+    String? subCategoryId,
+    String? categorySlug,
+    String? subCategorySlug,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final Map<String, dynamic> queryParameters = {
+        'status': 'active',
+        'page': page,
+        'limit': limit,
+      };
+
+      if (subCategoryId != null) {
+        queryParameters['subCategoryId'] = subCategoryId;
+      } else if (subCategorySlug != null) {
+        queryParameters['subCategorySlug'] = subCategorySlug;
+      }
+
+      if (categoryId != null) {
+        queryParameters['categoryIds'] = categoryId;
+      } else if (categorySlug != null) {
+        queryParameters['categoryName'] = categorySlug;
+      }
+
+      final response = await _apiClient.get(
+        ApiUrl.products,
+        queryParameters: queryParameters,
+      );
+
+      return switch (response) {
+        Success(value: final data) =>
+          Success(ProductModal.fromMap(data).data?.data ?? []),
+        Error(failure: final failure) => Error(failure),
+      };
+    } catch (e) {
+      if (e is Failure) return Error(e);
+      return Error(NetworkFailure(e.toString()));
+    }
+  }
 }

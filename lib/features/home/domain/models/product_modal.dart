@@ -68,6 +68,7 @@ class ProductData {
   final String? description;
   final int? quantity;
   final List<String>? categoryIds;
+  final List<String>? subCategoryIds;
   final double? pricePerUnit;
   final ProductDiscount? discount;
   final List<ProductImage>? images;
@@ -92,6 +93,7 @@ class ProductData {
     this.description,
     this.quantity,
     this.categoryIds,
+    this.subCategoryIds,
     this.pricePerUnit,
     this.discount,
     this.images,
@@ -119,6 +121,9 @@ class ProductData {
         categoryIds: json["categoryIds"] == null
             ? []
             : List<String>.from(json["categoryIds"]!.map((x) => x)),
+        subCategoryIds: json["subCategoryIds"] == null
+            ? []
+            : List<String>.from(json["subCategoryIds"]!.map((x) => x)),
         pricePerUnit: json["pricePerUnit"]?.toDouble(),
         discount: json["discount"] == null
             ? null
@@ -154,6 +159,9 @@ class ProductData {
         "categoryIds": categoryIds == null
             ? []
             : List<dynamic>.from(categoryIds!.map((x) => x)),
+        "subCategoryIds": subCategoryIds == null
+            ? []
+            : List<dynamic>.from(subCategoryIds!.map((x) => x)),
         "pricePerUnit": pricePerUnit,
         "discount": discount?.toMap(),
         "images": images == null

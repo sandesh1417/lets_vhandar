@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
+import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -19,7 +20,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const Center(child: Text("Category")),
+    const CategoryScreen(),
     const Center(child: Text("List")),
     const CartScreen(), // Replaced placeholder with CartScreen
     const Center(child: Text("Account")),
