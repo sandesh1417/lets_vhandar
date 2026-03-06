@@ -38,7 +38,7 @@ class ProductRepository {
         ApiUrl.products,
         queryParameters: {
           'status': 'active',
-          'categoryIds': categoryId,
+          'categoryId': categoryId,
           'page': 1,
           'limit': 20,
         },
@@ -90,6 +90,8 @@ class ProductRepository {
     String? subCategoryId,
     String? categorySlug,
     String? subCategorySlug,
+    // String? sort,
+    // String? search,
     int page = 1,
     int limit = 20,
   }) async {
@@ -107,10 +109,13 @@ class ProductRepository {
       }
 
       if (categoryId != null) {
-        queryParameters['categoryIds'] = categoryId;
+        queryParameters['categoryId'] = categoryId;
       } else if (categorySlug != null) {
         queryParameters['categoryName'] = categorySlug;
       }
+
+      // if (sort != null) queryParameters['sort'] = sort;
+      // if (search != null) queryParameters['search'] = search;
 
       final response = await _apiClient.get(
         ApiUrl.products,

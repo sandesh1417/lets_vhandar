@@ -7,18 +7,36 @@ import 'package:lets_vhandar/features/home/providers/category_detail_provider.da
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
-class CategoryDetailScreen extends ConsumerWidget {
+class CategoryDetailScreen extends ConsumerStatefulWidget {
   final String categorySlug;
 
   const CategoryDetailScreen({super.key, required this.categorySlug});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final categoryAsync = ref.watch(categoryBySlugProvider(categorySlug));
-    final subCategoriesAsync = ref.watch(subCategoriesProvider(categorySlug));
-    final productsAsync = ref.watch(categoryProductsProvider(categorySlug));
+  ConsumerState<CategoryDetailScreen> createState() =>
+      _CategoryDetailScreenState();
+}
+
+class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearchExpanded = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final categoryAsync =
+        ref.watch(categoryBySlugProvider(widget.categorySlug));
+    final subCategoriesAsync =
+        ref.watch(subCategoriesProvider(widget.categorySlug));
+    final productsAsync =
+        ref.watch(filteredProductsProvider(widget.categorySlug));
     final selectedSubSlug =
-        ref.watch(selectedSubCategorySlugProvider(categorySlug));
+        ref.watch(selectedSubCategorySlugProvider(widget.categorySlug));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -29,21 +47,48 @@ class CategoryDetailScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => context.pop(),
         ),
-        title: categoryAsync.when(
-          data: (category) => Text(
-            category.name ?? '',
-            style: TextStyle(
-                color: AppColor.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.sp),
-          ),
-          loading: () => const SizedBox.shrink(),
-          error: (_, __) => const Text('Category'),
-        ),
+        title: _isSearchExpanded
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search products...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                ),
+                style: TextStyle(fontSize: 14.sp),
+                onChanged: (value) {
+                  ref
+                      .read(searchQueryProvider(widget.categorySlug).notifier)
+                      .state = value;
+                },
+              )
+            : categoryAsync.when(
+                data: (category) => Text(
+                  category.name ?? '',
+                  style: TextStyle(
+                      color: AppColor.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp),
+                ),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const Text('Category'),
+              ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
+            icon: Icon(_isSearchExpanded ? Icons.close : Icons.search,
+                color: Colors.black),
+            onPressed: () {
+              setState(() {
+                if (_isSearchExpanded) {
+                  _searchController.clear();
+                  ref
+                      .read(searchQueryProvider(widget.categorySlug).notifier)
+                      .state = '';
+                }
+                _isSearchExpanded = !_isSearchExpanded;
+              });
+            },
           ),
         ],
       ),
@@ -51,19 +96,16 @@ class CategoryDetailScreen extends ConsumerWidget {
         children: [
           // Sidebar
           Container(
-            width: 85.w, // Reduced from 100.w
+            width: 85.w,
             color: const Color(0xFFF8F9FA),
             child: subCategoriesAsync.when(
               data: (subs) {
-                // Prepend an "All" option if needed
                 return ListView.builder(
                   itemCount: subs.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       final isSelected = selectedSubSlug == null;
                       return _buildSidebarItem(
-                        context,
-                        ref,
                         'All',
                         null,
                         isSelected,
@@ -73,8 +115,6 @@ class CategoryDetailScreen extends ConsumerWidget {
                     final sub = subs[index - 1];
                     final isSelected = selectedSubSlug == sub.slug;
                     return _buildSidebarItem(
-                      context,
-                      ref,
                       sub.name ?? '',
                       sub.slug!,
                       isSelected,
@@ -90,60 +130,130 @@ class CategoryDetailScreen extends ConsumerWidget {
                   Center(child: Icon(Icons.error_outline, size: 24.sp)),
             ),
           ),
-          // Product Grid
+          // Product Grid Area
           Expanded(
-            child: Container(
-              color: const Color(0xFFF5F6F8),
-              child: productsAsync.when(
-                data: (products) {
-                  if (products.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 48.sp, color: Colors.grey),
-                          SizedBox(height: 12.h),
-                          Text('No products found',
-                              style: TextStyle(
-                                  color: AppColor.textMuted, fontSize: 14.sp)),
-                        ],
+            child: Column(
+              children: [
+                // Sort Bar
+                _buildSortBar(),
+                Expanded(
+                  child: Container(
+                    color: const Color(0xFFF5F6F8),
+                    child: productsAsync.when(
+                      data: (products) {
+                        if (products.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.inventory_2_outlined,
+                                    size: 48.sp, color: Colors.grey),
+                                SizedBox(height: 12.h),
+                                Text('No products found',
+                                    style: TextStyle(
+                                        color: AppColor.textMuted,
+                                        fontSize: 14.sp)),
+                              ],
+                            ),
+                          );
+                        }
+                        return GridView.builder(
+                          padding: EdgeInsets.all(12.w),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.55,
+                            crossAxisSpacing: 10.w,
+                            mainAxisSpacing: 10.h,
+                          ),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final product = products[index];
+                            return ProductItemCard(
+                              key:
+                                  ValueKey(product.id), // Added key for sorting
+                              product: product,
+                              width: double.infinity,
+                              margin: EdgeInsets.zero,
+                              onTap: () {
+                                context.push('/productDetailScreen',
+                                    extra: product);
+                              },
+                            );
+                          },
+                        );
+                      },
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, _) => Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.w),
+                          child: Text(
+                            'Error: $err',
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(color: Colors.red, fontSize: 12.sp),
+                          ),
+                        ),
                       ),
-                    );
-                  }
-                  return GridView.builder(
-                    padding: EdgeInsets.all(12.w),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.55, // Increased vertical space
-                      crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 10.h,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      return ProductItemCard(
-                        product: product,
-                        width: double.infinity,
-                        margin: EdgeInsets.zero,
-                        onTap: () {
-                          context.push('/productDetailScreen', extra: product);
-                        },
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Text(
-                      'Error: $err',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortBar() {
+    final currentSort = ref.watch(selectedSortProvider(widget.categorySlug));
+    final sortLabels = {
+      'relevance': 'Relevance',
+      'price_low_high': 'Price (Low to High)',
+      'price_high_low': 'Price (High to Low)',
+      'discount_high_low': 'Discount (High to Low)',
+      'discount_low_high': 'Discount (Low to High)',
+      'name_a_z': 'Name (A to Z)',
+    };
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: 12.w, vertical: 8.h), // Reduced horizontal padding
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+            bottom: BorderSide(color: Colors.grey.shade100)), // Subtle border
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text('Sort By',
+              style: TextStyle(fontSize: 11.sp, color: Colors.grey.shade600)),
+          SizedBox(width: 6.w),
+          InkWell(
+            onTap: () => _showSortModal(),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    sortLabels[currentSort] ?? 'Relevance',
+                    style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.primary),
+                  ),
+                  SizedBox(width: 4.w),
+                  Icon(Icons.keyboard_arrow_down,
+                      size: 14.sp, color: AppColor.primary),
+                ],
               ),
             ),
           ),
@@ -152,16 +262,117 @@ class CategoryDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSidebarItem(BuildContext context, WidgetRef ref, String title,
-      String? slug, bool isSelected, String? imageUrl) {
+  void _showSortModal() {
+    final options = [
+      {'val': 'relevance', 'label': 'Relevance'},
+      {'val': 'price_low_high', 'label': 'Price (Low to High)'},
+      {'val': 'price_high_low', 'label': 'Price (High to Low)'},
+      {'val': 'discount_high_low', 'label': 'Discount (High to Low)'},
+      {'val': 'discount_low_high', 'label': 'Discount (Low to High)'},
+      {'val': 'name_a_z', 'label': 'Name (A to Z)'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      margin: EdgeInsets.only(bottom: 20.h),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Sort By',
+                    style:
+                        TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final currentSort =
+                          ref.watch(selectedSortProvider(widget.categorySlug));
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: options.length,
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final opt = options[index];
+                          final isSelected = currentSort == opt['val'];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              opt['label']!,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColor.primary
+                                    : Colors.black87,
+                              ),
+                            ),
+                            trailing: isSelected
+                                ? Icon(Icons.check_circle,
+                                    color: AppColor.primary)
+                                : const Icon(Icons.radio_button_unchecked,
+                                    color: Colors.grey),
+                            onTap: () {
+                              ref
+                                  .read(
+                                      selectedSortProvider(widget.categorySlug)
+                                          .notifier)
+                                  .state = opt['val'];
+                              // Don't pop immediately so the user can see the change
+                              Future.delayed(const Duration(milliseconds: 300),
+                                  () {
+                                if (context.mounted) Navigator.pop(context);
+                              });
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  SizedBox(height: 10.h),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSidebarItem(
+      String title, String? slug, bool isSelected, String? imageUrl) {
     return InkWell(
       onTap: () {
-        ref.read(selectedSubCategorySlugProvider(categorySlug).notifier).state =
-            slug;
+        ref
+            .read(selectedSubCategorySlugProvider(widget.categorySlug).notifier)
+            .state = slug;
       },
       child: Container(
-        padding: EdgeInsets.symmetric(
-            vertical: 12.h, horizontal: 4.w), // Reduced padding
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           border: isSelected
@@ -175,22 +386,22 @@ class CategoryDetailScreen extends ConsumerWidget {
             if (imageUrl != null) ...[
               CustomImageViewer(
                 path: imageUrl,
-                height: 32.h, // Reduced from 40.h
-                width: 32.w, // Reduced from 40.w
+                height: 32.h,
+                width: 32.w,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 4.h), // Reduced from 8.h
+              SizedBox(height: 4.h),
             ] else if (slug == null) ...[
               Icon(Icons.apps,
                   color: isSelected ? AppColor.primary : Colors.grey,
-                  size: 24.sp), // Reduced from 28.sp
-              SizedBox(height: 4.h), // Reduced from 8.h
+                  size: 24.sp),
+              SizedBox(height: 4.h),
             ],
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 10.sp, // Reduced from 11.sp
+                fontSize: 10.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected ? AppColor.primary : AppColor.textBlack54,
               ),
