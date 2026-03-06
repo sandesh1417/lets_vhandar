@@ -113,7 +113,7 @@ class ProductItemCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Rs ${product.actualPrice.toInt()}',
+                          Text('Rs. ${product.actualPrice.toInt()}',
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
@@ -122,10 +122,12 @@ class ProductItemCard extends StatelessWidget {
                           if (hasDiscount)
                             Text('MRP ${product.pricePerUnit?.toInt()}',
                                 style: TextStyle(
-                                    fontSize: 9.sp,
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.w400,
-                                    decoration: TextDecoration.lineThrough)),
+                                    fontSize: 10.sp,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor: Colors.black38,
+                                    decorationThickness: 2.0)),
                         ],
                       ),
                       Container(

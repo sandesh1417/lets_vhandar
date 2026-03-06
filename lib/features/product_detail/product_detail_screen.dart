@@ -133,24 +133,27 @@ class ProductDetailScreen extends ConsumerWidget {
                         Text(
                           'MRP ${product.pricePerUnit?.toInt()}',
                           style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey,
+                            fontSize: 16.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.bold,
                             decoration: TextDecoration.lineThrough,
+                            decorationColor: Colors.black38,
+                            decorationThickness: 2.0,
                           ),
                         ),
-                        SizedBox(width: 8.w),
+                        SizedBox(width: 12.w),
                         Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 8.w, vertical: 4.h),
+                              horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(4.r),
+                            color: const Color(0xFF5A8DEE), // Blue from image
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Text(
-                            'Rs. ${product.discount?.value?.toInt()} SAVE',
+                            'RS. ${product.discount?.value?.toInt()} SAVE',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 10.sp,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
