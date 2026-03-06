@@ -8,6 +8,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final double? horizontalPadding;
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
+  final Widget? floatingActionButton;
   final bool isScrollable;
   const CustomScaffoldWrapper({
     super.key,
@@ -15,6 +16,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
     this.appBar,
     this.horizontalPadding,
     this.bottomNavigationBar,
+    this.floatingActionButton,
     this.isScrollable = true,
   });
 
@@ -24,6 +26,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
       backgroundColor: AppColor.white,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
       body: SafeArea(
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(

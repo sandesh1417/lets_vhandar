@@ -81,6 +81,8 @@ class ProductData {
   final String? returnPolicy;
   final String? disclaimer;
   final String? customerCareDetails;
+  final bool? hasVariant;
+  final String? parentId;
 
   ProductData({
     this.id,
@@ -103,6 +105,8 @@ class ProductData {
     this.returnPolicy,
     this.disclaimer,
     this.customerCareDetails,
+    this.hasVariant,
+    this.parentId,
   });
 
   factory ProductData.fromMap(Map<String, dynamic> json) => ProductData(
@@ -136,6 +140,8 @@ class ProductData {
         returnPolicy: json["returnPolicy"],
         disclaimer: json["disclaimer"],
         customerCareDetails: json["customerCareDetails"],
+        hasVariant: json["hasVariant"] ?? false,
+        parentId: json["parentId"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -165,6 +171,8 @@ class ProductData {
         "returnPolicy": returnPolicy,
         "disclaimer": disclaimer,
         "customerCareDetails": customerCareDetails,
+        "hasVariant": hasVariant,
+        "parentId": parentId,
       };
 
   double get actualPrice {

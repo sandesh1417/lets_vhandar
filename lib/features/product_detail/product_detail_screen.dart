@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
+import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
-class ProductDetailScreen extends ConsumerWidget {
+class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductData product;
 
   const ProductDetailScreen({
@@ -18,12 +20,61 @@ class ProductDetailScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
+  late ProductData _currentProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentProduct = widget.product;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final product = _currentProduct;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
 
+    final cartItemCount = ref.watch(totalCartItemsProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: cartItemCount > 0
+          ? SizedBox(
+              width: 60.w,
+              height: 60.h,
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Pop back to the DashboardScreen where Cart tab is handled,
+                  // or if independent routing is created, use context.push('/cart')
+                  // For now, simple return to dashboard and user can switch tab.
+                  Navigator.of(context).pop();
+                },
+                backgroundColor: AppColor.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: Badge(
+                  label: Text(
+                    '$cartItemCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  backgroundColor: AppColor.secondary, // Yellow badge
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  offset: const Offset(4, -4),
+                  child: Icon(Icons.shopping_cart,
+                      color: Colors.white, size: 28.sp),
+                ),
+              ),
+            )
+          : null,
       body: CustomScrollView(
         slivers: [
           // Custom App Bar with Image Slider
@@ -170,33 +221,204 @@ class ProductDetailScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 24.h),
 
-                  // Add to Cart Button
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 50.h,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              side: BorderSide(color: AppColor.primary),
-                              shape: RoundedRectangleBorder(
+                  // Variant Selection
+                  if (widget.product.hasVariant == true) ...[
+                    Text(
+                      'Select Unit',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColor.textBlack,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    ref.watch(productVariantsProvider(widget.product)).when(
+                          data: (variants) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: variants.map((v) {
+                                  final isSelected = v.id == product.id;
+                                  final vHasDiscount = v.discount != null &&
+                                      (v.discount?.value ?? 0) > 0;
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _currentProduct = v;
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: 12.w),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w, vertical: 8.h),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColor.primary.withOpacity(0.05)
+                                            : Colors.white,
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? AppColor.primary
+                                              : Colors.grey.shade300,
+                                          width: isSelected ? 2 : 1,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(12.r),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (vHasDiscount)
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 6.w,
+                                                  vertical: 2.h),
+                                              decoration: BoxDecoration(
+                                                color: AppColor.discountBadge,
+                                                borderRadius:
+                                                    BorderRadius.circular(4.r),
+                                              ),
+                                              child: Text(
+                                                'RS. ${v.discount?.value?.toInt()} SAVE',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            '${v.unitValue?.toInt()} ${v.unit}',
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.textBlack,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Rs.${v.actualPrice.toInt()}',
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColor.textBlack,
+                                                ),
+                                              ),
+                                              if (vHasDiscount) ...[
+                                                SizedBox(width: 4.w),
+                                                Text(
+                                                  'MRP${v.pricePerUnit?.toInt()}',
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color: AppColor.textMuted,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          },
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (e, s) => const SizedBox.shrink(),
+                        ),
+                    SizedBox(height: 24.h),
+                  ],
+
+                  // Add to Cart Logic
+                  Consumer(
+                    builder: (context, ref, _) {
+                      // Watch the cartItems to trigger rebuilds on quantity changes
+                      ref.watch(cartProvider);
+                      final cartCount = ref
+                          .read(cartProvider.notifier)
+                          .getCartItemCount(product.id!);
+                      return Row(
+                        children: [
+                          if (cartCount == 0)
+                            SizedBox(
+                              height: 48.h,
+                              width: 120.w,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  ref
+                                      .read(cartProvider.notifier)
+                                      .addToCart(product);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(color: AppColor.primary),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                ),
+                                child: Text(
+                                  'ADD',
+                                  style: TextStyle(
+                                    color: AppColor.primary,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              height: 48.h,
+                              width: 120.w,
+                              decoration: BoxDecoration(
+                                color: AppColor.primary,
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
-                            ),
-                            child: Text(
-                              'ADD',
-                              style: TextStyle(
-                                color: AppColor.primary,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      ref
+                                          .read(cartProvider.notifier)
+                                          .updateQuantity(
+                                              product.id!, cartCount - 1);
+                                    },
+                                  ),
+                                  Text(
+                                    '$cartCount',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      ref
+                                          .read(cartProvider.notifier)
+                                          .updateQuantity(
+                                              product.id!, cartCount + 1);
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
 
                   SizedBox(height: 32.h),
