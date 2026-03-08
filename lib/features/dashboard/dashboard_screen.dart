@@ -31,6 +31,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final currentIndex = ref.watch(dashboardIndexProvider);
 
     return CustomScaffoldWrapper(
+      // appBar: const CustomAppBar(
+      //   hideBackBtn: true,
+      //   title: 'Vhandar',
+      // ),
       isScrollable: false,
       floatingActionButton: cartItemCount > 0 && currentIndex != 3
           ? SizedBox(
