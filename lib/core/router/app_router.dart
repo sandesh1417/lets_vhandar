@@ -9,6 +9,8 @@ import 'package:lets_vhandar/features/auth/register/register_screen.dart';
 import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart';
 import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart';
+import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
@@ -101,6 +103,20 @@ class LVGoRouter {
         builder: (BuildContext context, GoRouterState state) {
           final slug = state.pathParameters['slug']!;
           return CategoryDetailScreen(categorySlug: slug);
+        },
+      ),
+      GoRoute(
+        path: '/brands',
+        name: 'brandScreen',
+        builder: (BuildContext context, GoRouterState state) =>
+            const BrandScreen(),
+      ),
+      GoRoute(
+        path: '/brand-detail/:slug',
+        name: 'brandDetailScreen',
+        builder: (BuildContext context, GoRouterState state) {
+          final slug = state.pathParameters['slug']!;
+          return BrandDetailScreen(brandSlug: slug);
         },
       ),
     ],

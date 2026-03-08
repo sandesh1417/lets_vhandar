@@ -708,7 +708,7 @@ class _DeliveryInstructionsCardState extends State<_DeliveryInstructionsCard> {
             Padding(
               padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.h),
               child: SizedBox(
-                height: 100.h,
+                height: 120.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _options.length,

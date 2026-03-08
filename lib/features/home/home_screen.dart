@@ -18,15 +18,7 @@ class HomeScreen extends StatelessWidget {
           const HomeHeader(),
           SizedBox(height: 40.h),
           const HomeBannerSlider(),
-          SizedBox(height: 24.h),
-          HomeSectionTitle(
-            title: 'Explore By Categories',
-            onSeeAll: () {
-              // Handle See All Categories
-            },
-          ),
-          const HomeCategoriesGrid(),
-          SizedBox(height: 20.h),
+          SizedBox(height: 12.h),
           HomeSectionTitle(
             title: 'Featured Products',
             onSeeAll: () {
@@ -34,6 +26,13 @@ class HomeScreen extends StatelessWidget {
             },
           ),
           const HomeFeaturedProductsList(),
+          HomeSectionTitle(
+            title: 'Explore By Categories',
+            onSeeAll: () {
+              // Handle See All Categories
+            },
+          ),
+          const HomeCategoriesGrid(),
           SizedBox(height: 20.h),
         ],
       ),

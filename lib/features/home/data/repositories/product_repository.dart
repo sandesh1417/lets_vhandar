@@ -90,6 +90,8 @@ class ProductRepository {
     String? subCategoryId,
     String? categorySlug,
     String? subCategorySlug,
+    String? brandId,
+    String? brandSlug,
     // String? sort,
     // String? search,
     int page = 1,
@@ -106,6 +108,12 @@ class ProductRepository {
         queryParameters['subCategoryId'] = subCategoryId;
       } else if (subCategorySlug != null) {
         queryParameters['subCategorySlug'] = subCategorySlug;
+      }
+
+      if (brandId != null) {
+        queryParameters['brandId'] = brandId;
+      } else if (brandSlug != null) {
+        queryParameters['brandName'] = brandSlug;
       }
 
       if (categoryId != null) {

@@ -8,6 +8,7 @@ class ApiUrl {
   static String categories = 'categories';
   static String subCategories = 'sub-categories';
   static String products = 'products';
+  static String brands = 'brands';
 
   static String categoryByName(String name) => 'categories/name/$name';
 }
