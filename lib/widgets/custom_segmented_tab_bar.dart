@@ -17,8 +17,8 @@ class CustomSegmentedTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-      height: 48.h,
+      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+      height: 36.h,
       decoration: BoxDecoration(
         color: const Color(0xFFF0F1F3),
         borderRadius: BorderRadius.circular(24.r),
