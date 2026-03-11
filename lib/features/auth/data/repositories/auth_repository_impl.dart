@@ -4,11 +4,28 @@ import 'package:lets_vhandar/core/error/failure.dart';
 import 'package:lets_vhandar/core/modals/generic_response_modal.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/features/auth/login/models/login_response_modal.dart';
+import 'package:lets_vhandar/features/auth/login/models/user_profile_response.dart';
 
 class AuthRepositoryImpl {
   final ApiClient _apiClient;
 
   AuthRepositoryImpl(this._apiClient);
+
+  Future<Result<UserProfileResponse, Failure>> getUserProfile(String id) async {
+    try {
+      final result = await _apiClient.get(ApiUrl.userProfile(id));
+      switch (result) {
+        case Success(value: final data):
+          return Success(UserProfileResponse.fromMap(data));
+        case Error(failure: final failure):
+          throw failure;
+      }
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
 
   Future<Result<LoginResponseModal, Failure>> login(
       String phoneNumber, String password) async {

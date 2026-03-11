@@ -11,4 +11,5 @@ class ApiUrl {
   static String brands = 'brands';
 
   static String categoryByName(String name) => 'categories/name/$name';
+  static String userProfile(String id) => 'users/$id';
 }
