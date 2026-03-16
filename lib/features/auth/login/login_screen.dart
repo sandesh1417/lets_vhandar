@@ -46,6 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
     return CustomScaffoldWrapper(
+      horizontalPadding: 16.w,
       body: Form(
         key: _formKey,
         child: Column(

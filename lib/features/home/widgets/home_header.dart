@@ -5,14 +5,26 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/address/providers/address_provider.dart';
+import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
+
+// TODO: Replace with actual logged-in user ID from auth state
+const _kUserId = '67baf2ff5d58f3aca9733828';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cartItemCount = ref.watch(totalCartItemsProvider);
+    final addressState = ref.watch(addressProvider);
+    final selected = addressState.selected;
+
+    // Load addresses on first build if not already loaded
+    if (addressState.addresses.isEmpty && !addressState.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(addressProvider.notifier).loadAddresses(_kUserId);
+      });
+    }
 
     return Stack(
       clipBehavior: Clip.none,
@@ -37,43 +49,49 @@ class HomeHeader extends ConsumerWidget {
                   SvgPicture.asset(
                     KImageConstant.vandharIcon,
                     height: 40.h,
-                    colorFilter: const ColorFilter.mode(
-                        Colors.yellow, BlendMode.srcIn), // Yellow V logo
+                    colorFilter:
+                        const ColorFilter.mode(Colors.yellow, BlendMode.srcIn),
                   ),
-                  // Location Info
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Delivery in ',
-                            style: KTextStyle.roboto14white4W,
-                          ),
-                          Text(
-                            '19 Mins',
-                            style: KTextStyle.roboto16white7W
-                                .copyWith(fontSize: 18.sp),
-                          ),
-                          SizedBox(width: 4.w),
-                          const Icon(Icons.timer,
-                              color: Colors.white, size: 16),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Baneshwor - Baneshwor, Kathma..',
-                            style: KTextStyle.roboto14white4W
-                                .copyWith(fontSize: 12.sp),
-                          ),
-                          Icon(Icons.keyboard_arrow_down,
-                              color: Colors.white, size: 16.sp),
-                        ],
-                      ),
-                    ],
+                  // Location Info — tappable
+                  GestureDetector(
+                    onTap: () =>
+                        showAddressSelectorSheet(context, userId: _kUserId),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Delivery in ',
+                              style: KTextStyle.roboto14white4W,
+                            ),
+                            Text(
+                              '19 Mins',
+                              style: KTextStyle.roboto16white7W
+                                  .copyWith(fontSize: 18.sp),
+                            ),
+                            SizedBox(width: 4.w),
+                            const Icon(Icons.timer,
+                                color: Colors.white, size: 16),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              selected != null
+                                  ? _truncate(
+                                      selected.description ?? 'Select Address')
+                                  : 'Select Address',
+                              style: KTextStyle.roboto14white4W
+                                  .copyWith(fontSize: 12.sp),
+                            ),
+                            Icon(Icons.keyboard_arrow_down,
+                                color: Colors.white, size: 16.sp),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  // Cart Icon with Badge
                 ],
               ),
             ],
@@ -113,4 +131,7 @@ class HomeHeader extends ConsumerWidget {
       ],
     );
   }
+
+  String _truncate(String s, {int max = 26}) =>
+      s.length > max ? '${s.substring(0, max)}..' : s;
 }

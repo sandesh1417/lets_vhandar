@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/address/data/address_repository.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/features/home/data/repositories/banner_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/brand_repository.dart';
@@ -50,6 +51,12 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<BrandRepository>()) {
     locator.registerLazySingleton<BrandRepository>(
       () => BrandRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<AddressRepository>()) {
+    locator.registerLazySingleton<AddressRepository>(
+      () => AddressRepository(locator<ApiClient>()),
     );
   }
 }

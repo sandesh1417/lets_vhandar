@@ -30,7 +30,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final cartItemCount = ref.watch(totalCartItemsProvider);
     final currentIndex = ref.watch(dashboardIndexProvider);
 
-    return CustomScaffoldWrapper(
+    return CustomScaffoldWrapper( 
       // appBar: const CustomAppBar(
       //   hideBackBtn: true,
       //   title: 'Vhandar',

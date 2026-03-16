@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/address/providers/address_provider.dart';
+import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/cart/widgets/cancellation_policy_card.dart';
@@ -12,6 +14,9 @@ import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
+// TODO: Replace with actual logged-in user ID from auth state
+const _kCartUserId = '67baf2ff5d58f3aca9733828';
+
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
@@ -21,6 +26,7 @@ class CartScreen extends ConsumerWidget {
     final totalItems = ref.watch(totalCartItemsProvider);
     final totalPrice = ref.watch(totalCartPriceProvider);
     final totalMrp = ref.watch(totalCartMrpProvider);
+    final selectedAddress = ref.watch(addressProvider).selected;
 
     return CustomScaffoldWrapper(
       isScrollable: false,
@@ -73,6 +79,26 @@ class CartScreen extends ConsumerWidget {
                   child: ListView(
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     children: [
+                      // Cart Items List
+                      Container(
+                        color: Colors.white,
+                        child: ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: cartItems.length,
+                          separatorBuilder: (context, index) => Divider(
+                              height: 1,
+                              color: Colors.grey.shade200,
+                              indent: 16.w,
+                              endIndent: 16.w),
+                          itemBuilder: (context, index) {
+                            final item = cartItems[index];
+                            return CartItemWidget(item: item);
+                          },
+                        ),
+                      ),
+
+                      SizedBox(height: 16.h),
                       // Apply Coupons Banner (Mockup)
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 16.w),
@@ -99,28 +125,6 @@ class CartScreen extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 16.h),
-
-                      // Cart Items List
-                      Container(
-                        color: Colors.white,
-                        child: ListView.separated(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: cartItems.length,
-                          separatorBuilder: (context, index) => Divider(
-                              height: 1,
-                              color: Colors.grey.shade200,
-                              indent: 16.w,
-                              endIndent: 16.w),
-                          itemBuilder: (context, index) {
-                            final item = cartItems[index];
-                            return CartItemWidget(item: item);
-                          },
-                        ),
-                      ),
-
-                      SizedBox(height: 16.h),
-
                       // Bill Details
                       BillDetailsCard(
                         totalItems: totalItems,
@@ -141,10 +145,17 @@ class CartScreen extends ConsumerWidget {
                       const CancellationPolicyCard(),
                       SizedBox(height: 8.h),
 
-                      // Delivery To (Non-expandable)
-                      _buildInfoRow(
-                          Icons.location_on_outlined, 'Delivery To', null,
-                          actionText: 'Choose'),
+                      // Delivery To (tappable with address info)
+                      GestureDetector(
+                        onTap: () => showAddressSelectorSheet(context,
+                            userId: _kCartUserId),
+                        child: _buildInfoRow(
+                          Icons.location_on_outlined,
+                          'Delivery To',
+                          selectedAddress?.description,
+                          actionText: selectedAddress == null ? 'Choose' : null,
+                        ),
+                      ),
 
                       SizedBox(height: 32.h), // Some bottom padding
                     ],
