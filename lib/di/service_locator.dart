@@ -7,7 +7,9 @@ import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_imp
 import 'package:lets_vhandar/features/home/data/repositories/banner_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/brand_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/category_repository.dart';
+import 'package:lets_vhandar/features/home/data/repositories/general_settings_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:lets_vhandar/features/home/data/repositories/warehouse_repository.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {
@@ -57,6 +59,18 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<AddressRepository>()) {
     locator.registerLazySingleton<AddressRepository>(
       () => AddressRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<GeneralSettingsRepository>()) {
+    locator.registerLazySingleton<GeneralSettingsRepository>(
+      () => GeneralSettingsRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<WarehouseRepository>()) {
+    locator.registerLazySingleton<WarehouseRepository>(
+      () => WarehouseRepository(locator<ApiClient>()),
     );
   }
 }

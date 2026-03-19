@@ -14,6 +14,8 @@ class ApiUrl {
   static String userProfile(String id) => 'users/$id';
   static String addresses = 'addresses';
   static String userAddresses(String userId) => 'addresses/$userId';
+  static String generalSettings = 'general-settings';
+  static String warehouses = 'warehouses';
 }
 
 // https://api.vhandar.com/general-settings?page=1&limit=1000
@@ -67,7 +69,3 @@ class ApiUrl {
 //     "status": "SUCCESS"
 // }
 
-
-
-// https://api.vhandar.com/addresses
-// {"status":"SUCCESS"}
