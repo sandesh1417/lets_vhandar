@@ -7,6 +7,7 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
+import 'package:lets_vhandar/features/order/order_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -20,8 +21,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const CategoryScreen(),
-    const Center(child: Text("List")),
-    const CartScreen(), // Replaced placeholder with CartScreen
+    const OrderScreen(),
+    const CartScreen(),
     const Center(child: Text("Account")),
   ];
 
@@ -30,7 +31,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final cartItemCount = ref.watch(totalCartItemsProvider);
     final currentIndex = ref.watch(dashboardIndexProvider);
 
-    return CustomScaffoldWrapper( 
+    return CustomScaffoldWrapper(
       // appBar: const CustomAppBar(
       //   hideBackBtn: true,
       //   title: 'Vhandar',
@@ -92,7 +93,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           const BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),
             activeIcon: Icon(Icons.list_alt_rounded),
-            label: 'List',
+            label: 'Order',
           ),
           BottomNavigationBarItem(
             icon: Badge(

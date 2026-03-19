@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/address/providers/address_provider.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 
-class CartCheckoutBar extends StatelessWidget {
+// TODO: Replace with actual logged-in user ID from auth state
+const _kCheckoutUserId = '67baf2ff5d58f3aca9733828';
+
+class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
 
   const CartCheckoutBar({super.key, required this.totalPrice});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(orderProvider).isPlacingOrder;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -23,7 +32,7 @@ class CartCheckoutBar extends StatelessWidget {
       ),
       child: SafeArea(
         child: InkWell(
-          onTap: () {},
+          onTap: isLoading ? null : () => _placeOrder(context, ref),
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -58,17 +67,26 @@ class CartCheckoutBar extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Proceed to Pay',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    if (isLoading)
+                      SizedBox(
+                        width: 18.w,
+                        height: 18.h,
+                        child: const CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    else
+                      Text(
+                        'Proceed to Pay',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
                     SizedBox(width: 8.w),
-                    Icon(Icons.arrow_forward_ios,
-                        size: 14.sp, color: Colors.white),
+                    if (!isLoading)
+                      Icon(Icons.arrow_forward_ios,
+                          size: 14.sp, color: Colors.white),
                   ],
                 ),
               ],
@@ -77,5 +95,79 @@ class CartCheckoutBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _placeOrder(BuildContext context, WidgetRef ref) async {
+    final selectedAddress = ref.read(addressProvider).selected;
+    if (selectedAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a delivery address first')),
+      );
+      return;
+    }
+
+    final cartItems = ref.read(cartProvider);
+    if (cartItems.isEmpty) return;
+
+    final products = cartItems.map((item) => {
+          'name': item.product.name,
+          '_id': item.product.id,
+          'count': item.quantity,
+          'pricePerUnit': item.product.actualPrice,
+          'totalPrice': item.totalPrice,
+          'netPrice': item.totalPrice,
+          'unit': item.product.unit,
+          'images': item.product.images ?? [],
+          'discount': item.product.discount,
+        }).toList();
+
+    final location = {
+      'lat': selectedAddress.lat,
+      'long': selectedAddress.long,
+      'userId': selectedAddress.userId ?? _kCheckoutUserId,
+      'name': selectedAddress.name,
+      'description': selectedAddress.description,
+      'addressType': selectedAddress.addressType,
+      'landMark': selectedAddress.landMark,
+      'locality': selectedAddress.locality,
+      'phoneNumber': selectedAddress.phoneNumber,
+      'houseNumber': selectedAddress.houseNumber,
+      'floor': selectedAddress.floor,
+    };
+
+    final success = await ref.read(orderProvider.notifier).placeOrder(
+          userId: _kCheckoutUserId,
+          products: products,
+          totalAmount: totalPrice,
+          totalDiscount: 0,
+          totalVatAmount: totalPrice * 0.13,
+          totalPayableAmount: totalPrice + 100, // +delivery
+          handlingCharge: 0,
+          deliveryCharge: 100,
+          cartId: 'cart_${DateTime.now().millisecondsSinceEpoch}',
+          location: location,
+        );
+
+    if (!context.mounted) return;
+
+    if (success) {
+      // Clear cart and navigate to Order tab (index 2)
+      ref.read(cartProvider.notifier).clearCart();
+      ref.read(dashboardIndexProvider.notifier).state = 2;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Order placed successfully! 🎉'),
+          backgroundColor: AppColor.primary,
+        ),
+      );
+    } else {
+      final error = ref.read(orderProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Failed to place order'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
