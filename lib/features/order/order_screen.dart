@@ -7,8 +7,7 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
-// TODO: Replace with actual logged-in user ID from auth state
-const _kOrderUserId = '67baf2ff5d58f3aca9733828';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
   const OrderScreen({super.key});
@@ -22,7 +21,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(orderProvider.notifier).loadOrders(_kOrderUserId);
+      final userId = ref.read(loginProvider).user?.id;
+      if (userId != null) {
+        ref.read(orderProvider.notifier).loadOrders(userId);
+      }
     });
   }
 
@@ -41,9 +43,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                 : state.orders.isEmpty
                     ? _buildEmptyState()
                     : RefreshIndicator(
-                        onRefresh: () => ref
-                            .read(orderProvider.notifier)
-                            .loadOrders(_kOrderUserId),
+                    onRefresh: () {
+                      final userId = ref.read(loginProvider).user?.id;
+                      if (userId != null) {
+                        return ref.read(orderProvider.notifier).loadOrders(userId);
+                      }
+                      return Future.value();
+                    },
                         color: AppColor.primary,
                         child: ListView.separated(
                           padding: EdgeInsets.all(16.w),
@@ -61,16 +67,26 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               currentPage: state.currentPage,
               totalPages: state.totalPages,
               onPrev: state.currentPage > 1
-                  ? () => ref.read(orderProvider.notifier).loadOrders(
-                        _kOrderUserId,
-                        page: state.currentPage - 1,
-                      )
+                  ? () {
+                      final userId = ref.read(loginProvider).user?.id;
+                      if (userId != null) {
+                        ref.read(orderProvider.notifier).loadOrders(
+                              userId,
+                              page: state.currentPage - 1,
+                            );
+                      }
+                    }
                   : null,
               onNext: state.currentPage < state.totalPages
-                  ? () => ref.read(orderProvider.notifier).loadOrders(
-                        _kOrderUserId,
-                        page: state.currentPage + 1,
-                      )
+                  ? () {
+                      final userId = ref.read(loginProvider).user?.id;
+                      if (userId != null) {
+                        ref.read(orderProvider.notifier).loadOrders(
+                              userId,
+                              page: state.currentPage + 1,
+                            );
+                      }
+                    }
                   : null,
             ),
         ],

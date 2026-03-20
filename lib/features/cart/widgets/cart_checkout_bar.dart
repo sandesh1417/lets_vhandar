@@ -7,8 +7,7 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 
-// TODO: Replace with actual logged-in user ID from auth state
-const _kCheckoutUserId = '67baf2ff5d58f3aca9733828';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
@@ -109,6 +108,16 @@ class CartCheckoutBar extends ConsumerWidget {
     final cartItems = ref.read(cartProvider);
     if (cartItems.isEmpty) return;
 
+    final loginState = ref.read(loginProvider);
+    final userId = loginState.user?.id;
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to place order')),
+      );
+      return;
+    }
+
     final products = cartItems.map((item) {
       final productMap = item.product.toMap();
 
@@ -134,7 +143,7 @@ class CartCheckoutBar extends ConsumerWidget {
     final location = {
       'lat': selectedAddress.lat,
       'long': selectedAddress.long,
-      'userId': selectedAddress.userId ?? _kCheckoutUserId,
+      'userId': selectedAddress.userId ?? userId,
       'name': selectedAddress.name,
       'description': selectedAddress.description,
       'addressType': selectedAddress.addressType,
@@ -149,7 +158,7 @@ class CartCheckoutBar extends ConsumerWidget {
     final payableAmount = double.parse((totalPrice + 100).toStringAsFixed(2));
 
     final success = await ref.read(orderProvider.notifier).placeOrder(
-          userId: _kCheckoutUserId,
+          userId: userId,
           products: products,
           totalAmount: totalPrice,
           totalDiscount: 0,
@@ -157,7 +166,7 @@ class CartCheckoutBar extends ConsumerWidget {
           totalPayableAmount: payableAmount,
           handlingCharge: 0,
           deliveryCharge: 100,
-          cartId: _kCheckoutUserId,
+          cartId: userId, // Using userId as cartId for now since it's a valid ObjectId
           location: location,
         );
 

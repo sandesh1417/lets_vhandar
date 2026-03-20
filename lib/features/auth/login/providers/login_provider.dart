@@ -34,7 +34,11 @@ class LoginNotifier extends StateNotifier<LoginState> {
           await SessionPrefences().setToken(token: accessToken);
           Rsession.token = accessToken;
         }
-        state = state.copyWith(isLoading: false, isLoggedIn: true);
+        state = state.copyWith(
+          isLoading: false,
+          isLoggedIn: true,
+          user: data.user,
+        );
         CustomSnackbar.success(context, message: "Login Successful");
         // Navigate using GoRouter
         context.go(LVRoute.dashboardScreen.route);

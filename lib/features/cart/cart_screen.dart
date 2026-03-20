@@ -14,8 +14,7 @@ import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
-// TODO: Replace with actual logged-in user ID from auth state
-const _kCartUserId = '67baf2ff5d58f3aca9733828';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -147,8 +146,18 @@ class CartScreen extends ConsumerWidget {
 
                       // Delivery To (tappable with address info)
                       GestureDetector(
-                        onTap: () => showAddressSelectorSheet(context,
-                            userId: _kCartUserId),
+                        onTap: () {
+                          final userId = ref.read(loginProvider).user?.id;
+                          if (userId != null) {
+                            showAddressSelectorSheet(context, userId: userId);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Please login to select address')),
+                            );
+                          }
+                        },
                         child: _buildInfoRow(
                           Icons.location_on_outlined,
                           'Delivery To',
