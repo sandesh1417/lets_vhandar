@@ -109,17 +109,27 @@ class CartCheckoutBar extends ConsumerWidget {
     final cartItems = ref.read(cartProvider);
     if (cartItems.isEmpty) return;
 
-    final products = cartItems.map((item) => {
-          'name': item.product.name,
-          '_id': item.product.id,
-          'count': item.quantity,
-          'pricePerUnit': item.product.actualPrice,
-          'totalPrice': item.totalPrice,
-          'netPrice': item.totalPrice,
-          'unit': item.product.unit,
-          'images': item.product.images ?? [],
-          'discount': item.product.discount,
-        }).toList();
+    final products = cartItems.map((item) {
+      final productMap = item.product.toMap();
+
+      // The Order API expects images as a list of Strings (paths), not objects
+      final imagesList = item.product.images?.map((e) => e.path).toList() ?? [];
+      final featuredImagesList =
+          item.product.featuredImages?.map((e) => e.path).toList() ?? [];
+
+      // Clean up the map: replace image objects with paths, remove unrecognized keys
+      productMap['images'] = imagesList;
+      productMap['featuredImages'] = featuredImagesList;
+      productMap.remove(
+          'hasVariant'); // Per server error: "Unrecognized key(s) in object: 'hasVariant'"
+
+      return {
+        ...productMap,
+        'count': item.quantity,
+        'totalPrice': item.totalPrice,
+        'netPrice': item.totalPrice,
+      };
+    }).toList();
 
     final location = {
       'lat': selectedAddress.lat,
@@ -135,16 +145,19 @@ class CartCheckoutBar extends ConsumerWidget {
       'floor': selectedAddress.floor,
     };
 
+    final vatAmount = double.parse((totalPrice * 0.13).toStringAsFixed(2));
+    final payableAmount = double.parse((totalPrice + 100).toStringAsFixed(2));
+
     final success = await ref.read(orderProvider.notifier).placeOrder(
           userId: _kCheckoutUserId,
           products: products,
           totalAmount: totalPrice,
           totalDiscount: 0,
-          totalVatAmount: totalPrice * 0.13,
-          totalPayableAmount: totalPrice + 100, // +delivery
+          totalVatAmount: vatAmount,
+          totalPayableAmount: payableAmount,
           handlingCharge: 0,
           deliveryCharge: 100,
-          cartId: 'cart_${DateTime.now().millisecondsSinceEpoch}',
+          cartId: _kCheckoutUserId,
           location: location,
         );
 

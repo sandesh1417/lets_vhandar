@@ -15,7 +15,12 @@ class OrderRepository {
 
     switch (result) {
       case Success(value: final data):
-        return Success(PlaceOrderResponse.fromMap(data).data!);
+        final response = PlaceOrderResponse.fromMap(data);
+        if (response.data == null) {
+          return Error(
+              ServerFailure("Order placed but server response data is empty"));
+        }
+        return Success(response.data!);
       case Error(failure: final failure):
         return Error(failure);
     }

@@ -29,8 +29,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _phoneController = TextEditingController();
-    _passwordController = TextEditingController();
+    _phoneController = TextEditingController(text: '9861100736');
+    _passwordController = TextEditingController(text: 'S@ndesh123');
   }
 
   @override

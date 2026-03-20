@@ -65,50 +65,122 @@ class ProductData {
   final String? name;
   final String? unit;
   final double? unitValue;
+  final String? brandId;
+  final List<dynamic>? tags;
+  final int? sortOrder;
   final String? description;
   final int? quantity;
   final List<String>? categoryIds;
   final List<String>? subCategoryIds;
+  final bool? isVegeterian;
   final double? pricePerUnit;
-  final ProductDiscount? discount;
-  final List<ProductImage>? images;
-  final List<ProductImage>? featuredImages;
-  final String? productCode;
-  final String? status;
-  final bool? isFeatured;
-  final String? slug;
+  final double? businessPricePerUnit;
+  final String? type;
+  final String? flavor;
+  final String? ingredients;
   final String? keyFeatures;
   final String? shelfLife;
-  final String? returnPolicy;
-  final String? disclaimer;
+  final String? manufacturerDetails;
+  final String? countryOfOrigin;
+  final String? fssaiLicense;
+  final String? keyword;
   final String? customerCareDetails;
+  final String? returnPolicy;
+  final String? expiryDate;
+  final String? seller;
+  final String? sellerFssai;
+  final String? disclaimer;
+  final ProductDiscount? discount;
+  final String? sku;
+  final bool? productShownToNormalCustomer;
+  final List<ProductImage>? images;
+  final List<String>? warehouseIds;
+  final dynamic packs;
+  final bool? productShownToBusinessCustomer;
+  final String? productCode;
+  final String? permalink;
+  final String? packagingtype;
+  final String? storageTips;
+  final String? nutrientValue;
+  final String? storageTemperature;
+  final String? marketedBy;
+  final int? quantityAlert;
+  final String? status;
+  final dynamic businessDiscount;
+  final dynamic maximumQuantityOrder;
+  final dynamic minimumQuantityOrder;
+  final dynamic businessMaximumQuantityOrder;
+  final dynamic businessMinimumQuantityOrder;
+  final bool? isVatAdded;
+  final bool? isFeatured;
+  final List<ProductImage>? featuredImages;
+  final List<dynamic>? relatedProducts;
   final bool? hasVariant;
   final String? parentId;
+  final String? slug;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   ProductData({
     this.id,
     this.name,
     this.unit,
     this.unitValue,
+    this.brandId,
+    this.tags,
+    this.sortOrder,
     this.description,
     this.quantity,
     this.categoryIds,
     this.subCategoryIds,
+    this.isVegeterian,
     this.pricePerUnit,
-    this.discount,
-    this.images,
-    this.featuredImages,
-    this.productCode,
-    this.status,
-    this.isFeatured,
-    this.slug,
+    this.businessPricePerUnit,
+    this.type,
+    this.flavor,
+    this.ingredients,
     this.keyFeatures,
     this.shelfLife,
-    this.returnPolicy,
-    this.disclaimer,
+    this.manufacturerDetails,
+    this.countryOfOrigin,
+    this.fssaiLicense,
+    this.keyword,
     this.customerCareDetails,
+    this.returnPolicy,
+    this.expiryDate,
+    this.seller,
+    this.sellerFssai,
+    this.disclaimer,
+    this.discount,
+    this.sku,
+    this.productShownToNormalCustomer,
+    this.images,
+    this.warehouseIds,
+    this.packs,
+    this.productShownToBusinessCustomer,
+    this.productCode,
+    this.permalink,
+    this.packagingtype,
+    this.storageTips,
+    this.nutrientValue,
+    this.storageTemperature,
+    this.marketedBy,
+    this.quantityAlert,
+    this.status,
+    this.businessDiscount,
+    this.maximumQuantityOrder,
+    this.minimumQuantityOrder,
+    this.businessMaximumQuantityOrder,
+    this.businessMinimumQuantityOrder,
+    this.isVatAdded,
+    this.isFeatured,
+    this.featuredImages,
+    this.relatedProducts,
     this.hasVariant,
     this.parentId,
+    this.slug,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory ProductData.fromMap(Map<String, dynamic> json) => ProductData(
@@ -116,6 +188,9 @@ class ProductData {
         name: json["name"],
         unit: json["unit"],
         unitValue: json["unitValue"]?.toDouble(),
+        brandId: json["brandId"],
+        tags: json["tags"],
+        sortOrder: json["sortOrder"],
         description: json["description"],
         quantity: json["quantity"],
         categoryIds: json["categoryIds"] == null
@@ -124,29 +199,68 @@ class ProductData {
         subCategoryIds: json["subCategoryIds"] == null
             ? []
             : List<String>.from(json["subCategoryIds"]!.map((x) => x)),
+        isVegeterian: json["isVegeterian"],
         pricePerUnit: json["pricePerUnit"]?.toDouble(),
+        businessPricePerUnit: json["businessPricePerUnit"]?.toDouble(),
+        type: json["type"],
+        flavor: json["flavor"],
+        ingredients: json["ingredients"],
+        keyFeatures: json["keyFeatures"],
+        shelfLife: json["shelfLife"],
+        manufacturerDetails: json["manufacturerDetails"],
+        countryOfOrigin: json["countryOfOrigin"],
+        fssaiLicense: json["fssaiLicense"],
+        keyword: json["keyword"],
+        customerCareDetails: json["customerCareDetails"],
+        returnPolicy: json["returnPolicy"],
+        expiryDate: json["expiryDate"],
+        seller: json["seller"],
+        sellerFssai: json["sellerFssai"],
+        disclaimer: json["disclaimer"],
         discount: json["discount"] == null
             ? null
             : ProductDiscount.fromMap(json["discount"]),
+        sku: json["sku"],
+        productShownToNormalCustomer: json["productShownToNormalCustomer"],
         images: json["images"] == null
             ? []
             : List<ProductImage>.from(
                 json["images"]!.map((x) => ProductImage.fromMap(x))),
+        warehouseIds: json["warehouseIds"] == null
+            ? []
+            : List<String>.from(json["warehouseIds"]!.map((x) => x)),
+        packs: json["packs"],
+        productShownToBusinessCustomer: json["productShownToBusinessCustomer"],
+        productCode: json["productCode"],
+        permalink: json["permalink"],
+        packagingtype: json["packagingtype"],
+        storageTips: json["storageTips"],
+        nutrientValue: json["nutrientValue"],
+        storageTemperature: json["storageTemperature"],
+        marketedBy: json["marketedBy"],
+        quantityAlert: json["quantityAlert"],
+        status: json["status"],
+        businessDiscount: json["businessDiscount"],
+        maximumQuantityOrder: json["maximumQuantityOrder"],
+        minimumQuantityOrder: json["minimumQuantityOrder"],
+        businessMaximumQuantityOrder: json["businessMaximumQuantityOrder"],
+        businessMinimumQuantityOrder: json["businessMinimumQuantityOrder"],
+        isVatAdded: json["isVatAdded"],
+        isFeatured: json["isFeatured"],
         featuredImages: json["featuredImages"] == null
             ? []
             : List<ProductImage>.from(
                 json["featuredImages"]!.map((x) => ProductImage.fromMap(x))),
-        productCode: json["productCode"],
-        status: json["status"],
-        isFeatured: json["isFeatured"],
-        slug: json["slug"],
-        keyFeatures: json["keyFeatures"],
-        shelfLife: json["shelfLife"],
-        returnPolicy: json["returnPolicy"],
-        disclaimer: json["disclaimer"],
-        customerCareDetails: json["customerCareDetails"],
+        relatedProducts: json["relatedProducts"],
         hasVariant: json["hasVariant"] ?? false,
         parentId: json["parentId"],
+        slug: json["slug"],
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.parse(json["createdAt"]),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.parse(json["updatedAt"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -154,33 +268,61 @@ class ProductData {
         "name": name,
         "unit": unit,
         "unitValue": unitValue,
+        "brandId": brandId,
+        "tags": tags,
+        "sortOrder": sortOrder,
         "description": description,
         "quantity": quantity,
-        "categoryIds": categoryIds == null
-            ? []
-            : List<dynamic>.from(categoryIds!.map((x) => x)),
-        "subCategoryIds": subCategoryIds == null
-            ? []
-            : List<dynamic>.from(subCategoryIds!.map((x) => x)),
+        "categoryIds": categoryIds,
+        "subCategoryIds": subCategoryIds,
+        "isVegeterian": isVegeterian,
         "pricePerUnit": pricePerUnit,
-        "discount": discount?.toMap(),
-        "images": images == null
-            ? []
-            : List<dynamic>.from(images!.map((x) => x.toMap())),
-        "featuredImages": featuredImages == null
-            ? []
-            : List<dynamic>.from(featuredImages!.map((x) => x.toMap())),
-        "productCode": productCode,
-        "status": status,
-        "isFeatured": isFeatured,
-        "slug": slug,
+        "businessPricePerUnit": businessPricePerUnit,
+        "type": type,
+        "flavor": flavor,
+        "ingredients": ingredients,
         "keyFeatures": keyFeatures,
         "shelfLife": shelfLife,
-        "returnPolicy": returnPolicy,
-        "disclaimer": disclaimer,
+        "manufacturerDetails": manufacturerDetails,
+        "countryOfOrigin": countryOfOrigin,
+        "fssaiLicense": fssaiLicense,
+        "keyword": keyword,
         "customerCareDetails": customerCareDetails,
+        "returnPolicy": returnPolicy,
+        "expiryDate": expiryDate,
+        "seller": seller,
+        "sellerFssai": sellerFssai,
+        "disclaimer": disclaimer,
+        "discount": discount?.toMap(),
+        "sku": sku,
+        "productShownToNormalCustomer": productShownToNormalCustomer,
+        "images": images?.map((x) => x.toMap()).toList(),
+        "warehouseIds": warehouseIds,
+        "packs": packs,
+        "productShownToBusinessCustomer": productShownToBusinessCustomer,
+        "productCode": productCode,
+        "permalink": permalink,
+        "packagingtype": packagingtype,
+        "storageTips": storageTips,
+        "nutrientValue": nutrientValue,
+        "storageTemperature": storageTemperature,
+        "marketedBy": marketedBy,
+        "quantityAlert": quantityAlert,
+        "status": status,
+        "businessDiscount": businessDiscount,
+        "maximumQuantityOrder": maximumQuantityOrder,
+        "minimumQuantityOrder": minimumQuantityOrder,
+        "businessMaximumQuantityOrder": businessMaximumQuantityOrder,
+        "businessMinimumQuantityOrder": businessMinimumQuantityOrder,
+        "isVatAdded": isVatAdded,
+        "isFeatured": isFeatured,
+        "featuredImages": featuredImages?.map((x) => x.toMap()).toList(),
+        "relatedProducts": relatedProducts,
         "hasVariant": hasVariant,
         "parentId": parentId,
+        "slug": slug,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
       };
 
   double get actualPrice {
