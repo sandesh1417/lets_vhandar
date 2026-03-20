@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 
-class BillDetailsCard extends StatelessWidget {
+class BillDetailsCard extends ConsumerWidget {
   final int totalItems;
   final double totalPrice;
   final double totalMrp;
@@ -15,10 +17,61 @@ class BillDetailsCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(generalSettingsProvider);
     final double savings = totalMrp - totalPrice;
     final bool hasSavings = savings > 0;
 
+    return settingsAsync.when(
+      data: (settings) {
+        final double deliveryCharge = settings?.deliveryCharge?.toDouble() ?? 0;
+        final double deliveryThreshold =
+            settings?.deliveryThreshold?.toDouble() ?? 0;
+        final double handlingCharge = settings?.handlingCharge?.toDouble() ?? 0;
+
+        final bool isFreeDelivery = totalPrice >= deliveryThreshold;
+        final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
+        final double grandTotal =
+            totalPrice + finalDeliveryCharge + handlingCharge;
+
+        return _buildCard(
+          context,
+          savings: savings,
+          hasSavings: hasSavings,
+          deliveryCharge: deliveryCharge,
+          finalDeliveryCharge: finalDeliveryCharge,
+          isFreeDelivery: isFreeDelivery,
+          handlingCharge: handlingCharge,
+          grandTotal: grandTotal,
+        );
+      },
+      loading: () => const SizedBox(
+        height: 200,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => _buildCard(
+        context,
+        savings: savings,
+        hasSavings: hasSavings,
+        deliveryCharge: 100,
+        finalDeliveryCharge: totalPrice >= 1000 ? 0 : 100,
+        isFreeDelivery: totalPrice >= 1000,
+        handlingCharge: 0,
+        grandTotal: totalPrice + (totalPrice >= 1000 ? 0 : 100),
+      ),
+    );
+  }
+
+  Widget _buildCard(
+    BuildContext context, {
+    required double savings,
+    required bool hasSavings,
+    required double deliveryCharge,
+    required double finalDeliveryCharge,
+    required bool isFreeDelivery,
+    required double handlingCharge,
+    required double grandTotal,
+  }) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
@@ -114,17 +167,29 @@ class BillDetailsCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Text('Rs.100',
-                            style: TextStyle(
-                                fontSize: 13.sp,
-                                color: AppColor.textStrikeThrough,
-                                decoration: TextDecoration.lineThrough)),
-                        SizedBox(width: 6.w),
-                        Text('FREE',
-                            style: TextStyle(
-                                fontSize: 13.sp,
-                                color: AppColor.secondary,
-                                fontWeight: FontWeight.bold)),
+                        if (isFreeDelivery && deliveryCharge > 0) ...[
+                          Text('Rs.${deliveryCharge.toInt()}',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: AppColor.textStrikeThrough,
+                                  decoration: TextDecoration.lineThrough)),
+                          SizedBox(width: 6.w),
+                          Text('FREE',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: AppColor.secondary,
+                                  fontWeight: FontWeight.bold)),
+                        ] else
+                          Text(
+                              finalDeliveryCharge == 0
+                                  ? 'FREE'
+                                  : 'Rs.${finalDeliveryCharge.toInt()}',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: finalDeliveryCharge == 0
+                                      ? AppColor.secondary
+                                      : AppColor.textBlack87)),
                       ],
                     ),
                   ],
@@ -146,7 +211,7 @@ class BillDetailsCard extends StatelessWidget {
                             size: 14.sp, color: AppColor.textMuted),
                       ],
                     ),
-                    Text('Rs.0',
+                    Text('Rs.${handlingCharge.toInt()}',
                         style: TextStyle(
                             fontSize: 13.sp, fontWeight: FontWeight.bold)),
                   ],
@@ -171,7 +236,7 @@ class BillDetailsCard extends StatelessWidget {
                                 fontSize: 11.sp, color: AppColor.textMuted)),
                       ],
                     ),
-                    Text('Rs. ${totalPrice.toInt()}',
+                    Text('Rs. ${grandTotal.toInt()}',
                         style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -181,7 +246,6 @@ class BillDetailsCard extends StatelessWidget {
               ],
             ),
           ),
-          // Saved Banner bottom part
           if (hasSavings)
             Container(
               width: double.infinity,
@@ -208,7 +272,11 @@ class BillDetailsCard extends StatelessWidget {
                             text: 'Rs. ${savings.toInt()} ',
                             style:
                                 const TextStyle(fontWeight: FontWeight.bold)),
-                        const TextSpan(text: 'Saved! Free Delivery!'),
+                        const TextSpan(text: 'Saved!'),
+                        if (isFreeDelivery)
+                          const TextSpan(
+                              text: ' Free Delivery!',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
