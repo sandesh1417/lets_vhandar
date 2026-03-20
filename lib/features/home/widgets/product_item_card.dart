@@ -248,6 +248,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
       child: Container(
         width: widget.width ?? 140.w,
         margin: widget.margin ?? EdgeInsets.only(right: 12.w, bottom: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
@@ -265,7 +266,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             Stack(
               children: [
                 Container(
-                  height: 100.h, // Reduced from 120.h
+                  height: 80.h, // Slightly reduced further for compactness
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
@@ -309,165 +310,185 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   ),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(product.name ?? 'Product Name',
-                      style: TextStyle(
-                        fontSize: 11.sp, // Reduced from 12.sp
-                        fontWeight: FontWeight.w700,
-                        color: AppColor.textBlack87,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
-                  SizedBox(height: 4.h),
-                  if (widget.product.hasVariant == true)
-                    GestureDetector(
-                      onTap: _showVariantBottomSheet,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(6.r),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(8.w), // Increased for premium feel
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 30.h, // Reduced from 32.h
+                          child: Text(product.name ?? 'Product Name',
+                              style: TextStyle(
+                                fontSize: 11.sp, // Reduced from 12.sp
+                                fontWeight: FontWeight.w700,
+                                color: AppColor.textBlack87,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        SizedBox(height: 4.h),
+                        SizedBox(
+                          height: 30.h, // Fixed height for alignment
+                          child: widget.product.hasVariant == true
+                              ? GestureDetector(
+                                  onTap: _showVariantBottomSheet,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 4.h),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                            '${product.unitValue?.toInt()} ${product.unit}',
+                                            style: TextStyle(
+                                              fontSize: 10.sp,
+                                              color: AppColor.textBlack87,
+                                              fontWeight: FontWeight.w600,
+                                            )),
+                                        SizedBox(width: 4.w),
+                                        Icon(Icons.keyboard_arrow_down,
+                                            size: 14.sp,
+                                            color: Colors.grey.shade600),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      '${product.unitValue?.toInt()}${product.unit}',
+                                      style: TextStyle(
+                                        fontSize: 10.sp,
+                                        color: AppColor.textBlack54,
+                                        fontWeight: FontWeight.w500,
+                                      )),
+                                ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6.h), // Reduced from 8.h
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                '${product.unitValue?.toInt()} ${product.unit}',
+                            Text('Rs. ${product.actualPrice.toInt()}',
                                 style: TextStyle(
-                                  fontSize: 10.sp,
-                                  color: AppColor.textBlack87,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12.sp, // Reduced from 13.sp
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.textBlack,
                                 )),
-                            SizedBox(width: 4.w),
-                            Icon(Icons.keyboard_arrow_down,
-                                size: 14.sp, color: Colors.grey.shade600),
+                            if (hasDiscount)
+                              Text('MRP ${product.pricePerUnit?.toInt()}',
+                                  style: TextStyle(
+                                      fontSize: 9.sp, // Reduced from 10.sp
+                                      color: AppColor.textBlack87,
+                                      fontWeight: FontWeight.w500,
+                                      decoration: TextDecoration.lineThrough,
+                                      decorationColor:
+                                          AppColor.textStrikeThrough,
+                                      decorationThickness: 2.0)),
                           ],
                         ),
-                      ),
-                    )
-                  else
-                    Text('${product.unitValue?.toInt()}${product.unit}',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: AppColor.textBlack54,
-                          fontWeight: FontWeight.w500,
-                        )),
-                  SizedBox(height: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Rs. ${product.actualPrice.toInt()}',
-                              style: TextStyle(
-                                fontSize: 12.sp, // Reduced from 13.sp
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.textBlack,
-                              )),
-                          if (hasDiscount)
-                            Text('MRP ${product.pricePerUnit?.toInt()}',
-                                style: TextStyle(
-                                    fontSize: 9.sp, // Reduced from 10.sp
-                                    color: AppColor.textBlack87,
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.lineThrough,
-                                    decorationColor: AppColor.textStrikeThrough,
-                                    decorationThickness: 2.0)),
-                        ],
-                      ),
-                      Consumer(
-                        builder: (context, ref, _) {
-                          // Watch the cartItems to trigger rebuilds on quantity changes
-                          ref.watch(cartProvider);
-                          final cartCount = ref
-                              .read(cartProvider.notifier)
-                              .getCartItemCount(product.id!);
-                          if (cartCount == 0) {
-                            return GestureDetector(
-                              onTap: () {
-                                ref
-                                    .read(cartProvider.notifier)
-                                    .addToCart(product);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w, vertical: 6.h),
+                        Consumer(
+                          builder: (context, ref, _) {
+                            // Watch the cartItems to trigger rebuilds on quantity changes
+                            ref.watch(cartProvider);
+                            final cartCount = ref
+                                .read(cartProvider.notifier)
+                                .getCartItemCount(product.id!);
+                            if (cartCount == 0) {
+                              return GestureDetector(
+                                onTap: () {
+                                  ref
+                                      .read(cartProvider.notifier)
+                                      .addToCart(product);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w, vertical: 6.h),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColor.primary),
+                                    borderRadius: BorderRadius.circular(4.r),
+                                  ),
+                                  child: Text(
+                                    'ADD',
+                                    style: TextStyle(
+                                        color: AppColor.primary,
+                                        fontSize: 11.sp, // Reduced from 12.sp
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                height: 30.h,
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: AppColor.primary),
+                                  color: AppColor.primary,
                                   borderRadius: BorderRadius.circular(4.r),
                                 ),
-                                child: Text(
-                                  'ADD',
-                                  style: TextStyle(
-                                      color: AppColor.primary,
-                                      fontSize: 11.sp, // Reduced from 12.sp
-                                      fontWeight: FontWeight.bold),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        ref
+                                            .read(cartProvider.notifier)
+                                            .updateQuantity(
+                                                product.id!, cartCount - 1);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 4.h),
+                                        color: Colors.transparent,
+                                        child: Icon(Icons.remove,
+                                            color: Colors.white, size: 16.sp),
+                                      ),
+                                    ),
+                                    Text(
+                                      '$cartCount',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        ref
+                                            .read(cartProvider.notifier)
+                                            .updateQuantity(
+                                                product.id!, cartCount + 1);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 4.h),
+                                        color: Colors.transparent,
+                                        child: Icon(Icons.add,
+                                            color: Colors.white, size: 16.sp),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            );
-                          } else {
-                            return Container(
-                              height: 30.h,
-                              decoration: BoxDecoration(
-                                color: AppColor.primary,
-                                borderRadius: BorderRadius.circular(4.r),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount - 1);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 6.w, vertical: 4.h),
-                                      color: Colors.transparent,
-                                      child: Icon(Icons.remove,
-                                          color: Colors.white, size: 16.sp),
-                                    ),
-                                  ),
-                                  Text(
-                                    '$cartCount',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount + 1);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 6.w, vertical: 4.h),
-                                      color: Colors.transparent,
-                                      child: Icon(Icons.add,
-                                          color: Colors.white, size: 16.sp),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

@@ -42,6 +42,10 @@ final selectedSortProvider = StateProvider.autoDispose
 final searchQueryProvider =
     StateProvider.autoDispose.family<String, String>((ref, slug) => '');
 
+/// Layout preference: false = Horizontal (bottom), true = Vertical (sidebar)
+final subCategoryLayoutProvider =
+    StateProvider.autoDispose.family<bool, String>((ref, slug) => false);
+
 final categoryProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, slug) async {
   final subCategorySlug = ref.watch(selectedSubCategorySlugProvider(slug));
