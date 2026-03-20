@@ -43,4 +43,19 @@ class OrderRepository {
         return Error(failure);
     }
   }
+
+  Future<Result<OrderData, Failure>> getOrderById(String id) async {
+    final result = await _apiClient.get(ApiUrl.orderDetail(id));
+
+    switch (result) {
+      case Success(value: final data):
+        final response = PlaceOrderResponse.fromMap(data);
+        if (response.data == null) {
+          return Error(ServerFailure("Order detail data is empty"));
+        }
+        return Success(response.data!);
+      case Error(failure: final failure):
+        return Error(failure);
+    }
+  }
 }

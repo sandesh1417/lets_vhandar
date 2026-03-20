@@ -18,6 +18,7 @@ class ApiUrl {
   static String warehouses = 'warehouses';
   static String orders = 'orders';
   static String ordersSearch = 'orders/search';
+  static String orderDetail(String id) => 'orders/$id';
 }
 
 // https://api.vhandar.com/orders

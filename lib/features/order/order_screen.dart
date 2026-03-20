@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
@@ -52,9 +53,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     },
                         color: AppColor.primary,
                         child: ListView.separated(
-                          padding: EdgeInsets.all(16.w),
+                          padding: EdgeInsets.all(12.w), // Reduced from 16.w
                           itemCount: state.orders.length,
-                          separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                          separatorBuilder: (_, __) =>
+                              SizedBox(height: 8.h), // Reduced from 12.h
                           itemBuilder: (context, index) {
                             return _OrderCard(order: state.orders[index]);
                           },
@@ -157,7 +159,8 @@ class _OrderCard extends StatelessWidget {
         children: [
           // ── Header ──────────────────────────────────────────────────────
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(
+                horizontal: 12.w, vertical: 8.h), // Reduced horizontal/vertical
             decoration: BoxDecoration(
               color: AppColor.primary.withOpacity(0.06),
               borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
@@ -175,7 +178,7 @@ class _OrderCard extends StatelessWidget {
                 ),
                 OutlinedButton(
                   onPressed: () {
-                    // TODO: navigate to order detail screen
+                    context.push('/order-detail/${order.id}');
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColor.primary,
@@ -196,7 +199,8 @@ class _OrderCard extends StatelessWidget {
 
           // ── Body ─────────────────────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(
+                horizontal: 12.w, vertical: 8.h), // Reduced from 16.w/12.h
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -228,7 +232,7 @@ class _OrderCard extends StatelessWidget {
                 // Product thumbnails
                 if (order.products != null && order.products!.isNotEmpty)
                   SizedBox(
-                    height: 48.h,
+                    height: 40.h, // Reduced from 48.h
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: order.products!.length,
@@ -241,8 +245,8 @@ class _OrderCard extends StatelessWidget {
                           clipBehavior: Clip.none,
                           children: [
                             Container(
-                              width: 48.w,
-                              height: 48.h,
+                              width: 40.w, // Reduced from 48.w
+                              height: 40.h, // Reduced from 48.h
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.grey.shade100,
@@ -362,7 +366,8 @@ class _StatusChip extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
+      padding: EdgeInsets.symmetric(
+          horizontal: 10.w, vertical: 3.h), // Reduced from 14.w/5.h
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20.r),
@@ -392,7 +397,8 @@ class _PaginationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(
+          horizontal: 16.w, vertical: 8.h), // Reduced from 12.h
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

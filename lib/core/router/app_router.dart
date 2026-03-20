@@ -12,6 +12,7 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
+import 'package:lets_vhandar/features/order/presentation/order_detail_screen.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
@@ -24,7 +25,8 @@ enum LVRoute {
   registerScreen,
   v4BRegistrationScreen,
   productDetailScreen,
-  categoryDetailScreen;
+  categoryDetailScreen,
+  orderDetailScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -117,6 +119,14 @@ class LVGoRouter {
         builder: (BuildContext context, GoRouterState state) {
           final slug = state.pathParameters['slug']!;
           return BrandDetailScreen(brandSlug: slug);
+        },
+      ),
+      GoRoute(
+        path: '/order-detail/:id',
+        name: 'orderDetailScreen',
+        builder: (BuildContext context, GoRouterState state) {
+          final id = state.pathParameters['id']!;
+          return OrderDetailScreen(orderId: id);
         },
       ),
     ],
