@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
   const OrderScreen({super.key});
@@ -18,6 +17,8 @@ class OrderScreen extends ConsumerStatefulWidget {
 }
 
 class _OrderScreenState extends ConsumerState<OrderScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +28,30 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         ref.read(orderProvider.notifier).loadOrders(userId);
       }
     });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        final state = ref.read(orderProvider);
+        if (!state.isLoading &&
+            !state.isLoadingMore &&
+            state.currentPage < state.totalPages) {
+          final userId = ref.read(loginProvider).user?.id;
+          if (userId != null) {
+            ref.read(orderProvider.notifier).loadOrders(
+                  userId,
+                  page: state.currentPage + 1,
+                );
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,6 +60,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
     return CustomScaffoldWrapper(
       isScrollable: false,
+      backgroundColor: const Color(0xFFF8F9FB),
       appBar: const CustomScreenHeader(title: 'Orders History'),
       body: Column(
         children: [
@@ -44,53 +70,36 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                 : state.orders.isEmpty
                     ? _buildEmptyState()
                     : RefreshIndicator(
-                    onRefresh: () {
-                      final userId = ref.read(loginProvider).user?.id;
-                      if (userId != null) {
-                        return ref.read(orderProvider.notifier).loadOrders(userId);
-                      }
-                      return Future.value();
-                    },
+                        onRefresh: () {
+                          final userId = ref.read(loginProvider).user?.id;
+                          if (userId != null) {
+                            return ref
+                                .read(orderProvider.notifier)
+                                .loadOrders(userId);
+                          }
+                          return Future.value();
+                        },
                         color: AppColor.primary,
                         child: ListView.separated(
-                          padding: EdgeInsets.all(12.w), // Reduced from 16.w
-                          itemCount: state.orders.length,
-                          separatorBuilder: (_, __) =>
-                              SizedBox(height: 8.h), // Reduced from 12.h
+                          controller: _scrollController,
+                          padding: EdgeInsets.all(12.w),
+                          itemCount: state.orders.length +
+                              (state.isLoadingMore ? 1 : 0),
+                          separatorBuilder: (_, __) => SizedBox(height: 6.h),
                           itemBuilder: (context, index) {
-                            return _OrderCard(order: state.orders[index]);
+                            if (index < state.orders.length) {
+                              return _OrderCard(order: state.orders[index]);
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24.h),
+                                child: const Center(
+                                    child: CircularProgressIndicator()),
+                              );
+                            }
                           },
                         ),
                       ),
           ),
-          // Pagination
-          if (state.totalPages > 1)
-            _PaginationBar(
-              currentPage: state.currentPage,
-              totalPages: state.totalPages,
-              onPrev: state.currentPage > 1
-                  ? () {
-                      final userId = ref.read(loginProvider).user?.id;
-                      if (userId != null) {
-                        ref.read(orderProvider.notifier).loadOrders(
-                              userId,
-                              page: state.currentPage - 1,
-                            );
-                      }
-                    }
-                  : null,
-              onNext: state.currentPage < state.totalPages
-                  ? () {
-                      final userId = ref.read(loginProvider).user?.id;
-                      if (userId != null) {
-                        ref.read(orderProvider.notifier).loadOrders(
-                              userId,
-                              page: state.currentPage + 1,
-                            );
-                      }
-                    }
-                  : null,
-            ),
         ],
       ),
     );
@@ -127,8 +136,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
   }
 }
 
-// ─── Order Card ───────────────────────────────────────────────────────────────
-
 class _OrderCard extends StatelessWidget {
   final OrderData order;
 
@@ -144,12 +151,12 @@ class _OrderCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade100),
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -157,13 +164,11 @@ class _OrderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ──────────────────────────────────────────────────────
           Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: 12.w, vertical: 8.h), // Reduced horizontal/vertical
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
             decoration: BoxDecoration(
-              color: AppColor.primary.withOpacity(0.06),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+              color: AppColor.primary.withOpacity(0.05),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
             ),
             child: Row(
               children: [
@@ -196,11 +201,8 @@ class _OrderCard extends StatelessWidget {
               ],
             ),
           ),
-
-          // ── Body ─────────────────────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 12.w, vertical: 8.h), // Reduced from 16.w/12.h
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -227,16 +229,14 @@ class _OrderCard extends StatelessWidget {
                   style:
                       TextStyle(fontSize: 13.sp, color: AppColor.textBlack54),
                 ),
-                SizedBox(height: 10.h),
-
-                // Product thumbnails
+                SizedBox(height: 6.h),
                 if (order.products != null && order.products!.isNotEmpty)
                   SizedBox(
-                    height: 40.h, // Reduced from 48.h
+                    height: 34.h,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: order.products!.length,
-                      separatorBuilder: (_, __) => SizedBox(width: 8.w),
+                      separatorBuilder: (_, __) => SizedBox(width: 6.w),
                       itemBuilder: (context, i) {
                         final product = order.products![i];
                         final count = product.count ?? 1;
@@ -245,8 +245,8 @@ class _OrderCard extends StatelessWidget {
                           clipBehavior: Clip.none,
                           children: [
                             Container(
-                              width: 40.w, // Reduced from 48.w
-                              height: 40.h, // Reduced from 48.h
+                              width: 34.w,
+                              height: 34.h,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.grey.shade100,
@@ -290,8 +290,7 @@ class _OrderCard extends StatelessWidget {
                       },
                     ),
                   ),
-
-                SizedBox(height: 10.h),
+                SizedBox(height: 4.h),
                 Align(
                   alignment: Alignment.centerRight,
                   child: _StatusChip(
@@ -326,8 +325,6 @@ class _OrderCard extends StatelessWidget {
     return '${months[date.month - 1]} ${date.day} ${date.year} ${hour.toString().padLeft(2, '0')}:$min $ampm';
   }
 }
-
-// ─── Status Chip ─────────────────────────────────────────────────────────────
 
 class _StatusChip extends StatelessWidget {
   final String status;
@@ -366,8 +363,7 @@ class _StatusChip extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: 10.w, vertical: 3.h), // Reduced from 14.w/5.h
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20.r),
@@ -375,82 +371,6 @@ class _StatusChip extends StatelessWidget {
       child: Text(label,
           style: TextStyle(
               color: textColor, fontSize: 12.sp, fontWeight: FontWeight.w600)),
-    );
-  }
-}
-
-// ─── Pagination Bar ───────────────────────────────────────────────────────────
-
-class _PaginationBar extends StatelessWidget {
-  final int currentPage;
-  final int totalPages;
-  final VoidCallback? onPrev;
-  final VoidCallback? onNext;
-
-  const _PaginationBar({
-    required this.currentPage,
-    required this.totalPages,
-    this.onPrev,
-    this.onNext,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: 16.w, vertical: 8.h), // Reduced from 12.h
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _PageButton(label: 'Previous', onTap: onPrev),
-          SizedBox(width: 16.w),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Text(
-              '$currentPage / $totalPages',
-              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
-            ),
-          ),
-          SizedBox(width: 16.w),
-          _PageButton(label: 'Next', onTap: onNext),
-        ],
-      ),
-    );
-  }
-}
-
-class _PageButton extends StatelessWidget {
-  final String label;
-  final VoidCallback? onTap;
-
-  const _PageButton({required this.label, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final enabled = onTap != null;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: enabled
-              ? AppColor.primary.withOpacity(0.12)
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-              color: enabled ? AppColor.primary : Colors.grey.shade400),
-        ),
-      ),
     );
   }
 }

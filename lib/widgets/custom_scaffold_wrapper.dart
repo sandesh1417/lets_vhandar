@@ -9,6 +9,8 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
   final bool isScrollable;
+  final Color? backgroundColor;
+
   const CustomScaffoldWrapper({
     super.key,
     required this.body,
@@ -17,12 +19,13 @@ class CustomScaffoldWrapper extends StatelessWidget {
     this.bottomNavigationBar,
     this.floatingActionButton,
     this.isScrollable = true,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: backgroundColor ?? AppColor.white,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,

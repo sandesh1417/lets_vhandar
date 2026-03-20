@@ -9,6 +9,7 @@ import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 class OrderState {
   final List<OrderData> orders;
   final bool isLoading;
+  final bool isLoadingMore;
   final bool isPlacingOrder;
   final String? error;
   final int currentPage;
@@ -17,6 +18,7 @@ class OrderState {
   const OrderState({
     this.orders = const [],
     this.isLoading = false,
+    this.isLoadingMore = false,
     this.isPlacingOrder = false,
     this.error,
     this.currentPage = 1,
@@ -26,6 +28,7 @@ class OrderState {
   OrderState copyWith({
     List<OrderData>? orders,
     bool? isLoading,
+    bool? isLoadingMore,
     bool? isPlacingOrder,
     String? error,
     bool clearError = false,
@@ -35,6 +38,7 @@ class OrderState {
     return OrderState(
       orders: orders ?? this.orders,
       isLoading: isLoading ?? this.isLoading,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isPlacingOrder: isPlacingOrder ?? this.isPlacingOrder,
       error: clearError ? null : (error ?? this.error),
       currentPage: currentPage ?? this.currentPage,
@@ -51,23 +55,30 @@ class OrderNotifier extends StateNotifier<OrderState> {
   OrderNotifier(this._repo) : super(const OrderState());
 
   Future<void> loadOrders(String userId, {int page = 1}) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    if (page == 1) {
+      state = state.copyWith(isLoading: true, clearError: true, orders: []);
+    } else {
+      state = state.copyWith(isLoadingMore: true, clearError: true);
+    }
+
     final result = await _repo.getOrders(userId: userId, page: page);
 
     switch (result) {
       case Success(value: final response):
-        final orders = response.data?.data ?? [];
+        final newOrders = response.data?.data ?? [];
         final total = response.data?.pagination?.total?.toInt() ?? 0;
         const limit = 5;
         final totalPages = (total / limit).ceil().clamp(1, 9999);
         state = state.copyWith(
           isLoading: false,
-          orders: orders,
+          isLoadingMore: false,
+          orders: page == 1 ? newOrders : [...state.orders, ...newOrders],
           currentPage: page,
           totalPages: totalPages,
         );
       case Error(failure: final failure):
-        state = state.copyWith(isLoading: false, error: failure.message);
+        state = state.copyWith(
+            isLoading: false, isLoadingMore: false, error: failure.message);
     }
   }
 
