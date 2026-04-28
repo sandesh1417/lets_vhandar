@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,6 +59,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
 
   bool _isSaving = false;
   bool _isGeocoding = false;
+  String? _locationError;
 
   @override
   void initState() {
@@ -93,20 +96,37 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     setState(() {
       _selectedLatLng = pos;
       _isGeocoding = true;
+      _locationError = null;
     });
     try {
       final placemarks =
           await placemarkFromCoordinates(pos.latitude, pos.longitude);
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
-        final desc = [p.subLocality, p.locality, p.country]
-            .where((e) => e != null && e.isNotEmpty)
-            .join(', ');
+        final parts = [
+          p.name,
+          p.subLocality,
+          p.locality,
+          p.subAdministrativeArea,
+          p.administrativeArea,
+        ].where((e) => e != null && e.isNotEmpty).toSet().toList();
+
+        final desc = parts.isEmpty
+            ? '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}'
+            : parts.join(', ');
+
         setState(() => _locationDescription = desc);
+      } else {
+        setState(() => _locationDescription =
+            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}');
       }
-    } catch (_) {
-      setState(() => _locationDescription =
-          '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}');
+    } catch (e) {
+      log('Geocoding error: $e');
+      setState(() {
+        _locationDescription =
+            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}';
+        _locationError = 'Could not fetch address details. Used coordinates.';
+      });
     } finally {
       setState(() => _isGeocoding = false);
     }
@@ -142,13 +162,15 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   }
 
   Future<void> _save() async {
+    log('${_locationDescription}123123');
     if (_locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location') {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a location on map')));
+      setState(() => _locationError = 'Please select a location on the map');
       return;
     }
     setState(() => _isSaving = true);
+    log('${_locationDescription}123123');
+
     final success = await ref.read(addressProvider.notifier).addAddress(
           userId: widget.userId,
           lat: _selectedLatLng.latitude,
@@ -299,14 +321,23 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                 margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: _locationError != null
+                      ? Colors.red.shade50
+                      : Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(
+                    color: _locationError != null
+                        ? Colors.red.shade200
+                        : Colors.grey.shade200,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.location_on_rounded,
-                        color: AppColor.primary, size: 20.sp),
+                        color: _locationError != null
+                            ? Colors.red
+                            : AppColor.primary,
+                        size: 20.sp),
                     SizedBox(width: 10.w),
                     Expanded(
                       child: _isGeocoding
@@ -319,12 +350,30 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                               style: TextStyle(
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColor.textBlack87),
+                                  color: _locationError != null
+                                      ? Colors.red.shade800
+                                      : AppColor.textBlack87),
                             ),
                     ),
                   ],
                 ),
               ),
+
+              if (_locationError != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _locationError!,
+                      style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
 
               // --- Form section ---
               Expanded(

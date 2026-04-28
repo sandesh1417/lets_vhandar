@@ -49,5 +49,7 @@
 	<string>This app needs access to location to show your delivery address on the map.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location to show your delivery address on the map.</string>
+	<key>GoogleMapsAPIKey</key>
+	<string>$(GOOGLE_MAP_API_KEY)</string>
 </dict>
 </plist>

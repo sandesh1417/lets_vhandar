@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 
 class BillDetailsCard extends ConsumerWidget {
@@ -19,12 +20,21 @@ class BillDetailsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(generalSettingsProvider);
+    final userState = ref.watch(loginProvider);
+    final isBusiness = userState.user?.isBusiness ?? false;
+
     final double savings = totalMrp - totalPrice;
     final bool hasSavings = savings > 0;
 
     return settingsAsync.when(
       data: (settings) {
-        final double deliveryCharge = settings?.deliveryCharge?.toDouble() ?? 0;
+        final double standardDeliveryCharge =
+            settings?.deliveryCharge?.toDouble() ?? 0;
+        final double businessDeliveryCharge =
+            settings?.businessDeliveryCharge?.toDouble() ?? 0;
+        final double deliveryCharge =
+            isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
+        
         final double deliveryThreshold =
             settings?.deliveryThreshold?.toDouble() ?? 0;
         final double handlingCharge = settings?.handlingCharge?.toDouble() ?? 0;
