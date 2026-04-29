@@ -8,7 +8,6 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/features/home/providers/brand_detail_provider.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
-import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {

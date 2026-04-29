@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
-import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 
 class CategoryProductGrid extends ConsumerWidget {
   final String categorySlug;
