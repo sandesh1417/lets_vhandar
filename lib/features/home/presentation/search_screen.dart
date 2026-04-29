@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -104,29 +102,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       children: [
         if (state.isLoading) const LinearProgressIndicator(),
         Expanded(
-          child: GridView.builder(
-            padding: EdgeInsets.all(12.w),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 10.h,
-              crossAxisSpacing: 10.w,
-              childAspectRatio: 0.85,
-            ),
-            itemCount: state.results.length,
-            itemBuilder: (context, index) {
-              final product = state.results[index];
-              return ProductItemCard(
-                product: product,
-                margin: EdgeInsets.zero,
-                width: double.infinity,
-                onTap: () {
-                  context.pushNamed(
-                    LVRoute.productDetailScreen.route,
-                    extra: product,
-                  );
-                },
-              );
-            },
+          child: ProductGrid(
+            products: state.results,
           ),
         ),
       ],

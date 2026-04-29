@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
+import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 
 class CategoryProductGrid extends ConsumerWidget {
@@ -26,29 +27,10 @@ class CategoryProductGrid extends ConsumerWidget {
                 if (products.isEmpty) {
                   return _buildEmptyState();
                 }
-                return GridView.builder(
+                return ProductGrid(
+                  products: products,
+                  isVertical: isVertical,
                   padding: EdgeInsets.all(8.w),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: isVertical
-                        ? 0.85
-                        : 0.9, // Dynamic to avoid overflow and maximize space
-                    crossAxisSpacing: 10.w,
-                    mainAxisSpacing: 10.h,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return ProductItemCard(
-                      key: ValueKey(product.id),
-                      product: product,
-                      width: double.infinity,
-                      margin: EdgeInsets.zero,
-                      onTap: () {
-                        context.push('/productDetailScreen', extra: product);
-                      },
-                    );
-                  },
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
