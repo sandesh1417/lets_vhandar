@@ -42,8 +42,10 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
       ),
       backgroundColor: Colors.white,
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(16.w),
+        return Consumer(
+          builder: (context, ref, _) {
+            return Container(
+              padding: EdgeInsets.all(16.w),
           height: 300.h,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,6 +233,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
               ),
             ],
           ),
+        );
+          },
         );
       },
     );
