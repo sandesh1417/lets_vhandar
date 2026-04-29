@@ -29,77 +29,83 @@ class HomeHeader extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Container(
-          height: 140.h,
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            color: AppColor.primary,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20.r),
-              bottomRight: Radius.circular(20.r),
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 150.h,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              decoration: BoxDecoration(
+                color: AppColor.primary,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20.r),
+                  bottomRight: Radius.circular(20.r),
+                ),
+              ),
+              child: Column(
                 children: [
-                  // Logo
-                  SvgPicture.asset(
-                    KImageConstant.vandharIcon,
-                    height: 40.h,
-                    colorFilter:
-                        const ColorFilter.mode(Colors.yellow, BlendMode.srcIn),
-                  ),
-                  // Location Info — tappable
-                  GestureDetector(
-                    onTap: () =>
-                        showAddressSelectorSheet(context, userId: _kUserId),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Logo
+                      SvgPicture.asset(
+                        KImageConstant.vandharIcon,
+                        height: 40.h,
+                        colorFilter: const ColorFilter.mode(
+                            Colors.yellow, BlendMode.srcIn),
+                      ),
+                      // Location Info — tappable
+                      GestureDetector(
+                        onTap: () =>
+                            showAddressSelectorSheet(context, userId: _kUserId),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              'Delivery in ',
-                              style: KTextStyle.roboto14white4W,
+                            Row(
+                              children: [
+                                Text(
+                                  'Delivery in ',
+                                  style: KTextStyle.roboto14white4W,
+                                ),
+                                Text(
+                                  '19 Mins',
+                                  style: KTextStyle.roboto16white7W
+                                      .copyWith(fontSize: 18.sp),
+                                ),
+                                SizedBox(width: 4.w),
+                                const Icon(Icons.timer,
+                                    color: Colors.white, size: 16),
+                              ],
                             ),
-                            Text(
-                              '19 Mins',
-                              style: KTextStyle.roboto16white7W
-                                  .copyWith(fontSize: 18.sp),
+                            Row(
+                              children: [
+                                Text(
+                                  selected != null
+                                      ? _truncate(selected.description ??
+                                          'Select Address')
+                                      : 'Select Address',
+                                  style: KTextStyle.roboto14white4W
+                                      .copyWith(fontSize: 12.sp),
+                                ),
+                                Icon(Icons.keyboard_arrow_down,
+                                    color: Colors.white, size: 16.sp),
+                              ],
                             ),
-                            SizedBox(width: 4.w),
-                            const Icon(Icons.timer,
-                                color: Colors.white, size: 16),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Text(
-                              selected != null
-                                  ? _truncate(
-                                      selected.description ?? 'Select Address')
-                                  : 'Select Address',
-                              style: KTextStyle.roboto14white4W
-                                  .copyWith(fontSize: 12.sp),
-                            ),
-                            Icon(Icons.keyboard_arrow_down,
-                                color: Colors.white, size: 16.sp),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 25.h), // Space for the overflowing search bar
+          ],
         ),
         // Search Bar
         Positioned(
-          bottom: -25.h,
+          bottom: 0,
           left: 16.w,
           right: 16.w,
           child: Container(
