@@ -163,7 +163,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.55,
+                                childAspectRatio: 0.85,
                                 crossAxisSpacing: 10.w,
                                 mainAxisSpacing: 10.h,
                               ),

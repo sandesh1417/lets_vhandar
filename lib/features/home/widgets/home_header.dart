@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
+import 'package:lets_vhandar/features/home/presentation/search_screen.dart';
 
 // TODO: Replace with actual logged-in user ID from auth state
 const _kUserId = '67baf2ff5d58f3aca9733828';
@@ -108,28 +109,37 @@ class HomeHeader extends ConsumerWidget {
           bottom: 0,
           left: 16.w,
           right: 16.w,
-          child: Container(
-            height: 50.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
+            child: Container(
+              height: 50.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  hintText: 'Search for Vhandar products',
+                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon:
+                      const Icon(Icons.qr_code_scanner, color: Colors.black),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 15.h),
                 ),
-              ],
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search for Vhandar products',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                suffixIcon:
-                    const Icon(Icons.qr_code_scanner, color: Colors.black),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 15.h),
               ),
             ),
           ),

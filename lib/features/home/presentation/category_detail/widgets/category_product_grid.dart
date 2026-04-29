@@ -31,7 +31,7 @@ class CategoryProductGrid extends ConsumerWidget {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: isVertical
-                        ? 0.65
+                        ? 0.85
                         : 0.9, // Dynamic to avoid overflow and maximize space
                     crossAxisSpacing: 10.w,
                     mainAxisSpacing: 10.h,

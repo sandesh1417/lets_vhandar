@@ -140,4 +140,30 @@ class ProductRepository {
       return Error(NetworkFailure(e.toString()));
     }
   }
+
+  Future<Result<List<ProductData>, Failure>> searchProducts(
+    String query, {
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        ApiUrl.productsSearch,
+        queryParameters: {
+          'search': query,
+          'page': page,
+          'limit': limit,
+        },
+      );
+
+      return switch (response) {
+        Success(value: final data) =>
+          Success(ProductModal.fromMap(data).data?.data ?? []),
+        Error(failure: final failure) => Error(failure),
+      };
+    } catch (e) {
+      if (e is Failure) return Error(e);
+      return Error(NetworkFailure(e.toString()));
+    }
+  }
 }

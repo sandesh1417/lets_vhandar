@@ -314,13 +314,13 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   ),
               ],
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(8.w), // Increased for premium feel
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
+            Padding(
+              padding: EdgeInsets.all(8.w), // Increased for premium feel
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -494,7 +494,6 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   ],
                 ),
               ),
-            ),
           ],
         ),
       ),
