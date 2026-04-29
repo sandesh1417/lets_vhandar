@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
+import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
 
 Future<void> showAddAddressSheet(
   BuildContext context, {
@@ -125,8 +126,37 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
       setState(() {
         _locationDescription =
             '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}';
-        _locationError = 'Could not fetch address details. Used coordinates.';
       });
+    }
+
+    // Validate delivery radius immediately
+    try {
+      final warehouses = ref.read(warehouseProvider).valueOrNull ?? [];
+      if (warehouses.isNotEmpty) {
+        bool isWithinRadius = false;
+        for (final wh in warehouses) {
+          if (wh.lat != null && wh.long != null && wh.deliveryRadius != null) {
+            final distanceInMeters = Geolocator.distanceBetween(
+              pos.latitude,
+              pos.longitude,
+              wh.lat!,
+              wh.long!,
+            );
+            if (distanceInMeters <= (wh.deliveryRadius!.toDouble() * 1000)) {
+              isWithinRadius = true;
+              break;
+            }
+          }
+        }
+        if (!isWithinRadius) {
+          setState(() {
+            _locationError =
+                'Selected location is outside our delivery area.';
+          });
+        }
+      }
+    } catch (e) {
+      log('Warehouse radius check error: $e');
     } finally {
       setState(() => _isGeocoding = false);
     }
@@ -162,14 +192,14 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   }
 
   Future<void> _save() async {
-    log('${_locationDescription}123123');
     if (_locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location') {
       setState(() => _locationError = 'Please select a location on the map');
       return;
     }
+    if (_locationError != null) return;
+
     setState(() => _isSaving = true);
-    log('${_locationDescription}123123');
 
     final success = await ref.read(addressProvider.notifier).addAddress(
           userId: widget.userId,
