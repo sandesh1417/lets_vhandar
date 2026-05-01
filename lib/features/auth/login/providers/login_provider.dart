@@ -32,6 +32,9 @@ class LoginNotifier extends StateNotifier<LoginState> {
         final accessToken = data.token?.accessToken;
         if (accessToken != null && accessToken.isNotEmpty) {
           await SessionPrefences().setToken(token: accessToken);
+          if (data.user != null) {
+            await SessionPrefences().setUser(user: data.user!);
+          }
           Rsession.token = accessToken;
         }
         state = state.copyWith(
@@ -41,12 +44,31 @@ class LoginNotifier extends StateNotifier<LoginState> {
         );
         CustomSnackbar.success(context, message: "Login Successful");
         // Navigate using GoRouter
-        context.go(LVRoute.dashboardScreen.route);
+        if (context.mounted) {
+          context.go(LVRoute.dashboardScreen.route);
+        }
         break;
       case Error(failure: final failure):
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
-        CustomSnackbar.error(context, message: failure.message);
+        if (context.mounted) {
+          CustomSnackbar.error(context, message: failure.message);
+        }
         break;
     }
+  }
+
+  Future<void> restoreSession() async {
+    final token = await SessionPrefences().getToken();
+    final user = await SessionPrefences().getUser();
+    if (token != null && token.isNotEmpty) {
+      Rsession.token = token;
+      state = state.copyWith(isLoggedIn: true, user: user);
+    }
+  }
+
+  Future<void> logout() async {
+    await SessionPrefences().clearSession();
+    Rsession.token = null;
+    state = const LoginState();
   }
 }

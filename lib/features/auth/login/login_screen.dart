@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void initState() {
     super.initState();
     _phoneController = TextEditingController(text: '9861100736');
-    _passwordController = TextEditingController(text: 'S@ndesh123');
+    _passwordController = TextEditingController(text: 'S@ndesh1234');
   }
 
   @override

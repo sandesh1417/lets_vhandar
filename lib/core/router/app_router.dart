@@ -33,7 +33,7 @@ enum LVRoute {
 
 class LVGoRouter {
   final GoRouter goRoute = GoRouter(
-    initialLocation: LVRoute.loginScreen.route,
+    initialLocation: LVRoute.splashScreen.route,
     debugLogDiagnostics: true, // Enable debugging
     routes: <GoRoute>[
       GoRoute(

@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/features/dashboard/presentation/tabs/account_tab.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
 import 'package:lets_vhandar/features/order/order_screen.dart';
@@ -23,7 +24,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     const CategoryScreen(),
     const OrderScreen(),
     const CartScreen(),
-    const Center(child: Text("Account")),
+    const AccountTab(),
   ];
 
   @override

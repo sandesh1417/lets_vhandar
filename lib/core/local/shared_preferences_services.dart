@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionPrefences {
@@ -24,25 +26,23 @@ class SessionPrefences {
     // }
   }
 
-  // Future<void> setSession({required LoginModal userSession}) async {
-  //   SharedPreferences prefs = await _initSharedPreferences();
-
-  //   prefs.setString('session', jsonEncode(userSession));
-  // }
-
-  // Future<LoginModal?> getSession() async {
-  //   SharedPreferences prefs = await _initSharedPreferences();
-  //   String? sessionString = prefs.getString('session');
-  //   if (sessionString != null) {
-  //     LoginModal session = LoginModal.fromJson(jsonDecode(sessionString));
-  //     return session;
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-  Future<bool> clearSession() async {
+  Future<void> setUser({required UserModel user}) async {
     SharedPreferences prefs = await _initSharedPreferences();
-    return prefs.remove('apple');
+    prefs.setString('user_data', jsonEncode(user.toMap()));
+  }
+
+  Future<UserModel?> getUser() async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    String? userString = prefs.getString('user_data');
+    if (userString != null) {
+      return UserModel.fromMap(jsonDecode(userString));
+    }
+    return null;
+  }
+
+  Future<void> clearSession() async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    await prefs.remove('apple');
+    await prefs.remove('user_data');
   }
 }
