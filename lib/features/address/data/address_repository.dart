@@ -69,7 +69,7 @@ class AddressRepository {
     }
   }
 
-  Future<Result<AddressModel, Failure>> updateAddress({
+  Future<Result<bool, Failure>> updateAddress({
     required String addressId,
     required double lat,
     required double long,
@@ -99,8 +99,8 @@ class AddressRepository {
         },
       );
       switch (result) {
-        case Success(value: final data):
-          return Success(AddressModel.fromMap(data['data']));
+        case Success():
+          return const Success(true);
         case Error(failure: final failure):
           throw failure;
       }

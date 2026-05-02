@@ -6,11 +6,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
 
+import 'address_form.dart';
+import 'address_location_banner.dart';
+import 'address_map_picker.dart';
+
+/// Opens the add/edit address bottom sheet.
 Future<void> showAddAddressSheet(
   BuildContext context, {
   required String userId,
@@ -44,12 +48,17 @@ class AddAddressSheet extends ConsumerStatefulWidget {
 class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   GoogleMapController? _mapController;
 
-  // Default center: Kathmandu
+  // Map state
   LatLng _selectedLatLng = const LatLng(27.7172, 85.3240);
   String _locationDescription = 'Tap on map to select location';
+  bool _isGeocoding = false;
+  String? _locationError;
 
+  // Form state
   String _addressType = 'home';
+  bool _isSaving = false;
 
+  // Controllers
   final _nameCtrl = TextEditingController();
   final _landMarkCtrl = TextEditingController();
   final _localityCtrl = TextEditingController();
@@ -58,26 +67,28 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   final _houseCtrl = TextEditingController();
   final _searchCtrl = TextEditingController();
 
-  bool _isSaving = false;
-  bool _isGeocoding = false;
-  String? _locationError;
+  bool get _isEditing => widget.existingAddress != null;
 
   @override
   void initState() {
     super.initState();
+    _populateFromExisting();
+  }
+
+  void _populateFromExisting() {
     final existing = widget.existingAddress;
-    if (existing != null) {
-      _selectedLatLng =
-          LatLng(existing.lat ?? 27.7172, existing.long ?? 85.3240);
-      _locationDescription = existing.description ?? '';
-      _addressType = existing.addressType ?? 'home';
-      _nameCtrl.text = existing.name ?? '';
-      _landMarkCtrl.text = existing.landMark ?? '';
-      _localityCtrl.text = existing.locality ?? '';
-      _floorCtrl.text = existing.floor ?? '';
-      _phoneCtrl.text = existing.phoneNumber ?? '';
-      _houseCtrl.text = existing.houseNumber ?? '';
-    }
+    if (existing == null) return;
+
+    _selectedLatLng =
+        LatLng(existing.lat ?? 27.7172, existing.long ?? 85.3240);
+    _locationDescription = existing.description ?? '';
+    _addressType = existing.addressType ?? 'home';
+    _nameCtrl.text = existing.name ?? '';
+    _landMarkCtrl.text = existing.landMark ?? '';
+    _localityCtrl.text = existing.locality ?? '';
+    _floorCtrl.text = existing.floor ?? '';
+    _phoneCtrl.text = existing.phoneNumber ?? '';
+    _houseCtrl.text = existing.houseNumber ?? '';
   }
 
   @override
@@ -93,12 +104,24 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     super.dispose();
   }
 
+  // ---------------------------------------------------------------------------
+  // Map callbacks
+  // ---------------------------------------------------------------------------
+
   Future<void> _onMapTap(LatLng pos) async {
     setState(() {
       _selectedLatLng = pos;
       _isGeocoding = true;
       _locationError = null;
     });
+
+    await _reverseGeocode(pos);
+    _validateDeliveryRadius(pos);
+
+    setState(() => _isGeocoding = false);
+  }
+
+  Future<void> _reverseGeocode(LatLng pos) async {
     try {
       final placemarks =
           await placemarkFromCoordinates(pos.latitude, pos.longitude);
@@ -112,61 +135,49 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
           p.administrativeArea,
         ].where((e) => e != null && e.isNotEmpty).toSet().toList();
 
-        final desc = parts.isEmpty
-            ? '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}'
-            : parts.join(', ');
-
-        setState(() => _locationDescription = desc);
+        setState(() => _locationDescription = parts.isEmpty
+            ? _coordsString(pos)
+            : parts.join(', '));
       } else {
-        setState(() => _locationDescription =
-            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}');
+        setState(() => _locationDescription = _coordsString(pos));
       }
     } catch (e) {
       log('Geocoding error: $e');
-      setState(() {
-        _locationDescription =
-            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}';
-      });
+      setState(() => _locationDescription = _coordsString(pos));
     }
+  }
 
-    // Validate delivery radius immediately
+  void _validateDeliveryRadius(LatLng pos) {
     try {
       final warehouses = ref.read(warehouseProvider).valueOrNull ?? [];
-      if (warehouses.isNotEmpty) {
-        bool isWithinRadius = false;
-        for (final wh in warehouses) {
-          if (wh.lat != null && wh.long != null && wh.deliveryRadius != null) {
-            final distanceInMeters = Geolocator.distanceBetween(
-              pos.latitude,
-              pos.longitude,
-              wh.lat!,
-              wh.long!,
-            );
-            if (distanceInMeters <= (wh.deliveryRadius!.toDouble() * 1000)) {
-              isWithinRadius = true;
-              break;
-            }
-          }
+      if (warehouses.isEmpty) return;
+
+      final isWithinRadius = warehouses.any((wh) {
+        if (wh.lat == null || wh.long == null || wh.deliveryRadius == null) {
+          return false;
         }
-        if (!isWithinRadius) {
-          setState(() {
-            _locationError =
-                'Selected location is outside our delivery area.';
-          });
-        }
+        final distance = Geolocator.distanceBetween(
+          pos.latitude,
+          pos.longitude,
+          wh.lat!,
+          wh.long!,
+        );
+        return distance <= (wh.deliveryRadius!.toDouble() * 1000);
+      });
+
+      if (!isWithinRadius) {
+        setState(() =>
+            _locationError = 'Selected location is outside our delivery area.');
       }
     } catch (e) {
       log('Warehouse radius check error: $e');
-    } finally {
-      setState(() => _isGeocoding = false);
     }
   }
 
   Future<void> _goToCurrentLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-      LocationPermission permission = await Geolocator.checkPermission();
+      if (!await Geolocator.isLocationServiceEnabled()) return;
+      var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) return;
@@ -191,6 +202,10 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     } catch (_) {}
   }
 
+  // ---------------------------------------------------------------------------
+  // Save / Update
+  // ---------------------------------------------------------------------------
+
   Future<void> _save() async {
     if (_locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location') {
@@ -201,59 +216,67 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
 
     setState(() => _isSaving = true);
 
-    final bool success;
-    final isEditing = widget.existingAddress != null;
+    // Collect trimmed optional values
+    final name = _trimOrNull(_nameCtrl);
+    final landMark = _trimOrNull(_landMarkCtrl);
+    final locality = _trimOrNull(_localityCtrl);
+    final floor = _trimOrNull(_floorCtrl);
+    final phone = _trimOrNull(_phoneCtrl);
+    final house = _trimOrNull(_houseCtrl);
 
-    if (isEditing) {
-      success = await ref.read(addressProvider.notifier).updateAddress(
-            userId: widget.userId,
-            addressId: widget.existingAddress!.id!,
-            lat: _selectedLatLng.latitude,
-            long: _selectedLatLng.longitude,
-            description: _locationDescription,
-            addressType: _addressType,
-            name:
-                _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
-            landMark: _landMarkCtrl.text.trim().isEmpty
-                ? null
-                : _landMarkCtrl.text.trim(),
-            locality: _localityCtrl.text.trim().isEmpty
-                ? null
-                : _localityCtrl.text.trim(),
-            floor:
-                _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
-            phoneNumber:
-                _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-            houseNumber:
-                _houseCtrl.text.trim().isEmpty ? null : _houseCtrl.text.trim(),
-          );
+    final notifier = ref.read(addressProvider.notifier);
+    final bool success;
+
+    if (_isEditing) {
+      success = await notifier.updateAddress(
+        userId: widget.userId,
+        addressId: widget.existingAddress!.id!,
+        lat: _selectedLatLng.latitude,
+        long: _selectedLatLng.longitude,
+        description: _locationDescription,
+        addressType: _addressType,
+        name: name,
+        landMark: landMark,
+        locality: locality,
+        floor: floor,
+        phoneNumber: phone,
+        houseNumber: house,
+      );
     } else {
-      success = await ref.read(addressProvider.notifier).addAddress(
-            userId: widget.userId,
-            lat: _selectedLatLng.latitude,
-            long: _selectedLatLng.longitude,
-            description: _locationDescription,
-            addressType: _addressType,
-            name:
-                _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
-            landMark: _landMarkCtrl.text.trim().isEmpty
-                ? null
-                : _landMarkCtrl.text.trim(),
-            locality: _localityCtrl.text.trim().isEmpty
-                ? null
-                : _localityCtrl.text.trim(),
-            floor:
-                _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
-            phoneNumber:
-                _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-            houseNumber:
-                _houseCtrl.text.trim().isEmpty ? null : _houseCtrl.text.trim(),
-          );
+      success = await notifier.addAddress(
+        userId: widget.userId,
+        lat: _selectedLatLng.latitude,
+        long: _selectedLatLng.longitude,
+        description: _locationDescription,
+        addressType: _addressType,
+        name: name,
+        landMark: landMark,
+        locality: locality,
+        floor: floor,
+        phoneNumber: phone,
+        houseNumber: house,
+      );
     }
 
     setState(() => _isSaving = false);
     if (success && mounted) Navigator.pop(context);
   }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  String? _trimOrNull(TextEditingController ctrl) {
+    final value = ctrl.text.trim();
+    return value.isEmpty ? null : value;
+  }
+
+  String _coordsString(LatLng pos) =>
+      '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}';
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -270,6 +293,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
           ),
           child: Column(
             children: [
+              // --- Drag handle ---
               Center(
                 child: Container(
                   margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
@@ -282,384 +306,45 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                 ),
               ),
 
-              // --- Google Map section ---
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 260.h,
-                    child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: _selectedLatLng,
-                        zoom: 14,
-                      ),
-                      onMapCreated: (c) => _mapController = c,
-                      onTap: _onMapTap,
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId('selected'),
-                          position: _selectedLatLng,
-                          draggable: true,
-                          onDragEnd: _onMapTap,
-                        ),
-                      },
-                      myLocationButtonEnabled: false,
-                      zoomControlsEnabled: true,
-                    ),
-                  ),
-                  // Search bar
-                  Positioned(
-                    top: 12.h,
-                    left: 12.w,
-                    right: 12.w,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                          )
-                        ],
-                      ),
-                      child: TextField(
-                        controller: _searchCtrl,
-                        decoration: InputDecoration(
-                          hintText: 'Search location...',
-                          hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 13.sp),
-                          prefixIcon: Icon(Icons.search,
-                              color: AppColor.textMuted, size: 20.sp),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-                        ),
-                        onSubmitted: _searchLocation,
-                        textInputAction: TextInputAction.search,
-                      ),
-                    ),
-                  ),
-                  // Go to current location
-                  Positioned(
-                    bottom: 12.h,
-                    left: 12.w,
-                    child: GestureDetector(
-                      onTap: _goToCurrentLocation,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 8.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 6,
-                            )
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.my_location,
-                                size: 16.sp, color: AppColor.primary),
-                            SizedBox(width: 6.w),
-                            Text(
-                              'Go to current location',
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColor.primary),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // --- Map picker ---
+              AddressMapPicker(
+                selectedLatLng: _selectedLatLng,
+                searchController: _searchCtrl,
+                onMapCreated: (c) => _mapController = c,
+                onMapTap: _onMapTap,
+                onCurrentLocationTap: _goToCurrentLocation,
+                onSearchSubmitted: _searchLocation,
               ),
 
-              // Delivering to banner
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-                decoration: BoxDecoration(
-                  color: _locationError != null
-                      ? Colors.red.shade50
-                      : Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
-                    color: _locationError != null
-                        ? Colors.red.shade200
-                        : Colors.grey.shade200,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_on_rounded,
-                        color: _locationError != null
-                            ? Colors.red
-                            : AppColor.primary,
-                        size: 20.sp),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: _isGeocoding
-                          ? const SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2))
-                          : Text(
-                              _locationDescription,
-                              style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: _locationError != null
-                                      ? Colors.red.shade800
-                                      : AppColor.textBlack87),
-                            ),
-                    ),
-                  ],
-                ),
+              // --- Location banner ---
+              AddressLocationBanner(
+                description: _locationDescription,
+                isGeocoding: _isGeocoding,
+                error: _locationError,
               ),
 
-              if (_locationError != null)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _locationError!,
-                      style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-
-              // --- Form section ---
+              // --- Form ---
               Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Enter complete address',
-                            style: TextStyle(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.textBlack,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: const Icon(Icons.close),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 14.h),
-
-                      // Address type chips
-                      Text(
-                        'Save address as *',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13.sp,
-                          color: AppColor.textBlack87,
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          _TypeChip(
-                            label: 'Home',
-                            icon: Icons.home_rounded,
-                            selected: _addressType == 'home',
-                            onTap: () => setState(() => _addressType = 'home'),
-                          ),
-                          SizedBox(width: 8.w),
-                          _TypeChip(
-                            label: 'Office',
-                            icon: Icons.business_rounded,
-                            selected: _addressType == 'office',
-                            onTap: () =>
-                                setState(() => _addressType = 'office'),
-                          ),
-                          SizedBox(width: 8.w),
-                          _TypeChip(
-                            label: 'Others',
-                            icon: Icons.location_on_rounded,
-                            selected: _addressType == 'others',
-                            onTap: () =>
-                                setState(() => _addressType = 'others'),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 14.h),
-
-                      _FormField(
-                          controller: _houseCtrl, hint: 'House / Flat no.'),
-                      SizedBox(height: 10.h),
-                      _FormField(
-                          controller: _floorCtrl, hint: 'Floor (optional)'),
-                      SizedBox(height: 10.h),
-                      _FormField(
-                          controller: _localityCtrl, hint: 'Area / Locality'),
-                      SizedBox(height: 10.h),
-                      _FormField(controller: _landMarkCtrl, hint: 'Landmark'),
-                      SizedBox(height: 14.h),
-                      Text(
-                        'Receiver name for seamless delivery experience.',
-                        style: TextStyle(
-                            fontSize: 12.sp, color: AppColor.textMuted),
-                      ),
-                      SizedBox(height: 8.h),
-                      _FormField(controller: _nameCtrl, hint: 'Receiver name'),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Receiver phone number',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13.sp,
-                            color: AppColor.textBlack87),
-                      ),
-                      SizedBox(height: 8.h),
-                      _FormField(
-                        controller: _phoneCtrl,
-                        hint: 'Phone number',
-                        keyboardType: TextInputType.phone,
-                      ),
-                      SizedBox(height: 20.h),
-
-                      // Save button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50.h,
-                        child: ElevatedButton(
-                          onPressed: _isSaving ? null : _save,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.secondary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          child: _isSaving
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white)
-                              : Text(
-                                  widget.existingAddress != null
-                                      ? 'Update Address'
-                                      : 'Save Address',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      SizedBox(height: 24.h),
-                    ],
-                  ),
+                child: AddressForm(
+                  scrollController: scrollController,
+                  addressType: _addressType,
+                  onAddressTypeChanged: (type) =>
+                      setState(() => _addressType = type),
+                  houseCtrl: _houseCtrl,
+                  floorCtrl: _floorCtrl,
+                  localityCtrl: _localityCtrl,
+                  landMarkCtrl: _landMarkCtrl,
+                  nameCtrl: _nameCtrl,
+                  phoneCtrl: _phoneCtrl,
+                  isSaving: _isSaving,
+                  isEditing: _isEditing,
+                  onSave: _save,
                 ),
               ),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _TypeChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _TypeChip({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColor.secondary.withOpacity(0.15)
-              : Colors.transparent,
-          border: Border.all(
-            color: selected ? AppColor.secondary : Colors.grey.shade300,
-            width: selected ? 1.5 : 1,
-          ),
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Row(
-          children: [
-            Icon(icon,
-                size: 16.sp,
-                color: selected ? AppColor.secondary : AppColor.textMuted),
-            SizedBox(width: 6.w),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-                color: selected ? AppColor.secondary : AppColor.textBlack87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FormField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final TextInputType? keyboardType;
-
-  const _FormField({
-    required this.controller,
-    required this.hint,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
-        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(color: AppColor.primary),
-        ),
-      ),
     );
   }
 }

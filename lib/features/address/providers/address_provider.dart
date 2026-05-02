@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/address/data/address_repository.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
@@ -84,16 +85,14 @@ class AddressNotifier extends StateNotifier<AddressState> {
       phoneNumber: phoneNumber,
       houseNumber: houseNumber,
     );
-    return result.when(
-      success: (_) async {
-        await loadAddresses(userId); // Refetch
+    switch (result) {
+      case Success():
+        await loadAddresses(userId);
         return true;
-      },
-      failure: (f) {
+      case Error(failure: final f):
         state = state.copyWith(error: f.message);
         return false;
-      },
-    );
+    }
   }
 
   void selectAddress(AddressModel address) {
@@ -127,19 +126,14 @@ class AddressNotifier extends StateNotifier<AddressState> {
       phoneNumber: phoneNumber,
       houseNumber: houseNumber,
     );
-    return result.when(
-      success: (updatedAddress) async {
-        // Refetch all addresses to keep list in sync
+    switch (result) {
+      case Success():
         await loadAddresses(userId);
-        // Auto-select the updated address
-        state = state.copyWith(selected: updatedAddress);
         return true;
-      },
-      failure: (f) {
+      case Error(failure: final f):
         state = state.copyWith(error: f.message);
         return false;
-      },
-    );
+    }
   }
 }
 
