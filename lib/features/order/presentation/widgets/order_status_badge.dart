@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class OrderStatusBadge extends StatelessWidget {
+  final String status;
+
+  const OrderStatusBadge({super.key, required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final config = _getBadgeConfig(status);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: config.backgroundColor,
+        borderRadius: BorderRadius.circular(100.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6.w,
+            height: 6.w,
+            decoration: BoxDecoration(
+              color: config.textColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 6.w),
+          Text(
+            status,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.bold,
+              color: config.textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _BadgeConfig _getBadgeConfig(String status) {
+    final s = status.toLowerCase();
+    if (s == 'delivered' || s == 'paid' || s == 'success') {
+      return _BadgeConfig(
+        backgroundColor: const Color(0xFFE8F5E9),
+        textColor: const Color(0xFF2E7D32),
+      );
+    } else if (s == 'cancelled' || s == 'failed') {
+      return _BadgeConfig(
+        backgroundColor: const Color(0xFFFFEBEE),
+        textColor: const Color(0xFFC62828),
+      );
+    } else if (s == 'pending' || s == 'processing') {
+      return _BadgeConfig(
+        backgroundColor: const Color(0xFFFFFDE7),
+        textColor: const Color(0xFFF9A825),
+      );
+    }
+    return _BadgeConfig(
+      backgroundColor: Colors.grey.shade100,
+      textColor: Colors.grey.shade700,
+    );
+  }
+}
+
+class _BadgeConfig {
+  final Color backgroundColor;
+  final Color textColor;
+
+  _BadgeConfig({required this.backgroundColor, required this.textColor});
+}
