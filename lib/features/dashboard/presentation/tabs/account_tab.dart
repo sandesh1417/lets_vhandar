@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
@@ -14,17 +16,10 @@ class AccountTab extends ConsumerWidget {
     final loginState = ref.watch(loginProvider);
     final user = loginState.user;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        title: Text('Account',
-            style: TextStyle(
-                color: AppColor.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.sp)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
+      appBar: const CustomScreenHeader(
+        title: 'Account',
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
-
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
@@ -18,7 +17,7 @@ class CartCheckoutBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(orderProvider).isPlacingOrder;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -29,7 +28,7 @@ class CartCheckoutBar extends ConsumerWidget {
           ),
         ],
       ),
-      child: SafeArea(
+      child: Container(
         child: InkWell(
           onTap: isLoading ? null : () => _placeOrder(context, ref),
           borderRadius: BorderRadius.circular(12.r),
@@ -166,7 +165,8 @@ class CartCheckoutBar extends ConsumerWidget {
           totalPayableAmount: payableAmount,
           handlingCharge: 0,
           deliveryCharge: 100,
-          cartId: userId, // Using userId as cartId for now since it's a valid ObjectId
+          cartId:
+              userId, // Using userId as cartId for now since it's a valid ObjectId
           location: location,
         );
 
