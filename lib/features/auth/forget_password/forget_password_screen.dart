@@ -18,6 +18,7 @@ class ForgetPasswordScreen extends StatelessWidget {
     //TODO:: change to state
     TextEditingController phoneController = TextEditingController();
     return CustomScaffoldWrapper(
+      horizontalPadding: 16.w,
       appBar: const CustomAppBar(
         title: '',
       ),

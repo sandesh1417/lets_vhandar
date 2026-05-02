@@ -57,6 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final registrationState = ref.watch(registrationProvider);
 
     return CustomScaffoldWrapper(
+      horizontalPadding: 16.w,
       appBar: const CustomAppBar(),
       body: Form(
         key: _formKey,
