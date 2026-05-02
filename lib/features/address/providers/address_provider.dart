@@ -99,6 +99,48 @@ class AddressNotifier extends StateNotifier<AddressState> {
   void selectAddress(AddressModel address) {
     state = state.copyWith(selected: address);
   }
+
+  Future<bool> updateAddress({
+    required String userId,
+    required String addressId,
+    required double lat,
+    required double long,
+    required String description,
+    required String addressType,
+    String? name,
+    String? landMark,
+    String? locality,
+    String? floor,
+    String? phoneNumber,
+    String? houseNumber,
+  }) async {
+    final result = await _repo.updateAddress(
+      addressId: addressId,
+      lat: lat,
+      long: long,
+      description: description,
+      addressType: addressType,
+      name: name,
+      landMark: landMark,
+      locality: locality,
+      floor: floor,
+      phoneNumber: phoneNumber,
+      houseNumber: houseNumber,
+    );
+    return result.when(
+      success: (updatedAddress) async {
+        // Refetch all addresses to keep list in sync
+        await loadAddresses(userId);
+        // Auto-select the updated address
+        state = state.copyWith(selected: updatedAddress);
+        return true;
+      },
+      failure: (f) {
+        state = state.copyWith(error: f.message);
+        return false;
+      },
+    );
+  }
 }
 
 // --- Provider ---

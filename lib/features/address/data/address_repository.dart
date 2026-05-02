@@ -83,7 +83,7 @@ class AddressRepository {
     String? houseNumber,
   }) async {
     try {
-      final result = await _apiClient.put(
+      final result = await _apiClient.patch(
         '${ApiUrl.addresses}/$addressId',
         data: {
           'lat': lat,

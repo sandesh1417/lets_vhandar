@@ -201,25 +201,56 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
 
     setState(() => _isSaving = true);
 
-    final success = await ref.read(addressProvider.notifier).addAddress(
-          userId: widget.userId,
-          lat: _selectedLatLng.latitude,
-          long: _selectedLatLng.longitude,
-          description: _locationDescription,
-          addressType: _addressType,
-          name: _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
-          landMark: _landMarkCtrl.text.trim().isEmpty
-              ? null
-              : _landMarkCtrl.text.trim(),
-          locality: _localityCtrl.text.trim().isEmpty
-              ? null
-              : _localityCtrl.text.trim(),
-          floor: _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
-          phoneNumber:
-              _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-          houseNumber:
-              _houseCtrl.text.trim().isEmpty ? null : _houseCtrl.text.trim(),
-        );
+    final bool success;
+    final isEditing = widget.existingAddress != null;
+
+    if (isEditing) {
+      success = await ref.read(addressProvider.notifier).updateAddress(
+            userId: widget.userId,
+            addressId: widget.existingAddress!.id!,
+            lat: _selectedLatLng.latitude,
+            long: _selectedLatLng.longitude,
+            description: _locationDescription,
+            addressType: _addressType,
+            name:
+                _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
+            landMark: _landMarkCtrl.text.trim().isEmpty
+                ? null
+                : _landMarkCtrl.text.trim(),
+            locality: _localityCtrl.text.trim().isEmpty
+                ? null
+                : _localityCtrl.text.trim(),
+            floor:
+                _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
+            phoneNumber:
+                _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
+            houseNumber:
+                _houseCtrl.text.trim().isEmpty ? null : _houseCtrl.text.trim(),
+          );
+    } else {
+      success = await ref.read(addressProvider.notifier).addAddress(
+            userId: widget.userId,
+            lat: _selectedLatLng.latitude,
+            long: _selectedLatLng.longitude,
+            description: _locationDescription,
+            addressType: _addressType,
+            name:
+                _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
+            landMark: _landMarkCtrl.text.trim().isEmpty
+                ? null
+                : _landMarkCtrl.text.trim(),
+            locality: _localityCtrl.text.trim().isEmpty
+                ? null
+                : _localityCtrl.text.trim(),
+            floor:
+                _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
+            phoneNumber:
+                _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
+            houseNumber:
+                _houseCtrl.text.trim().isEmpty ? null : _houseCtrl.text.trim(),
+          );
+    }
+
     setState(() => _isSaving = false);
     if (success && mounted) Navigator.pop(context);
   }
@@ -522,7 +553,9 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                               ? const CircularProgressIndicator(
                                   color: Colors.white)
                               : Text(
-                                  'Save Address',
+                                  widget.existingAddress != null
+                                      ? 'Update Address'
+                                      : 'Save Address',
                                   style: TextStyle(
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.bold,
