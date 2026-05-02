@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/dashboard/presentation/tabs/account_tab.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
 import 'package:lets_vhandar/features/order/order_screen.dart';
@@ -38,33 +38,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       //   title: 'Vhandar',
       // ),
       isScrollable: false,
-      floatingActionButton: cartItemCount > 0 && currentIndex != 3
-          ? SizedBox(
-              width: 60.w,
-              height: 60.h,
-              child: FloatingActionButton(
-                onPressed: () {
-                  ref.read(dashboardIndexProvider.notifier).state = 3;
-                },
-                backgroundColor: AppColor.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Badge(
-                  label: Text(
-                    '$cartItemCount',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  backgroundColor: AppColor.secondary, // Yellow badge
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                  offset: const Offset(4, -4),
-                  child: Icon(Icons.shopping_cart,
-                      color: Colors.white, size: 28.sp),
-                ),
-              ),
+      floatingActionButton: currentIndex != 3
+          ? CartFloatingBadge(
+              onTap: () {
+                ref.read(dashboardIndexProvider.notifier).state = 3;
+              },
             )
           : null,
       body: IndexedStack(

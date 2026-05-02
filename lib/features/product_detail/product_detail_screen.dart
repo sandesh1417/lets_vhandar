@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
@@ -43,38 +45,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: cartItemCount > 0
-          ? SizedBox(
-              width: 60.w,
-              height: 60.h,
-              child: FloatingActionButton(
-                onPressed: () {
-                  // Pop back to the DashboardScreen where Cart tab is handled,
-                  // or if independent routing is created, use context.push('/cart')
-                  // For now, simple return to dashboard and user can switch tab.
-                  Navigator.of(context).pop();
-                },
-                backgroundColor: AppColor.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Badge(
-                  label: Text(
-                    '$cartItemCount',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  backgroundColor: AppColor.secondary, // Yellow badge
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                  offset: const Offset(4, -4),
-                  child: Icon(Icons.shopping_cart,
-                      color: Colors.white, size: 28.sp),
-                ),
-              ),
-            )
-          : null,
+      floatingActionButton: CartFloatingBadge(
+        onTap: () {
+          ref.read(dashboardIndexProvider.notifier).state = 3;
+          context.go('/dashboardScreen');
+        },
+      ),
+      bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
       body: CustomScrollView(
         slivers: [
           // Custom App Bar with Image Slider
@@ -532,7 +509,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       child: Text('No category information available')),
             ),
           ),
-          SliverToBoxAdapter(child: SizedBox(height: 40.h)),
+          SliverToBoxAdapter(child: SizedBox(height: 80.h)),
         ],
       ),
     );

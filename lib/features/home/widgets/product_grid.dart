@@ -36,7 +36,7 @@ class ProductGrid extends StatelessWidget {
     final double cardHeight = 80.h + 30.h + 30.h + 35.h + 4.h + 6.h + 20.w;
 
     return GridView.builder(
-      padding: padding ?? EdgeInsets.all(12.w),
+      padding: padding ?? EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 10.h,

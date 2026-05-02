@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_summary_bar.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -61,16 +61,22 @@ class CategoryDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: CategoryProductGrid(categorySlug: categorySlug),
                 ),
-
-                // Sub-category selector bar at the bottom
-                SubCategoryHorizontalBar(categorySlug: categorySlug),
               ],
             ),
-      bottomNavigationBar: CartSummaryBar(
+      floatingActionButton: CartFloatingBadge(
         onTap: () {
           ref.read(dashboardIndexProvider.notifier).state = 3;
           context.go('/dashboardScreen');
         },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isVertical) SubCategoryHorizontalBar(categorySlug: categorySlug),
+            const SizedBox(height: 12), // Small extra spacing to match dashboard feel
+          ],
+        ),
       ),
     );
   }

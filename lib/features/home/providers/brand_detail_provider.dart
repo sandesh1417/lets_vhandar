@@ -11,6 +11,10 @@ final brandSelectedSortProvider = StateProvider.autoDispose
 final brandSearchQueryProvider =
     StateProvider.autoDispose.family<String, String>((ref, slug) => '');
 
+/// Layout preference for Brand Detail: false = Horizontal (bottom), true = Vertical (sidebar)
+final brandLayoutProvider =
+    StateProvider.autoDispose.family<bool, String>((ref, slug) => true); // Default to vertical for brands
+
 final brandProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, slug) async {
   final brandAsync = ref.watch(brandBySlugProvider(slug));

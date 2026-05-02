@@ -4,8 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
+import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
 
-class CategorySearchAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
+class CategorySearchAppBar extends ConsumerStatefulWidget
+    implements PreferredSizeWidget {
   final String categorySlug;
   final String categoryName;
 
@@ -16,7 +18,8 @@ class CategorySearchAppBar extends ConsumerStatefulWidget implements PreferredSi
   });
 
   @override
-  ConsumerState<CategorySearchAppBar> createState() => _CategorySearchAppBarState();
+  ConsumerState<CategorySearchAppBar> createState() =>
+      _CategorySearchAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -53,7 +56,9 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
               ),
               style: TextStyle(fontSize: 14.sp),
               onChanged: (value) {
-                ref.read(searchQueryProvider(widget.categorySlug).notifier).state = value;
+                ref
+                    .read(searchQueryProvider(widget.categorySlug).notifier)
+                    .state = value;
               },
             )
           : Text(
@@ -65,18 +70,14 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
               ),
             ),
       actions: [
-        IconButton(
-          icon: Icon(
-            ref.watch(subCategoryLayoutProvider(widget.categorySlug))
-                ? Icons.view_sidebar_rounded
-                : Icons.view_headline_rounded,
-            color: Colors.black,
-          ),
-          onPressed: () {
+        LayoutToggleButton(
+          isVertical: ref.watch(subCategoryLayoutProvider(widget.categorySlug)),
+          onToggle: () {
             final current =
                 ref.read(subCategoryLayoutProvider(widget.categorySlug));
-            ref.read(subCategoryLayoutProvider(widget.categorySlug).notifier).state =
-                !current;
+            ref
+                .read(subCategoryLayoutProvider(widget.categorySlug).notifier)
+                .state = !current;
           },
         ),
         IconButton(
@@ -86,8 +87,9 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
             setState(() {
               if (_isSearchExpanded) {
                 _searchController.clear();
-                ref.read(searchQueryProvider(widget.categorySlug).notifier).state =
-                    '';
+                ref
+                    .read(searchQueryProvider(widget.categorySlug).notifier)
+                    .state = '';
               }
               _isSearchExpanded = !_isSearchExpanded;
             });

@@ -27,7 +27,7 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
           ),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            padding: EdgeInsets.only(left: 12.w, right: 70.w), // Added right padding to clear FAB
             itemCount: subs.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
