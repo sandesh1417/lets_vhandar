@@ -86,46 +86,50 @@ class OrderCard extends StatelessWidget {
                             order.products!.isNotEmpty)
                           SizedBox(
                             height: 32.h,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: order.products!.length.clamp(0, 5),
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(width: -8.w), // Overlapping icons
-                              itemBuilder: (context, i) {
-                                final product = order.products![i];
-                                final imageUrl = product.firstImageUrl;
-                                return Container(
-                                  width: 32.h,
-                                  height: 32.h,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                    border: Border.all(
-                                        color: Colors.grey.shade200,
-                                        width: 1.5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
+                            child: Row(
+                              children: List.generate(
+                                order.products!.length.clamp(0, 5),
+                                (i) {
+                                  final product = order.products![i];
+                                  final imageUrl = product.firstImageUrl;
+                                  return Align(
+                                    widthFactor: 0.7,
+                                    child: Container(
+                                      width: 32.h,
+                                      height: 32.h,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: Colors.grey.shade200,
+                                            width: 1.5),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.05),
+                                            blurRadius: 4,
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: ClipOval(
-                                    child: imageUrl != null
-                                        ? Image.network(
-                                            imageUrl,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) =>
-                                                const Icon(
-                                                    Icons.shopping_bag_outlined,
-                                                    size: 16),
-                                          )
-                                        : const Icon(
-                                            Icons.shopping_bag_outlined,
-                                            size: 16),
-                                  ),
-                                );
-                              },
+                                      child: ClipOval(
+                                        child: imageUrl != null
+                                            ? Image.network(
+                                                imageUrl,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) =>
+                                                    const Icon(
+                                                        Icons
+                                                            .shopping_bag_outlined,
+                                                        size: 16),
+                                              )
+                                            : const Icon(
+                                                Icons.shopping_bag_outlined,
+                                                size: 16),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         SizedBox(height: 8.h),
