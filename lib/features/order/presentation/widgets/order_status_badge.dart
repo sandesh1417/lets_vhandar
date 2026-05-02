@@ -29,9 +29,9 @@ class OrderStatusBadge extends StatelessWidget {
           ),
           SizedBox(width: 6.w),
           Text(
-            status,
+            status.toUpperCase(),
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 10.sp,
               fontWeight: FontWeight.bold,
               color: config.textColor,
             ),

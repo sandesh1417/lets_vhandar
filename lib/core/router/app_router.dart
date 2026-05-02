@@ -13,7 +13,12 @@ import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart
 import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
 import 'package:lets_vhandar/features/order/presentation/order_detail_screen.dart';
+import 'package:lets_vhandar/features/address/presentation/address_screen.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
@@ -26,7 +31,12 @@ enum LVRoute {
   v4BRegistrationScreen,
   productDetailScreen,
   categoryDetailScreen,
-  orderDetailScreen;
+  orderDetailScreen,
+  feedbackScreen,
+  faqScreen,
+  savedAddressesScreen,
+  personalInformationScreen,
+  productSuggestionScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -129,6 +139,37 @@ class LVGoRouter {
           return OrderDetailScreen(orderId: id);
         },
       ),
+      GoRoute(
+        path: LVRoute.feedbackScreen.route,
+        name: LVRoute.feedbackScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const FeedbackScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.faqScreen.route,
+        name: LVRoute.faqScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const FAQScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.savedAddressesScreen.route,
+        name: LVRoute.savedAddressesScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const AddressScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.personalInformationScreen.route,
+        name: LVRoute.personalInformationScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const PersonalInformationScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.productSuggestionScreen.route,
+        name: LVRoute.productSuggestionScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const ProductSuggestionScreen(),
+      ),
+      // Add other routes as they are implemented
     ],
   );
   GoRouter get getGoRouter => goRoute;

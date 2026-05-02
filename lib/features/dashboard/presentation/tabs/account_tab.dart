@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -75,65 +79,89 @@ class AccountTab extends ConsumerWidget {
                 ],
               ),
             ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 20.h),
             // Settings List
-            _buildMenuItem(
-              icon: Icons.person_outline,
-              title: 'Edit Profile',
-              onTap: () {},
-            ),
             _buildMenuItem(
               icon: Icons.shopping_bag_outlined,
               title: 'My Orders',
+              onTap: () {
+                ref.read(dashboardIndexProvider.notifier).state = 2;
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.assignment_outlined,
+              title: 'Your List',
+              onTap: () {},
+            ),
+            _buildMenuItem(
+              icon: Icons.history_outlined,
+              title: 'Reorder',
               onTap: () {},
             ),
             _buildMenuItem(
               icon: Icons.location_on_outlined,
-              title: 'My Addresses',
+              title: 'Saved Addresses',
+              onTap: () {
+                context.push(LVRoute.savedAddressesScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.group_outlined,
+              title: 'Family Members',
               onTap: () {},
             ),
             _buildMenuItem(
-              icon: Icons.notifications_none,
-              title: 'Notifications',
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Wallet',
               onTap: () {},
             ),
             _buildMenuItem(
-              icon: Icons.help_outline,
-              title: 'Help & Support',
+              icon: Icons.person_outline,
+              title: 'Personal Information',
+              onTap: () {
+                context.push(LVRoute.personalInformationScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.lock_outline,
+              title: 'Change Password',
               onTap: () {},
+            ),
+            _buildMenuItem(
+              icon: Icons.share_outlined,
+              title: 'Refer and Earn',
+              onTap: () {},
+            ),
+            _buildMenuItem(
+              icon: Icons.lightbulb_outline,
+              title: 'Suggest Product',
+              onTap: () {
+                context.push(LVRoute.productSuggestionScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.chat_bubble_outline,
+              title: 'Feedback',
+              onTap: () {
+                context.push(LVRoute.feedbackScreen.route);
+              },
             ),
             _buildMenuItem(
               icon: Icons.info_outline,
               title: 'About Us',
               onTap: () {},
             ),
-            SizedBox(height: 20.h),
-            // Logout Button
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: ElevatedButton(
-                onPressed: () => _showLogoutDialog(context, ref),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade50,
-                  foregroundColor: Colors.red,
-                  elevation: 0,
-                  minimumSize: Size(double.infinity, 50.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    side: BorderSide(color: Colors.red.shade100),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.logout),
-                    SizedBox(width: 10.w),
-                    Text('Logout',
-                        style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
+            _buildMenuItem(
+              icon: Icons.help_outline,
+              title: 'FAQs',
+              onTap: () {
+                context.push(LVRoute.faqScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.logout,
+              title: 'Logout',
+              onTap: () => _showLogoutDialog(context, ref),
             ),
             SizedBox(height: 30.h),
           ],
@@ -147,21 +175,19 @@ class AccountTab extends ConsumerWidget {
     required String title,
     required VoidCallback onTap,
   }) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
+    return ListTile(
+      leading: Icon(icon, color: Colors.grey.shade600, size: 22.sp),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.sp,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
       ),
-      child: ListTile(
-        leading: Icon(icon, color: AppColor.primary),
-        title: Text(title,
-            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: onTap,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      ),
+      onTap: onTap,
+      dense: true,
+      visualDensity: VisualDensity.compact,
     );
   }
 

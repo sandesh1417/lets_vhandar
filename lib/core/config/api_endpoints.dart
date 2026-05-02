@@ -20,6 +20,9 @@ class ApiUrl {
   static String orders = 'orders';
   static String ordersSearch = 'orders/search';
   static String orderDetail(String id) => 'orders/$id';
+  static String feedbacks = 'feedbacks';
+  static String faqs = 'faqs';
+  static String productSuggestions = 'product-suggestions';
 }
 
 // https://api.vhandar.com/orders
