@@ -140,6 +140,34 @@ class AuthRepositoryImpl {
     }
   }
 
+  Future<Result<GenericResponseModal, Failure>> changePassword({
+    required String userId,
+    required String oldPassword,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      final data = {
+        'authorizedUser': {
+          'userId': userId,
+        },
+        'oldPassword': oldPassword,
+        'password': password,
+        'confirmPassword': confirmPassword,
+      };
+      final result = await _apiClient.patch(
+        ApiUrl.changePassword,
+        data: data,
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
   Future<Result<GenericResponseModal, Failure>> register({
     required String phoneNumber,
     String? phoneCode,

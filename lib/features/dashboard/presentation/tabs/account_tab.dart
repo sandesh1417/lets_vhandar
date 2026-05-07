@@ -125,7 +125,9 @@ class AccountTab extends ConsumerWidget {
             _buildMenuItem(
               icon: Icons.lock_outline,
               title: 'Change Password',
-              onTap: () {},
+              onTap: () {
+                context.push(LVRoute.changePasswordScreen.route);
+              },
             ),
             _buildMenuItem(
               icon: Icons.share_outlined,
