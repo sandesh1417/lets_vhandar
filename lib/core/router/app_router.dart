@@ -16,11 +16,13 @@ import 'package:lets_vhandar/features/home/presentation/category_detail_screen.d
 import 'package:lets_vhandar/features/order/presentation/order_detail_screen.dart';
 import 'package:lets_vhandar/features/address/presentation/address_screen.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/about_us_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/change_password_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
@@ -40,7 +42,9 @@ enum LVRoute {
   personalInformationScreen,
   productSuggestionScreen,
   resetPasswordScreen,
-  changePasswordScreen;
+  changePasswordScreen,
+  referAndEarnScreen,
+  aboutUsScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -191,6 +195,18 @@ class LVGoRouter {
         name: LVRoute.changePasswordScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.referAndEarnScreen.route,
+        name: LVRoute.referAndEarnScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const ReferAndEarnScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.aboutUsScreen.route,
+        name: LVRoute.aboutUsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const AboutUsScreen(),
       ),
       // Add other routes as they are implemented
     ],

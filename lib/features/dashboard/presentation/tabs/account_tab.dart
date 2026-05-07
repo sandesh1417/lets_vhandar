@@ -128,7 +128,9 @@ class AccountTab extends ConsumerWidget {
             _buildMenuItem(
               icon: Icons.share_outlined,
               title: 'Refer and Earn',
-              onTap: () {},
+              onTap: () {
+                context.push(LVRoute.referAndEarnScreen.route);
+              },
             ),
             _buildMenuItem(
               icon: Icons.lightbulb_outline,
@@ -147,7 +149,9 @@ class AccountTab extends ConsumerWidget {
             _buildMenuItem(
               icon: Icons.info_outline,
               title: 'About Us',
-              onTap: () {},
+              onTap: () {
+                context.push(LVRoute.aboutUsScreen.route);
+              },
             ),
             _buildMenuItem(
               icon: Icons.help_outline,
