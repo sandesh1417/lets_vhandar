@@ -161,6 +161,13 @@ class AccountTab extends ConsumerWidget {
               title: 'Logout',
               onTap: () => _showLogoutDialog(context, ref),
             ),
+            _buildMenuItem(
+              icon: Icons.delete_forever_outlined,
+              title: 'Delete Account',
+              titleColor: Colors.red,
+              iconColor: Colors.red,
+              onTap: () => _showDeleteAccountDialog(context, ref),
+            ),
             SizedBox(height: 30.h),
           ],
         ),
@@ -172,15 +179,18 @@ class AccountTab extends ConsumerWidget {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    Color? titleColor,
+    Color? iconColor,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.grey.shade600, size: 22.sp),
+      leading:
+          Icon(icon, color: iconColor ?? Colors.grey.shade600, size: 22.sp),
       title: Text(
         title,
         style: TextStyle(
           fontSize: 14.sp,
           fontWeight: FontWeight.w500,
-          color: Colors.black87,
+          color: titleColor ?? Colors.black87,
         ),
       ),
       onTap: onTap,
@@ -189,20 +199,44 @@ class AccountTab extends ConsumerWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text(
+            'Are you sure you want to delete your account? This action cannot be undone.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
+              await ref.read(loginProvider.notifier).deleteAccount(context);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
               await ref.read(loginProvider.notifier).logout();
               if (context.mounted) {
                 context.go(LVRoute.loginScreen.route);

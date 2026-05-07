@@ -71,4 +71,25 @@ class LoginNotifier extends StateNotifier<LoginState> {
     Rsession.token = null;
     state = const LoginState();
   }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    state = state.copyWith(isLoading: true);
+    final result = await _authRepository.deleteAccount();
+    switch (result) {
+      case Success(value: final data):
+        CustomSnackbar.success(context,
+            message: data.message ?? "Account deleted successfully");
+        await logout();
+        if (context.mounted) {
+          context.go(LVRoute.loginScreen.route);
+        }
+        break;
+      case Error(failure: final failure):
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+        if (context.mounted) {
+          CustomSnackbar.error(context, message: failure.message);
+        }
+        break;
+    }
+  }
 }

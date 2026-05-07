@@ -246,6 +246,21 @@ class AuthRepositoryImpl {
     }
   }
 
+  Future<Result<GenericResponseModal, Failure>> deleteAccount() async {
+    try {
+      final result = await _apiClient.patch(
+        ApiUrl.updateProfile,
+        data: {'deleteRequest': true},
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
   GenericResponseModal _handleResult(Result<dynamic, Failure> result) {
     switch (result) {
       case Success(value: final data):

@@ -8,6 +8,7 @@ class ApiUrl {
   static String resetPassword = 'reset-password';
   static String changePassword = 'change-password';
   static String register = 'customer/register';
+  static String updateProfile = 'customer/update-profile';
   static String banners = 'banners';
   static String categories = 'categories';
   static String subCategories = 'sub-categories';
