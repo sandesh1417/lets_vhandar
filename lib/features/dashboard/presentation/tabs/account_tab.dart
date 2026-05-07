@@ -5,10 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -81,18 +77,18 @@ class AccountTab extends ConsumerWidget {
             ),
             SizedBox(height: 20.h),
             // Settings List
-            _buildMenuItem(
-              icon: Icons.shopping_bag_outlined,
-              title: 'My Orders',
-              onTap: () {
-                ref.read(dashboardIndexProvider.notifier).state = 2;
-              },
-            ),
-            _buildMenuItem(
-              icon: Icons.assignment_outlined,
-              title: 'Your List',
-              onTap: () {},
-            ),
+            // _buildMenuItem(
+            //   icon: Icons.shopping_bag_outlined,
+            //   title: 'My Orders',
+            //   onTap: () {
+            //     ref.read(dashboardIndexProvider.notifier).state = 2;
+            //   },
+            // ),
+            // _buildMenuItem(
+            //   icon: Icons.assignment_outlined,
+            //   title: 'Your List',
+            //   onTap: () {},
+            // ),
             _buildMenuItem(
               icon: Icons.history_outlined,
               title: 'Reorder',

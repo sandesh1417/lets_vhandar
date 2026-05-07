@@ -135,6 +135,20 @@ class AddressNotifier extends StateNotifier<AddressState> {
         return false;
     }
   }
+  Future<bool> deleteAddress({
+    required String userId,
+    required String addressId,
+  }) async {
+    final result = await _repo.deleteAddress(addressId);
+    switch (result) {
+      case Success():
+        await loadAddresses(userId);
+        return true;
+      case Error(failure: final f):
+        state = state.copyWith(error: f.message);
+        return false;
+    }
+  }
 }
 
 // --- Provider ---

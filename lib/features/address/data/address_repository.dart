@@ -2,7 +2,6 @@ import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/config/api_endpoints.dart';
 import 'package:lets_vhandar/core/error/failure.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_response.dart';
 
 class AddressRepository {
@@ -98,6 +97,22 @@ class AddressRepository {
           if (houseNumber != null) 'houseNumber': houseNumber,
         },
       );
+      switch (result) {
+        case Success():
+          return const Success(true);
+        case Error(failure: final failure):
+          throw failure;
+      }
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<bool, Failure>> deleteAddress(String addressId) async {
+    try {
+      final result = await _apiClient.delete('${ApiUrl.addresses}/$addressId');
       switch (result) {
         case Success():
           return const Success(true);

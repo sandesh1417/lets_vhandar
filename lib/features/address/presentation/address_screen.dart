@@ -33,6 +33,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     final user = ref.watch(loginProvider).user;
 
     return CustomScaffoldWrapper(
+      isScrollable: false,
       appBar: const CustomScreenHeader(title: 'Saved Addresses'),
       body: Builder(
         builder: (context) {
@@ -57,7 +58,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
             );
           }
           return ListView.builder(
-            padding: EdgeInsets.all(16.w),
+            // padding: EdgeInsets.all(16.w),
             itemCount: addressState.addresses.length,
             itemBuilder: (context, index) {
               final address = addressState.addresses[index];
@@ -82,11 +83,48 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                     address.description ?? '',
                     style: TextStyle(fontSize: 12.sp, color: Colors.black54),
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: () {
-                      // Implement delete logic
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Edit Button
+                      InkWell(
+                        onTap: () {
+                          if (user?.id == null) return;
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => AddAddressSheet(
+                              userId: user!.id!,
+                              existingAddress: address,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(Icons.edit_outlined,
+                              size: 20.sp, color: Colors.green),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      // Delete Button
+                      InkWell(
+                        onTap: () =>
+                            _showDeleteConfirmation(context, ref, address),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(Icons.delete_outline,
+                              size: 20.sp, color: Colors.red),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -107,6 +145,36 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         label: const Text('Add New Address',
             style: TextStyle(color: Colors.white)),
         icon: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(
+      BuildContext context, WidgetRef ref, dynamic address) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Address'),
+        content: const Text('Are you sure you want to delete this address?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final user = ref.read(loginProvider).user;
+              if (user?.id != null && address.id != null) {
+                await ref.read(addressProvider.notifier).deleteAddress(
+                      userId: user!.id!,
+                      addressId: address.id!,
+                    );
+              }
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

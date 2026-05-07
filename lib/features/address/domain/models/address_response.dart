@@ -37,9 +37,16 @@ class AddressResponse {
   });
 
   factory AddressResponse.fromMap(Map<String, dynamic> json) {
-    final data = json['data'] as Map<String, dynamic>?;
-    final dataList = data?['data'] as List? ?? [];
-    final paginationMap = data?['pagination'] as Map<String, dynamic>?;
+    final dynamic rawData = json['data'];
+    List<dynamic> dataList = [];
+    Map<String, dynamic>? paginationMap;
+
+    if (rawData is List) {
+      dataList = rawData;
+    } else if (rawData is Map<String, dynamic>) {
+      dataList = rawData['data'] as List? ?? [];
+      paginationMap = rawData['pagination'] as Map<String, dynamic>?;
+    }
 
     return AddressResponse(
       status: json['status'] as String?,
