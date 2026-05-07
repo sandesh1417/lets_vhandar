@@ -18,8 +18,8 @@ class TFValidators {
     if (value == null || value.isEmpty) {
       return 'Phone is required';
     }
-    if (value.length < 10) {
-      return 'Please enter 10 digits';
+    if (value.length != 10) {
+      return 'Please enter exactly 10 digits';
     }
     return null;
   }

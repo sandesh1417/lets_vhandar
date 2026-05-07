@@ -175,4 +175,16 @@ class KTextStyle {
     fontWeight: FontWeight.w300,
     fontFamily: 'Roboto',
   );
+  static TextStyle roboto14Gray4W = TextStyle(
+    fontSize: 14.sp,
+    color: AppColor.lgrayTxt,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'Roboto',
+  );
+  static TextStyle roboto14GreenD4W = TextStyle(
+    fontSize: 14.sp,
+    color: AppColor.greenTxtColor,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'Roboto',
+  );
 }

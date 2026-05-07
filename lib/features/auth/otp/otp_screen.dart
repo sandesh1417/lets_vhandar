@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
 import 'package:lets_vhandar/features/auth/otp/widgets/otp_section_widget.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
@@ -12,18 +15,20 @@ class OTPScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
   final String name;
   final String referalCode;
-  final String password;
+  final String? password;
   final String confirmPassword;
   final String? phoneCode;
+  final bool isResetPassword;
 
   const OTPScreen({
-    required this.name,
-    required this.referalCode,
-    required this.password,
-    required this.confirmPassword,
+    this.name = '',
+    this.referalCode = '',
+    this.password,
+    this.confirmPassword = '',
     super.key,
     required this.phoneNumber,
     this.phoneCode,
+    this.isResetPassword = false,
   });
 
   @override
@@ -68,35 +73,38 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   void _verifyOTP() async {
     if (formKey.currentState?.validate() ?? false) {
       final otp = _otpController.text;
-      final registrationNotifier = ref.read(registrationProvider.notifier);
-
-      // Call registerWithOtp API
-      await registrationNotifier.registerWithOtp(
-        context,
-        otp: otp,
-        password: widget.password,
-        confirmPassword: widget.confirmPassword,
-        name: widget.name,
-        referalCode: widget.referalCode,
-        phoneNumber: widget.phoneNumber,
-        phoneCode: widget.phoneCode,
-      );
-
-      // final registrationState = ref.read(registrationProvider);
-
-      // if (registrationState.isRegistered) {
-      //   // Save user details in the state
-      //   // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
-      //   //   phoneNumber: widget.phoneNumber,
-      //   //   phoneCode: widget.phoneCode,
-      //   //   name: name,
-      //   //   password: password,
-      //   // );
-
-      //   // Navigate to the next screen (e.g., home screen)
-      //   // Navigator.pushReplacementNamed(context, '/home'); // Adjust route as needed
-      // } else {
-      //   // Show error message
+      if (widget.isResetPassword) {
+        final forgetPasswordNotifier =
+            ref.read(forgetPasswordProvider.notifier);
+        await forgetPasswordNotifier.verifyOtp(
+          context,
+          otp: otp,
+          phoneNumber: widget.phoneNumber,
+          phoneCode: widget.phoneCode,
+          onSuccess: () {
+            context.push(
+              LVRoute.resetPasswordScreen.route,
+              extra: {
+                'phoneNumber': widget.phoneNumber,
+                'phoneCode': widget.phoneCode,
+                'otp': otp,
+              },
+            );
+          },
+        );
+      } else {
+        final registrationNotifier = ref.read(registrationProvider.notifier);
+        await registrationNotifier.registerWithOtp(
+          context,
+          otp: otp,
+          password: widget.password ?? '',
+          confirmPassword: widget.confirmPassword,
+          name: widget.name,
+          referalCode: widget.referalCode,
+          phoneNumber: widget.phoneNumber,
+          phoneCode: widget.phoneCode,
+        );
+      }
     }
   }
 
@@ -107,25 +115,57 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         _canResendOTP = false;
       });
       _startOTPTimer();
-      ref
-          .read(registrationProvider.notifier)
-          .sendOtp(context, phoneNumber: widget.phoneNumber, phoneCode: "+977");
+      if (widget.isResetPassword) {
+        ref.read(forgetPasswordProvider.notifier).sendOtp(context,
+            phoneNumber: widget.phoneNumber,
+            phoneCode: widget.phoneCode ?? "+977");
+      } else {
+        ref.read(registrationProvider.notifier).sendOtp(context,
+            phoneNumber: widget.phoneNumber,
+            phoneCode: widget.phoneCode ?? "+977");
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final registrationState = ref.watch(registrationProvider);
+    final forgetPasswordState = ref.watch(forgetPasswordProvider);
+    final isLoading = widget.isResetPassword
+        ? forgetPasswordState.isLoading
+        : registrationState.isLoading;
 
     return CustomScaffoldWrapper(
+      horizontalPadding: 16.w,
       appBar: const CustomAppBar(title: ''),
       body: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.orange.withValues(alpha: 0.1),
+            ),
+            child:
+                const Icon(Icons.mail_outline, size: 50, color: Colors.orange),
+          ),
+          SizedBox(height: 24.h),
           Text('OTP Verification', style: KTextStyle.roboto24blackD7W),
           SizedBox(height: 8.h),
-          Text('OTP has been sent to ${widget.phoneNumber}',
-              style: KTextStyle.roboto14Green4W),
-          SizedBox(height: 24.h),
+          Text.rich(
+            TextSpan(
+              text: 'Code sent to ',
+              style: KTextStyle.roboto14Gray4W,
+              children: [
+                TextSpan(
+                  text: '${widget.phoneCode ?? "+977"} ${widget.phoneNumber}',
+                  style: KTextStyle.roboto14GreenD4W
+                      .copyWith(color: Colors.orange),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 32.h),
           PinputExample(
             controller: _otpController,
             focusNode: focusNode,
@@ -139,26 +179,20 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           ),
           SizedBox(height: 32.h),
           CustomButton(
-            isLoading: registrationState.isLoading,
+            isLoading: isLoading,
             onPress: _verifyOTP,
-            buttonTitle: 'Verify',
+            buttonTitle: 'Verify Code',
           ),
-          SizedBox(height: 16.h),
-          Text(
-            _timerSeconds > 0
-                ? '00:${_timerSeconds.toString().padLeft(2, '0')}'
-                : '',
-            style: KTextStyle.roboto24GreenD4W,
-          ),
-          SizedBox(height: 8.h),
-          Text('Didn’t get it?', style: KTextStyle.roboto14Green6W),
+          SizedBox(height: 24.h),
+          Text('Didn\'t receive the code?', style: KTextStyle.roboto14Gray4W),
           SizedBox(height: 8.h),
           GestureDetector(
             onTap: _resendOTP,
             child: Text(
-              'Send OTP (SMS)',
+              'Resend OTP',
               style: KTextStyle.roboto16sec5W.copyWith(
-                color: _canResendOTP ? Colors.blue : Colors.grey,
+                color: _canResendOTP ? Colors.orange : Colors.grey,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

@@ -70,6 +70,76 @@ class AuthRepositoryImpl {
     }
   }
 
+  Future<Result<GenericResponseModal, Failure>> sendOtpForgetPassword(
+      String phoneNumber, String? phoneCode) async {
+    try {
+      final result = await _apiClient.post(
+        ApiUrl.forgetPasswordSendOTP,
+        data: {
+          'phoneNumber': phoneNumber,
+          'phoneCode': phoneCode ?? '+977',
+        },
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<GenericResponseModal, Failure>> verifyOtp({
+    required String phoneNumber,
+    required String otp,
+    String? phoneCode,
+  }) async {
+    try {
+      final result = await _apiClient.post(
+        ApiUrl.verifyOTP,
+        data: {
+          'phoneNumber': phoneNumber,
+          // 'phoneCode': phoneCode ?? '+977',
+          'otp': otp,
+        },
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<GenericResponseModal, Failure>> resetPassword({
+    required String phoneNumber,
+    required String otp,
+    required String password,
+    required String confirmPassword,
+    String? phoneCode,
+  }) async {
+    try {
+      final data = {
+        'phoneNumber': phoneNumber,
+        'phoneCode': phoneCode ?? '+977',
+        'otp': otp,
+        'password': password,
+        'confirmPassword': confirmPassword,
+      };
+      final result = await _apiClient.post(
+        ApiUrl.resetPassword,
+        data: data,
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
   Future<Result<GenericResponseModal, Failure>> register({
     required String phoneNumber,
     String? phoneCode,

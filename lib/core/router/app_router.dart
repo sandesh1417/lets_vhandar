@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
+import 'package:lets_vhandar/features/auth/forget_password/reset_password_screen.dart';
 import 'package:lets_vhandar/features/auth/login/login_screen.dart';
 import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
 import 'package:lets_vhandar/features/auth/register/register_screen.dart';
@@ -36,7 +37,8 @@ enum LVRoute {
   faqScreen,
   savedAddressesScreen,
   personalInformationScreen,
-  productSuggestionScreen;
+  productSuggestionScreen,
+  resetPasswordScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -74,6 +76,7 @@ class LVGoRouter {
             referalCode: extra['referalCode'] ?? '',
             password: extra['password'] ?? '',
             confirmPassword: extra['confirmPassword'] ?? '',
+            isResetPassword: extra['isResetPassword'] ?? false,
           );
         },
       ),
@@ -82,6 +85,18 @@ class LVGoRouter {
         name: LVRoute.forgetPasswordScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const ForgetPasswordScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.resetPasswordScreen.route,
+        name: LVRoute.resetPasswordScreen.route,
+        builder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return ResetPasswordScreen(
+            phoneNumber: extra['phoneNumber'] ?? '',
+            phoneCode: extra['phoneCode'],
+            otp: extra['otp'] ?? '',
+          );
+        },
       ),
       GoRoute(
         path: LVRoute.registerScreen.route,

@@ -3,6 +3,9 @@ class ApiUrl {
 
   static String login = 'login';
   static String sendOTP = 'send-otp/register';
+  static String forgetPasswordSendOTP = 'forget-password';
+  static String verifyOTP = 'verify-otp';
+  static String resetPassword = 'reset-password';
   static String register = 'customer/register';
   static String banners = 'banners';
   static String categories = 'categories';
