@@ -103,6 +103,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           referalCode: widget.referalCode,
           phoneNumber: widget.phoneNumber,
           phoneCode: widget.phoneCode,
+          onSuccess: () {
+            context.go(LVRoute.loginScreen.route);
+          },
         );
       }
     }

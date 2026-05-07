@@ -63,6 +63,7 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
     required String phoneNumber,
     String? phoneCode,
     String? referalCode,
+    VoidCallback? onSuccess,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -84,6 +85,7 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
         );
         CustomSnackbar.success(context,
             message: data.message ?? 'Registration successful');
+        onSuccess?.call();
         break;
       case Error(failure: final failure):
         CustomSnackbar.error(context, message: failure.message);
