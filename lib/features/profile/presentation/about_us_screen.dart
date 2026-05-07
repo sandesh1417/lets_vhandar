@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+// #docregion platform_imports
+// Import for Android features.
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+// Import for iOS features.
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+// #enddocregion platform_imports
 
 class AboutUsScreen extends StatefulWidget {
   const AboutUsScreen({super.key});
@@ -13,17 +19,39 @@ class AboutUsScreen extends StatefulWidget {
 class _AboutUsScreenState extends State<AboutUsScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
+
+    late final PlatformWebViewControllerCreationParams params;
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      params = WebKitWebViewControllerCreationParams(
+        allowsInlineMediaPlayback: true,
+        // mediaTypesRequiringUserActionForPlayback: const <PlaybackMediaTypes>{},
+      );
+    } else {
+      params = const PlatformWebViewControllerCreationParams();
+    }
+
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(params);
+
+    controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setUserAgent(
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
       ..setNavigationDelegate(
         NavigationDelegate(
+          onProgress: (int progress) {
+            debugPrint('WebView is loading (progress : $progress%)');
+          },
           onPageStarted: (String url) {
             setState(() {
               _isLoading = true;
+              _error = null;
             });
           },
           onPageFinished: (String url) {
@@ -32,11 +60,25 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             });
           },
           onWebResourceError: (WebResourceError error) {
-            debugPrint('WebView error: ${error.description}');
+            setState(() {
+              _isLoading = false;
+              _error = error.description;
+            });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
           },
         ),
       )
       ..loadRequest(Uri.parse('https://www.vhandar.com/about'));
+
+    if (controller.platform is AndroidWebViewController) {
+      AndroidWebViewController.enableDebugging(true);
+      (controller.platform as AndroidWebViewController)
+          .setMediaPlaybackRequiresUserGesture(false);
+    }
+
+    _controller = controller;
   }
 
   @override
@@ -50,6 +92,22 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           if (_isLoading)
             const Center(
               child: CircularProgressIndicator(),
+            ),
+          if (_error != null)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const SizedBox(height: 16),
+                  Text('Failed to load: $_error', textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _controller.reload(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             ),
         ],
       ),

@@ -5,14 +5,21 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-class FAQScreen extends StatefulWidget {
-  const FAQScreen({super.key});
+class GenericWebViewScreen extends StatefulWidget {
+  final String title;
+  final String url;
+
+  const GenericWebViewScreen({
+    super.key,
+    required this.title,
+    required this.url,
+  });
 
   @override
-  State<FAQScreen> createState() => _FAQScreenState();
+  State<GenericWebViewScreen> createState() => _GenericWebViewScreenState();
 }
 
-class _FAQScreenState extends State<FAQScreen> {
+class _GenericWebViewScreenState extends State<GenericWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
   String? _error;
@@ -65,7 +72,7 @@ class _FAQScreenState extends State<FAQScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://www.vhandar.com/faq'));
+      ..loadRequest(Uri.parse(widget.url));
 
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
@@ -80,7 +87,7 @@ class _FAQScreenState extends State<FAQScreen> {
   Widget build(BuildContext context) {
     return CustomScaffoldWrapper(
       isScrollable: false,
-      appBar: const CustomScreenHeader(title: 'FAQs'),
+      appBar: CustomScreenHeader(title: widget.title),
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),

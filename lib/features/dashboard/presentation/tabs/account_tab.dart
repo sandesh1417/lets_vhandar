@@ -161,6 +161,27 @@ class AccountTab extends ConsumerWidget {
               },
             ),
             _buildMenuItem(
+              icon: Icons.article_outlined,
+              title: 'Blog',
+              onTap: () {
+                context.push(LVRoute.blogScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.contact_support_outlined,
+              title: 'Contact Us',
+              onTap: () {
+                context.push(LVRoute.contactUsScreen.route);
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.work_outline,
+              title: 'Careers',
+              onTap: () {
+                context.push(LVRoute.careersScreen.route);
+              },
+            ),
+            _buildMenuItem(
               icon: Icons.logout,
               title: 'Logout',
               onTap: () => _showLogoutDialog(context, ref),

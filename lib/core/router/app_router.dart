@@ -18,6 +18,7 @@ import 'package:lets_vhandar/features/address/presentation/address_screen.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/about_us_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/change_password_screen.dart';
+import 'package:lets_vhandar/widgets/generic_webview_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
@@ -44,7 +45,10 @@ enum LVRoute {
   resetPasswordScreen,
   changePasswordScreen,
   referAndEarnScreen,
-  aboutUsScreen;
+  aboutUsScreen,
+  blogScreen,
+  contactUsScreen,
+  careersScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -207,6 +211,33 @@ class LVGoRouter {
         name: LVRoute.aboutUsScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const AboutUsScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.blogScreen.route,
+        name: LVRoute.blogScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Blog',
+          url: 'https://www.vhandar.com/blog',
+        ),
+      ),
+      GoRoute(
+        path: LVRoute.contactUsScreen.route,
+        name: LVRoute.contactUsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Contact Us',
+          url: 'https://www.vhandar.com/contact',
+        ),
+      ),
+      GoRoute(
+        path: LVRoute.careersScreen.route,
+        name: LVRoute.careersScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Careers',
+          url: 'https://www.vhandar.com/careers',
+        ),
       ),
       // Add other routes as they are implemented
     ],
