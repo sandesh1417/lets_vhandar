@@ -31,18 +31,18 @@ class AccountTab extends ConsumerWidget {
             SizedBox(height: 16.h),
             // User Profile Section
             _buildProfileHeader(user),
-            
+
             SizedBox(height: 8.h),
 
             // My Activity
             AccountSection(
               title: 'My Activity',
               children: [
-                AccountMenuItem(
-                  icon: Icons.history_outlined,
-                  title: 'Reorder',
-                  onTap: () {},
-                ),
+                // AccountMenuItem(
+                //   icon: Icons.history_outlined,
+                //   title: 'Reorder',
+                //   onTap: () {},
+                // ),
                 AccountMenuItem(
                   icon: Icons.location_on_outlined,
                   title: 'Saved Addresses',
@@ -72,17 +72,17 @@ class AccountTab extends ConsumerWidget {
                     context.push(LVRoute.changePasswordScreen.route);
                   },
                 ),
-                AccountMenuItem(
-                  icon: Icons.account_balance_wallet_outlined,
-                  title: 'Wallet',
-                  onTap: () {},
-                ),
-                AccountMenuItem(
-                  icon: Icons.group_outlined,
-                  title: 'Family Members',
-                  showDivider: false,
-                  onTap: () {},
-                ),
+                // AccountMenuItem(
+                //   icon: Icons.account_balance_wallet_outlined,
+                //   title: 'Wallet',
+                //   onTap: () {},
+                // ),
+                // AccountMenuItem(
+                //   icon: Icons.group_outlined,
+                //   title: 'Family Members',
+                //   showDivider: false,
+                //   onTap: () {},
+                // ),
               ],
             ),
 
@@ -179,7 +179,7 @@ class AccountTab extends ConsumerWidget {
             ),
 
             const AccountSupportCard(),
-            
+
             SizedBox(height: 20.h),
           ],
         ),
@@ -208,7 +208,8 @@ class AccountTab extends ConsumerWidget {
             padding: EdgeInsets.all(3.w),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColor.primary.withOpacity(0.2), width: 2),
+              border: Border.all(
+                  color: AppColor.primary.withOpacity(0.2), width: 2),
             ),
             child: CircleAvatar(
               radius: 30.r,
@@ -243,7 +244,8 @@ class AccountTab extends ConsumerWidget {
           ),
           IconButton(
             onPressed: () {}, // Navigate to edit profile
-            icon: Icon(Icons.edit_outlined, color: AppColor.primary, size: 20.sp),
+            icon:
+                Icon(Icons.edit_outlined, color: AppColor.primary, size: 20.sp),
             style: IconButton.styleFrom(
               backgroundColor: AppColor.primary.withOpacity(0.05),
               padding: EdgeInsets.all(8.w),
@@ -258,7 +260,8 @@ class AccountTab extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         title: const Text('Delete Account'),
         content: const Text(
             'Are you sure you want to delete your account? This action cannot be undone.'),
@@ -283,7 +286,8 @@ class AccountTab extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
@@ -306,4 +310,3 @@ class AccountTab extends ConsumerWidget {
     );
   }
 }
-
