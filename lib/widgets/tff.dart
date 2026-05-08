@@ -129,13 +129,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 borderRadius: BorderRadius.all(Radius.circular(8.r)),
                 borderSide: BorderSide(color: AppColor.border)),
         enabledBorder: widget.enabledBorder,
-        focusedBorder: widget.focusedBorder,
+        focusedBorder: widget.focusedBorder ??
+            OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                borderSide: BorderSide(color: AppColor.primary, width: 1)),
         labelText: widget.labelText,
         labelStyle: TextStyle(
           color: Colors.grey.shade700,
           fontWeight: FontWeight.w500,
+          fontSize: 14.sp,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: AppColor.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 14.sp,
         ),
       ),
+      cursorColor: AppColor.primary,
       autovalidateMode:
           widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
       validator: widget.validator,
