@@ -33,6 +33,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     final user = ref.watch(loginProvider).user;
 
     return CustomScaffoldWrapper(
+      backgroundColor: const Color(0xFFF8F9FB),
       isScrollable: false,
       appBar: const CustomScreenHeader(title: 'Saved Addresses'),
       body: Builder(
@@ -44,89 +45,28 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
             return Center(child: Text('Error: ${addressState.error}'));
           }
           if (addressState.addresses.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.location_off_outlined,
-                      size: 60.sp, color: Colors.grey),
-                  SizedBox(height: 16.h),
-                  const Text('No addresses saved yet.',
-                      style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-            );
+            return _buildEmptyState();
           }
           return ListView.builder(
-            // padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 100.h),
             itemCount: addressState.addresses.length,
             itemBuilder: (context, index) {
               final address = addressState.addresses[index];
-              return Card(
-                margin: EdgeInsets.only(bottom: 12.h),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r)),
-                elevation: 0,
-                color: Colors.white,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-                    child: Icon(_getAddressIcon(address.addressType),
-                        color: AppColor.primary),
-                  ),
-                  title: Text(
-                    address.name ?? 'Address',
-                    style:
-                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    address.description ?? '',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Edit Button
-                      InkWell(
-                        onTap: () {
-                          if (user?.id == null) return;
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (context) => AddAddressSheet(
-                              userId: user!.id!,
-                              existingAddress: address,
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Icon(Icons.edit_outlined,
-                              size: 20.sp, color: Colors.green),
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      // Delete Button
-                      InkWell(
-                        onTap: () =>
-                            _showDeleteConfirmation(context, ref, address),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Icon(Icons.delete_outline,
-                              size: 20.sp, color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              return _AddressCard(
+                address: address,
+                onEdit: () {
+                  if (user?.id == null) return;
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddAddressSheet(
+                      userId: user!.id!,
+                      existingAddress: address,
+                    ),
+                  );
+                },
+                onDelete: () => _showDeleteConfirmation(context, ref, address),
               );
             },
           );
@@ -138,13 +78,62 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
+            backgroundColor: Colors.transparent,
             builder: (context) => AddAddressSheet(userId: user!.id!),
           );
         },
         backgroundColor: AppColor.primary,
-        label: const Text('Add New Address',
-            style: TextStyle(color: Colors.white)),
+        elevation: 4,
+        label: Text(
+          'Add New Address',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+          ),
+        ),
         icon: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(24.w),
+            decoration: BoxDecoration(
+              color: AppColor.primary.withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.location_off_outlined,
+              size: 56.sp,
+              color: AppColor.primary,
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'No Saved Addresses',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: AppColor.textBlack,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Add an address to make checkout\nfaster and easier.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: Colors.grey.shade500,
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -154,6 +143,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         title: const Text('Delete Address'),
         content: const Text('Are you sure you want to delete this address?'),
         actions: [
@@ -178,8 +168,20 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       ),
     );
   }
+}
 
-  IconData _getAddressIcon(String? type) {
+class _AddressCard extends StatelessWidget {
+  final dynamic address;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const _AddressCard({
+    required this.address,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  IconData _getIcon(String? type) {
     switch (type?.toLowerCase()) {
       case 'home':
         return Icons.home_outlined;
@@ -188,5 +190,155 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       default:
         return Icons.location_on_outlined;
     }
+  }
+
+  Color _getTypeColor(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'home':
+        return const Color(0xFF1E8B5A);
+      case 'work':
+        return const Color(0xFF1565C0);
+      default:
+        return const Color(0xFF7B1FA2);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final typeColor = _getTypeColor(address.addressType);
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon with tinted bg
+            Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: typeColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Icon(_getIcon(address.addressType),
+                  color: typeColor, size: 22.sp),
+            ),
+            SizedBox(width: 14.w),
+
+            // Address details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        address.name ?? 'Address',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.textBlack,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      // Type chip
+                      if (address.addressType != null)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 2.h),
+                          decoration: BoxDecoration(
+                            color: typeColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                            address.addressType!
+                                .toString()
+                                .toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.bold,
+                              color: typeColor,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    address.description ?? '',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: Colors.grey.shade600,
+                      height: 1.4,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: 8.w),
+
+            // Action buttons
+            Column(
+              children: [
+                _ActionIconButton(
+                  icon: Icons.edit_outlined,
+                  color: AppColor.primary,
+                  onTap: onEdit,
+                ),
+                SizedBox(height: 8.h),
+                _ActionIconButton(
+                  icon: Icons.delete_outline,
+                  color: Colors.red.shade400,
+                  onTap: onDelete,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionIconButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionIconButton({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(7.w),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(icon, size: 18.sp, color: color),
+      ),
+    );
   }
 }

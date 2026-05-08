@@ -22,8 +22,8 @@ class PersonalInformationScreen extends ConsumerWidget {
             SizedBox(height: 20.h),
             _buildInfoCard(context, user),
             SizedBox(height: 20.h),
-            _buildDeleteAccountSection(context),
-            SizedBox(height: 30.h),
+            // _buildDeleteAccountSection(context),
+            // SizedBox(height: 30.h),
           ],
         ),
       ),
@@ -66,7 +66,8 @@ class PersonalInformationScreen extends ConsumerWidget {
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.orange.shade400,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -115,7 +116,8 @@ class PersonalInformationScreen extends ConsumerWidget {
               color: const Color(0xFF0D4D3B),
               borderRadius: BorderRadius.circular(6.r),
             ),
-            child: Icon(Icons.workspace_premium, color: Colors.orange, size: 16.sp),
+            child: Icon(Icons.workspace_premium,
+                color: Colors.orange, size: 16.sp),
           ),
           SizedBox(width: 8.w),
           Column(

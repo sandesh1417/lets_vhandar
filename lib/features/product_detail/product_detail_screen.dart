@@ -4,22 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
-import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
-import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+
+import 'widgets/product_add_to_cart_bar.dart';
+import 'widgets/product_details_table.dart';
+import 'widgets/product_image_slider.dart';
+import 'widgets/product_variant_selector.dart';
+import 'widgets/product_why_shop_section.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductData product;
 
-  const ProductDetailScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailScreen({super.key, required this.product});
 
   @override
   ConsumerState<ProductDetailScreen> createState() =>
@@ -41,80 +39,159 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
 
-    final cartItemCount = ref.watch(totalCartItemsProvider);
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      floatingActionButton: CartFloatingBadge(
-        onTap: () {
-          ref.read(dashboardIndexProvider.notifier).state = 3;
-          context.go('/dashboardScreen');
-        },
+      backgroundColor: const Color(0xFFF8F9FB),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: _GlassButton(
+            icon: Icons.arrow_back,
+            onTap: () => Navigator.pop(context),
+          ),
+        ),
+        actions: const [
+          // Padding(
+          //   padding: EdgeInsets.all(8.w),
+          //   child: _GlassButton(
+          //     icon: Icons.share_outlined,
+          //     onTap: () {},
+          //   ),
+          // ),
+        ],
       ),
-      bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
+      bottomNavigationBar: ProductAddToCartBar(product: product),
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
-          // Custom App Bar with Image Slider
+          // ─── Image Area ───────────────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 350.h,
-            pinned: true,
-            elevation: 0,
+            automaticallyImplyLeading: false,
+            expandedHeight: 320.h,
+            pinned: false,
             backgroundColor: Colors.white,
-            leading: Padding(
-              padding: EdgeInsets.all(8.w),
-              child: CircleAvatar(
-                backgroundColor: Colors.white.withOpacity(0.8),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.8),
-                  child: IconButton(
-                    icon: const Icon(Icons.share_outlined, color: Colors.black),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
+              background: ProductImageSlider(product: product),
+            ),
+          ),
+
+          // ─── Product Info Card ────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Container(
+              margin: EdgeInsets.only(top: 4.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageView.builder(
-                    itemCount: product.images?.length ?? 1,
-                    itemBuilder: (context, index) {
-                      return CustomImageViewer(
-                        path: product.images?.isNotEmpty == true
-                            ? product.images![index].url
-                            : null,
-                        fit: BoxFit.contain,
-                      );
-                    },
-                  ),
-                  if (hasDiscount)
-                    Positioned(
-                      top: 100.h,
-                      right: 16.w,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade100,
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        child: Text(
-                          '${product.discount?.value?.toInt()} ${product.discount?.type == 'flat' ? 'OFF' : '% OFF'}',
+                  // ── Name & Price ──
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name ?? 'Product Name',
                           style: TextStyle(
-                            color: Colors.blue.shade700,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12.sp,
+                            color: AppColor.textBlack,
+                            height: 1.2,
                           ),
                         ),
+                        SizedBox(height: 6.h),
+                        Text(
+                          '${product.unitValue?.toInt()} ${product.unit}',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColor.textMuted,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        SizedBox(height: 14.h),
+
+                        // Price row
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Rs. ${product.actualPrice.toInt()}',
+                              style: TextStyle(
+                                fontSize: 26.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.textBlack,
+                              ),
+                            ),
+                            if (hasDiscount) ...[
+                              SizedBox(width: 10.w),
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 3.h),
+                                child: Text(
+                                  'MRP Rs.${product.pricePerUnit?.toInt()}',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: AppColor.textMuted,
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w, vertical: 5.h),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF1E8B5A),
+                                      Color(0xFF27AE70)
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Text(
+                                  '${product.discount?.value?.toInt()}${product.discount?.type == 'flat' ? ' Rs' : '%'} OFF',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        Text(
+                          'Inclusive of all taxes',
+                          style: TextStyle(
+                              fontSize: 10.sp, color: AppColor.textMuted),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Divider(
+                        height: 28.h,
+                        color: Colors.grey.shade100,
+                        thickness: 1),
+                  ),
+
+                  // ── Variant Selector ──
+                  if (widget.product.hasVariant == true)
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 20.h),
+                      child: ProductVariantSelector(
+                        baseProduct: widget.product,
+                        selected: _currentProduct,
+                        onVariantChanged: (v) =>
+                            setState(() => _currentProduct = v),
                       ),
                     ),
                 ],
@@ -122,342 +199,42 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
           ),
 
-          // Product Info
+          // ─── Body Content ─────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    product.name ?? 'Product Name',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.textBlack,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    '${product.unitValue?.toInt()}${product.unit}',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: AppColor.textMuted,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 12.h),
+                  ProductDetailsTable(product: product),
+                  SizedBox(height: 20.h),
+                  const ProductWhyShopSection(),
+                  SizedBox(height: 28.h),
+
+                  // ── Similar Products ──
                   Row(
                     children: [
-                      Text(
-                        'Rs. ${product.actualPrice.toInt()}',
-                        style: TextStyle(
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.textBlack,
+                      Container(
+                        width: 3.w,
+                        height: 16.h,
+                        decoration: BoxDecoration(
+                          color: AppColor.primary,
+                          borderRadius: BorderRadius.circular(2.r),
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      if (hasDiscount) ...[
-                        Text(
-                          'MRP ${product.pricePerUnit?.toInt()}',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: AppColor.textBlack54,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor: AppColor.textStrikeThrough,
-                            decorationThickness: 2.0,
-                          ),
+                      Text(
+                        'Similar Products',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColor.textBlack,
                         ),
-                        SizedBox(width: 12.w),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10.w, vertical: 6.h),
-                          decoration: BoxDecoration(
-                            color: AppColor.discountBadge,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Text(
-                            'RS. ${product.discount?.value?.toInt()} SAVE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ],
                   ),
-                  Text(
-                    '(Inclusive of all taxes)',
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      color: AppColor.textMuted,
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-
-                  // Variant Selection
-                  if (widget.product.hasVariant == true) ...[
-                    Text(
-                      'Select Unit',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    ref.watch(productVariantsProvider(widget.product)).when(
-                          data: (variants) {
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: variants.map((v) {
-                                  final isSelected = v.id == product.id;
-                                  final vHasDiscount = v.discount != null &&
-                                      (v.discount?.value ?? 0) > 0;
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _currentProduct = v;
-                                      });
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.only(right: 12.w),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.w, vertical: 8.h),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? AppColor.primary.withOpacity(0.05)
-                                            : Colors.white,
-                                        border: Border.all(
-                                          color: isSelected
-                                              ? AppColor.primary
-                                              : Colors.grey.shade300,
-                                          width: isSelected ? 2 : 1,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(12.r),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (vHasDiscount)
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 6.w,
-                                                  vertical: 2.h),
-                                              decoration: BoxDecoration(
-                                                color: AppColor.discountBadge,
-                                                borderRadius:
-                                                    BorderRadius.circular(4.r),
-                                              ),
-                                              child: Text(
-                                                'RS. ${v.discount?.value?.toInt()} SAVE',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 10.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          SizedBox(height: 4.h),
-                                          Text(
-                                            '${v.unitValue?.toInt()} ${v.unit}',
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColor.textBlack,
-                                            ),
-                                          ),
-                                          SizedBox(height: 4.h),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Rs.${v.actualPrice.toInt()}',
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColor.textBlack,
-                                                ),
-                                              ),
-                                              if (vHasDiscount) ...[
-                                                SizedBox(width: 4.w),
-                                                Text(
-                                                  'MRP${v.pricePerUnit?.toInt()}',
-                                                  style: TextStyle(
-                                                    fontSize: 12.sp,
-                                                    color: AppColor.textMuted,
-                                                    decoration: TextDecoration
-                                                        .lineThrough,
-                                                  ),
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            );
-                          },
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (e, s) => const SizedBox.shrink(),
-                        ),
-                    SizedBox(height: 24.h),
-                  ],
-
-                  // Add to Cart Logic
-                  Consumer(
-                    builder: (context, ref, _) {
-                      // Watch the cartItems to trigger rebuilds on quantity changes
-                      ref.watch(cartProvider);
-                      final cartCount = ref
-                          .read(cartProvider.notifier)
-                          .getCartItemCount(product.id!);
-                      return Row(
-                        children: [
-                          if (cartCount == 0)
-                            SizedBox(
-                              height: 48.h,
-                              width: 120.w,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  ref
-                                      .read(cartProvider.notifier)
-                                      .addToCart(product);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  side: BorderSide(color: AppColor.primary),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                  ),
-                                ),
-                                child: Text(
-                                  'ADD',
-                                  style: TextStyle(
-                                    color: AppColor.primary,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            )
-                          else
-                            Container(
-                              height: 48.h,
-                              width: 120.w,
-                              decoration: BoxDecoration(
-                                color: AppColor.primary,
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.remove,
-                                        color: Colors.white),
-                                    onPressed: () {
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount - 1);
-                                    },
-                                  ),
-                                  Text(
-                                    '$cartCount',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.add,
-                                        color: Colors.white),
-                                    onPressed: () {
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount + 1);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: 32.h),
-
-                  // Why shop from Vhandar
-                  Text(
-                    'Why shop from Vhandar?',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.textBlack,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  _buildWhyShopItem(
-                    Icons.delivery_dining_outlined,
-                    'Superfast Delivery',
-                    'Get your order delivered to your doorstep at the earliest from dark stores near you.',
-                  ),
-                  _buildWhyShopItem(
-                    Icons.sell_outlined,
-                    'Best Prices & Offers',
-                    'Best price destination with offers directly from the manufacturers.',
-                  ),
-                  _buildWhyShopItem(
-                    Icons.category_outlined,
-                    'Wide Assortment',
-                    'Choose from 5000+ products across food, personal care, household & other categories.',
-                  ),
-
-                  SizedBox(height: 32.h),
-
-                  // Product Details Table
-                  Text(
-                    'Product Details',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.textBlack,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  _buildDetailRow(
-                      'Unit', '${product.unitValue?.toInt()} ${product.unit}'),
-                  _buildDetailRow('Type', product.status ?? ''),
-                  _buildDetailRow('Key Features', product.keyFeatures ?? ''),
-                  _buildDetailRow('Shelf Life', product.shelfLife ?? ''),
-                  _buildDetailRow('Return Policy', product.returnPolicy ?? ''),
-                  _buildDetailRow('Disclaimer', product.disclaimer ?? ''),
-
-                  SizedBox(height: 32.h),
-
-                  // Similar Products
-                  Text(
-                    'Similar Products',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.textBlack,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 12.h),
                 ],
               ),
             ),
@@ -466,37 +243,37 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Similar Products List
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 250.h,
+              height: 240.h,
               child: product.categoryIds?.isNotEmpty == true
                   ? ref
                       .watch(
                           similarProductsProvider(product.categoryIds!.first))
                       .when(
                         data: (products) {
-                          // Filter out the current product
-                          final filteredProducts = products
+                          final filtered = products
                               .where((p) => p.id != product.id)
                               .toList();
-
-                          if (filteredProducts.isEmpty) {
-                            return const Center(
-                                child: Text('No similar products found'));
+                          if (filtered.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No similar products found',
+                                style: TextStyle(
+                                    color: AppColor.textMuted, fontSize: 13.sp),
+                              ),
+                            );
                           }
-
                           return ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            itemCount: filteredProducts.length,
+                            itemCount: filtered.length,
                             itemBuilder: (context, index) {
-                              final p = filteredProducts[index];
+                              final p = filtered[index];
                               return ProductItemCard(
                                 product: p,
-                                onTap: () {
-                                  context.pushNamed(
-                                    LVRoute.productDetailScreen.route,
-                                    extra: p,
-                                  );
-                                },
+                                onTap: () => context.pushNamed(
+                                  LVRoute.productDetailScreen.route,
+                                  extra: p,
+                                ),
                               );
                             },
                           );
@@ -505,84 +282,41 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             const Center(child: CircularProgressIndicator()),
                         error: (e, s) => const SizedBox.shrink(),
                       )
-                  : const Center(
-                      child: Text('No category information available')),
+                  : const SizedBox.shrink(),
             ),
           ),
-          SliverToBoxAdapter(child: SizedBox(height: 80.h)),
+          SliverToBoxAdapter(child: SizedBox(height: 20.h)),
         ],
       ),
     );
   }
+}
 
-  Widget _buildWhyShopItem(IconData icon, String title, String subtitle) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: AppColor.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppColor.primary, size: 24.sp),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColor.textBlack,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColor.textBlack87,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+class _GlassButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
 
-  Widget _buildDetailRow(String label, String value) {
-    if (value.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColor.textBlack,
+  const _GlassButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 38.w,
+        height: 38.w,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          SizedBox(height: 2.h),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 13.sp,
-              color: AppColor.textBlack87,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Divider(height: 1, color: Colors.grey.shade200),
-        ],
+          ],
+        ),
+        child: Icon(icon, color: Colors.black87, size: 20.sp),
       ),
     );
   }
