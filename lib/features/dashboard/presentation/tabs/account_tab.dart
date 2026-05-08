@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
@@ -193,8 +194,66 @@ class AccountTab extends ConsumerWidget {
               iconColor: Colors.red,
               onTap: () => _showDeleteAccountDialog(context, ref),
             ),
+            SizedBox(height: 20.h),
+            _buildSupportButton(context),
             SizedBox(height: 30.h),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: GestureDetector(
+        onTap: () async {
+          final Uri webUrl = Uri.parse('https://wa.me/9779851357358');
+          try {
+            await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Could not launch WhatsApp')),
+              );
+            }
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            color: Colors.orange,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.support_agent, color: Colors.white, size: 36.sp),
+              SizedBox(width: 12.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '9851357358',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '24/7 Support Center',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
