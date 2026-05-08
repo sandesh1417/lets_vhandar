@@ -6,6 +6,8 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
+import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
+
 class BrandScreen extends ConsumerWidget {
   const BrandScreen({super.key});
 
@@ -14,19 +16,22 @@ class BrandScreen extends ConsumerWidget {
     final brandsAsync = ref.watch(brandProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6F8),
+      backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
         title: Text(
           'All Brands',
           style: TextStyle(
-            color: AppColor.primary,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: brandsAsync.when(
         data: (brands) {
@@ -36,67 +41,20 @@ class BrandScreen extends ConsumerWidget {
 
           return GridView.builder(
             padding: EdgeInsets.all(16.w),
+            physics: const BouncingScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              childAspectRatio: 0.8,
+              childAspectRatio: 0.85,
               crossAxisSpacing: 12.w,
-              mainAxisSpacing: 16.h,
+              mainAxisSpacing: 20.h,
             ),
             itemCount: brands.length,
             itemBuilder: (context, index) {
               final brand = brands[index];
-              return InkWell(
-                onTap: () {
-                  context.push('/brand-detail/${brand.slug}');
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.w),
-                          child: CustomImageViewer(
-                            path: brand.images?.isNotEmpty == true
-                                ? brand.images!.first.url
-                                : null,
-                            borderRadius: 8.r,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4.w),
-                          child: Text(
-                            brand.name ?? '',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.textBlack87,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              return BrandCard(
+                name: brand.name ?? '',
+                imageUrl: brand.images?.isNotEmpty == true ? brand.images!.first.url : null,
+                onTap: () => context.push('/brand-detail/${brand.slug}'),
               );
             },
           );
