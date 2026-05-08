@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/widgets/tff.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -30,23 +31,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: TextField(
+        title: CustomTextField(
           controller: _searchController,
           autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Search for products...',
-            hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-            border: InputBorder.none,
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.grey),
-                    onPressed: () {
-                      _searchController.clear();
-                      ref.read(searchProvider.notifier).search('');
-                    },
-                  )
-                : null,
-          ),
+          hintText: 'Search for products...',
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.grey),
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(searchProvider.notifier).search('');
+                  },
+                )
+              : null,
           onChanged: (value) {
             setState(() {}); // to show/hide clear button
             ref.read(searchProvider.notifier).search(value);

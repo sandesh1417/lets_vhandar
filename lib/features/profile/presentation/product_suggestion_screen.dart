@@ -7,6 +7,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/product_suggestion_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/tff.dart';
 
 class ProductSuggestionScreen extends ConsumerStatefulWidget {
   const ProductSuggestionScreen({super.key});
@@ -92,27 +93,10 @@ class _ProductSuggestionScreenState extends ConsumerState<ProductSuggestionScree
               ),
             ),
             SizedBox(height: 20.h),
-            TextField(
+            CustomTextField(
               controller: _suggestionController,
               maxLines: 6,
-              decoration: InputDecoration(
-                hintText: 'Enter product name, brand, or description...',
-                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: AppColor.primary, width: 1),
-                ),
-              ),
+              hintText: 'Enter product name, brand, or description...',
             ),
             SizedBox(height: 30.h),
             ElevatedButton(

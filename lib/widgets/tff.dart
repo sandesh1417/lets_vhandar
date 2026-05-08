@@ -7,7 +7,7 @@ import '../core/constants/color_constant.dart';
 class CustomTextField extends StatefulWidget {
   final String hintText;
   final String? errorText;
-  final String labelText;
+  final String? labelText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool? obscureText;
@@ -18,10 +18,23 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyBoardType;
   final TextInputFormatter? textInputFormatter;
   final String? Function(String?)? validator;
+  final int? maxLines;
+  final TextInputAction? textInputAction;
+  final Function(String)? onSubmitted;
+  final VoidCallback? onTap;
+  final FocusNode? focusNode;
+  final InputBorder? border;
+  final InputBorder? enabledBorder;
+  final InputBorder? focusedBorder;
+  final Color? fillColor;
+  final bool? filled;
+  final EdgeInsetsGeometry? contentPadding;
+  final bool autofocus;
+  final bool? enabled;
 
   const CustomTextField({
     required this.hintText,
-    required this.labelText,
+    this.labelText,
     this.prefixIcon,
     this.onChanged,
     this.suffixIcon,
@@ -35,6 +48,19 @@ class CustomTextField extends StatefulWidget {
     this.textInputFormatter,
     this.validator,
     this.autovalidateMode,
+    this.maxLines = 1,
+    this.textInputAction,
+    this.onSubmitted,
+    this.onTap,
+    this.focusNode,
+    this.border,
+    this.enabledBorder,
+    this.focusedBorder,
+    this.fillColor,
+    this.filled,
+    this.contentPadding,
+    this.autofocus = false,
+    this.enabled,
   });
 
   final AutovalidateMode? autovalidateMode;
@@ -47,23 +73,38 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      enabled: widget.enabled,
+      autofocus: widget.autofocus,
       readOnly: widget.isReadOnly ?? false,
       textAlignVertical: TextAlignVertical.center,
       controller: widget.controller,
       obscureText: widget.obscureText ?? false,
       keyboardType: widget.keyBoardType ?? TextInputType.emailAddress,
+      maxLines: widget.obscureText == true ? 1 : widget.maxLines,
+      textInputAction: widget.textInputAction,
+      onFieldSubmitted: widget.onSubmitted,
+      onTap: widget.onTap,
+      focusNode: widget.focusNode,
       inputFormatters: widget.textInputFormatter != null
           ? [widget.textInputFormatter!]
           : null,
       onChanged: widget.onChanged ?? (v) {},
-      style: TextStyle(color: AppColor.black),
+      style: TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.w500,
+        fontSize: 16.sp,
+      ),
       decoration: InputDecoration(
-        contentPadding: widget.prefixIcon == null
-            ? EdgeInsets.symmetric(horizontal: 12.w)
-            : null,
+        filled: widget.filled,
+        fillColor: widget.fillColor,
+        contentPadding: widget.contentPadding ??
+            EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
         isDense: true,
         hintText: widget.hintText,
-        hintStyle: TextStyle(color: AppColor.hintText),
+        hintStyle: TextStyle(
+          color: Colors.grey.shade600,
+          fontSize: 14.sp,
+        ),
         prefixIcon: widget.prefixIcon != null
             ? SizedBox(child: widget.prefixIcon)
             : null,
@@ -83,11 +124,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       ),
               )
             : widget.suffixIcon,
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.r)),
-            borderSide: BorderSide(color: AppColor.border)),
+        border: widget.border ??
+            OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                borderSide: BorderSide(color: AppColor.border)),
+        enabledBorder: widget.enabledBorder,
+        focusedBorder: widget.focusedBorder,
         labelText: widget.labelText,
-        labelStyle: TextStyle(color: AppColor.hintText),
+        labelStyle: TextStyle(
+          color: Colors.grey.shade700,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       autovalidateMode:
           widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/tff.dart';
 
 /// Google Map with search bar and "Go to current location" button.
 class AddressMapPicker extends StatelessWidget {
@@ -65,16 +66,14 @@ class AddressMapPicker extends StatelessWidget {
                 )
               ],
             ),
-            child: TextField(
+            child: CustomTextField(
               controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Search location...',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 13.sp),
-                prefixIcon:
-                    Icon(Icons.search, color: AppColor.textMuted, size: 20.sp),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-              ),
+              hintText: 'Search location...',
+              prefixIcon: Icon(Icons.search, color: AppColor.textMuted, size: 20.sp),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: 12.h),
               onSubmitted: onSearchSubmitted,
               textInputAction: TextInputAction.search,
             ),

@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/tff.dart';
 
 class FeedbackScreen extends ConsumerStatefulWidget {
   const FeedbackScreen({super.key});
@@ -173,24 +174,10 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     }).toList(),
                   ),
                   SizedBox(height: 20.h),
-                  TextField(
+                  CustomTextField(
                     controller: _descriptionController,
                     maxLines: 4,
-                    maxLength: 300,
-                    decoration: InputDecoration(
-                      hintText: 'Description',
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide(color: Colors.grey.shade200),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide(color: Colors.grey.shade200),
-                      ),
-                    ),
+                    hintText: 'Description',
                   ),
                 ],
               ),

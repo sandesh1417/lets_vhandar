@@ -7,10 +7,9 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/presentation/search_screen.dart';
-
-// TODO: Replace with actual logged-in user ID from auth state
-const _kUserId = '67baf2ff5d58f3aca9733828';
+import 'package:lets_vhandar/widgets/tff.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
@@ -19,11 +18,12 @@ class HomeHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final addressState = ref.watch(addressProvider);
     final selected = addressState.selected;
+    final userId = ref.watch(loginProvider).user?.id ?? '';
 
     // Load addresses on first build if not already loaded
-    if (addressState.addresses.isEmpty && !addressState.isLoading) {
+    if (addressState.addresses.isEmpty && !addressState.isLoading && userId.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(addressProvider.notifier).loadAddresses(_kUserId);
+        ref.read(addressProvider.notifier).loadAddresses(userId);
       });
     }
 
@@ -58,8 +58,15 @@ class HomeHeader extends ConsumerWidget {
                       ),
                       // Location Info — tappable
                       GestureDetector(
-                        onTap: () =>
-                            showAddressSelectorSheet(context, userId: _kUserId),
+                        onTap: () {
+                          if (userId.isNotEmpty) {
+                            showAddressSelectorSheet(context, userId: userId);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please login to manage addresses')),
+                            );
+                          }
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -129,17 +136,16 @@ class HomeHeader extends ConsumerWidget {
                   ),
                 ],
               ),
-              child: TextField(
+              child: CustomTextField(
                 enabled: false,
-                decoration: InputDecoration(
-                  hintText: 'Search for Vhandar products',
-                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  suffixIcon:
-                      const Icon(Icons.qr_code_scanner, color: Colors.black),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.h),
-                ),
+                hintText: 'Search for Vhandar products',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon:
+                    const Icon(Icons.qr_code_scanner, color: Colors.black),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 15.h),
               ),
             ),
           ),
