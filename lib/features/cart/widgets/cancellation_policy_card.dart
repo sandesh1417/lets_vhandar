@@ -8,7 +8,7 @@ class CancellationPolicyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      // margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -22,7 +22,7 @@ class CancellationPolicyCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeight.bold,
-              color: AppColor.greenTxtColor,
+              color: AppColor.textBlack,
             ),
           ),
           SizedBox(height: 8.h),
@@ -30,7 +30,7 @@ class CancellationPolicyCard extends StatelessWidget {
             'Orders cannot be cancelled once packed for delivery. In case of unexpected delays, a refund will be provided, if applicable.',
             style: TextStyle(
               fontSize: 12.sp,
-              color: AppColor.textMuted,
+              color: Colors.grey.shade700,
               height: 1.4,
             ),
           ),

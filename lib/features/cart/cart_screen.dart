@@ -27,27 +27,25 @@ class CartScreen extends ConsumerWidget {
     final selectedAddress = ref.watch(addressProvider).selected;
 
     return CustomScaffoldWrapper(
+      backgroundColor: const Color(0xFFF8F9FB),
       isScrollable: false,
       appBar: CustomScreenHeader(
         title: 'My Cart',
         trailing: cartItems.isNotEmpty
-            ? InkWell(
-                onTap: () {
-                  ref.read(cartProvider.notifier).clearCart();
-                },
-                borderRadius: BorderRadius.circular(8.r),
+            ? GestureDetector(
+                onTap: () => ref.read(cartProvider.notifier).clearCart(),
                 child: Container(
                   padding:
                       EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: AppColor.primary.withOpacity(0.1),
+                    color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
-                    'Clear Cart',
+                    'Clear',
                     style: TextStyle(
-                      color: AppColor.primary,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.red.shade400,
+                      fontWeight: FontWeight.w600,
                       fontSize: 12.sp,
                     ),
                   ),
@@ -56,95 +54,17 @@ class CartScreen extends ConsumerWidget {
             : null,
       ),
       body: cartItems.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined,
-                      size: 80.sp, color: Colors.grey.shade400),
-                  SizedBox(height: 16.h),
-                  Text('Your cart is empty',
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColor.textBlack54,
-                          fontWeight: FontWeight.w500)),
-                ],
-              ),
-            )
+          ? _buildEmptyCart()
           : Column(
               children: [
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(bottom: 12.h),
                     children: [
-                      // Cart Items List
-                      Container(
-                        color: Colors.white,
-                        child: ListView.separated(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: cartItems.length,
-                          separatorBuilder: (context, index) => Divider(
-                              height: 1,
-                              color: Colors.grey.shade200,
-                              indent: 16.w,
-                              endIndent: 16.w),
-                          itemBuilder: (context, index) {
-                            final item = cartItems[index];
-                            return CartItemWidget(item: item);
-                          },
-                        ),
-                      ),
-
-                      SizedBox(height: 16.h),
-                      // Apply Coupons Banner (Mockup)
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16.w),
-                        padding: EdgeInsets.all(12.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.green.shade100),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.local_offer,
-                                color: AppColor.primary, size: 20.sp),
-                            SizedBox(width: 8.w),
-                            Text('Apply Coupons & Offers',
-                                style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColor.textBlack87)),
-                            const Spacer(),
-                            Icon(Icons.keyboard_arrow_right,
-                                color: AppColor.textBlack54),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      // Bill Details
-                      BillDetailsCard(
-                        totalItems: totalItems,
-                        totalPrice: totalPrice,
-                        totalMrp: totalMrp,
-                      ),
-                      SizedBox(height: 16.h),
-
-                      // Expandable Delivery Instructions
-                      const DeliveryInstructionsCard(),
-                      SizedBox(height: 8.h),
-
-                      // Expandable Partner Safety
-                      const DeliveryPartnerSafetyCard(),
-                      SizedBox(height: 8.h),
-
-                      // Cancellation Policy
-                      const CancellationPolicyCard(),
-                      SizedBox(height: 8.h),
-
-                      // Delivery To (tappable with address info)
-                      GestureDetector(
+                      // ── Delivery Address Banner ──────────────────────
+                      _DeliveryAddressBanner(
+                        selectedAddress: selectedAddress,
                         onTap: () {
                           final userId = ref.read(loginProvider).user?.id;
                           if (userId != null) {
@@ -157,19 +77,97 @@ class CartScreen extends ConsumerWidget {
                             );
                           }
                         },
-                        child: _buildInfoRow(
-                          Icons.location_on_outlined,
-                          'Delivery To',
-                          selectedAddress?.description,
-                          actionText: selectedAddress == null ? 'Choose' : null,
+                      ),
+
+                      SizedBox(height: 12.h),
+
+                      // ── Cart Items Card ──────────────────────────────
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '$totalItems ${totalItems == 1 ? 'item' : 'items'} in cart',
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColor.textMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ListView.separated(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: cartItems.length,
+                              separatorBuilder: (_, __) => Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: Divider(
+                                    height: 1, color: Colors.grey.shade100),
+                              ),
+                              itemBuilder: (context, index) =>
+                                  CartItemWidget(item: cartItems[index]),
+                            ),
+                          ],
                         ),
                       ),
 
-                      SizedBox(height: 32.h), // Some bottom padding
+                      SizedBox(height: 12.h),
+
+                      // ── Coupon Banner ────────────────────────────────
+                      _CouponBanner(),
+
+                      SizedBox(height: 12.h),
+
+                      // ── Bill Details ─────────────────────────────────
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: BillDetailsCard(
+                          totalItems: totalItems,
+                          totalPrice: totalPrice,
+                          totalMrp: totalMrp,
+                        ),
+                      ),
+
+                      SizedBox(height: 12.h),
+
+                      // ── Additional Info Cards ────────────────────────
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Column(
+                          children: [
+                            const DeliveryInstructionsCard(),
+                            SizedBox(height: 8.h),
+                            const DeliveryPartnerSafetyCard(),
+                            SizedBox(height: 8.h),
+                            const CancellationPolicyCard(),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 12.h),
                     ],
                   ),
                 ),
-                // Bottom Fixed Checkout Bar
+
+                // ── Checkout Bar ─────────────────────────────────────
                 CartCheckoutBar(totalPrice: totalPrice),
                 SizedBox(height: 8.h)
               ],
@@ -177,54 +175,196 @@ class CartScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String title, String? subtitle,
-      {String? actionText}) {
+  Widget _buildEmptyCart() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(28.w),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF0FAF5),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.shopping_cart_outlined,
+              size: 56.sp,
+              color: AppColor.primary,
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'Your cart is empty',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+              color: AppColor.textBlack,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Add items to your cart to get started.',
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Delivery Address Banner ────────────────────────────────────────────────
+
+class _DeliveryAddressBanner extends StatelessWidget {
+  final dynamic selectedAddress;
+  final VoidCallback onTap;
+
+  const _DeliveryAddressBanner(
+      {required this.selectedAddress, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasAddress = selectedAddress != null;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
+        padding: EdgeInsets.all(14.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+            color: hasAddress
+                ? AppColor.primary.withOpacity(0.2)
+                : Colors.orange.shade200,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: hasAddress
+                    ? AppColor.primary.withOpacity(0.08)
+                    : Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(
+                Icons.location_on_outlined,
+                color: hasAddress ? AppColor.primary : Colors.orange.shade600,
+                size: 20.sp,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hasAddress ? 'Delivering to' : 'No address selected',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    hasAddress
+                        ? selectedAddress.description ?? 'Address'
+                        : 'Tap to select a delivery address',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: hasAddress
+                          ? AppColor.textBlack
+                          : Colors.orange.shade700,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                color: hasAddress
+                    ? AppColor.primary.withOpacity(0.08)
+                    : Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Text(
+                hasAddress ? 'Change' : 'Choose',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                  color: hasAddress ? AppColor.primary : Colors.orange.shade700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Coupon Banner ──────────────────────────────────────────────────────────
+
+class _CouponBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColor.primary, size: 28.sp),
+          Container(
+            padding: EdgeInsets.all(7.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3E0),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(Icons.local_offer_outlined,
+                color: Colors.orange.shade600, size: 18.sp),
+          ),
           SizedBox(width: 12.w),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack87)),
-                if (subtitle != null) ...[
-                  SizedBox(height: 2.h),
-                  Text(subtitle,
-                      style: TextStyle(
-                          fontSize: 12.sp, color: AppColor.textMuted)),
-                ]
-              ],
+            child: Text(
+              'Apply Coupons & Offers',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColor.textBlack,
+              ),
             ),
           ),
-          if (actionText != null) ...[
-            SizedBox(width: 8.w),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Text(actionText,
-                  style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.primary)),
-            )
-          ] else ...[
-            Icon(Icons.keyboard_arrow_right, color: Colors.grey.shade400),
-          ]
+          Icon(Icons.keyboard_arrow_right,
+              color: Colors.grey.shade400, size: 20.sp),
         ],
       ),
     );

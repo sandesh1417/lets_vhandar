@@ -8,7 +8,7 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      // margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
@@ -24,11 +24,11 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
             style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColor.textBlack87),
+                color: AppColor.textBlack),
           ),
           subtitle: Text(
             'Learn more about how we ensure their safety',
-            style: TextStyle(fontSize: 12.sp, color: AppColor.textMuted),
+            style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
           ),
           children: [
             Padding(
@@ -49,7 +49,7 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
                   Text(
                     'At Vhandar, Rider\'s safety is our responsibility',
                     style:
-                        TextStyle(fontSize: 12.sp, color: AppColor.textMuted),
+                        TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
                   ),
                   SizedBox(height: 16.h),
                   _buildSafetyPoint(Icons.speed,
@@ -83,7 +83,7 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
               text,
               style: TextStyle(
                   fontSize: 11.sp,
-                  color: AppColor.greenTxtColor,
+                  color: AppColor.textBlack,
                   fontWeight: FontWeight.w500),
             ),
           ),

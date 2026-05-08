@@ -34,7 +34,7 @@ class BillDetailsCard extends ConsumerWidget {
             settings?.businessDeliveryCharge?.toDouble() ?? 0;
         final double deliveryCharge =
             isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
-        
+
         final double deliveryThreshold =
             settings?.deliveryThreshold?.toDouble() ?? 0;
         final double handlingCharge = settings?.handlingCharge?.toDouble() ?? 0;
@@ -83,10 +83,16 @@ class BillDetailsCard extends ConsumerWidget {
     required double grandTotal,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,13 +102,26 @@ class BillDetailsCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Bill details',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.greenTxtColor,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 3.w,
+                      height: 16.h,
+                      decoration: BoxDecoration(
+                        color: AppColor.primary,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      'Bill Details',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColor.textBlack,
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16.h),
                 Row(
@@ -113,7 +132,8 @@ class BillDetailsCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.receipt_long,
-                            size: 16.sp, color: AppColor.textMuted),
+                            size: 16.sp,
+                            color: AppColor.primary.withOpacity(0.6)),
                         SizedBox(width: 8.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +141,8 @@ class BillDetailsCard extends ConsumerWidget {
                             Text('Items total',
                                 style: TextStyle(
                                     fontSize: 13.sp,
-                                    color: AppColor.textBlack87)),
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColor.textBlack)),
                             if (hasSavings) ...[
                               SizedBox(height: 4.h),
                               Container(
@@ -149,8 +170,9 @@ class BillDetailsCard extends ConsumerWidget {
                           Text('Rs. ${totalMrp.toInt()}',
                               style: TextStyle(
                                   fontSize: 13.sp,
-                                  color: AppColor.textStrikeThrough,
-                                  decoration: TextDecoration.lineThrough)),
+                                  color: Colors.grey.shade700,
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationColor: Colors.grey.shade700)),
                         Text('Rs. ${totalPrice.toInt()}',
                             style: TextStyle(
                                 fontSize: 13.sp, fontWeight: FontWeight.bold)),
@@ -165,14 +187,17 @@ class BillDetailsCard extends ConsumerWidget {
                     Row(
                       children: [
                         Icon(Icons.delivery_dining,
-                            size: 16.sp, color: AppColor.textMuted),
+                            size: 16.sp,
+                            color: AppColor.primary.withOpacity(0.6)),
                         SizedBox(width: 8.w),
                         Text('Delivery charge',
                             style: TextStyle(
-                                fontSize: 13.sp, color: AppColor.textBlack87)),
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColor.textBlack)),
                         SizedBox(width: 4.w),
                         Icon(Icons.info_outline,
-                            size: 14.sp, color: AppColor.textMuted),
+                            size: 14.sp, color: Colors.grey.shade800),
                       ],
                     ),
                     Row(
@@ -181,8 +206,9 @@ class BillDetailsCard extends ConsumerWidget {
                           Text('Rs.${deliveryCharge.toInt()}',
                               style: TextStyle(
                                   fontSize: 13.sp,
-                                  color: AppColor.textStrikeThrough,
-                                  decoration: TextDecoration.lineThrough)),
+                                  color: Colors.grey.shade500,
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationColor: Colors.grey.shade900)),
                           SizedBox(width: 6.w),
                           Text('FREE',
                               style: TextStyle(
@@ -199,7 +225,7 @@ class BillDetailsCard extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                   color: finalDeliveryCharge == 0
                                       ? AppColor.secondary
-                                      : AppColor.textBlack87)),
+                                      : AppColor.textBlack)),
                       ],
                     ),
                   ],
@@ -211,14 +237,17 @@ class BillDetailsCard extends ConsumerWidget {
                     Row(
                       children: [
                         Icon(Icons.shopping_bag_outlined,
-                            size: 16.sp, color: AppColor.textMuted),
+                            size: 16.sp,
+                            color: AppColor.primary.withOpacity(0.6)),
                         SizedBox(width: 8.w),
                         Text('Handling Charge',
                             style: TextStyle(
-                                fontSize: 13.sp, color: AppColor.textBlack87)),
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColor.textBlack)),
                         SizedBox(width: 4.w),
                         Icon(Icons.info_outline,
-                            size: 14.sp, color: AppColor.textMuted),
+                            size: 14.sp, color: Colors.grey.shade400),
                       ],
                     ),
                     Text('Rs.${handlingCharge.toInt()}',
@@ -235,15 +264,15 @@ class BillDetailsCard extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Grand total',
+                        Text('Grand Total',
                             style: TextStyle(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AppColor.greenTxtColor)),
+                                color: AppColor.textBlack)),
                         SizedBox(height: 2.h),
                         Text('Incl. all taxes and charges',
                             style: TextStyle(
-                                fontSize: 11.sp, color: AppColor.textMuted)),
+                                fontSize: 11.sp, color: Colors.grey.shade600)),
                       ],
                     ),
                     Text('Rs. ${grandTotal.toInt()}',
