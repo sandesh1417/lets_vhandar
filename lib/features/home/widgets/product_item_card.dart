@@ -291,7 +291,11 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE53935), Color(0xFFFF7043)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(12.r),
                             bottomRight: Radius.circular(12.r)),

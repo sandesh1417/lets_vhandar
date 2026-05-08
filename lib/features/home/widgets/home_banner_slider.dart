@@ -82,17 +82,19 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                   },
                 ),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 10.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   banners.length,
-                  (index) => Container(
-                    width: 8.w,
-                    height: 8.w,
-                    margin: EdgeInsets.symmetric(horizontal: 4.w),
+                  (index) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: _currentPage == index ? 20.w : 6.w,
+                    height: 6.w,
+                    margin: EdgeInsets.symmetric(horizontal: 3.w),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(3.r),
                       color: _currentPage == index
                           ? AppColor.primary
                           : Colors.grey.shade300,

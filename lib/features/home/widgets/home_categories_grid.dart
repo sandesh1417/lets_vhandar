@@ -6,6 +6,18 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
+// Soft background tints cycling per category card
+const _kCategoryBgColors = [
+  Color(0xFFEAF6EE),
+  Color(0xFFFFF8E7),
+  Color(0xFFEEF2FF),
+  Color(0xFFFFF0F0),
+  Color(0xFFE8F9F7),
+  Color(0xFFF5EEFF),
+  Color(0xFFFFF4E6),
+  Color(0xFFEFF9FF),
+];
+
 class HomeCategoriesGrid extends ConsumerWidget {
   const HomeCategoriesGrid({super.key});
 
@@ -25,39 +37,42 @@ class HomeCategoriesGrid extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.65,
+              childAspectRatio: 0.68,
               crossAxisSpacing: 10.w,
-              mainAxisSpacing: 15.h,
+              mainAxisSpacing: 16.h,
             ),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final category = categories[index];
-              return InkWell(
-                onTap: () {
-                  context.push('/category-detail/${category.slug}');
-                },
+              final bgColor =
+                  _kCategoryBgColors[index % _kCategoryBgColors.length];
+              return GestureDetector(
+                onTap: () => context.push('/category-detail/${category.slug}'),
                 child: Column(
                   children: [
                     Container(
                       height: 64.h,
                       width: 64.h,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12.r),
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
-                      child: CustomImageViewer(
-                        path: category.images?.first.url,
-                        borderRadius: 12.r,
-                        fit: BoxFit.cover,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: CustomImageViewer(
+                          path: category.images?.first.url,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 5.h),
+                    SizedBox(height: 6.h),
                     Text(
                       category.name ?? '',
                       style: TextStyle(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColor.greenTxtColor),
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.textBlack87,
+                      ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
