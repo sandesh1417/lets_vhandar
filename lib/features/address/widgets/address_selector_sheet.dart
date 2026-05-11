@@ -35,7 +35,10 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
     super.initState();
     // Load addresses when sheet opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(addressProvider.notifier).loadAddresses(widget.userId);
+      final addressState = ref.read(addressProvider);
+      if (!addressState.isFetched && !addressState.isLoading) {
+        ref.read(addressProvider.notifier).loadAddresses(widget.userId);
+      }
     });
   }
 

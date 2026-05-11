@@ -21,7 +21,7 @@ class HomeHeader extends ConsumerWidget {
     final userId = ref.watch(loginProvider).user?.id ?? '';
 
     // Load addresses on first build if not already loaded
-    if (addressState.addresses.isEmpty && !addressState.isLoading && userId.isNotEmpty) {
+    if (!addressState.isFetched && !addressState.isLoading && userId.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(addressProvider.notifier).loadAddresses(userId);
       });

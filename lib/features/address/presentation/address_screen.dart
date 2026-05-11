@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -21,7 +22,8 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = ref.read(loginProvider).user;
-      if (user?.id != null) {
+      final addressState = ref.read(addressProvider);
+      if (user?.id != null && !addressState.isFetched && !addressState.isLoading) {
         ref.read(addressProvider.notifier).loadAddresses(user!.id!);
       }
     });
@@ -140,32 +142,24 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 
   void _showDeleteConfirmation(
       BuildContext context, WidgetRef ref, dynamic address) {
-    showDialog(
+    CustomDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Delete Address'),
-        content: const Text('Are you sure you want to delete this address?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final user = ref.read(loginProvider).user;
-              if (user?.id != null && address.id != null) {
-                await ref.read(addressProvider.notifier).deleteAddress(
-                      userId: user!.id!,
-                      addressId: address.id!,
-                    );
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+      icon: Icons.delete_outline,
+      iconColor: Colors.red.shade400,
+      iconBgColor: Colors.red.shade50,
+      title: 'Delete Address',
+      message: 'Are you sure you want to delete this address?',
+      confirmLabel: 'Yes, Delete',
+      confirmGradient: [Colors.red.shade600, Colors.red.shade400],
+      onConfirm: () async {
+        final user = ref.read(loginProvider).user;
+        if (user?.id != null && address.id != null) {
+          await ref.read(addressProvider.notifier).deleteAddress(
+                userId: user!.id!,
+                addressId: address.id!,
+              );
+        }
+      },
     );
   }
 }

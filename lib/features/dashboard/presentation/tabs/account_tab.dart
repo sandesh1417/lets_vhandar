@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -257,56 +258,36 @@ class AccountTab extends ConsumerWidget {
   }
 
   void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
+    CustomDialog.show(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Delete Account'),
-        content: const Text(
-            'Are you sure you want to delete your account? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref.read(loginProvider.notifier).deleteAccount(context);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+      icon: Icons.delete_forever_outlined,
+      iconColor: Colors.red.shade400,
+      iconBgColor: Colors.red.shade50,
+      title: 'Delete Account',
+      message:
+          'This action is permanent and cannot be undone. All your data, orders, and addresses will be removed.',
+      confirmLabel: 'Yes, Delete Account',
+      confirmGradient: [Colors.red.shade600, Colors.red.shade400],
+      onConfirm: () async {
+        await ref.read(loginProvider.notifier).deleteAccount(context);
+      },
     );
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
+    CustomDialog.show(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref.read(loginProvider.notifier).logout();
-              if (context.mounted) {
-                context.go(LVRoute.loginScreen.route);
-              }
-            },
-            child: const Text('Logout', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+      icon: Icons.logout_outlined,
+      iconColor: AppColor.primary,
+      title: 'Logging Out',
+      message: 'Are you sure you want to log out of your account?',
+      confirmLabel: 'Yes, Logout',
+      onConfirm: () async {
+        await ref.read(loginProvider.notifier).logout();
+        if (context.mounted) {
+          context.go(LVRoute.loginScreen.route);
+        }
+      },
     );
   }
 }

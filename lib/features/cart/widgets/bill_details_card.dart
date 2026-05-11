@@ -247,7 +247,7 @@ class BillDetailsCard extends ConsumerWidget {
                                 color: AppColor.textBlack)),
                         SizedBox(width: 4.w),
                         Icon(Icons.info_outline,
-                            size: 14.sp, color: Colors.grey.shade400),
+                            size: 14.sp, color: Colors.grey.shade700),
                       ],
                     ),
                     Text('Rs.${handlingCharge.toInt()}',

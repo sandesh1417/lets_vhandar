@@ -9,12 +9,14 @@ class AddressState {
   final List<AddressModel> addresses;
   final AddressModel? selected;
   final bool isLoading;
+  final bool isFetched;
   final String? error;
 
   const AddressState({
     this.addresses = const [],
     this.selected,
     this.isLoading = false,
+    this.isFetched = false,
     this.error,
   });
 
@@ -23,12 +25,14 @@ class AddressState {
     AddressModel? selected,
     bool clearSelected = false,
     bool? isLoading,
+    bool? isFetched,
     String? error,
   }) {
     return AddressState(
       addresses: addresses ?? this.addresses,
       selected: clearSelected ? null : (selected ?? this.selected),
       isLoading: isLoading ?? this.isLoading,
+      isFetched: isFetched ?? this.isFetched,
       error: error,
     );
   }
@@ -47,6 +51,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       success: (response) {
         state = state.copyWith(
           isLoading: false,
+          isFetched: true,
           addresses: response.addresses,
           // Auto-select first address if none selected
           selected: state.selected ??
@@ -54,7 +59,11 @@ class AddressNotifier extends StateNotifier<AddressState> {
         );
       },
       failure: (failure) {
-        state = state.copyWith(isLoading: false, error: failure.message);
+        state = state.copyWith(
+          isLoading: false,
+          isFetched: true,
+          error: failure.message,
+        );
       },
     );
   }

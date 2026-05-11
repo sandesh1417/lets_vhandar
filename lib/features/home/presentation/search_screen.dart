@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -25,8 +26,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+    return CustomScaffoldWrapper(
+      isScrollable: false,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
