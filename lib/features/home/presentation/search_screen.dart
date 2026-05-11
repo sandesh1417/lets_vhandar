@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
@@ -28,7 +29,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return CustomScaffoldWrapper(
       isScrollable: false,
-      horizontalPadding: 16.w,
+      horizontalPadding: 0,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -73,29 +74,28 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    if (!state.isLoading &&
-        state.results.isEmpty &&
-        _searchController.text.trim().isNotEmpty) {
-      return Center(
-        child: Text(
-          'No products found.',
-          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-        ),
-      );
-    }
-
-    if (state.results.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search, size: 80.sp, color: Colors.grey.shade300),
-            SizedBox(height: 16.h),
-            Text(
-              'What are you looking for?',
-              style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-            ),
-          ],
+    if (state.results.isEmpty && !state.isLoading) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.search, size: 80.sp, color: Colors.grey.shade300),
+              SizedBox(height: 16.h),
+              Text(
+                _searchController.text.trim().isEmpty
+                    ? 'What are you looking for?'
+                    : 'No products found.',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -103,10 +103,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return Column(
       children: [
         if (state.isLoading) const LinearProgressIndicator(),
+        const SearchSortBar(),
         Expanded(
           child: ProductGrid(
-            products: state.results,
-            padding: EdgeInsets.symmetric(vertical: 12.h),
+            products: state.sortedResults,
           ),
         ),
       ],
