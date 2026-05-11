@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -73,11 +75,14 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                   },
                   itemBuilder: (context, index) {
                     final banner = banners[index];
-                    return CustomImageViewer(
-                      path: banner.images?.first.url,
-                      borderRadius: 16.r,
-                      width: double.infinity,
-                      fit: BoxFit.fill,
+                    return GestureDetector(
+                      onTap: () => navigateToSlug(context, banner.link, isBrand: false),
+                      child: CustomImageViewer(
+                        path: banner.images?.first.url,
+                        borderRadius: 16.r,
+                        width: double.infinity,
+                        fit: BoxFit.fill,
+                      ),
                     );
                   },
                 ),

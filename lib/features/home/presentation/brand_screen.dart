@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -54,7 +55,7 @@ class BrandScreen extends ConsumerWidget {
               return BrandCard(
                 name: brand.name ?? '',
                 imageUrl: brand.images?.isNotEmpty == true ? brand.images!.first.url : null,
-                onTap: () => context.push('/brand-detail/${brand.slug}'),
+                onTap: () => navigateToSlug(context, brand.slug, isBrand: true),
               );
             },
           );

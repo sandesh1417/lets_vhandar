@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -123,7 +124,7 @@ class CategoryScreen extends ConsumerWidget {
                   imageUrl: brand.images?.isNotEmpty == true
                       ? brand.images!.first.url
                       : null,
-                  onTap: () => context.push('/brand-detail/${brand.slug}'),
+                  onTap: () => navigateToSlug(context, brand.slug, isBrand: true),
                 ),
               );
             },
@@ -159,7 +160,7 @@ class CategoryScreen extends ConsumerWidget {
           imageUrl: category.images?.isNotEmpty == true
               ? category.images!.first.url
               : null,
-          onTap: () => context.push('/category-detail/${category.slug}'),
+          onTap: () => navigateToSlug(context, category.slug, isBrand: false),
         );
       },
     );
