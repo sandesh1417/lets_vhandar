@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: MaterialApp.router(
-            title: 'Lets Vhandar',
+            title: 'Vhandar',
             routerConfig: locator<LVGoRouter>().getGoRouter,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
