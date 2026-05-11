@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/presentation/search_screen.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
@@ -21,7 +19,9 @@ class HomeHeader extends ConsumerWidget {
     final userId = ref.watch(loginProvider).user?.id ?? '';
 
     // Load addresses on first build if not already loaded
-    if (!addressState.isFetched && !addressState.isLoading && userId.isNotEmpty) {
+    if (!addressState.isFetched &&
+        !addressState.isLoading &&
+        userId.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(addressProvider.notifier).loadAddresses(userId);
       });
@@ -30,90 +30,99 @@ class HomeHeader extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 150.h,
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              decoration: BoxDecoration(
-                color: AppColor.primary,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20.r),
-                  bottomRight: Radius.circular(20.r),
-                ),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.fromLTRB(16.w, 0.h, 16.w, 52.h),
+          decoration: BoxDecoration(
+            color: AppColor.primary,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(24.r),
+              bottomRight: Radius.circular(24.r),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 8.w,
               ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Logo
-                      SvgPicture.asset(
-                        KImageConstant.vandharIcon,
-                        height: 40.h,
-                        colorFilter: const ColorFilter.mode(
-                            Colors.yellow, BlendMode.srcIn),
-                      ),
-                      // Location Info — tappable
-                      GestureDetector(
-                        onTap: () {
-                          if (userId.isNotEmpty) {
-                            showAddressSelectorSheet(context, userId: userId);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please login to manage addresses')),
-                            );
-                          }
-                        },
+              child: Padding(
+                padding: EdgeInsets.only(top: 50.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Logo
+                    SvgPicture.asset(
+                      KImageConstant.vandharIcon,
+                      height: 48.h,
+                    ),
+                    // Location Info — tappable
+                    GestureDetector(
+                      onTap: () {
+                        if (userId.isNotEmpty) {
+                          showAddressSelectorSheet(context, userId: userId);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please login to manage addresses'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Delivery in ',
-                                  style: KTextStyle.roboto14white4W,
-                                ),
-                                Text(
-                                  '19 Mins',
-                                  style: KTextStyle.roboto16white7W
-                                      .copyWith(fontSize: 18.sp),
+                                  'Delivering to',
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                                 SizedBox(width: 4.w),
-                                const Icon(Icons.timer,
-                                    color: Colors.white, size: 16),
+                                Icon(Icons.keyboard_arrow_down,
+                                    color: Colors.white, size: 14.sp),
                               ],
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  selected != null
-                                      ? _truncate(selected.description ??
-                                          'Select Address')
-                                      : 'Select Address',
-                                  style: KTextStyle.roboto14white4W
-                                      .copyWith(fontSize: 12.sp),
-                                ),
-                                Icon(Icons.keyboard_arrow_down,
-                                    color: Colors.white, size: 16.sp),
-                              ],
+                            Text(
+                              selected != null
+                                  ? _truncate(
+                                      selected.description ?? 'Select Address')
+                                  : 'Select Address',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            SizedBox(height: 25.h), // Space for the overflowing search bar
-          ],
+          ),
         ),
-        // Search Bar
+
+        // Search Bar (Floating)
         Positioned(
-          bottom: 0,
+          bottom: -25.h,
           left: 16.w,
           right: 16.w,
           child: GestureDetector(
@@ -124,28 +133,43 @@ class HomeHeader extends ConsumerWidget {
               );
             },
             child: Container(
-              height: 50.h,
+              height: 52.h,
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: Colors.grey.shade100),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
-              child: CustomTextField(
-                enabled: false,
-                hintText: 'Search for Vhandar products',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                suffixIcon:
-                    const Icon(Icons.qr_code_scanner, color: Colors.black),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 15.h),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey.shade400, size: 22.sp),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      'Search for products...',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey.shade400,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 24.h,
+                    width: 1,
+                    color: Colors.grey.shade200,
+                    margin: EdgeInsets.symmetric(horizontal: 8.w),
+                  ),
+                  Icon(Icons.qr_code_scanner,
+                      color: Colors.black87, size: 20.sp),
+                ],
               ),
             ),
           ),
@@ -154,6 +178,6 @@ class HomeHeader extends ConsumerWidget {
     );
   }
 
-  String _truncate(String s, {int max = 26}) =>
+  String _truncate(String s, {int max = 22}) =>
       s.length > max ? '${s.substring(0, max)}..' : s;
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/home_header.dart';
@@ -13,15 +12,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFF0FAF5), // very light green tint
-            const Color(0xFFFCFCFC), // near white
+            Color(0xFFF0FAF5), // very light green tint
+            Color(0xFFFCFCFC), // near white
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: const [0.0, 0.4],
+          stops: [0.0, 0.4],
         ),
       ),
       child: SingleChildScrollView(
@@ -30,7 +29,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const HomeHeader(),
-            SizedBox(height: 14.h),
+            SizedBox(height: 40.h), // Adjusted for floating search bar
             const HomeBannerSlider(),
             SizedBox(height: 20.h),
             HomeSectionTitle(

@@ -80,62 +80,64 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       final isSearching = _searchController.text.trim().isNotEmpty;
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 74.h),
-            // Illustration
-            Image.asset(
-              'assets/images/search_empty.png',
-              height: 200.h,
-              width: 200.w,
-              fit: BoxFit.contain,
-            ),
-            SizedBox(height: 24.h),
-            Text(
-              'Nothing here yet',
-              style: TextStyle(
-                fontSize: 28.sp,
-                color: Colors.grey.shade600,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 74.h),
+              // Illustration
+              Image.asset(
+                'assets/images/search_empty.png',
+                height: 200.h,
+                width: 200.w,
+                fit: BoxFit.contain,
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'Try searching again or explore our popular categories for more great options!',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey.shade400,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 32.h),
-            ElevatedButton(
-              onPressed: () {
-                context.pushNamed(LVRoute.productSuggestionScreen.route);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color(0xFFF9B141), // Orange/Amber from image
-                foregroundColor: Colors.white,
-                minimumSize: Size(200.w, 48.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24.r),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                'Suggest Product',
+              SizedBox(height: 24.h),
+              Text(
+                'Nothing here yet',
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 28.sp,
+                  color: Colors.grey.shade600,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              SizedBox(height: 12.h),
+              Text(
+                'Try searching again or explore our popular categories for more great options!',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.grey.shade400,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 32.h),
+              ElevatedButton(
+                onPressed: () {
+                  context.pushNamed(LVRoute.productSuggestionScreen.route);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      const Color(0xFFF9B141), // Orange/Amber from image
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(200.w, 48.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24.r),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Suggest Product',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }

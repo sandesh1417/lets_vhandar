@@ -50,7 +50,7 @@ class ApiInterceptor extends Interceptor {
     // log("$cyan${response.statusCode} ${(response.data != null ? (response.requestOptions.baseUrl + response.requestOptions.path) : 'URL')}");
     // log("{$cyan}Headers:");
     // response.headers.forEach((k, v) => log('$cyan$k: $v'));
-    log("${cyan}Response: ${response.data}");
+    // log("${cyan}Response: ${response.data}");
     // log("${cyan}END HTTP");
     // log("$cyan=======================================================================================================================================");
     super.onResponse(response, handler);
