@@ -34,7 +34,14 @@ class HomeHeader extends ConsumerWidget {
           width: double.infinity,
           padding: EdgeInsets.fromLTRB(16.w, 0.h, 16.w, 52.h),
           decoration: BoxDecoration(
-            color: AppColor.primary,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColor.primary,
+                const Color.fromARGB(255, 6, 89, 58), // Vibrant green highlight
+              ],
+            ),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(24.r),
               bottomRight: Radius.circular(24.r),
