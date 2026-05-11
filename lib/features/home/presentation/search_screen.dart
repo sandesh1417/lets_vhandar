@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
@@ -75,27 +77,65 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
 
     if (state.results.isEmpty && !state.isLoading) {
+      final isSearching = _searchController.text.trim().isNotEmpty;
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.search, size: 80.sp, color: Colors.grey.shade300),
-              SizedBox(height: 16.h),
-              Text(
-                _searchController.text.trim().isEmpty
-                    ? 'What are you looking for?'
-                    : 'No products found.',
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 74.h),
+            // Illustration
+            Image.asset(
+              'assets/images/search_empty.png',
+              height: 200.h,
+              width: 200.w,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(height: 24.h),
+            Text(
+              'Nothing here yet',
+              style: TextStyle(
+                fontSize: 28.sp,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 12.h),
+            Text(
+              'Try searching again or explore our popular categories for more great options!',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey.shade400,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 32.h),
+            ElevatedButton(
+              onPressed: () {
+                context.pushNamed(LVRoute.productSuggestionScreen.route);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color(0xFFF9B141), // Orange/Amber from image
+                foregroundColor: Colors.white,
+                minimumSize: Size(200.w, 48.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24.r),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'Suggest Product',
                 style: TextStyle(
                   fontSize: 16.sp,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
