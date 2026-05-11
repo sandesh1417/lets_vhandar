@@ -109,7 +109,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              SizedBox(height: 4.h),
+                                              SizedBox(height: 2.h),
                                               Row(
                                                 children: [
                                                   Text(
@@ -285,7 +285,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             Stack(
               children: [
                 Container(
-                  height: 80.h, // Slightly reduced further for compactness
+                  height: 75.h, // Reduced for compactness
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
@@ -334,12 +334,12 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
               ],
             ),
             Expanded(
-                child: Padding(
-              padding: EdgeInsets.all(8.w), // Increased for premium feel
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -351,13 +351,13 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 2.h),
                       widget.product.hasVariant == true
                           ? GestureDetector(
                               onTap: _showVariantBottomSheet,
                               child: Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 4.h),
+                                    horizontal: 8.w, vertical: 3.h),
                                 decoration: BoxDecoration(
                                   border:
                                       Border.all(color: Colors.grey.shade300),

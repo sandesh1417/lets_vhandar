@@ -23,17 +23,15 @@ class ProductGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Card content breakdown (all values from ProductItemCard):
-    //   image:    80.h
-    //   padding:  8.w * 2 (top + bottom of text section)
-    //   name:     30.h
-    //   gap:       4.h
-    //   unit:     30.h
-    //   gap:       6.h
-    //   price row: ~35.h  (price text + ADD button)
-    // Total ≈ 80 + 16 + 30 + 4 + 30 + 6 + 35 = 201
-    // Add a small buffer for shadows and rounding.
-    final double cardHeight = 80.h + 30.h + 30.h + 35.h + 4.h + 6.h + 20.w;
+    // Compact card content breakdown:
+    //   image:    75.h
+    //   padding:  6.w * 2
+    //   name:     28.h (approx for 2 lines)
+    //   unit:     22.h
+    //   price:    32.h
+    //   buffer:   15.w
+    // Compact card height to ensure consistency and prevent overflow
+    final double cardHeight = 185.h;
 
     return GridView.builder(
       padding: padding ?? EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),
@@ -49,7 +47,7 @@ class ProductGrid extends StatelessWidget {
         return ProductItemCard(
           key: ValueKey(product.id),
           product: product,
-          margin: EdgeInsets.zero,
+          margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
           width: double.infinity,
           onTap: () {
             context.pushNamed(

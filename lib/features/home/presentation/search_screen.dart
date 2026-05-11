@@ -28,6 +28,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return CustomScaffoldWrapper(
       isScrollable: false,
+      horizontalPadding: 16.w,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -105,6 +106,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         Expanded(
           child: ProductGrid(
             products: state.results,
+            padding: EdgeInsets.symmetric(vertical: 12.h),
           ),
         ),
       ],
