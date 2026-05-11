@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,8 +30,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _phoneController = TextEditingController(text: '9861100736');
-    _passwordController = TextEditingController(text: 'S@ndesh1234');
+    _phoneController =
+        TextEditingController(text: kDebugMode ? '9861100736' : '');
+    _passwordController =
+        TextEditingController(text: kDebugMode ? 'S@ndesh1234' : '');
   }
 
   @override
