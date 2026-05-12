@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart
 import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/presentation/barcode_scanner_screen.dart';
+import 'package:lets_vhandar/features/home/presentation/search_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
@@ -50,7 +51,8 @@ enum LVRoute {
   blogScreen,
   contactUsScreen,
   careersScreen,
-  barcodeScannerScreen;
+  barcodeScannerScreen,
+  searchScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -246,6 +248,12 @@ class LVGoRouter {
         name: LVRoute.barcodeScannerScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const BarcodeScannerScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.searchScreen.route,
+        name: LVRoute.searchScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const SearchScreen(),
       ),
       // Add other routes as they are implemented
     ],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -63,8 +64,11 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
   }
 
   void _performSearch(String barcode) {
+    debugPrint('Barcode Scanned: $barcode');
     ref.read(searchProvider.notifier).search(barcode);
-    context.pop(); // Go back to search screen which will show results
+    
+    // Instead of popping, navigate to SearchScreen to ensure results are shown
+    context.pushReplacementNamed(LVRoute.searchScreen.route);
   }
 
   @override

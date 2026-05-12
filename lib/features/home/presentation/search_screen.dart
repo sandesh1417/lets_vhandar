@@ -21,6 +21,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize controller with current query from provider
+    _searchController.text = ref.read(searchProvider).query;
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -63,7 +70,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.barcode_reader, color: AppColor.primary),
+              icon: Icon(Icons.qr_code_scanner, color: AppColor.primary),
               onPressed: () {
                 context.pushNamed(LVRoute.barcodeScannerScreen.route);
               },

@@ -9,6 +9,7 @@ class SearchState {
   final List<ProductData> results;
   final List<ProductData> sortedResults;
   final String? error;
+  final String query;
   final String selectedSort;
 
   SearchState({
@@ -16,6 +17,7 @@ class SearchState {
     this.results = const [],
     this.sortedResults = const [],
     this.error,
+    this.query = '',
     this.selectedSort = 'relevance',
   });
 
@@ -24,6 +26,7 @@ class SearchState {
     List<ProductData>? results,
     List<ProductData>? sortedResults,
     String? error,
+    String? query,
     String? selectedSort,
   }) {
     return SearchState(
@@ -31,6 +34,7 @@ class SearchState {
       results: results ?? this.results,
       sortedResults: sortedResults ?? this.sortedResults,
       error: error,
+      query: query ?? this.query,
       selectedSort: selectedSort ?? this.selectedSort,
     );
   }
@@ -50,7 +54,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, query: query);
 
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       final result = await _repository.searchProducts(query);
@@ -125,6 +129,6 @@ class SearchNotifier extends StateNotifier<SearchState> {
 }
 
 final searchProvider =
-    StateNotifierProvider.autoDispose<SearchNotifier, SearchState>((ref) {
+    StateNotifierProvider<SearchNotifier, SearchState>((ref) {
   return SearchNotifier();
 });
