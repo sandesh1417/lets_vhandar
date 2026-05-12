@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/app_style.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
-import 'package:lets_vhandar/features/auth/otp/widgets/otp_section_widget.dart';
-import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
-import 'package:lets_vhandar/widgets/custom_button.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/core/constants/app_style.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
+import 'package:vhandar/features/auth/otp/widgets/otp_section_widget.dart';
+import 'package:vhandar/features/auth/register/providers/register_provider.dart';
+import 'package:vhandar/widgets/custom_appbar.dart';
+import 'package:vhandar/widgets/custom_button.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class OTPScreen extends ConsumerStatefulWidget {
   final String phoneNumber;

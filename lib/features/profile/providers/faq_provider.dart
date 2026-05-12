@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/features/profile/data/faq_repository.dart';
+import 'package:vhandar/features/profile/data/faq_repository.dart';
 
 final faqRepositoryProvider = Provider((ref) => FAQRepository());
 

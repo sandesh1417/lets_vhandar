@@ -6,9 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
-import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
+import 'package:vhandar/features/address/domain/models/address_model.dart';
+import 'package:vhandar/features/address/providers/address_provider.dart';
+import 'package:vhandar/features/home/providers/warehouse_provider.dart';
 
 import 'address_form.dart';
 import 'address_location_banner.dart';

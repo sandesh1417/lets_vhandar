@@ -1,6 +1,6 @@
-// import 'package:lets_vhandar/core/error/failure.dart';
-// import 'package:lets_vhandar/core/modals/generic_response_modal.dart';
-// import 'package:lets_vhandar/core/utils/result.dart';
+// import 'package:vhandar/core/error/failure.dart';
+// import 'package:vhandar/core/modals/generic_response_modal.dart';
+// import 'package:vhandar/core/utils/result.dart';
 
 // abstract class AuthRepository {
 //   Future<Result<GenericResponseModal, Failure>> login(

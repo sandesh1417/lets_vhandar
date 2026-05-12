@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/home/providers/brand_detail_provider.dart';
-import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
-import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
-import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/cart/widgets/cart_floating_badge.dart';
+import 'package:vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:vhandar/features/home/providers/brand_detail_provider.dart';
+import 'package:vhandar/features/home/providers/brand_provider.dart';
+import 'package:vhandar/features/home/widgets/product_grid.dart';
+import 'package:vhandar/widgets/custom_image_viewer.dart';
+import 'package:vhandar/widgets/layout_toggle_button.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {
   final String brandSlug;

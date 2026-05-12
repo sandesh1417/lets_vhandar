@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/home/providers/search_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
-import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/home/providers/search_provider.dart';
+import 'package:vhandar/features/home/widgets/product_grid.dart';
+import 'package:vhandar/features/home/widgets/search_sort_bar.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/tff.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 // import 'package:celestria/core/constants/r_session.dart';
 import 'package:dio/dio.dart';
-import 'package:lets_vhandar/core/constants/r_session.dart';
+import 'package:vhandar/core/constants/r_session.dart';
 
 // import 'package:shared_preferences/shared_preferences.dart';
 

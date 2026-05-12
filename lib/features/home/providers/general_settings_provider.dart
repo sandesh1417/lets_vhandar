@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/home/data/repositories/general_settings_repository.dart';
-import 'package:lets_vhandar/features/home/domain/models/general_settings_model.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/home/data/repositories/general_settings_repository.dart';
+import 'package:vhandar/features/home/domain/models/general_settings_model.dart';
 
 final generalSettingsProvider =
     FutureProvider<GeneralSettings?>((ref) async {

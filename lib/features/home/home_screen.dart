@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
-import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
-import 'package:lets_vhandar/features/home/widgets/home_header.dart';
-import 'package:lets_vhandar/features/home/widgets/home_section_title.dart';
-import 'package:lets_vhandar/features/home/widgets/home_top_selling_list.dart';
+import 'package:vhandar/features/home/widgets/home_banner_slider.dart';
+import 'package:vhandar/features/home/widgets/home_categories_grid.dart';
+import 'package:vhandar/features/home/widgets/home_header.dart';
+import 'package:vhandar/features/home/widgets/home_section_title.dart';
+import 'package:vhandar/features/home/widgets/home_top_selling_list.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

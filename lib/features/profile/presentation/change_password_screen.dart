@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/app_style.dart';
-import 'package:lets_vhandar/core/utils/validation.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/profile/providers/change_password_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
-import 'package:lets_vhandar/widgets/custom_button.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:vhandar/core/constants/app_style.dart';
+import 'package:vhandar/core/utils/validation.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/features/profile/providers/change_password_provider.dart';
+import 'package:vhandar/widgets/custom_appbar.dart';
+import 'package:vhandar/widgets/custom_button.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/custom_snackbar.dart';
+import 'package:vhandar/widgets/tff.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});

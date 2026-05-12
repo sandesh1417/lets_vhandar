@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/home/data/repositories/category_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
-import 'package:lets_vhandar/features/home/domain/models/category_modal.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
-import 'package:lets_vhandar/features/home/domain/models/sub_category_modal.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/home/data/repositories/category_repository.dart';
+import 'package:vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:vhandar/features/home/domain/models/category_modal.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/home/domain/models/sub_category_modal.dart';
 
 final categoryBySlugProvider =
     FutureProvider.family<CategoryData, String>((ref, slug) async {

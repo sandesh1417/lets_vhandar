@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/address/providers/address_provider.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/features/cart/providers/cart_provider.dart';
+import 'package:vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:vhandar/features/order/providers/order_provider.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;

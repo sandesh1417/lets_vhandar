@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
+import 'package:vhandar/features/auth/login/models/user_model.dart';
 
 class LoginState extends Equatable {
   final bool isLoading;

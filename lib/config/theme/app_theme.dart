@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/config/theme/color_schemes.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/config/theme/color_schemes.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {

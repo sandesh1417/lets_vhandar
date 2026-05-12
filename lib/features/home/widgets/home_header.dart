@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/home/presentation/search_screen.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/image_constant.dart';
+import 'package:vhandar/features/address/providers/address_provider.dart';
+import 'package:vhandar/features/address/widgets/address_selector_sheet.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/features/home/presentation/search_screen.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});

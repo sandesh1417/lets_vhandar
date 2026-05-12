@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:lets_vhandar/core/api/interceptor.dart';
-import 'package:lets_vhandar/core/config/api_endpoints.dart';
+import 'package:vhandar/core/api/interceptor.dart';
+import 'package:vhandar/core/config/api_endpoints.dart';
 
 class DioClient {
   late final Dio _dio;

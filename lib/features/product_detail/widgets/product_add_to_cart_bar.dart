@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/cart/providers/cart_provider.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
 
 class ProductAddToCartBar extends ConsumerWidget {
   final ProductData product;

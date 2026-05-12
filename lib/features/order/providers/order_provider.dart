@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/order/data/order_repository.dart';
-import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/order/data/order_repository.dart';
+import 'package:vhandar/features/order/domain/models/order_model.dart';
 
 // ─── Order List State ─────────────────────────────────────────────────────────
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
-import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/address/domain/models/address_model.dart';
+import 'package:vhandar/features/address/providers/address_provider.dart';
+import 'package:vhandar/features/address/widgets/add_address_sheet.dart';
 
 /// Shows the list of saved addresses and an "Add Address" button.
 /// Call via: showAddressSelectorSheet(context, userId: '...')

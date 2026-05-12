@@ -1,4 +1,4 @@
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
 
 class CartItem {
   final ProductData product;

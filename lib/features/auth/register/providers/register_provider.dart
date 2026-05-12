@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:lets_vhandar/features/auth/register/domain/register_state.dart';
-import 'package:lets_vhandar/features/auth/register/modals/register_modal.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:vhandar/features/auth/register/domain/register_state.dart';
+import 'package:vhandar/features/auth/register/modals/register_modal.dart';
+import 'package:vhandar/widgets/custom_snackbar.dart';
 
 // Registration Provider
 final registrationProvider =

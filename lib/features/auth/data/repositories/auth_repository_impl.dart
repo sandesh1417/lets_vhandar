@@ -1,10 +1,10 @@
-import 'package:lets_vhandar/core/api/api_client.dart';
-import 'package:lets_vhandar/core/config/api_endpoints.dart';
-import 'package:lets_vhandar/core/error/failure.dart';
-import 'package:lets_vhandar/core/modals/generic_response_modal.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/features/auth/login/models/login_response_modal.dart';
-import 'package:lets_vhandar/features/auth/login/models/user_profile_response.dart';
+import 'package:vhandar/core/api/api_client.dart';
+import 'package:vhandar/core/config/api_endpoints.dart';
+import 'package:vhandar/core/error/failure.dart';
+import 'package:vhandar/core/modals/generic_response_modal.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/features/auth/login/models/login_response_modal.dart';
+import 'package:vhandar/features/auth/login/models/user_profile_response.dart';
 
 class AuthRepositoryImpl {
   final ApiClient _apiClient;

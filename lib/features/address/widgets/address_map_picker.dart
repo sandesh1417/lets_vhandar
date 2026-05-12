@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/widgets/tff.dart';
 
 /// Google Map with search bar and "Go to current location" button.
 class AddressMapPicker extends StatelessWidget {

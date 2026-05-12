@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
-import 'package:lets_vhandar/features/cart/widgets/cancellation_policy_card.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_checkout_bar.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_item_widget.dart';
-import 'package:lets_vhandar/features/cart/widgets/delivery_instructions_card.dart';
-import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/address/providers/address_provider.dart';
+import 'package:vhandar/features/address/widgets/address_selector_sheet.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/features/cart/providers/cart_provider.dart';
+import 'package:vhandar/features/cart/widgets/bill_details_card.dart';
+import 'package:vhandar/features/cart/widgets/cancellation_policy_card.dart';
+import 'package:vhandar/features/cart/widgets/cart_checkout_bar.dart';
+import 'package:vhandar/features/cart/widgets/cart_item_widget.dart';
+import 'package:vhandar/features/cart/widgets/delivery_instructions_card.dart';
+import 'package:vhandar/features/cart/widgets/delivery_partner_safety_card.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/custom_screen_header.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/custom_screen_header.dart';
+import 'package:vhandar/widgets/custom_snackbar.dart';
 
 class ReferAndEarnScreen extends ConsumerWidget {
   const ReferAndEarnScreen({super.key});

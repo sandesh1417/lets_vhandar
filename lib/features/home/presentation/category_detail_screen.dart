@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/features/cart/widgets/cart_floating_badge.dart';
+import 'package:vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:vhandar/features/home/providers/category_detail_provider.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
 
 import 'category_detail/widgets/category_product_grid.dart';
 import 'category_detail/widgets/category_search_app_bar.dart';

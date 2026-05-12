@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
-import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/home/widgets/product_item_card.dart';
 
 /// A shared, responsive product grid used across Search, Category, and Brand screens.
 /// Uses [mainAxisExtent] instead of [childAspectRatio] so that card height is

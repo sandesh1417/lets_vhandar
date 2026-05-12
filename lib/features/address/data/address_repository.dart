@@ -1,8 +1,8 @@
-import 'package:lets_vhandar/core/api/api_client.dart';
-import 'package:lets_vhandar/core/config/api_endpoints.dart';
-import 'package:lets_vhandar/core/error/failure.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/features/address/domain/models/address_response.dart';
+import 'package:vhandar/core/api/api_client.dart';
+import 'package:vhandar/core/config/api_endpoints.dart';
+import 'package:vhandar/core/error/failure.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/features/address/domain/models/address_response.dart';
 
 class AddressRepository {
   final ApiClient _apiClient;

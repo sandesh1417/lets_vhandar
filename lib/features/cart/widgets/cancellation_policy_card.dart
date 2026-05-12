@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
 
 class CancellationPolicyCard extends StatelessWidget {
   const CancellationPolicyCard({super.key});

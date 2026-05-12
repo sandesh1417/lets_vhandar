@@ -1,4 +1,4 @@
-import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
+import 'package:vhandar/features/auth/login/models/user_model.dart';
 
 class UserProfileResponse {
   final String? status;

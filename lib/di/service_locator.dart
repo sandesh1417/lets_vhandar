@@ -1,16 +1,16 @@
 import 'package:get_it/get_it.dart';
-import 'package:lets_vhandar/core/api/api_client.dart';
-import 'package:lets_vhandar/core/api/dio_client.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/address/data/address_repository.dart';
-import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:lets_vhandar/features/home/data/repositories/banner_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/brand_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/category_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/general_settings_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
-import 'package:lets_vhandar/features/home/data/repositories/warehouse_repository.dart';
-import 'package:lets_vhandar/features/order/data/order_repository.dart';
+import 'package:vhandar/core/api/api_client.dart';
+import 'package:vhandar/core/api/dio_client.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/address/data/address_repository.dart';
+import 'package:vhandar/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:vhandar/features/home/data/repositories/banner_repository.dart';
+import 'package:vhandar/features/home/data/repositories/brand_repository.dart';
+import 'package:vhandar/features/home/data/repositories/category_repository.dart';
+import 'package:vhandar/features/home/data/repositories/general_settings_repository.dart';
+import 'package:vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:vhandar/features/home/data/repositories/warehouse_repository.dart';
+import 'package:vhandar/features/order/data/order_repository.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {

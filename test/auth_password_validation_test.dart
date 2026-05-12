@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lets_vhandar/core/utils/validation.dart';
+import 'package:vhandar/core/utils/validation.dart';
 
 void main() {
   group('Password Validation Tests', () {

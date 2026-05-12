@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/features/cart/domain/models/cart_item_model.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/cart/domain/models/cart_item_model.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
   CartNotifier() : super([]);

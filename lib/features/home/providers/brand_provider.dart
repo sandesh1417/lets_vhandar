@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/home/data/repositories/brand_repository.dart';
-import 'package:lets_vhandar/features/home/domain/models/brand_modal.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/home/data/repositories/brand_repository.dart';
+import 'package:vhandar/features/home/domain/models/brand_modal.dart';
 
 final brandProvider = FutureProvider<List<BrandData>>((ref) async {
   final brandRepository = locator<BrandRepository>();

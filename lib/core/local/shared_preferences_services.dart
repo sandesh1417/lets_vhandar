@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
+import 'package:vhandar/features/auth/login/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionPrefences {

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
 
 class LoadingOverlay {
   LoadingOverlay();

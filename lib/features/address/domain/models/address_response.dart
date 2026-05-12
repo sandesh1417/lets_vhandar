@@ -1,4 +1,4 @@
-import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
+import 'package:vhandar/features/address/domain/models/address_model.dart';
 
 class AddressPagination {
   final int? total;

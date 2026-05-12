@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/cart/cart_screen.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
-import 'package:lets_vhandar/features/dashboard/presentation/tabs/account_tab.dart';
-import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/home/home_screen.dart';
-import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
-import 'package:lets_vhandar/features/order/order_screen.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/cart/cart_screen.dart';
+import 'package:vhandar/features/cart/providers/cart_provider.dart';
+import 'package:vhandar/features/cart/widgets/cart_floating_badge.dart';
+import 'package:vhandar/features/dashboard/presentation/tabs/account_tab.dart';
+import 'package:vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:vhandar/features/home/home_screen.dart';
+import 'package:vhandar/features/home/presentation/category_screen.dart';
+import 'package:vhandar/features/order/order_screen.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});

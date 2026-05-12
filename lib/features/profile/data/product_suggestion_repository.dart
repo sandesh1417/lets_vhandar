@@ -1,8 +1,8 @@
-import 'package:lets_vhandar/core/api/api_client.dart';
-import 'package:lets_vhandar/core/config/api_endpoints.dart';
-import 'package:lets_vhandar/core/error/failure.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
+import 'package:vhandar/core/api/api_client.dart';
+import 'package:vhandar/core/config/api_endpoints.dart';
+import 'package:vhandar/core/error/failure.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
 
 class ProductSuggestionRepository {
   final ApiClient _apiClient = locator<ApiClient>();

@@ -1,8 +1,8 @@
-import 'package:lets_vhandar/core/api/api_client.dart';
-import 'package:lets_vhandar/core/config/api_endpoints.dart';
-import 'package:lets_vhandar/core/error/failure.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/core/api/api_client.dart';
+import 'package:vhandar/core/config/api_endpoints.dart';
+import 'package:vhandar/core/error/failure.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
 
 class ProductRepository {
   final ApiClient _apiClient;

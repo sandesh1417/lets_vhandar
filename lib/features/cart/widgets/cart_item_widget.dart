@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/cart/domain/models/cart_item_model.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
-import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/cart/domain/models/cart_item_model.dart';
+import 'package:vhandar/features/cart/providers/cart_provider.dart';
+import 'package:vhandar/widgets/custom_image_viewer.dart';
 
 class CartItemWidget extends ConsumerWidget {
   final CartItem item;

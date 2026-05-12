@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="lets_vhandar"
+        android:label="vhandar"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

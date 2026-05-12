@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/home/providers/product_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/home/providers/product_provider.dart';
+import 'package:vhandar/features/home/widgets/product_item_card.dart';
 
 class HomeFeaturedProductsList extends ConsumerWidget {
   const HomeFeaturedProductsList({super.key});

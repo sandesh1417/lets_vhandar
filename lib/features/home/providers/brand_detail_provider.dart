@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
-import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/home/providers/brand_provider.dart';
 
 final brandSelectedSortProvider = StateProvider.autoDispose
     .family<String?, String>((ref, slug) => 'relevance');

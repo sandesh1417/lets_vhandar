@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
-import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
-import 'package:lets_vhandar/features/order/providers/order_detail_provider.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/home/providers/general_settings_provider.dart';
+import 'package:vhandar/features/order/domain/models/order_model.dart';
+import 'package:vhandar/features/order/providers/order_detail_provider.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/custom_screen_header.dart';
 
 import 'widgets/bill_details_card.dart';
 import 'widgets/order_product_item.dart';

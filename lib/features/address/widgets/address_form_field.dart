@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/widgets/tff.dart';
 
 /// Reusable styled text field for the address form.
 class AddressFormField extends StatelessWidget {

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
-import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/features/home/providers/category_detail_provider.dart';
+import 'package:vhandar/widgets/layout_toggle_button.dart';
 
 class CategorySearchAppBar extends ConsumerStatefulWidget
     implements PreferredSizeWidget {

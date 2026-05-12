@@ -1,5 +1,5 @@
-import 'package:lets_vhandar/features/auth/login/models/token_model.dart';
-import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
+import 'package:vhandar/features/auth/login/models/token_model.dart';
+import 'package:vhandar/features/auth/login/models/user_model.dart';
 
 class LoginResponseModal {
   final String? status;

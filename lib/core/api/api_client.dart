@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:lets_vhandar/core/api/dio_client.dart';
-import 'package:lets_vhandar/core/error/failure.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
+import 'package:vhandar/core/api/dio_client.dart';
+import 'package:vhandar/core/error/failure.dart';
+import 'package:vhandar/core/utils/result.dart';
 
 class ApiClient {
   final DioClient _dioClient;

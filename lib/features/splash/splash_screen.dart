@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/core/local/shared_preferences_services.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/image_constant.dart';
+import 'package:vhandar/core/local/shared_preferences_services.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/auth/login/providers/login_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

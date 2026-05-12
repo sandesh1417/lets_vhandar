@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
 
 class CustomSnackbar {
   static void show(

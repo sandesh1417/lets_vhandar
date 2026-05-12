@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
 
 import 'address_form_field.dart';
 import 'address_type_chip.dart';

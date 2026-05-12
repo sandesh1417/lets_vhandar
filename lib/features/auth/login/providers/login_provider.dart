@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/r_session.dart';
-import 'package:lets_vhandar/core/local/shared_preferences_services.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
-import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:lets_vhandar/features/auth/login/domain/login_state.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:vhandar/core/constants/r_session.dart';
+import 'package:vhandar/core/local/shared_preferences_services.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/core/utils/result.dart';
+import 'package:vhandar/di/service_locator.dart';
+import 'package:vhandar/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:vhandar/features/auth/login/domain/login_state.dart';
+import 'package:vhandar/widgets/custom_snackbar.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
