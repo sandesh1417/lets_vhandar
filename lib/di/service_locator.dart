@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/home/data/repositories/general_settings_re
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/warehouse_repository.dart';
 import 'package:lets_vhandar/features/order/data/order_repository.dart';
+import 'package:vhandar/core/router/app_router.dart';
 
 GetIt locator = GetIt.I;
 void setUpDependenciesInjection() {

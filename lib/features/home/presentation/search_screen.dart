@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/features/home/providers/search_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
-import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:vhandar/core/constants/color_constant.dart';
+import 'package:vhandar/core/router/app_router.dart';
+import 'package:vhandar/features/home/providers/search_provider.dart';
+import 'package:vhandar/features/home/widgets/product_grid.dart';
+import 'package:vhandar/features/home/widgets/search_sort_bar.dart';
+import 'package:vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:vhandar/widgets/tff.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -36,26 +37,38 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: CustomTextField(
-          controller: _searchController,
-          autofocus: true,
-          hintText: 'Search for products...',
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.grey),
-                  onPressed: () {
-                    _searchController.clear();
-                    ref.read(searchProvider.notifier).search('');
-                  },
-                )
-              : null,
-          onChanged: (value) {
-            setState(() {}); // to show/hide clear button
-            ref.read(searchProvider.notifier).search(value);
-          },
+        title: Row(
+          children: [
+            Expanded(
+              child: CustomTextField(
+                controller: _searchController,
+                autofocus: true,
+                hintText: 'Search for products...',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.grey),
+                        onPressed: () {
+                          _searchController.clear();
+                          ref.read(searchProvider.notifier).search('');
+                        },
+                      )
+                    : null,
+                onChanged: (value) {
+                  setState(() {}); // to show/hide clear button
+                  ref.read(searchProvider.notifier).search(value);
+                },
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.barcode_reader, color: AppColor.primary),
+              onPressed: () {
+                context.pushNamed(LVRoute.barcodeScannerScreen.route);
+              },
+            ),
+          ],
         ),
       ),
       body: _buildBody(searchState),

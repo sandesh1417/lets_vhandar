@@ -2,29 +2,30 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
-import 'package:lets_vhandar/features/auth/forget_password/reset_password_screen.dart';
-import 'package:lets_vhandar/features/auth/login/login_screen.dart';
-import 'package:lets_vhandar/features/auth/otp/otp_screen.dart';
-import 'package:lets_vhandar/features/auth/register/register_screen.dart';
-import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart';
-import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
-import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
-import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart';
-import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
-import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
-import 'package:lets_vhandar/features/order/presentation/order_detail_screen.dart';
-import 'package:lets_vhandar/features/address/presentation/address_screen.dart';
-import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/about_us_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/change_password_screen.dart';
-import 'package:lets_vhandar/widgets/generic_webview_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
-import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
-import 'package:lets_vhandar/features/splash/splash_screen.dart';
+import 'package:vhandar/features/auth/forget_password/forget_password_screen.dart';
+import 'package:vhandar/features/auth/forget_password/reset_password_screen.dart';
+import 'package:vhandar/features/auth/login/login_screen.dart';
+import 'package:vhandar/features/auth/otp/otp_screen.dart';
+import 'package:vhandar/features/auth/register/register_screen.dart';
+import 'package:vhandar/features/auth/v4B_register/v4B_register_screen.dart';
+import 'package:vhandar/features/dashboard/dashboard_screen.dart';
+import 'package:vhandar/features/home/domain/models/product_modal.dart';
+import 'package:vhandar/features/home/presentation/barcode_scanner_screen.dart';
+import 'package:vhandar/features/home/presentation/brand_detail_screen.dart';
+import 'package:vhandar/features/home/presentation/brand_screen.dart';
+import 'package:vhandar/features/home/presentation/category_detail_screen.dart';
+import 'package:vhandar/features/order/presentation/order_detail_screen.dart';
+import 'package:vhandar/features/address/presentation/address_screen.dart';
+import 'package:vhandar/features/product_detail/product_detail_screen.dart';
+import 'package:vhandar/features/profile/presentation/about_us_screen.dart';
+import 'package:vhandar/features/profile/presentation/change_password_screen.dart';
+import 'package:vhandar/widgets/generic_webview_screen.dart';
+import 'package:vhandar/features/profile/presentation/faq_screen.dart';
+import 'package:vhandar/features/profile/presentation/feedback_screen.dart';
+import 'package:vhandar/features/profile/presentation/personal_information_screen.dart';
+import 'package:vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:vhandar/features/profile/presentation/referral_screen.dart';
+import 'package:vhandar/features/splash/splash_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -48,7 +49,8 @@ enum LVRoute {
   aboutUsScreen,
   blogScreen,
   contactUsScreen,
-  careersScreen;
+  careersScreen,
+  barcodeScannerScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -238,6 +240,12 @@ class LVGoRouter {
           title: 'Careers',
           url: 'https://www.vhandar.com/careers',
         ),
+      ),
+      GoRoute(
+        path: LVRoute.barcodeScannerScreen.route,
+        name: LVRoute.barcodeScannerScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const BarcodeScannerScreen(),
       ),
       // Add other routes as they are implemented
     ],
