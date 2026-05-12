@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
+import 'package:lets_vhandar/widgets/custom_appbar.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -66,222 +68,188 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
   void _performSearch(String barcode) {
     debugPrint('Barcode Scanned: $barcode');
     ref.read(searchProvider.notifier).search(barcode);
-    
-    // Instead of popping, navigate to SearchScreen to ensure results are shown
     context.pushReplacementNamed(LVRoute.searchScreen.route);
   }
 
   @override
   Widget build(BuildContext context) {
+    return CustomScaffoldWrapper(
+      isScrollable: true,
+      appBar: CustomAppBar(
+        title: _isManualEntry ? 'Enter Barcode' : 'Scan Barcode',
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
     if (!_isPermissionChecked) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF06412D),
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      return SizedBox(
+        height: 0.8.sh,
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (!_hasPermission) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF06412D),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.camera_alt, color: Colors.white, size: 64),
-                SizedBox(height: 16.h),
-                Text(
-                  'Camera permission is required\nto scan barcodes',
-                  style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                  textAlign: TextAlign.center,
+    if (!_hasPermission && !_isManualEntry) {
+      return SizedBox(
+        height: 0.8.sh,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.camera_alt, color: Colors.grey, size: 64.sp),
+              SizedBox(height: 16.h),
+              Text(
+                'Camera permission is required\nto scan barcodes',
+                style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24.h),
+              ElevatedButton(
+                onPressed: _checkPermission,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primary,
+                  foregroundColor: Colors.white,
                 ),
-                SizedBox(height: 24.h),
-                ElevatedButton(
-                  onPressed: _checkPermission,
-                  child: const Text('Grant Permission'),
-                ),
-                TextButton(
-                  onPressed: () => context.pop(),
-                  child: const Text('Go Back',
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
+                child: const Text('Grant Permission'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isManualEntry = true;
+                  });
+                },
+                child: Text('Enter Manually Instead',
+                    style: TextStyle(color: AppColor.primary)),
+              ),
+            ],
           ),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF06412D), // Dark green background
-      body: Stack(
+    return Padding(
+      padding: EdgeInsets.all(24.r),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (!_isManualEntry) ...[
-            MobileScanner(
-              controller: cameraController,
-              onDetect: _onDetect,
-            ),
-            // Custom Scanner Overlay
-            Center(
-              child: Container(
-                width: 250.w,
-                height: 250.w,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(12),
+          if (_isManualEntry) _buildManualEntryUI() else _buildScannerUI(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScannerUI() {
+    return Column(
+      children: [
+        SizedBox(height: 20.h),
+        Text(
+          'Align the barcode within the frame',
+          style: TextStyle(fontSize: 16.sp, color: Colors.grey.shade600),
+        ),
+        SizedBox(height: 40.h),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              width: 320.w,
+              height: 320.w,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.r),
+                child: MobileScanner(
+                  controller: cameraController,
+                  onDetect: _onDetect,
                 ),
               ),
             ),
-          ],
-
-          // Background overlay for manual entry or UI elements
-          if (_isManualEntry)
+            // Scanner Overlay Frame
             Container(
-              color: const Color(0xFF06412D),
-            ),
-
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/v.svg',
-                        height: 32.h,
-                        colorFilter: const ColorFilter.mode(
-                            Colors.white, BlendMode.srcIn),
-                      ),
-                      IconButton(
-                        onPressed: () => context.pop(),
-                        icon: const Icon(Icons.close,
-                            color: Colors.white, size: 32),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  if (_isManualEntry) ...[
-                    // Manual Entry UI based on screenshot
-                    Container(
-                      padding: EdgeInsets.all(20.r),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.barcode_reader,
-                          color: Colors.white, size: 48),
-                    ),
-                    SizedBox(height: 24.h),
-                    Text(
-                      'Enter Barcode',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Type the barcode number manually',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    SizedBox(height: 32.h),
-                    CustomTextField(
-                      controller: _barcodeController,
-                      hintText: 'e.g. 8901234567890',
-                      // textColor: Colors.white,
-                      // hintStyle: const TextStyle(color: Colors.white38),
-                      // keyboardType: TextInputType.number,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: const BorderSide(color: Color(0xFFF9B141)),
-                      ),
-                    ),
-                    SizedBox(height: 32.h),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_barcodeController.text.isNotEmpty) {
-                          _performSearch(_barcodeController.text);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
-                            0xFF7A8744), // Olive green from screenshot
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 56.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                      ),
-                      child: Text(
-                        'Search Product',
-                        style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isManualEntry = false;
-                        });
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 56.h),
-                        side: const BorderSide(color: Colors.white24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                      ),
-                      child: Text(
-                        'Back to Scanner',
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
-                    ),
-                  ] else ...[
-                    // Scanning UI
-                    const Text(
-                      'Scan product barcode',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 24.h),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isManualEntry = true;
-                        });
-                      },
-                      icon: const Icon(Icons.keyboard),
-                      label: const Text('Enter Manually'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white24,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.r),
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(flex: 2),
-                ],
+              width: 260.w,
+              height: 200.h,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColor.primary, width: 3),
+                borderRadius: BorderRadius.circular(12.r),
               ),
             ),
+          ],
+        ),
+        SizedBox(height: 60.h),
+        ElevatedButton.icon(
+          onPressed: () {
+            setState(() {
+              _isManualEntry = true;
+            });
+          },
+          icon: const Icon(Icons.edit),
+          label: const Text('Enter Barcode Manually'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.primary.withOpacity(0.1),
+            foregroundColor: AppColor.primary,
+            elevation: 0,
+            minimumSize: Size(double.infinity, 56.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildManualEntryUI() {
+    return Column(
+      children: [
+        SizedBox(height: 40.h),
+        Container(
+          padding: EdgeInsets.all(20.r),
+          decoration: BoxDecoration(
+            color: AppColor.primary.withOpacity(0.05),
+            shape: BoxShape.circle,
+          ),
+          child:
+              Icon(Icons.barcode_reader, color: AppColor.primary, size: 48.sp),
+        ),
+        SizedBox(height: 32.h),
+        CustomTextField(
+          controller: _barcodeController,
+          hintText: 'Enter barcode number',
+          // keyboardType: TextInputType.number,
+          autofocus: true,
+        ),
+        SizedBox(height: 32.h),
+        ElevatedButton(
+          onPressed: () {
+            if (_barcodeController.text.isNotEmpty) {
+              _performSearch(_barcodeController.text);
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.primary,
+            foregroundColor: Colors.white,
+            minimumSize: Size(double.infinity, 56.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+          ),
+          child: Text(
+            'Search Product',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(height: 16.h),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              _isManualEntry = false;
+            });
+          },
+          child: Text(
+            'Back to Scanner',
+            style:
+                TextStyle(color: AppColor.primary, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
     );
   }
 }
