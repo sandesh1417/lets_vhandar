@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/auth/register/register_screen.dart';
 import 'package:lets_vhandar/features/auth/v4B_register/v4B_register_screen.dart';
 import 'package:lets_vhandar/features/dashboard/dashboard_screen.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:lets_vhandar/features/home/presentation/barcode_scanner_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_detail_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
@@ -48,7 +49,8 @@ enum LVRoute {
   aboutUsScreen,
   blogScreen,
   contactUsScreen,
-  careersScreen;
+  careersScreen,
+  barcodeScannerScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -238,6 +240,12 @@ class LVGoRouter {
           title: 'Careers',
           url: 'https://www.vhandar.com/careers',
         ),
+      ),
+      GoRoute(
+        path: LVRoute.barcodeScannerScreen.route,
+        name: LVRoute.barcodeScannerScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const BarcodeScannerScreen(),
       ),
       // Add other routes as they are implemented
     ],
