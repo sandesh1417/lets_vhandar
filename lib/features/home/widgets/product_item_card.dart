@@ -22,6 +22,8 @@ class ProductItemCard extends ConsumerStatefulWidget {
     this.margin,
   });
 
+  static double get preferredHeight => 218.h;
+
   @override
   ConsumerState<ProductItemCard> createState() => _ProductItemCardState();
 
@@ -301,8 +303,9 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
       onTap: widget.onTap,
       child: Container(
         width: widget.width ?? 140.w,
+        height: ProductItemCard.preferredHeight,
         margin: widget.margin ?? EdgeInsets.only(right: 12.w, bottom: 8.h),
-        padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+        padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
@@ -320,10 +323,11 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             Stack(
               children: [
                 Container(
-                  height: 75.h, // Reduced for compactness
+                  height: 100.h, // Reduced for compactness
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    // color: Colors.grey.shade50,
+                    color: Colors.white,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(12.r)),
                   ),
@@ -387,7 +391,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 6.h),
                       widget.product.hasVariant == true
                           ? GestureDetector(
                               onTap: _showVariantBottomSheet,
@@ -537,6 +541,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                 ],
               ),
             )),
+            SizedBox(height: 4.h)
           ],
         ),
       ),

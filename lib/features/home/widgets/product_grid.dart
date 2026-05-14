@@ -31,7 +31,7 @@ class ProductGrid extends StatelessWidget {
     //   price:    32.h
     //   buffer:   15.w
     // Compact card height to ensure consistency and prevent overflow
-    final double cardHeight = 185.h;
+    final double cardHeight = ProductItemCard.preferredHeight;
 
     return GridView.builder(
       padding: padding ?? EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),

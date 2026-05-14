@@ -53,7 +53,8 @@ class _CategorySection extends ConsumerWidget {
               },
             ),
             SizedBox(
-              height: 200.h,
+              height: ProductItemCard.preferredHeight,
+
               child: ListView.builder(
                 padding: EdgeInsets.only(left: 16.w, right: 4.w),
                 scrollDirection: Axis.horizontal,
@@ -97,7 +98,8 @@ class _CategoryLoadingSkeleton extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 240.h,
+          height: ProductItemCard.preferredHeight,
+
           child: ListView.builder(
             padding: EdgeInsets.only(left: 16.w),
             scrollDirection: Axis.horizontal,

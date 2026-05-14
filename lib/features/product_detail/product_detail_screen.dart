@@ -243,7 +243,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Similar Products List
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 240.h,
+              height: ProductItemCard.preferredHeight,
+
               child: product.categoryIds?.isNotEmpty == true
                   ? ref
                       .watch(
