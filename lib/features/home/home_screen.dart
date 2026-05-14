@@ -34,10 +34,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 40.h), // Adjusted for floating search bar
             const HomeBannerSlider(),
             SizedBox(height: 20.h),
-            HomeSectionTitle(
+            const HomeSectionTitle(
               title: 'Featured Products',
               subtitle: 'Hand-picked for you today',
-              onSeeAll: () {},
+              // onSeeAll: () {},
             ),
             const HomeFeaturedProductsList(),
             SizedBox(height: 20.h),

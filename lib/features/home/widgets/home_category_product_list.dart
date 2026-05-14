@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/domain/models/category_modal.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
@@ -60,6 +61,10 @@ class _CategorySection extends ConsumerWidget {
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   return ProductItemCard(
+                    onTap: () {
+                      context.push(LVRoute.productDetailScreen.route,
+                          extra: products[index]);
+                    },
                     product: products[index],
                   );
                 },
