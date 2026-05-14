@@ -13,6 +13,8 @@ import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
 import 'address_form.dart';
 import 'address_location_banner.dart';
 import 'address_map_picker.dart';
+import '../data/location_search_service.dart';
+import 'dart:async';
 
 /// Opens the add/edit address bottom sheet.
 Future<void> showAddAddressSheet(
@@ -52,7 +54,13 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   LatLng _selectedLatLng = const LatLng(27.7172, 85.3240);
   String _locationDescription = 'Tap on map to select location';
   bool _isGeocoding = false;
+  bool _isSearching = false;
   String? _locationError;
+
+  // Search suggestions
+  final _searchService = LocationSearchService();
+  List<LocationSuggestion> _suggestions = [];
+  Timer? _debounceTimer;
 
   // Form state
   String _addressType = 'home';
@@ -93,6 +101,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   @override
   void dispose() {
     _mapController?.dispose();
+    _debounceTimer?.cancel();
     _nameCtrl.dispose();
     _landMarkCtrl.dispose();
     _localityCtrl.dispose();
@@ -187,17 +196,57 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     } catch (_) {}
   }
 
+  void _onSearchChanged(String query) {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (query.length < 3) {
+        setState(() => _suggestions = []);
+        return;
+      }
+
+      setState(() => _isSearching = true);
+      final suggestions = await _searchService.getSuggestions(query);
+      setState(() {
+        _suggestions = suggestions;
+        _isSearching = false;
+      });
+    });
+  }
+
+  Future<void> _selectSuggestion(LocationSuggestion suggestion) async {
+    setState(() {
+      _suggestions = [];
+      _searchCtrl.text = suggestion.displayName;
+    });
+    _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(suggestion.latLng, 16));
+    await _onMapTap(suggestion.latLng);
+  }
+
   Future<void> _searchLocation(String query) async {
     if (query.isEmpty) return;
+    setState(() {
+      _isSearching = true;
+      _locationError = null;
+      _suggestions = [];
+    });
     try {
       final locations = await locationFromAddress(query);
       if (locations.isNotEmpty) {
         final loc = locations.first;
         final latlng = LatLng(loc.latitude, loc.longitude);
-        _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latlng, 15));
+        _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latlng, 16));
         await _onMapTap(latlng);
+      } else {
+        setState(() => _locationError = 'No locations found for "$query"');
       }
-    } catch (_) {}
+    } catch (e) {
+      log('Search error: $e');
+      setState(() => _locationError =
+          'Could not find location. Please try a more specific address.');
+    } finally {
+      setState(() => _isSearching = false);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -319,10 +368,18 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                 AddressMapPicker(
                   selectedLatLng: _selectedLatLng,
                   searchController: _searchCtrl,
+                  isSearching: _isSearching,
+                  suggestions: _suggestions,
                   onMapCreated: (c) => _mapController = c,
                   onMapTap: _onMapTap,
                   onCurrentLocationTap: _goToCurrentLocation,
                   onSearchSubmitted: _searchLocation,
+                  onSearchChanged: _onSearchChanged,
+                  onSuggestionTap: _selectSuggestion,
+                  onClearSearch: () {
+                    _searchCtrl.clear();
+                    setState(() => _suggestions = []);
+                  },
                 ),
 
                 // --- Location banner ---
