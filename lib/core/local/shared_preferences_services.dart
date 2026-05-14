@@ -45,4 +45,14 @@ class SessionPrefences {
     await prefs.remove('apple');
     await prefs.remove('user_data');
   }
+
+  Future<void> setLayoutPreference(bool isVertical) async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    await prefs.setBool('is_vertical_layout', isVertical);
+  }
+
+  Future<bool> getLayoutPreference() async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    return prefs.getBool('is_vertical_layout') ?? true; // Default to true (Vertical)
+  }
 }

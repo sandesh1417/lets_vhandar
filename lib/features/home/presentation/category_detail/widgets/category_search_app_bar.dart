@@ -70,16 +70,7 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
               ),
             ),
       actions: [
-        LayoutToggleButton(
-          isVertical: ref.watch(subCategoryLayoutProvider(widget.categorySlug)),
-          onToggle: () {
-            final current =
-                ref.read(subCategoryLayoutProvider(widget.categorySlug));
-            ref
-                .read(subCategoryLayoutProvider(widget.categorySlug).notifier)
-                .state = !current;
-          },
-        ),
+        const LayoutToggleButton(),
         IconButton(
           icon: Icon(_isSearchExpanded ? Icons.close : Icons.search,
               color: Colors.black),

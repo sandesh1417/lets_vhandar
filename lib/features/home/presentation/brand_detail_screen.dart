@@ -8,6 +8,7 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/features/home/providers/brand_detail_provider.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
 
@@ -82,14 +83,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                 error: (_, __) => const Text('Brand'),
               ),
         actions: [
-          LayoutToggleButton(
-            isVertical: ref.watch(brandLayoutProvider(_currentBrandSlug)),
-            onToggle: () {
-              final current = ref.read(brandLayoutProvider(_currentBrandSlug));
-              ref.read(brandLayoutProvider(_currentBrandSlug).notifier).state =
-                  !current;
-            },
-          ),
+          const LayoutToggleButton(),
           IconButton(
             icon: Icon(_isSearchExpanded ? Icons.close : Icons.search,
                 color: Colors.black),
@@ -108,7 +102,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
           ),
         ],
       ),
-      body: ref.watch(brandLayoutProvider(_currentBrandSlug))
+      body: ref.watch(appLayoutProvider)
           ? Row(
               children: [
                 // Brands Sidebar
@@ -244,7 +238,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!ref.watch(brandLayoutProvider(_currentBrandSlug)))
+            if (!ref.watch(appLayoutProvider))
               _buildBrandHorizontalBar(),
             const SizedBox(height: 12),
           ],

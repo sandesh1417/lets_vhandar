@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
@@ -20,7 +21,7 @@ class CategoryDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoryAsync = ref.watch(categoryBySlugProvider(categorySlug));
-    final isVertical = ref.watch(subCategoryLayoutProvider(categorySlug));
+    final isVertical = ref.watch(appLayoutProvider);
 
     return CustomScaffoldWrapper(
       isScrollable: false,

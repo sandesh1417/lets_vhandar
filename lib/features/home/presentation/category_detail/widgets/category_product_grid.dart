@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 
@@ -13,7 +14,7 @@ class CategoryProductGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(filteredProductsProvider(categorySlug));
-    final isVertical = ref.watch(subCategoryLayoutProvider(categorySlug));
+    final isVertical = ref.watch(appLayoutProvider);
 
     return Column(
       children: [
