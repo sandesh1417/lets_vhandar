@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
+import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class ProductItemCard extends ConsumerStatefulWidget {
@@ -249,7 +250,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             );
                           },
                           loading: () =>
-                              const Center(child: CircularProgressIndicator()),
+                              const Center(child: CustomCircularLoader()),
                           error: (e, s) => Center(
                             child: Text(
                               'Failed to load variants',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 import '../data/location_search_service.dart';
@@ -84,13 +85,10 @@ class AddressMapPicker extends StatelessWidget {
               controller: searchController,
               hintText: 'Search for area, street name...',
               prefixIcon: isSearching
-                  ? UnconstrainedBox(
-                      child: SizedBox(
-                        width: 14.w,
-                        height: 14.h,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
+                  ? const UnconstrainedBox(
+                      child: CustomCircularLoader(
+                        size: 14,
+                        strokeWidth: 2,
                       ),
                     )
                   : Icon(Icons.search, color: AppColor.textMuted, size: 20.sp),

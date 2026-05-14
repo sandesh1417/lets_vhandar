@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 
 /// Displays the selected location description and optional error message.
 class AddressLocationBanner extends StatelessWidget {
@@ -45,15 +46,10 @@ class AddressLocationBanner extends StatelessWidget {
                 child: isGeocoding
                     ? Row(
                         children: [
-                          SizedBox(
-                            height: 14.sp,
-                            width: 14.sp,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColor.primary.withOpacity(0.6),
-                              ),
-                            ),
+                          CustomCircularLoader(
+                            size: 14,
+                            strokeWidth: 2,
+                            color: AppColor.primary.withValues(alpha: 0.6),
                           ),
                           SizedBox(width: 10.w),
                           Text(

@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 
 class CategoryProductGrid extends ConsumerWidget {
   final String categorySlug;
@@ -32,7 +33,7 @@ class CategoryProductGrid extends ConsumerWidget {
                   padding: EdgeInsets.all(8.w),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CustomCircularLoader()),
               error: (err, _) => Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.w),
