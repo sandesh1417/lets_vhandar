@@ -56,7 +56,11 @@ class CustomCardBtn extends StatelessWidget {
   final void Function()? onPress;
   final String buttonTitle;
   final TextStyle? textStyle;
-  const CustomCardBtn({super.key, required this.buttonTitle, required this.onPress, this.textStyle});
+  const CustomCardBtn(
+      {super.key,
+      required this.buttonTitle,
+      required this.onPress,
+      this.textStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +80,8 @@ class CustomCardBtn extends StatelessWidget {
             ),
             child: Text(
               buttonTitle,
-              style: textStyle ?? KTextStyle.roboto14white4W.copyWith(color: AppColor.white),
+              style: textStyle ??
+                  KTextStyle.roboto14white4W.copyWith(color: AppColor.white),
             ),
           ),
         ),
@@ -125,9 +130,12 @@ class CustomButtonOutline extends StatelessWidget {
       child: !isLoading!
           ? Text(
               buttonTitle,
-              style: txtStyle ?? KTextStyle.roboto14white5W.copyWith(color: Colors.white),
+              style: txtStyle ??
+                  KTextStyle.roboto14white5W.copyWith(color: Colors.white),
             )
-          : SizedBox(width: btnWidth ?? double.infinity, child: const CircularLoader()),
+          : SizedBox(
+              width: btnWidth ?? double.infinity,
+              child: const CircularLoader()),
     );
   }
 }
@@ -153,6 +161,46 @@ class CustomBackButton extends StatelessWidget {
             context.pop();
             // navigatePop(context);
           }),
+    );
+  }
+}
+
+class ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final Color? color;
+  final Color? foregroundColor;
+
+  const ActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.color,
+    this.foregroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 16.sp),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      style: TextButton.styleFrom(
+        backgroundColor: color ?? AppColor.secondary,
+        foregroundColor: foregroundColor ?? Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+      ),
     );
   }
 }

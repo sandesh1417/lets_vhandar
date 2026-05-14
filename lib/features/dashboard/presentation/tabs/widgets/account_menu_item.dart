@@ -9,6 +9,7 @@ class AccountMenuItem extends StatelessWidget {
   final Color? titleColor;
   final Color? iconColor;
   final bool showDivider;
+  final bool showRightArrow;
 
   const AccountMenuItem({
     super.key,
@@ -18,6 +19,7 @@ class AccountMenuItem extends StatelessWidget {
     this.titleColor,
     this.iconColor,
     this.showDivider = true,
+    this.showRightArrow = true,
   });
 
   @override
@@ -53,11 +55,12 @@ class AccountMenuItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14.sp,
-                  color: Colors.grey.shade400,
-                ),
+                if (showRightArrow)
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 14.sp,
+                    color: Colors.grey.shade400,
+                  ),
               ],
             ),
           ),

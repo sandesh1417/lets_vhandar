@@ -23,3 +23,13 @@ final similarProductsProvider =
     failure: (failure) => throw failure.message,
   );
 });
+final productsByCategoryProvider =
+    FutureProvider.family<List<ProductData>, String>((ref, categoryId) async {
+  final repository = locator<ProductRepository>();
+  final result = await repository.getProductsByCategory(categoryId);
+
+  return result.when(
+    success: (products) => products,
+    failure: (failure) => throw failure.message,
+  );
+});

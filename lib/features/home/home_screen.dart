@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
+import 'package:lets_vhandar/features/home/widgets/home_category_product_list.dart';
 import 'package:lets_vhandar/features/home/widgets/home_header.dart';
 import 'package:lets_vhandar/features/home/widgets/home_section_title.dart';
 import 'package:lets_vhandar/features/home/widgets/home_top_selling_list.dart';
+// import 'package:lets_vhandar/features/home/widgets/home_featured_products_list.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -45,6 +47,8 @@ class HomeScreen extends StatelessWidget {
               onSeeAll: () {},
             ),
             const HomeCategoriesGrid(),
+            SizedBox(height: 20.h),
+            const HomeCategoryProductList(),
             SizedBox(height: 32.h),
           ],
         ),

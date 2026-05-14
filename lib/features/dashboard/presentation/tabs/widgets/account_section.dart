@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 
 class AccountSection extends StatelessWidget {
   final String title;
@@ -18,7 +17,7 @@ class AccountSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 24.w, bottom: 8.h, top: 16.h),
+          padding: EdgeInsets.only(left: 24.w, bottom: 16.h, top: 16.h),
           child: Text(
             title.toUpperCase(),
             style: TextStyle(

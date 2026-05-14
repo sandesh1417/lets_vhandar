@@ -168,14 +168,14 @@ class AccountTab extends ConsumerWidget {
                   title: 'Logout',
                   onTap: () => _showLogoutDialog(context, ref),
                 ),
-                AccountMenuItem(
-                  icon: Icons.delete_forever_outlined,
-                  title: 'Delete Account',
-                  titleColor: Colors.red,
-                  iconColor: Colors.red,
-                  showDivider: false,
-                  onTap: () => _showDeleteAccountDialog(context, ref),
-                ),
+                // AccountMenuItem(
+                //   icon: Icons.delete_forever_outlined,
+                //   title: 'Delete Account',
+                //   titleColor: Colors.red,
+                //   iconColor: Colors.red,
+                //   showDivider: false,
+                //   onTap: () => _showDeleteAccountDialog(context, ref),
+                // ),
               ],
             ),
 
@@ -257,7 +257,7 @@ class AccountTab extends ConsumerWidget {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+  void showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
     CustomDialog.show(
       context: context,
       icon: Icons.delete_forever_outlined,

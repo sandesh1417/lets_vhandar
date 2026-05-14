@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/account_menu_item.dart';
+import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/account_section.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -21,9 +25,22 @@ class PersonalInformationScreen extends ConsumerWidget {
           children: [
             SizedBox(height: 20.h),
             _buildInfoCard(context, user),
-            SizedBox(height: 20.h),
-            // _buildDeleteAccountSection(context),
-            // SizedBox(height: 30.h),
+            SizedBox(height: 10.h),
+            AccountSection(
+              title: 'Danger Zone',
+              children: [
+                AccountMenuItem(
+                  showRightArrow: false,
+                  icon: Icons.delete_forever_outlined,
+                  title: 'Delete Account',
+                  titleColor: Colors.red,
+                  iconColor: Colors.red,
+                  showDivider: false,
+                  onTap: () => showDeleteAccountDialog(context, ref),
+                ),
+              ],
+            ),
+            SizedBox(height: 30.h),
           ],
         ),
       ),
@@ -59,20 +76,12 @@ class PersonalInformationScreen extends ConsumerWidget {
                   color: Colors.black87,
                 ),
               ),
-              TextButton(
+              ActionButton(
+                icon: Icons.edit_outlined,
+                label: 'Edit Profile',
                 onPressed: () {
                   // Navigate to Edit Profile
                 },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.orange.shade400,
-                  foregroundColor: Colors.white,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                ),
-                child: Text('Edit Profile', style: TextStyle(fontSize: 12.sp)),
               ),
             ],
           ),
@@ -178,59 +187,21 @@ class PersonalInformationScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildDeleteAccountSection(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Delete Account',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Deleting your account will remove all your orders, Vhandar Points and any active referral.',
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: Colors.black45,
-              height: 1.5,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          OutlinedButton(
-            onPressed: () {
-              // Show Delete Account Dialog
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              side: const BorderSide(color: Colors.red),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-            ),
-            child: Text('Delete Account', style: TextStyle(fontSize: 14.sp)),
-          ),
-        ],
-      ),
-    );
-  }
+void showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+  CustomDialog.show(
+    context: context,
+    icon: Icons.delete_forever_outlined,
+    iconColor: Colors.red.shade400,
+    iconBgColor: Colors.red.shade50,
+    title: 'Delete Account',
+    message:
+        'This action is permanent and cannot be undone. All your data, orders, and addresses will be removed.',
+    confirmLabel: 'Yes, Delete Account',
+    confirmGradient: [Colors.red.shade600, Colors.red.shade400],
+    onConfirm: () async {
+      await ref.read(loginProvider.notifier).deleteAccount(context);
+    },
+  );
 }
