@@ -19,26 +19,23 @@ class ProductBrandSection extends ConsumerWidget {
               onTap: () => context.pushNamed('brandDetailScreen',
                   pathParameters: {'slug': brand.slug ?? ''}),
               child: Container(
-                margin: EdgeInsets.symmetric(vertical: 20.h),
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.symmetric(
-                    horizontal:
-                        BorderSide(color: Colors.grey.shade100, width: 1),
-                  ),
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: Colors.grey.shade100),
                 ),
                 child: Row(
                   children: [
-                    // Brand Logo
+                    // Minimized Brand Logo
                     Container(
-                      width: 64.w,
-                      height: 64.w,
-                      padding: EdgeInsets.all(10.w),
+                      width: 42.w,
+                      height: 42.w,
+                      padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade100),
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: CustomImageViewer(
                         path: brand.images?.isNotEmpty == true
@@ -47,25 +44,25 @@ class ProductBrandSection extends ConsumerWidget {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    SizedBox(width: 16.w),
-                    // Brand Name & Explore
+                    SizedBox(width: 12.w),
+                    // Brand Name
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             brand.name ?? 'Brand Name',
                             style: TextStyle(
-                              fontSize: 19.sp,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1B3E2F),
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppColor.textBlack87,
                             ),
                           ),
-                          SizedBox(height: 2.h),
                           Text(
-                            'Explore all products',
+                            'Explore Brand',
                             style: TextStyle(
-                              fontSize: 13.sp,
+                              fontSize: 11.sp,
                               color: AppColor.textMuted,
                               fontWeight: FontWeight.w500,
                             ),
@@ -73,7 +70,8 @@ class ProductBrandSection extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    Icon(Icons.chevron_right, color: Colors.grey.shade300),
+                    Icon(Icons.arrow_forward_ios,
+                        color: Colors.grey.shade400, size: 14.sp),
                   ],
                 ),
               ),

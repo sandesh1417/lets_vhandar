@@ -188,7 +188,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       thickness: 1,
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 12.h),
 
                   // ── Variant Selector ──
                   if (widget.product.hasVariant == true)

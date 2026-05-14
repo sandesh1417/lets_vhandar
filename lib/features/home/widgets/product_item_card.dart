@@ -22,7 +22,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
     this.margin,
   });
 
-  static double get preferredHeight => 218.h;
+  static double get preferredHeight => 226.h;
 
   @override
   ConsumerState<ProductItemCard> createState() => _ProductItemCardState();
