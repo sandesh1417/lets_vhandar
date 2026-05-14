@@ -74,7 +74,48 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
             ),
           ),
 
+        // Veg/Non-Veg Tag
+        if (widget.product.isVegeterian != null)
+          Positioned(
+            bottom: 16.h,
+            right: 16.w,
+            child: _VegNonVegTag(isVegetarian: widget.product.isVegeterian!),
+          ),
       ],
     );
   }
 }
+
+class _VegNonVegTag extends StatelessWidget {
+  final bool isVegetarian;
+  const _VegNonVegTag({required this.isVegetarian});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isVegetarian ? const Color(0xFF008B58) : const Color(0xFFE53935);
+    return Container(
+      padding: EdgeInsets.all(3.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: color, width: 1.5.w),
+        borderRadius: BorderRadius.circular(4.r),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.15),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Container(
+        width: 8.w,
+        height: 8.w,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+

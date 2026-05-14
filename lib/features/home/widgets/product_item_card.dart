@@ -371,6 +371,34 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       ),
                     ),
                   ),
+                if (product.isVegeterian != null)
+                  Positioned(
+                    bottom: 6.h,
+                    right: 6.w,
+                    child: Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: product.isVegeterian!
+                              ? const Color(0xFF008B58)
+                              : const Color(0xFFE53935),
+                          width: 1.w,
+                        ),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                      child: Container(
+                        width: 5.w,
+                        height: 5.w,
+                        decoration: BoxDecoration(
+                          color: product.isVegeterian!
+                              ? const Color(0xFF008B58)
+                              : const Color(0xFFE53935),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Expanded(
