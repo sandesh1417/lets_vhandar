@@ -15,197 +15,256 @@ class HomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final addressState = ref.watch(addressProvider);
-    final selected = addressState.selected;
-    final userId = ref.watch(loginProvider).user?.id ?? '';
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    // The extent of the "green" part
+    final maxHeaderHeight = 135.h + statusBarHeight;
+    final minHeaderHeight = 110.h + statusBarHeight;
 
-    // Load addresses on first build if not already loaded
-    if (!addressState.isFetched &&
-        !addressState.isLoading &&
-        userId.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(addressProvider.notifier).loadAddresses(userId);
-      });
-    }
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _HomeHeaderDelegate(
+        maxHeight: maxHeaderHeight,
+        minHeight: minHeaderHeight,
+        statusBarHeight: statusBarHeight,
+      ),
+    );
+  }
+}
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.fromLTRB(16.w, 0.h, 16.w, 52.h),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColor.primary,
-                const Color.fromARGB(255, 6, 89, 58), // Vibrant green highlight
-              ],
-            ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(24.r),
-              bottomRight: Radius.circular(24.r),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            bottom: false,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 8.w,
+class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double maxHeight;
+  final double minHeight;
+  final double statusBarHeight;
+
+  _HomeHeaderDelegate({
+    required this.maxHeight,
+    required this.minHeight,
+    required this.statusBarHeight,
+  });
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // We want the animation to be complete before the header fully collapses
+    final progress = shrinkOffset / (maxHeight - minHeight);
+    final currentProgress = progress.clamp(0.0, 1.0);
+
+    return Consumer(
+      builder: (context, ref, _) {
+        final addressState = ref.watch(addressProvider);
+        final selected = addressState.selected;
+        final userId = ref.watch(loginProvider).user?.id ?? '';
+
+        if (!addressState.isFetched &&
+            !addressState.isLoading &&
+            userId.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(addressProvider.notifier).loadAddresses(userId);
+          });
+        }
+
+        return Stack(
+          clipBehavior: Clip.none, // Essential for the floating effect
+          children: [
+            // Background with Gradient
+            Container(
+              height:
+                  maxHeight - (shrinkOffset.clamp(0.0, maxHeight - minHeight)),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColor.primary,
+                    const Color.fromARGB(255, 6, 89, 58),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(24.r * (1 - currentProgress)),
+                  bottomRight: Radius.circular(24.r * (1 - currentProgress)),
+                ),
               ),
-              child: Padding(
-                padding: EdgeInsets.only(top: 50.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Logo
-                    SvgPicture.asset(
+            ),
+
+            // Logo and Address Info
+            Positioned(
+              top: statusBarHeight + (10.h * (1 - currentProgress)),
+              left: 20.w,
+              right: 20.w,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Hero(
+                    tag: 'logo',
+                    child: SvgPicture.asset(
                       KImageConstant.vandharIcon,
-                      height: 48.h,
+                      height: (48.h * (1 - currentProgress * 0.4))
+                          .clamp(28.h, 48.h),
                     ),
-                    // Location Info — tappable
-                    GestureDetector(
-                      onTap: () {
-                        if (userId.isNotEmpty) {
-                          showAddressSelectorSheet(context, userId: userId);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please login to manage addresses'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Delivering to',
-                                  style: TextStyle(
-                                    fontSize: 10.sp,
-                                    color: Colors.white70,
-                                    fontWeight: FontWeight.w500,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (userId.isNotEmpty) {
+                        showAddressSelectorSheet(context, userId: userId);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please login to manage addresses'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (currentProgress < 0.5)
+                            Opacity(
+                              opacity:
+                                  (1 - currentProgress * 2).clamp(0.0, 1.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Delivering to',
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 4.w),
-                                Icon(Icons.keyboard_arrow_down,
-                                    color: Colors.white, size: 14.sp),
-                              ],
+                                  SizedBox(width: 4.w),
+                                  Icon(Icons.keyboard_arrow_down,
+                                      color: Colors.white, size: 14.sp),
+                                ],
+                              ),
                             ),
-                            Text(
-                              selected != null
-                                  ? _truncate(
-                                      selected.description ?? 'Select Address')
-                                  : 'Select Address',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (currentProgress >= 0.5)
+                                Padding(
+                                  padding: EdgeInsets.only(right: 4.w),
+                                  child: Icon(Icons.location_on,
+                                      color: Colors.white, size: 12.sp),
+                                ),
+                              Text(
+                                selected != null
+                                    ? _truncate(
+                                        selected.description ??
+                                            'Select Address',
+                                        max: currentProgress > 0.5 ? 18 : 22)
+                                    : 'Select Address',
+                                style: TextStyle(
+                                  fontSize:
+                                      currentProgress > 0.5 ? 11.sp : 13.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (currentProgress >= 0.5)
+                                Icon(Icons.keyboard_arrow_down,
+                                    color: Colors.white, size: 12.sp),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Search Bar (Initially floating, then pins)
+            Positioned(
+              left: 16.w,
+              right: 16.w,
+              // Animate from -25.h (floating) to 12.h (inside the collapsed header)
+              bottom:
+                  (-25.h * (1 - currentProgress)) + (12.h * currentProgress),
+              child: Container(
+                height: 50.h,
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: Colors.grey.shade100),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () =>
+                            context.pushNamed(LVRoute.searchScreen.route),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search,
+                                color: Colors.grey.shade400, size: 22.sp),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Text(
+                                'Search for products...',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey.shade400,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
+                    Container(
+                      height: 24.h,
+                      width: 1,
+                      color: Colors.grey.shade200,
+                      margin: EdgeInsets.symmetric(horizontal: 8.w),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.qr_code_scanner,
+                          color: AppColor.primary, size: 22.sp),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () =>
+                          context.pushNamed(LVRoute.barcodeScannerScreen.route),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-        ),
-
-        // Search Bar (Floating)
-        // ... inside HomeHeader build ...
-        Positioned(
-          bottom: -25.h,
-          left: 16.w,
-          right: 16.w,
-          child: Container(
-            // Removed GestureDetector from here
-            height: 52.h,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: Colors.grey.shade100),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                // Wrap only the Search area in a GestureDetector or InkWell
-                Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior
-                        .opaque, // Ensures the whole area is clickable
-                    onTap: () {
-                      context.pushNamed(LVRoute
-                          .searchScreen.route); // Use pushNamed for consistency
-                    },
-                    child: Row(
-                      children: [
-                        Icon(Icons.search,
-                            color: Colors.grey.shade400, size: 22.sp),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Text(
-                            'Search for products...',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: Colors.grey.shade400,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Divider
-                Container(
-                  height: 24.h,
-                  width: 1,
-                  color: Colors.grey.shade200,
-                  margin: EdgeInsets.symmetric(horizontal: 8.w),
-                ),
-
-                // Scanner Button (Now it won't be blocked)
-                IconButton(
-                  icon: Icon(Icons.qr_code_scanner,
-                      color: AppColor.primary, size: 24.sp),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 24.r,
-                  onPressed: () {
-                    context.pushNamed(LVRoute.barcodeScannerScreen.route);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
+  }
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  bool shouldRebuild(covariant _HomeHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight;
   }
 
   String _truncate(String s, {int max = 22}) =>

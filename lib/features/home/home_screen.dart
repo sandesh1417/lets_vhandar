@@ -25,33 +25,36 @@ class HomeScreen extends StatelessWidget {
           stops: [0.0, 0.4],
         ),
       ),
-      child: SingleChildScrollView(
+      child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const HomeHeader(),
-            SizedBox(height: 40.h), // Adjusted for floating search bar
-            const HomeBannerSlider(),
-            SizedBox(height: 20.h),
-            const HomeSectionTitle(
-              title: 'Featured Products',
-              subtitle: 'Hand-picked for you today',
-              // onSeeAll: () {},
+        slivers: [
+          const HomeHeader(),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 40.h),
+                const HomeBannerSlider(),
+                SizedBox(height: 20.h),
+                const HomeSectionTitle(
+                  title: 'Featured Products',
+                  subtitle: 'Hand-picked for you today',
+                ),
+                const HomeFeaturedProductsList(),
+                SizedBox(height: 20.h),
+                HomeSectionTitle(
+                  title: 'Shop by Category',
+                  subtitle: 'Find exactly what you need',
+                  onSeeAll: () {},
+                ),
+                const HomeCategoriesGrid(),
+                SizedBox(height: 20.h),
+                const HomeCategoryProductList(),
+                SizedBox(height: 32.h),
+              ],
             ),
-            const HomeFeaturedProductsList(),
-            SizedBox(height: 20.h),
-            HomeSectionTitle(
-              title: 'Shop by Category',
-              subtitle: 'Find exactly what you need',
-              onSeeAll: () {},
-            ),
-            const HomeCategoriesGrid(),
-            SizedBox(height: 20.h),
-            const HomeCategoryProductList(),
-            SizedBox(height: 32.h),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
