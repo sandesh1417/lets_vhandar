@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:lets_vhandar/features/product_detail/widgets/product_brand_section.dart';
 
 import 'widgets/product_add_to_cart_bar.dart';
 import 'widgets/product_details_table.dart';
@@ -107,7 +108,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         Text(
                           '${product.unitValue?.toInt()} ${product.unit}',
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 15.sp,
                             color: AppColor.textMuted,
                             fontWeight: FontWeight.w500,
                           ),
@@ -175,13 +176,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                   ),
 
+                  // ── Brand Section ──
+                  if (product.brandId != null)
+                    ProductBrandSection(brandId: product.brandId!),
+
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Divider(
-                        height: 28.h,
-                        color: Colors.grey.shade100,
-                        thickness: 1),
+                      height: 1.h,
+                      color: Colors.grey.shade100,
+                      thickness: 1,
+                    ),
                   ),
+                  SizedBox(height: 20.h),
 
                   // ── Variant Selector ──
                   if (widget.product.hasVariant == true)
@@ -244,7 +251,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           SliverToBoxAdapter(
             child: SizedBox(
               height: ProductItemCard.preferredHeight,
-
               child: product.categoryIds?.isNotEmpty == true
                   ? ref
                       .watch(
@@ -296,28 +302,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 class _GlassButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final double? size;
+  final double? iconSize;
 
-  const _GlassButton({required this.icon, required this.onTap});
+  const _GlassButton({
+    required this.icon,
+    required this.onTap,
+    this.size,
+    this.iconSize,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 38.w,
-        height: 38.w,
+        width: size ?? 38.w,
+        height: size ?? 38.w,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
+          color: const Color(0xFFF0FAF5).withOpacity(0.9),
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
-        child: Icon(icon, color: Colors.black87, size: 20.sp),
+        child: Icon(icon, color: AppColor.primary, size: iconSize ?? 20.sp),
       ),
     );
   }
