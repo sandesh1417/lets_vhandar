@@ -79,8 +79,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     final existing = widget.existingAddress;
     if (existing == null) return;
 
-    _selectedLatLng =
-        LatLng(existing.lat ?? 27.7172, existing.long ?? 85.3240);
+    _selectedLatLng = LatLng(existing.lat ?? 27.7172, existing.long ?? 85.3240);
     _locationDescription = existing.description ?? '';
     _addressType = existing.addressType ?? 'home';
     _nameCtrl.text = existing.name ?? '';
@@ -135,9 +134,8 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
           p.administrativeArea,
         ].where((e) => e != null && e.isNotEmpty).toSet().toList();
 
-        setState(() => _locationDescription = parts.isEmpty
-            ? _coordsString(pos)
-            : parts.join(', '));
+        setState(() => _locationDescription =
+            parts.isEmpty ? _coordsString(pos) : parts.join(', '));
       } else {
         setState(() => _locationDescription = _coordsString(pos));
       }
@@ -288,60 +286,79 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-          ),
-          child: Column(
-            children: [
-              // --- Drag handle ---
-              Center(
-                child: Container(
-                  margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
-                  width: 36.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-              ),
-
-              // --- Map picker ---
-              AddressMapPicker(
-                selectedLatLng: _selectedLatLng,
-                searchController: _searchCtrl,
-                onMapCreated: (c) => _mapController = c,
-                onMapTap: _onMapTap,
-                onCurrentLocationTap: _goToCurrentLocation,
-                onSearchSubmitted: _searchLocation,
-              ),
-
-              // --- Location banner ---
-              AddressLocationBanner(
-                description: _locationDescription,
-                isGeocoding: _isGeocoding,
-                error: _locationError,
-              ),
-
-              // --- Form ---
-              Expanded(
-                child: AddressForm(
-                  scrollController: scrollController,
-                  addressType: _addressType,
-                  onAddressTypeChanged: (type) =>
-                      setState(() => _addressType = type),
-                  houseCtrl: _houseCtrl,
-                  floorCtrl: _floorCtrl,
-                  localityCtrl: _localityCtrl,
-                  landMarkCtrl: _landMarkCtrl,
-                  nameCtrl: _nameCtrl,
-                  phoneCtrl: _phoneCtrl,
-                  isSaving: _isSaving,
-                  isEditing: _isEditing,
-                  onSave: _save,
-                ),
+            color: const Color(0xFFF9FAFB), // Matching Order History screen
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 15,
+                offset: const Offset(0, -5),
               ),
             ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              children: [
+                // --- Drag handle ---
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
+                    width: 40.w,
+                    height: 5.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                ),
+
+                // --- Map picker ---
+                AddressMapPicker(
+                  selectedLatLng: _selectedLatLng,
+                  searchController: _searchCtrl,
+                  onMapCreated: (c) => _mapController = c,
+                  onMapTap: _onMapTap,
+                  onCurrentLocationTap: _goToCurrentLocation,
+                  onSearchSubmitted: _searchLocation,
+                ),
+
+                // --- Location banner ---
+                AddressLocationBanner(
+                  description: _locationDescription,
+                  isGeocoding: _isGeocoding,
+                  error: _locationError,
+                ),
+
+                // --- Form ---
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(24.r)),
+                    ),
+                    child: AddressForm(
+                      scrollController: scrollController,
+                      addressType: _addressType,
+                      onAddressTypeChanged: (type) =>
+                          setState(() => _addressType = type),
+                      houseCtrl: _houseCtrl,
+                      floorCtrl: _floorCtrl,
+                      localityCtrl: _localityCtrl,
+                      landMarkCtrl: _landMarkCtrl,
+                      nameCtrl: _nameCtrl,
+                      phoneCtrl: _phoneCtrl,
+                      isSaving: _isSaving,
+                      isEditing: _isEditing,
+                      onSave: _save,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

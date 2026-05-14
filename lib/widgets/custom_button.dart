@@ -34,14 +34,14 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: isEnabled ?? true ? onPress : null,
-      disabledColor: AppColor.primary.withOpacity(0.3),
+      disabledColor: AppColor.primary.withValues(alpha: 0.3),
       color: buttonColor ?? AppColor.secondary,
       minWidth: btnWidth ?? double.infinity,
       height: btnHeight ?? 45.h,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius ?? 10),
       ),
-      splashColor: AppColor.primary.withOpacity(0.5),
+      splashColor: AppColor.primary.withValues(alpha: 0.5),
       child: !(isLoading ?? false)
           ? Text(
               buttonTitle,
@@ -118,7 +118,7 @@ class CustomButtonOutline extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: isEnabled ?? true ? onPress : null,
-      disabledColor: AppColor.primary.withOpacity(0.3),
+      disabledColor: AppColor.primary.withValues(alpha: 0.3),
       color: buttonColor ?? AppColor.white03,
       minWidth: btnWidth ?? double.infinity,
       height: btnHeight ?? 45.h,
@@ -126,7 +126,7 @@ class CustomButtonOutline extends StatelessWidget {
         side: BorderSide(color: AppColor.primary),
         borderRadius: BorderRadius.circular(borderRadius ?? 10),
       ),
-      splashColor: AppColor.primary.withOpacity(0.5),
+      splashColor: AppColor.primary.withValues(alpha: 0.5),
       child: !isLoading!
           ? Text(
               buttonTitle,

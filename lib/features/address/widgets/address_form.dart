@@ -48,17 +48,32 @@ class AddressForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Enter complete address',
-                style: TextStyle(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.textBlack,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Enter complete address',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.textBlack,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    'Help us find your location precisely',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColor.textMuted,
+                    ),
+                  ),
+                ],
               ),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.close),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.close, color: Colors.grey.shade400),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
             ],
           ),
@@ -137,25 +152,37 @@ class AddressForm extends StatelessWidget {
           // --- Save / Update button ---
           SizedBox(
             width: double.infinity,
-            height: 50.h,
-            child: ElevatedButton(
-              onPressed: isSaving ? null : onSave,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
+            height: 52.h,
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColor.secondary.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: isSaving
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      isEditing ? 'Update Address' : 'Save Address',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+              child: ElevatedButton(
+                onPressed: isSaving ? null : onSave,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.secondary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                ),
+                child: isSaving
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        isEditing ? 'Update Address' : 'Save Address',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
           SizedBox(height: 24.h),

@@ -35,7 +35,7 @@ class AccountMenuItem extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColor.primary).withOpacity(0.08),
+                    color: (iconColor ?? AppColor.primary).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(

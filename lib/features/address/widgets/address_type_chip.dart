@@ -25,7 +25,7 @@ class AddressTypeChip extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: selected
-              ? AppColor.secondary.withOpacity(0.15)
+              ? AppColor.secondary.withValues(alpha: 0.15)
               : Colors.transparent,
           border: Border.all(
             color: selected ? AppColor.secondary : Colors.grey.shade300,
