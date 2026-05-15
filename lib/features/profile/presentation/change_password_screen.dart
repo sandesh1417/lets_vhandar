@@ -5,9 +5,9 @@ import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/change_password_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
@@ -43,7 +43,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final userId = ref.watch(loginProvider).user?.id ?? '';
 
     return CustomScaffoldWrapper(
-      appBar: const CustomAppBar(title: 'Change Password'),
+      appBar: const CustomScreenHeader(title: 'Change Password'),
       horizontalPadding: 16.w,
       body: Form(
         key: _formKey,

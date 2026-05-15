@@ -7,9 +7,9 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class ForgetPasswordScreen extends ConsumerStatefulWidget {
@@ -42,7 +42,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      appBar: const CustomAppBar(
+      appBar: const CustomScreenHeader(
         title: '',
       ),
       body: Form(

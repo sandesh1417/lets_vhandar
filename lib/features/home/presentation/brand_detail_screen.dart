@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {
   final String brandSlug;
@@ -45,8 +46,9 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
     final productsAsync =
         ref.watch(filteredBrandProductsProvider(_currentBrandSlug));
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: Colors.white,
+      isScrollable: false,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/auth/register/providers/register_provider.
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
@@ -58,7 +59,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      appBar: const CustomAppBar(),
+      appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
         child: Column(

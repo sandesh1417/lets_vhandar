@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/auth/register/providers/register_provider.
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 class OTPScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -140,7 +141,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      appBar: const CustomAppBar(title: ''),
+      appBar: const CustomScreenHeader(title: ''),
       body: Column(
         children: [
           Container(

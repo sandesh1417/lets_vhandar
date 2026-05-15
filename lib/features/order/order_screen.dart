@@ -61,7 +61,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     return CustomScaffoldWrapper(
       isScrollable: false,
       backgroundColor: const Color(0xFFF9FAFB),
-      appBar: const CustomScreenHeader(title: 'Orders History'),
+      appBar: const CustomScreenHeader(
+        title: 'Orders History',
+        showBackButton: false,
+      ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : state.orders.isEmpty

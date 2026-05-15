@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
@@ -75,7 +76,7 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
   Widget build(BuildContext context) {
     return CustomScaffoldWrapper(
       isScrollable: true,
-      appBar: CustomAppBar(
+      appBar: CustomScreenHeader(
         title: _isManualEntry ? 'Enter Barcode' : 'Scan Barcode',
       ),
       body: _buildBody(),

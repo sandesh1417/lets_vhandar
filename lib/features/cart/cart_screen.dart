@@ -31,6 +31,7 @@ class CartScreen extends ConsumerWidget {
       isScrollable: false,
       appBar: CustomScreenHeader(
         title: 'My Cart',
+        showBackButton: false,
         trailing: cartItems.isNotEmpty
             ? GestureDetector(
                 onTap: () => ref.read(cartProvider.notifier).clearCart(),

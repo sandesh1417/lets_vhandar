@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -58,6 +60,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
     return CustomScaffoldWrapper(
+      appBar: const CustomAppBar(),
       horizontalPadding: 16.w,
       body: Form(
         key: _formKey,
@@ -153,6 +156,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
             ),
             SizedBox(height: 20.h),
             CustomButton(
+                buttonColor: AppColor.primary,
                 onPress: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     // Additional check for password match

@@ -25,6 +25,7 @@ class AccountTab extends ConsumerWidget {
       backgroundColor: Colors.grey.shade50,
       appBar: const CustomScreenHeader(
         title: 'Account',
+        showBackButton: false,
       ),
       body: SingleChildScrollView(
         child: Column(
