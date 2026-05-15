@@ -42,10 +42,9 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const HomeFeaturedProductsList(),
                 SizedBox(height: 20.h),
-                HomeSectionTitle(
+                const HomeSectionTitle(
                   title: 'Shop by Category',
                   subtitle: 'Find exactly what you need',
-                  onSeeAll: () {},
                 ),
                 const HomeCategoriesGrid(),
                 SizedBox(height: 20.h),
