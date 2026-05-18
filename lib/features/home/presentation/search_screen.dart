@@ -9,6 +9,7 @@ import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -84,7 +85,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildBody(SearchState state) {
     if (state.isLoading && state.results.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const ProductGridShimmer();
     }
 
     if (state.error != null) {

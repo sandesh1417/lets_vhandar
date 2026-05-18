@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 enum ImageType { network, asset, file, svg }
 
@@ -100,15 +100,7 @@ class CustomImageViewer extends StatelessWidget {
   }
 
   Widget _buildLoadingWidget() {
-    return Center(
-      child: SizedBox(
-        height: 20.h,
-        width: 20.h,
-        child: const CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
-      ),
-    );
+    return const CustomShimmer.rectangular();
   }
 
   Widget _buildErrorWidget() {

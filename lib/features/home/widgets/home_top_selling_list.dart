@@ -6,6 +6,8 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+
 class HomeFeaturedProductsList extends ConsumerWidget {
   const HomeFeaturedProductsList({super.key});
 
@@ -39,11 +41,7 @@ class HomeFeaturedProductsList extends ConsumerWidget {
           ),
         );
       },
-      loading: () => SizedBox(
-        height: ProductItemCard.preferredHeight,
-        child: const Center(child: CircularProgressIndicator()),
-
-      ),
+      loading: () => const ProductHorizontalListShimmer(),
       error: (err, stack) => const SizedBox.shrink(),
     );
   }

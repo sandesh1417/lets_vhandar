@@ -8,6 +8,7 @@ import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_section_title.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class HomeCategoryProductList extends ConsumerWidget {
   const HomeCategoryProductList({super.key});
@@ -91,29 +92,13 @@ class _CategoryLoadingSkeleton extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Container(
-            width: 150.w,
-            height: 20.h,
-            color: Colors.grey.shade200,
+          child: const CustomShimmer.rectangular(
+            width: 150,
+            height: 20,
           ),
         ),
-        SizedBox(
-          height: ProductItemCard.preferredHeight,
-
-          child: ListView.builder(
-            padding: EdgeInsets.only(left: 16.w),
-            scrollDirection: Axis.horizontal,
-            itemCount: 3,
-            itemBuilder: (context, index) => Container(
-              width: 140.w,
-              margin: EdgeInsets.only(right: 12.w),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-            ),
-          ),
-        ),
+        SizedBox(height: 6.h),
+        const ProductHorizontalListShimmer(itemCount: 3),
         SizedBox(height: 20.h),
       ],
     );

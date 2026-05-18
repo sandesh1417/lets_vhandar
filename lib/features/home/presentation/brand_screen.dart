@@ -7,6 +7,8 @@ import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 
 class BrandScreen extends ConsumerStatefulWidget {
   const BrandScreen({super.key});
@@ -78,30 +80,38 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
                   );
                 }
 
-                return GridView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                  physics: const BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.82,
-                    crossAxisSpacing: 10.w,
-                    mainAxisSpacing: 16.h,
-                  ),
-                  itemCount: filteredBrands.length,
-                  itemBuilder: (context, index) {
-                    final brand = filteredBrands[index];
-                    return BrandCard(
-                      name: brand.name ?? '',
-                      imageUrl: brand.images?.isNotEmpty == true
-                          ? brand.images!.first.url
-                          : null,
-                      onTap: () =>
-                          navigateToSlug(context, brand.slug, isBrand: true),
-                    );
+                return RefreshIndicator(
+                  color: AppColor.primary,
+                  onRefresh: () async {
+                    ref.invalidate(brandProvider);
                   },
+                  child: GridView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      childAspectRatio: 0.82,
+                      crossAxisSpacing: 10.w,
+                      mainAxisSpacing: 16.h,
+                    ),
+                    itemCount: filteredBrands.length,
+                    itemBuilder: (context, index) {
+                      final brand = filteredBrands[index];
+                      return BrandCard(
+                        name: brand.name ?? '',
+                        imageUrl: brand.images?.isNotEmpty == true
+                            ? brand.images!.first.url
+                            : null,
+                        onTap: () =>
+                            navigateToSlug(context, brand.slug, isBrand: true),
+                      );
+                    },
+                  ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const GridShimmer(),
               error: (err, stack) => Center(child: Text("Error: $err")),
             ),
           ),

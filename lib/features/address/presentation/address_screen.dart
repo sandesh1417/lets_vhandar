@@ -8,6 +8,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
   const AddressScreen({super.key});
@@ -23,7 +24,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = ref.read(loginProvider).user;
       final addressState = ref.read(addressProvider);
-      if (user?.id != null && !addressState.isFetched && !addressState.isLoading) {
+      if (user?.id != null &&
+          !addressState.isFetched &&
+          !addressState.isLoading) {
         ref.read(addressProvider.notifier).loadAddresses(user!.id!);
       }
     });
@@ -41,7 +44,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       body: Builder(
         builder: (context) {
           if (addressState.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const OrderListShimmer();
           }
           if (addressState.error != null) {
             return Center(child: Text('Error: ${addressState.error}'));
@@ -49,28 +52,42 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           if (addressState.addresses.isEmpty) {
             return _buildEmptyState();
           }
-          return ListView.builder(
-            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 100.h),
-            itemCount: addressState.addresses.length,
-            itemBuilder: (context, index) {
-              final address = addressState.addresses[index];
-              return _AddressCard(
-                address: address,
-                onEdit: () {
-                  if (user?.id == null) return;
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddAddressSheet(
-                      userId: user!.id!,
-                      existingAddress: address,
-                    ),
-                  );
-                },
-                onDelete: () => _showDeleteConfirmation(context, ref, address),
-              );
+          return RefreshIndicator(
+            color: AppColor.primary,
+            onRefresh: () async {
+              if (user?.id != null) {
+                await ref
+                    .read(addressProvider.notifier)
+                    .loadAddresses(user!.id!);
+              }
             },
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 100.h),
+              itemCount: addressState.addresses.length,
+              itemBuilder: (context, index) {
+                final address = addressState.addresses[index];
+                return _AddressCard(
+                  address: address,
+                  onEdit: () {
+                    if (user?.id == null) return;
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddAddressSheet(
+                        userId: user!.id!,
+                        existingAddress: address,
+                      ),
+                    );
+                  },
+                  onDelete: () =>
+                      _showDeleteConfirmation(context, ref, address),
+                );
+              },
+            ),
           );
         },
       ),
@@ -257,9 +274,7 @@ class _AddressCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Text(
-                            address.addressType!
-                                .toString()
-                                .toUpperCase(),
+                            address.addressType!.toString().toUpperCase(),
                             style: TextStyle(
                               fontSize: 9.sp,
                               fontWeight: FontWeight.bold,

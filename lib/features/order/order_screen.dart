@@ -6,6 +6,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 import 'presentation/widgets/order_card.dart';
 
@@ -471,7 +472,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           // Main Orders List Area
           Expanded(
             child: state.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const OrderListShimmer()
                 : filteredOrders.isEmpty
                     ? _buildEmptyState()
                     : RefreshIndicator(

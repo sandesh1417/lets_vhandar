@@ -6,9 +6,10 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 import 'widgets/brand_card.dart';
 import 'widgets/category_card.dart';
@@ -93,41 +94,49 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       );
                     }
 
-                    return SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (filteredBrands.isNotEmpty) ...[
-                            _buildBrandSection(context, filteredBrands),
-                            SizedBox(height: 8.h),
-                          ],
-                          if (filteredCategories.isNotEmpty) ...[
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 8.h),
-                              child: Text(
-                                'Shop by Category',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.textBlack,
+                    return RefreshIndicator(
+                      color: AppColor.primary,
+                      onRefresh: () async {
+                        ref.invalidate(allCategoryProvider);
+                        ref.invalidate(brandProvider);
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (filteredBrands.isNotEmpty) ...[
+                              _buildBrandSection(context, filteredBrands),
+                              SizedBox(height: 8.h),
+                            ],
+                            if (filteredCategories.isNotEmpty) ...[
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 8.h),
+                                child: Text(
+                                  'Shop by Category',
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.textBlack,
+                                  ),
                                 ),
                               ),
-                            ),
-                            _buildCategoryGrid(context, filteredCategories),
+                              _buildCategoryGrid(context, filteredCategories),
+                            ],
+                            SizedBox(height: 32.h),
                           ],
-                          SizedBox(height: 32.h),
-                        ],
+                        ),
                       ),
                     );
                   },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
+                  loading: () => const HorizontalListShimmer(),
                   error: (err, _) => Center(child: Text("Error: $err")),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const GridShimmer(crossAxisCount: 3, isCircle: false),
               error: (err, _) => Center(child: Text("Error: $err")),
             ),
           ),

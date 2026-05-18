@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class HomeBannerSlider extends ConsumerStatefulWidget {
   const HomeBannerSlider({super.key});
@@ -111,14 +112,12 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
           ),
         );
       },
-      loading: () => Container(
-        height: 140.h,
-        margin: EdgeInsets.symmetric(horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+      loading: () => Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(16.r),
+          child: const CustomShimmer.rectangular(height: 140),
         ),
-        child: const Center(child: CustomCircularLoader()),
       ),
       error: (err, stack) => const SizedBox.shrink(),
     );

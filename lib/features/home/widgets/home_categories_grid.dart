@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 // Soft background tints cycling per category card
 const _kCategoryBgColors = [
@@ -85,7 +86,12 @@ class HomeCategoriesGrid extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const GridShimmer(
+        crossAxisCount: 4,
+        itemCount: 8,
+        childAspectRatio: 0.68,
+        isCircle: false,
+      ),
       error: (err, stack) => const SizedBox.shrink(),
     );
   }
