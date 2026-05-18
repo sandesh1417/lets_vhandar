@@ -8,64 +8,130 @@ import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'widgets/brand_card.dart';
 import 'widgets/category_card.dart';
 
-class CategoryScreen extends ConsumerWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoryProvider);
     final brandsAsync = ref.watch(brandProvider);
 
     return CustomScaffoldWrapper(
       backgroundColor: const Color(0xFFFBFBFB),
       isScrollable: false,
+      resizeToAvoidBottomInset: false,
       appBar: const CustomScreenHeader(
         title: 'Explore',
         showBackButton: false,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Brands Section ---
-                    brandsAsync.when(
-                      data: (brands) => _buildBrandSection(context, brands),
-                      loading: () => const SizedBox(
-                          height: 100,
-                          child: Center(child: CircularProgressIndicator())),
-                      error: (err, _) => const SizedBox.shrink(),
-                    ),
+      body: Column(
+        children: [
+          SizedBox(height: 10.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: PremiumSearchBar(
+              controller: _searchController,
+              hintText: 'Search categories or brands...',
+              showScanIcon: false,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.trim().toLowerCase();
+                });
+              },
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Expanded(
+            child: categoriesAsync.when(
+              data: (categories) {
+                return brandsAsync.when(
+                  data: (brands) {
+                    final filteredBrands = _searchQuery.isEmpty
+                        ? brands
+                        : brands
+                            .where((brand) => (brand.name ?? '')
+                                .toLowerCase()
+                                .contains(_searchQuery))
+                            .toList();
 
-                    SizedBox(height: 8.h),
+                    final filteredCategories = _searchQuery.isEmpty
+                        ? categories
+                        : categories
+                            .where((cat) => (cat.name ?? '')
+                                .toLowerCase()
+                                .contains(_searchQuery))
+                            .toList();
 
-                    // --- Categories Section ---
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      child: Text(
-                        'Shop by Category',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.textBlack,
+                    if (filteredBrands.isEmpty && filteredCategories.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No matching categories or brands found",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
+                      );
+                    }
+
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (filteredBrands.isNotEmpty) ...[
+                            _buildBrandSection(context, filteredBrands),
+                            SizedBox(height: 8.h),
+                          ],
+                          if (filteredCategories.isNotEmpty) ...[
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 8.h),
+                              child: Text(
+                                'Shop by Category',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.textBlack,
+                                ),
+                              ),
+                            ),
+                            _buildCategoryGrid(context, filteredCategories),
+                          ],
+                          SizedBox(height: 32.h),
+                        ],
                       ),
-                    ),
-                    categoriesAsync.when(
-                      data: (categories) =>
-                          _buildCategoryGrid(context, categories),
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (err, _) => Center(child: Text("Error: $err")),
-                    ),
-                    SizedBox(height: 32.h),
-                  ],
-        ),
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, _) => Center(child: Text("Error: $err")),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Center(child: Text("Error: $err")),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -109,7 +175,6 @@ class CategoryScreen extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            // itemCount: brands.length > 15 ? 15 : brands.length,
             itemCount: brands.length,
             separatorBuilder: (context, index) => SizedBox(width: 16.w),
             itemBuilder: (context, index) {
@@ -121,7 +186,8 @@ class CategoryScreen extends ConsumerWidget {
                   imageUrl: brand.images?.isNotEmpty == true
                       ? brand.images!.first.url
                       : null,
-                  onTap: () => navigateToSlug(context, brand.slug, isBrand: true),
+                  onTap: () =>
+                      navigateToSlug(context, brand.slug, isBrand: true),
                 ),
               );
             },
@@ -136,8 +202,9 @@ class CategoryScreen extends ConsumerWidget {
   }
 
   Widget _buildCategoryGrid(BuildContext context, List<dynamic> categories) {
-    if (categories.isEmpty)
+    if (categories.isEmpty) {
       return const Center(child: Text("No categories found"));
+    }
 
     return GridView.builder(
       shrinkWrap: true,

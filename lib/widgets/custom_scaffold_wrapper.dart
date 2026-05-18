@@ -11,6 +11,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final bool isScrollable;
   final Color? backgroundColor;
   final bool extendBodyBehindAppBar;
+  final bool? resizeToAvoidBottomInset;
 
   const CustomScaffoldWrapper({
     super.key,
@@ -22,6 +23,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
     this.isScrollable = true,
     this.backgroundColor,
     this.extendBodyBehindAppBar = false,
+    this.resizeToAvoidBottomInset,
   });
 
   @override
@@ -29,6 +31,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor ?? AppColor.white,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
