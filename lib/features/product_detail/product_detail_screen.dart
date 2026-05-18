@@ -37,6 +37,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   @override
+  void didUpdateWidget(ProductDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.product.id != oldWidget.product.id) {
+      _currentProduct = widget.product;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final product = _currentProduct;
     final hasDiscount =
