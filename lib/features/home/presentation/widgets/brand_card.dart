@@ -22,37 +22,37 @@ class BrandCard extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 75.h,
-            width: 75.w,
-            padding: EdgeInsets.all(12.w),
+            height: 65.h,
+            width: 65.w,
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 ),
               ],
               border: Border.all(
-                color: AppColor.primary.withOpacity(0.05),
+                color: AppColor.primary.withOpacity(0.06),
                 width: 1,
               ),
             ),
             child: CustomImageViewer(
               path: imageUrl,
               fit: BoxFit.contain,
-              borderRadius: 40.r,
+              borderRadius: 32.r,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 6.h),
           Text(
             name,
             style: TextStyle(
               fontSize: 10.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColor.textBlack54,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,

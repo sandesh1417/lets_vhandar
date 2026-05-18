@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
+import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
-import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-
-import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
 
 class BrandScreen extends ConsumerWidget {
   const BrandScreen({super.key});
@@ -29,20 +25,22 @@ class BrandScreen extends ConsumerWidget {
           }
 
           return GridView.builder(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             physics: const BouncingScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.85,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 20.h,
+              crossAxisCount: 4,
+              childAspectRatio: 0.82,
+              crossAxisSpacing: 10.w,
+              mainAxisSpacing: 16.h,
             ),
             itemCount: brands.length,
             itemBuilder: (context, index) {
               final brand = brands[index];
               return BrandCard(
                 name: brand.name ?? '',
-                imageUrl: brand.images?.isNotEmpty == true ? brand.images!.first.url : null,
+                imageUrl: brand.images?.isNotEmpty == true
+                    ? brand.images!.first.url
+                    : null,
                 onTap: () => navigateToSlug(context, brand.slug, isBrand: true),
               );
             },
