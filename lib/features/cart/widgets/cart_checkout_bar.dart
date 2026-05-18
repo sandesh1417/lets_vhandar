@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
@@ -30,7 +33,14 @@ class CartCheckoutBar extends ConsumerWidget {
       ),
       child: Container(
         child: InkWell(
-          onTap: isLoading ? null : () => _placeOrder(context, ref),
+          onTap: () {
+            final selectedAddress = ref.read(addressProvider).selected;
+            if (selectedAddress == null) {
+              CustomSnackbar.error(context, message: 'Please select a delivery address first');
+              return;
+            }
+            context.push(LVRoute.selectPaymentMethodScreen.route);
+          },
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),

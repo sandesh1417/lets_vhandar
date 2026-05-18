@@ -27,6 +27,7 @@ import 'package:lets_vhandar/features/profile/presentation/personal_information_
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
+import 'package:lets_vhandar/features/cart/presentation/select_payment_method_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -52,7 +53,8 @@ enum LVRoute {
   contactUsScreen,
   careersScreen,
   barcodeScannerScreen,
-  searchScreen;
+  searchScreen,
+  selectPaymentMethodScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -254,6 +256,12 @@ class LVGoRouter {
         name: LVRoute.searchScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const SearchScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.selectPaymentMethodScreen.route,
+        name: LVRoute.selectPaymentMethodScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const SelectPaymentMethodScreen(),
       ),
       // Add other routes as they are implemented
     ],
