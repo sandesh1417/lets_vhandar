@@ -15,6 +15,7 @@ import 'widgets/product_image_slider.dart';
 import 'widgets/product_variant_selector.dart';
 import 'widgets/product_why_shop_section.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductData product;
@@ -55,14 +56,45 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             onTap: () => Navigator.pop(context),
           ),
         ),
-        actions: const [
-          // Padding(
-          //   padding: EdgeInsets.all(8.w),
-          //   child: _GlassButton(
-          //     icon: Icons.share_outlined,
-          //     onTap: () {},
-          //   ),
-          // ),
+        actions: [
+          Builder(
+            builder: (context) => Padding(
+              padding: EdgeInsets.all(8.w),
+              child: _GlassButton(
+                icon: Icons.share_outlined,
+                onTap: () {
+                  debugPrint('--- Share Button Tapped ---');
+                  final box = context.findRenderObject() as RenderBox?;
+                  final Rect? sharePositionOrigin = box != null
+                      ? box.localToGlobal(Offset.zero) & box.size
+                      : null;
+                  
+                  // Strip HTML tags from description
+                  final rawDesc = product.description ?? '';
+                  final cleanDesc = rawDesc
+                      .replaceAll(RegExp(r'<[^>]*>|&nbsp;'), '')
+                      .replaceAll(RegExp(r'\s+'), ' ')
+                      .trim();
+                  
+                  final productUrl = "https://vhandar.com/product/${product.slug ?? product.id ?? ''}";
+                  final playStoreUrl = "https://play.google.com/store/apps/details?id=com.example.lets_vhandar";
+                  
+                  final shareText = "Check out *${product.name}* on Let's Vhandar!\n\n"
+                      "Price: Rs. ${product.actualPrice}\n"
+                      "${cleanDesc.isNotEmpty ? '$cleanDesc\n\n' : ''}"
+                      "👉 View Product: $productUrl\n"
+                      "📲 Download the App: $playStoreUrl";
+                  
+                  debugPrint('Sharing content: $shareText');
+                  Share.share(
+                    shareText,
+                    subject: product.name,
+                    sharePositionOrigin: sharePositionOrigin,
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: ProductAddToCartBar(product: product),

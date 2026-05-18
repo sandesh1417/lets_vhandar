@@ -53,6 +53,7 @@ class BillDetailsCard extends ConsumerWidget {
           isFreeDelivery: isFreeDelivery,
           handlingCharge: handlingCharge,
           grandTotal: grandTotal,
+          deliveryThreshold: deliveryThreshold,
         );
       },
       loading: () => const SizedBox(
@@ -68,6 +69,7 @@ class BillDetailsCard extends ConsumerWidget {
         isFreeDelivery: totalPrice >= 1000,
         handlingCharge: 0,
         grandTotal: totalPrice + (totalPrice >= 1000 ? 0 : 100),
+        deliveryThreshold: 1000,
       ),
     );
   }
@@ -81,6 +83,7 @@ class BillDetailsCard extends ConsumerWidget {
     required bool isFreeDelivery,
     required double handlingCharge,
     required double grandTotal,
+    required double deliveryThreshold,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -264,66 +267,146 @@ class BillDetailsCard extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Grand Total',
+                        Text('Grand total',
                             style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AppColor.textBlack)),
+                                color: const Color(0xFF1B4332))),
                         SizedBox(height: 2.h),
                         Text('Incl. all taxes and charges',
                             style: TextStyle(
                                 fontSize: 11.sp, color: Colors.grey.shade600)),
                       ],
                     ),
-                    Text('Rs. ${grandTotal.toInt()}',
+                    Text('Rs.${grandTotal.toInt()}',
                         style: TextStyle(
-                            fontSize: 16.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
-                            color: AppColor.primary)),
+                            color: const Color(0xFF0F5A29))),
                   ],
                 ),
               ],
             ),
           ),
-          if (hasSavings)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFBE4B9),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(12.r),
-                  bottomRight: Radius.circular(12.r),
-                ),
+          if (!isFreeDelivery || hasSavings)
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16.r),
+                bottomRight: Radius.circular(16.r),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.local_offer,
-                      size: 14.sp, color: const Color(0xFF8D5B18)),
-                  SizedBox(width: 6.w),
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                          fontSize: 11.sp, color: const Color(0xFF8D5B18)),
-                      children: [
-                        TextSpan(
-                            text: 'Rs. ${savings.toInt()} ',
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                        const TextSpan(text: 'Saved!'),
-                        if (isFreeDelivery)
-                          const TextSpan(
-                              text: ' Free Delivery!',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+              child: ClipPath(
+                clipper: ScallopedClipper(),
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+                  color: const Color(0xFFFDF0D5),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.local_offer,
+                            size: 14.sp,
+                            color: const Color(0xFF7F4F1D),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  color: const Color(0xFF7F4F1D),
+                                  fontSize: 12.sp,
+                                ),
+                                children: [
+                                  if (hasSavings)
+                                    TextSpan(
+                                      text: 'Rs. ${savings.toInt()} saved  ',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  if (!isFreeDelivery) ...[
+                                    const TextSpan(text: 'Add '),
+                                    TextSpan(
+                                      text:
+                                          'Rs. ${(deliveryThreshold - totalPrice).toInt()} ',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const TextSpan(text: 'more for '),
+                                    const TextSpan(
+                                      text: 'free delivery',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ] else ...[
+                                    const TextSpan(
+                                      text: 'You have unlocked free delivery!',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.h),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4.r),
+                        child: LinearProgressIndicator(
+                          value:
+                              (totalPrice / deliveryThreshold).clamp(0.0, 1.0),
+                          backgroundColor: const Color(0xFFF5E3C4),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFFD48D21),
+                          ),
+                          minHeight: 4.h,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
         ],
       ),
     );
   }
+}
+
+class ScallopedClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, 6.h);
+    double x = 0;
+    double y = 6.h;
+    double waveLength = 14.w;
+    double waveHeight = 4.h;
+
+    while (x < size.width) {
+      path.quadraticBezierTo(
+        x + waveLength / 4,
+        y - waveHeight,
+        x + waveLength / 2,
+        y,
+      );
+      path.quadraticBezierTo(
+        x + 3 * waveLength / 4,
+        y + waveHeight,
+        x + waveLength,
+        y,
+      );
+      x += waveLength;
+    }
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
