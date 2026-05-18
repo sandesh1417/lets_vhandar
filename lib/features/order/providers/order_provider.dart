@@ -15,6 +15,13 @@ class OrderState {
   final int currentPage;
   final int totalPages;
 
+  // Filter States
+  final String? paymentStatus;
+  final String? status;
+  final String? startDate;
+  final String? endDate;
+  final String? searchQuery;
+
   const OrderState({
     this.orders = const [],
     this.isLoading = false,
@@ -23,7 +30,25 @@ class OrderState {
     this.error,
     this.currentPage = 1,
     this.totalPages = 1,
+    this.paymentStatus,
+    this.status,
+    this.startDate,
+    this.endDate,
+    this.searchQuery,
   });
+
+  // Client-side search helper over order ID and product names
+  List<OrderData> get filteredOrders {
+    if (searchQuery == null || searchQuery!.trim().isEmpty) {
+      return orders;
+    }
+    final query = searchQuery!.trim().toLowerCase();
+    return orders.where((order) {
+      final matchesOrderId = order.orderId?.toLowerCase().contains(query) ?? false;
+      final matchesProduct = order.products?.any((prod) => prod.name?.toLowerCase().contains(query) ?? false) ?? false;
+      return matchesOrderId || matchesProduct;
+    }).toList();
+  }
 
   OrderState copyWith({
     List<OrderData>? orders,
@@ -34,6 +59,12 @@ class OrderState {
     bool clearError = false,
     int? currentPage,
     int? totalPages,
+    String? paymentStatus,
+    String? status,
+    String? startDate,
+    String? endDate,
+    String? searchQuery,
+    bool clearFilters = false,
   }) {
     return OrderState(
       orders: orders ?? this.orders,
@@ -43,6 +74,11 @@ class OrderState {
       error: clearError ? null : (error ?? this.error),
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
+      paymentStatus: clearFilters ? null : (paymentStatus ?? this.paymentStatus),
+      status: clearFilters ? null : (status ?? this.status),
+      startDate: clearFilters ? null : (startDate ?? this.startDate),
+      endDate: clearFilters ? null : (endDate ?? this.endDate),
+      searchQuery: clearFilters ? null : (searchQuery ?? this.searchQuery),
     );
   }
 }
@@ -54,14 +90,45 @@ class OrderNotifier extends StateNotifier<OrderState> {
 
   OrderNotifier(this._repo) : super(const OrderState());
 
-  Future<void> loadOrders(String userId, {int page = 1}) async {
+  Future<void> loadOrders(
+    String userId, {
+    int page = 1,
+    String? paymentStatus,
+    String? status,
+    String? startDate,
+    String? endDate,
+    String? searchQuery,
+    bool clearFilters = false,
+  }) async {
     if (page == 1) {
-      state = state.copyWith(isLoading: true, clearError: true, orders: []);
+      state = state.copyWith(
+        isLoading: true,
+        clearError: true,
+        orders: [],
+        paymentStatus: paymentStatus,
+        status: status,
+        startDate: startDate,
+        endDate: endDate,
+        searchQuery: searchQuery,
+        clearFilters: clearFilters,
+      );
     } else {
       state = state.copyWith(isLoadingMore: true, clearError: true);
     }
 
-    final result = await _repo.getOrders(userId: userId, page: page);
+    final activePaymentStatus = page == 1 ? paymentStatus : state.paymentStatus;
+    final activeStatus = page == 1 ? status : state.status;
+    final activeStartDate = page == 1 ? startDate : state.startDate;
+    final activeEndDate = page == 1 ? endDate : state.endDate;
+
+    final result = await _repo.getOrders(
+      userId: userId,
+      page: page,
+      paymentStatus: activePaymentStatus,
+      status: activeStatus,
+      startDate: activeStartDate,
+      endDate: activeEndDate,
+    );
 
     switch (result) {
       case Success(value: final response):

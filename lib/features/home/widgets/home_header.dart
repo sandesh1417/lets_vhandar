@@ -9,6 +9,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
@@ -190,63 +191,10 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
               // Animate from -25.h (floating) to 12.h (inside the collapsed header)
               bottom:
                   (-25.h * (1 - currentProgress)) + (12.h * currentProgress),
-              child: Container(
-                height: 50.h,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(color: Colors.grey.shade100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () =>
-                            context.pushNamed(LVRoute.searchScreen.route),
-                        child: Row(
-                          children: [
-                            Icon(Icons.search,
-                                color: Colors.grey.shade400, size: 22.sp),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Text(
-                                'Search for products...',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.grey.shade400,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 24.h,
-                      width: 1,
-                      color: Colors.grey.shade200,
-                      margin: EdgeInsets.symmetric(horizontal: 8.w),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.qr_code_scanner,
-                          color: AppColor.primary, size: 22.sp),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () =>
-                          context.pushNamed(LVRoute.barcodeScannerScreen.route),
-                    ),
-                  ],
-                ),
+              child: PremiumSearchBar(
+                controller: TextEditingController(),
+                readOnly: true,
+                onTap: () => context.pushNamed(LVRoute.searchScreen.route),
               ),
             ),
           ],

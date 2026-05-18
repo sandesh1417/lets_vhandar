@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+
+class PremiumSearchBar extends StatefulWidget {
+  final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
+  final String hintText;
+  final VoidCallback? onScanTap;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final bool showScanIcon;
+
+  const PremiumSearchBar({
+    super.key,
+    required this.controller,
+    this.onChanged,
+    this.hintText = 'Search for products...',
+    this.onScanTap,
+    this.readOnly = false,
+    this.onTap,
+    this.showScanIcon = true,
+  });
+
+  @override
+  State<PremiumSearchBar> createState() => _PremiumSearchBarState();
+}
+
+class _PremiumSearchBarState extends State<PremiumSearchBar> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onTextChanged);
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50.h,
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.search,
+            color: AppColor.primary,
+            size: 22.sp,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: widget.readOnly
+                ? GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: widget.onTap,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.hintText,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  )
+                : TextField(
+                    controller: widget.controller,
+                    onChanged: widget.onChanged,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      hintStyle: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+          ),
+          if (!widget.readOnly && widget.controller.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                widget.controller.clear();
+                if (widget.onChanged != null) {
+                  widget.onChanged!('');
+                }
+              },
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: Colors.grey.shade400,
+                  size: 20.sp,
+                ),
+              ),
+            ),
+          if (widget.showScanIcon) ...[
+            Container(
+              height: 24.h,
+              width: 1,
+              color: Colors.grey.shade200,
+              margin: EdgeInsets.symmetric(horizontal: 8.w),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.qr_code_scanner,
+                color: AppColor.primary,
+                size: 22.sp,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: widget.onScanTap ??
+                  () {
+                    context.pushNamed(LVRoute.barcodeScannerScreen.route);
+                  },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

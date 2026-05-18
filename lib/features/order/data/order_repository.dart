@@ -30,10 +30,32 @@ class OrderRepository {
     required String userId,
     int page = 1,
     int limit = 5,
+    String? paymentStatus,
+    String? status,
+    String? startDate,
+    String? endDate,
   }) async {
+    final Map<String, dynamic> params = {
+      'page': page,
+      'limit': limit,
+      'userId': userId,
+    };
+    if (paymentStatus != null && paymentStatus.isNotEmpty) {
+      params['paymentStatus'] = paymentStatus.toLowerCase();
+    }
+    if (status != null && status.isNotEmpty) {
+      params['status'] = status.toLowerCase();
+    }
+    if (startDate != null && startDate.isNotEmpty) {
+      params['startDate'] = startDate;
+    }
+    if (endDate != null && endDate.isNotEmpty) {
+      params['endDate'] = endDate;
+    }
+
     final result = await _apiClient.get(
       ApiUrl.ordersSearch,
-      queryParameters: {'page': page, 'limit': limit, 'userId': userId},
+      queryParameters: params,
     );
 
     switch (result) {
