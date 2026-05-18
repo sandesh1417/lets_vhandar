@@ -14,6 +14,7 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 
 class SelectPaymentMethodScreen extends ConsumerStatefulWidget {
   const SelectPaymentMethodScreen({super.key});
@@ -491,6 +492,8 @@ class _SelectPaymentMethodScreenState
     final totalPrice = ref.read(totalCartPriceProvider);
     final settingsAsync = ref.read(generalSettingsProvider);
     final isBusiness = loginState.user?.isBusiness ?? false;
+    final appliedCoupon = ref.read(appliedCouponProvider);
+    final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
 
     double standardDeliveryCharge = 0;
     double businessDeliveryCharge = 0;
@@ -509,7 +512,7 @@ class _SelectPaymentMethodScreenState
         isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
     final bool isFreeDelivery = totalPrice >= deliveryThreshold;
     final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
-    final double grandTotal = totalPrice + finalDeliveryCharge + handlingCharge;
+    final double grandTotal = totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
 
     final vatAmount = double.parse((totalPrice * 0.13).toStringAsFixed(2));
 
@@ -525,6 +528,8 @@ class _SelectPaymentMethodScreenState
           cartId:
               userId, // Using userId as cartId for now since it's a valid ObjectId
           location: location,
+          appliedCouponCode: appliedCoupon?.code ?? '',
+          couponDiscount: couponDiscount,
         );
 
     if (!context.mounted) return;
@@ -532,6 +537,7 @@ class _SelectPaymentMethodScreenState
     if (success) {
       // Clear cart and navigate to Order tab (index 2)
       ref.read(cartProvider.notifier).clearCart();
+      ref.read(appliedCouponProvider.notifier).removeCoupon();
       ref.read(dashboardIndexProvider.notifier).state = 2;
 
       // Go back to the dashboard tab list

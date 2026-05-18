@@ -94,6 +94,8 @@ class OrderNotifier extends StateNotifier<OrderState> {
     required String cartId,
     required Map<String, dynamic> location,
     String paymentMethod = 'cashOnDelivery',
+    String appliedCouponCode = '',
+    double couponDiscount = 0,
   }) async {
     state = state.copyWith(isPlacingOrder: true, clearError: true);
 
@@ -106,14 +108,14 @@ class OrderNotifier extends StateNotifier<OrderState> {
       'deliveryCharge': deliveryCharge,
       'paymentStatus': 'pending',
       'userId': userId,
-      'appliedCouponCode': '',
+      'appliedCouponCode': appliedCouponCode,
       'dueAmount': 0,
       'cartId': cartId,
       'products': products,
       'deliveryTime': '',
       'paymentMethod': paymentMethod,
       'totalSavedAmount': 0,
-      'couponDiscount': 0,
+      'couponDiscount': couponDiscount,
       'deliveryTimeSlot': null,
       'location': location,
     };

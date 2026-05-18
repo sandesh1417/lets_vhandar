@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
@@ -19,6 +20,10 @@ class CartCheckoutBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(orderProvider).isPlacingOrder;
+    final appliedCoupon = ref.watch(appliedCouponProvider);
+    final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
+    final double finalPrice = totalPrice - couponDiscount;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
       decoration: BoxDecoration(
@@ -56,7 +61,7 @@ class CartCheckoutBar extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Rs. ${totalPrice.toInt()}',
+                      'Rs. ${finalPrice.toInt()}',
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

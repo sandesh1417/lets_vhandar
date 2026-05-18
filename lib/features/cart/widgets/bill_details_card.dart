@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
+import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 
 class BillDetailsCard extends ConsumerWidget {
   final int totalItems;
@@ -22,6 +23,8 @@ class BillDetailsCard extends ConsumerWidget {
     final settingsAsync = ref.watch(generalSettingsProvider);
     final userState = ref.watch(loginProvider);
     final isBusiness = userState.user?.isBusiness ?? false;
+    final appliedCoupon = ref.watch(appliedCouponProvider);
+    final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
 
     final double savings = totalMrp - totalPrice;
     final bool hasSavings = savings > 0;
@@ -42,7 +45,7 @@ class BillDetailsCard extends ConsumerWidget {
         final bool isFreeDelivery = totalPrice >= deliveryThreshold;
         final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
         final double grandTotal =
-            totalPrice + finalDeliveryCharge + handlingCharge;
+            totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
 
         return _buildCard(
           context,
@@ -54,6 +57,7 @@ class BillDetailsCard extends ConsumerWidget {
           handlingCharge: handlingCharge,
           grandTotal: grandTotal,
           deliveryThreshold: deliveryThreshold,
+          couponDiscount: couponDiscount,
         );
       },
       loading: () => const SizedBox(
@@ -68,8 +72,9 @@ class BillDetailsCard extends ConsumerWidget {
         finalDeliveryCharge: totalPrice >= 1000 ? 0 : 100,
         isFreeDelivery: totalPrice >= 1000,
         handlingCharge: 0,
-        grandTotal: totalPrice + (totalPrice >= 1000 ? 0 : 100),
+        grandTotal: totalPrice + (totalPrice >= 1000 ? 0 : 100) - couponDiscount,
         deliveryThreshold: 1000,
+        couponDiscount: couponDiscount,
       ),
     );
   }
@@ -84,6 +89,7 @@ class BillDetailsCard extends ConsumerWidget {
     required double handlingCharge,
     required double grandTotal,
     required double deliveryThreshold,
+    required double couponDiscount,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -258,6 +264,32 @@ class BillDetailsCard extends ConsumerWidget {
                             fontSize: 13.sp, fontWeight: FontWeight.bold)),
                   ],
                 ),
+                if (couponDiscount > 0) ...[
+                  SizedBox(height: 12.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.local_offer_outlined,
+                              size: 16.sp,
+                              color: AppColor.primary.withOpacity(0.6)),
+                          SizedBox(width: 8.w),
+                          Text('Coupon Discount',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.textBlack)),
+                        ],
+                      ),
+                      Text('- Rs.${couponDiscount.toInt()}',
+                          style: TextStyle(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.primary)),
+                    ],
+                  ),
+                ],
                 SizedBox(height: 16.h),
                 Divider(color: Colors.grey.shade200, height: 1),
                 SizedBox(height: 16.h),
