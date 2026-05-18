@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class LocationNotServiceableScreen extends StatelessWidget {
   const LocationNotServiceableScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: true,
+      horizontalPadding: 24,
       appBar: AppBar(
         leading: const CircleAvatar(
           backgroundColor: Colors.black,
@@ -20,10 +23,8 @@ class LocationNotServiceableScreen extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Icon(Icons.shopping_bag, size: 80, color: Colors.green),
@@ -71,7 +72,6 @@ class LocationNotServiceableScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

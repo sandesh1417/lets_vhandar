@@ -6,11 +6,13 @@ class CustomScreenHeader extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
   final Widget? trailing;
+  final bool showBackButton;
 
   const CustomScreenHeader({
     super.key,
     required this.title,
     this.trailing,
+    this.showBackButton = true,
   });
 
   @override
@@ -36,13 +38,29 @@ class CustomScreenHeader extends StatelessWidget
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: AppColor.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.sp,
-                ),
+              Row(
+                children: [
+                  if (showBackButton)
+                    Padding(
+                      padding: EdgeInsets.only(right: 12.w),
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: AppColor.primary,
+                          size: 24.sp,
+                        ),
+                      ),
+                    ),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: AppColor.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.sp,
+                    ),
+                  ),
+                ],
               ),
               if (trailing != null) trailing!,
             ],

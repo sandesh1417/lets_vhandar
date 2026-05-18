@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 import 'widgets/brand_card.dart';
@@ -19,19 +20,19 @@ class CategoryScreen extends ConsumerWidget {
     final categoriesAsync = ref.watch(allCategoryProvider);
     final brandsAsync = ref.watch(brandProvider);
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: const Color(0xFFFBFBFB),
-      body: SafeArea(
+      isScrollable: false,
+      appBar: const CustomScreenHeader(
+        title: 'Explore',
+        showBackButton: false,
+      ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomScreenHeader(title: 'Explore'),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // --- Brands Section ---
+            // --- Brands Section ---
                     brandsAsync.when(
                       data: (brands) => _buildBrandSection(context, brands),
                       loading: () => const SizedBox(
@@ -64,10 +65,6 @@ class CategoryScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: 32.h),
                   ],
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

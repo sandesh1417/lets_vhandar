@@ -6,6 +6,8 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
 
@@ -16,24 +18,10 @@ class BrandScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final brandsAsync = ref.watch(brandProvider);
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: const Color(0xFFFBFBFB),
-      appBar: AppBar(
-        title: Text(
-          'All Brands',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20.sp,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      isScrollable: false,
+      appBar: const CustomScreenHeader(title: 'All Brands'),
       body: brandsAsync.when(
         data: (brands) {
           if (brands.isEmpty) {

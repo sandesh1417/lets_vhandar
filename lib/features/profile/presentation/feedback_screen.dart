@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
@@ -75,15 +76,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
 
     return CustomScaffoldWrapper(
       isScrollable: true,
-      appBar: AppBar(
-        title: const Text('Feedback', style: TextStyle(fontWeight: FontWeight.bold)),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: const CustomScreenHeader(title: 'Feedback'),
       body: Padding(
         padding: EdgeInsets.all(20.w),
         child: Column(

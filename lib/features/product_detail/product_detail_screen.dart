@@ -14,6 +14,7 @@ import 'widgets/product_details_table.dart';
 import 'widgets/product_image_slider.dart';
 import 'widgets/product_variant_selector.dart';
 import 'widgets/product_why_shop_section.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductData product;
@@ -40,8 +41,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: const Color(0xFFF8F9FB),
+      isScrollable: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

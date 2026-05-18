@@ -6,7 +6,7 @@ import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -55,7 +55,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      appBar: const CustomAppBar(title: ''),
+      appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
         child: Column(
