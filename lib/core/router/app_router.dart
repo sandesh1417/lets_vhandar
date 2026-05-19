@@ -54,7 +54,8 @@ enum LVRoute {
   careersScreen,
   barcodeScannerScreen,
   searchScreen,
-  selectPaymentMethodScreen;
+  selectPaymentMethodScreen,
+  helpSupportScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -243,6 +244,15 @@ class LVGoRouter {
             const GenericWebViewScreen(
           title: 'Careers',
           url: 'https://www.vhandar.com/careers',
+        ),
+      ),
+      GoRoute(
+        path: LVRoute.helpSupportScreen.route,
+        name: LVRoute.helpSupportScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Help & Support',
+          url: 'https://www.vhandar.com/help',
         ),
       ),
       GoRoute(

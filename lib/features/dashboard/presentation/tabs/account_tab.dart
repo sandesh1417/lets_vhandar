@@ -93,6 +93,13 @@ class AccountTab extends ConsumerWidget {
               title: 'Support & Feedback',
               children: [
                 AccountMenuItem(
+                  icon: Icons.help_center_outlined,
+                  title: 'Help & Support',
+                  onTap: () {
+                    context.push(LVRoute.helpSupportScreen.route);
+                  },
+                ),
+                AccountMenuItem(
                   icon: Icons.share_outlined,
                   title: 'Refer and Earn',
                   onTap: () {
