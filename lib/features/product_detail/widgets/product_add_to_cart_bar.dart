@@ -20,118 +20,132 @@ class ProductAddToCartBar extends ConsumerWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.shade100,
+            width: 1.h,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
             offset: const Offset(0, -4),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Price info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Rs. ${product.actualPrice.toInt()}',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.textBlack,
-                  ),
-                ),
-                if (product.discount != null &&
-                    (product.discount?.value ?? 0) > 0)
-                  Text(
-                    'MRP Rs.${product.pricePerUnit?.toInt()}',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: AppColor.textMuted,
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // Add / Stepper
-          if (cartCount == 0)
-            GestureDetector(
-              onTap: () =>
-                  ref.read(cartProvider.notifier).addToCart(product),
-              child: Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 32.w, vertical: 14.h),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColor.primary,
-                      AppColor.primary.withOpacity(0.8)
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.primary.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  'Add to Cart',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            )
-          else
-            Container(
-              decoration: BoxDecoration(
-                color: AppColor.primary,
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: Row(
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            // Price info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _StepButton(
-                    icon: Icons.remove,
-                    onTap: () => ref
-                        .read(cartProvider.notifier)
-                        .updateQuantity(product.id!, cartCount - 1),
-                  ),
-                  SizedBox(
-                    width: 36.w,
-                    child: Text(
-                      '$cartCount',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    'Rs. ${product.actualPrice.toInt()}',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.textBlack,
                     ),
                   ),
-                  _StepButton(
-                    icon: Icons.add,
-                    onTap: () => ref
-                        .read(cartProvider.notifier)
-                        .updateQuantity(product.id!, cartCount + 1),
-                  ),
+                  if (product.discount != null &&
+                      (product.discount?.value ?? 0) > 0) ...[
+                    SizedBox(height: 2.h),
+                    Text(
+                      'MRP Rs.${product.pricePerUnit?.toInt()}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: AppColor.textMuted,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-        ],
+
+            // Add / Stepper
+            if (cartCount == 0)
+              GestureDetector(
+                onTap: () => ref.read(cartProvider.notifier).addToCart(product),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColor.primary,
+                        AppColor.primary.withValues(alpha: 0.85)
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.primary.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'Add to Cart',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FAF5),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: AppColor.primary.withValues(alpha: 0.25),
+                    width: 1.w,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _StepButton(
+                      icon: Icons.remove,
+                      onTap: () => ref
+                          .read(cartProvider.notifier)
+                          .updateQuantity(product.id!, cartCount - 1),
+                    ),
+                    SizedBox(
+                      width: 28.w,
+                      child: Text(
+                        '$cartCount',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColor.primary,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    _StepButton(
+                      icon: Icons.add,
+                      onTap: () => ref
+                          .read(cartProvider.notifier)
+                          .updateQuantity(product.id!, cartCount + 1),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -147,10 +161,10 @@ class _StepButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-        color: Colors.transparent,
-        child: Icon(icon, color: Colors.white, size: 18.sp),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        child: Icon(icon, color: AppColor.primary, size: 16.sp),
       ),
     );
   }

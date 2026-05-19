@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/product_detail/widgets/product_brand_section.dart';
+import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -29,11 +31,17 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   late ProductData _currentProduct;
+  final ValueNotifier<double> _scrollOffset = ValueNotifier<double>(0.0);
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _currentProduct = widget.product;
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      _scrollOffset.value = _scrollController.offset;
+    });
   }
 
   @override
@@ -42,6 +50,46 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     if (widget.product.id != oldWidget.product.id) {
       _currentProduct = widget.product;
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _scrollOffset.dispose();
+    super.dispose();
+  }
+
+  void _shareProduct() {
+    debugPrint('--- Share Button Tapped ---');
+    final box = context.findRenderObject() as RenderBox?;
+    final Rect? sharePositionOrigin =
+        box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+
+    final product = _currentProduct;
+    // Strip HTML tags from description
+    final rawDesc = product.description ?? '';
+    final cleanDesc = rawDesc
+        .replaceAll(RegExp(r'<[^>]*>|&nbsp;'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    final productUrl =
+        "https://vhandar.com/product/${product.slug ?? product.id ?? ''}";
+    const playStoreUrl =
+        "https://play.google.com/store/apps/details?id=com.example.lets_vhandar";
+
+    final shareText = "Check out *${product.name}* on Let's Vhandar!\n\n"
+        "Price: Rs. ${product.actualPrice}\n"
+        "${cleanDesc.isNotEmpty ? '$cleanDesc\n\n' : ''}"
+        "👉 View Product: $productUrl\n"
+        "📲 Download the App: $playStoreUrl";
+
+    debugPrint('Sharing content: $shareText');
+    Share.share(
+      shareText,
+      subject: product.name,
+      sharePositionOrigin: sharePositionOrigin,
+    );
   }
 
   @override
@@ -54,62 +102,103 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       backgroundColor: const Color(0xFFF8F9FB),
       isScrollable: false,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: _GlassButton(
-            icon: Icons.arrow_back,
-            onTap: () => Navigator.pop(context),
-          ),
-        ),
-        actions: [
-          Builder(
-            builder: (context) => Padding(
-              padding: EdgeInsets.all(8.w),
-              child: _GlassButton(
-                icon: Icons.share_outlined,
-                onTap: () {
-                  debugPrint('--- Share Button Tapped ---');
-                  final box = context.findRenderObject() as RenderBox?;
-                  final Rect? sharePositionOrigin = box != null
-                      ? box.localToGlobal(Offset.zero) & box.size
-                      : null;
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56.0),
+        child: ValueListenableBuilder<double>(
+          valueListenable: _scrollOffset,
+          builder: (context, offset, child) {
+            final double collapseStart = 50.h;
+            final double collapseEnd = 150.h;
+            final double ratio =
+                ((offset - collapseStart) / (collapseEnd - collapseStart))
+                    .clamp(0.0, 1.0);
 
-                  // Strip HTML tags from description
-                  final rawDesc = product.description ?? '';
-                  final cleanDesc = rawDesc
-                      .replaceAll(RegExp(r'<[^>]*>|&nbsp;'), '')
-                      .replaceAll(RegExp(r'\s+'), ' ')
-                      .trim();
+            final double curvedRatio = Curves.easeInOut.transform(ratio);
+            final Color appBarBgColor =
+                Colors.white.withValues(alpha: curvedRatio);
+            final double elevation = curvedRatio * 2.0;
 
-                  final productUrl =
-                      "https://vhandar.com/product/${product.slug ?? product.id ?? ''}";
-                  const playStoreUrl =
-                      "https://play.google.com/store/apps/details?id=com.example.lets_vhandar";
-
-                  final shareText =
-                      "Check out *${product.name}* on Let's Vhandar!\n\n"
-                      "Price: Rs. ${product.actualPrice}\n"
-                      "${cleanDesc.isNotEmpty ? '$cleanDesc\n\n' : ''}"
-                      "👉 View Product: $productUrl\n"
-                      "📲 Download the App: $playStoreUrl";
-
-                  debugPrint('Sharing content: $shareText');
-                  Share.share(
-                    shareText,
-                    subject: product.name,
-                    sharePositionOrigin: sharePositionOrigin,
-                  );
-                },
+            return AppBar(
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              backgroundColor: appBarBgColor,
+              elevation: elevation,
+              shadowColor: Colors.black.withValues(alpha: 0.06),
+              automaticallyImplyLeading: false,
+              leading: Center(
+                child: _GlassButton(
+                  icon: Icons.arrow_back,
+                  onTap: () => Navigator.pop(context),
+                  isGlass: ratio < 0.5,
+                ),
               ),
-            ),
-          ),
-        ],
+              titleSpacing: 0,
+              title: Opacity(
+                opacity: curvedRatio,
+                child: Transform.translate(
+                  offset: Offset(0, (1 - curvedRatio) * 12.h),
+                  child: Row(
+                    children: [
+                      if (product.images?.isNotEmpty == true)
+                        Container(
+                          width: 32.w,
+                          height: 32.w,
+                          margin: EdgeInsets.only(right: 8.w),
+                          child: CustomImageViewer(
+                            path: product.images!.first.url,
+                            borderRadius: 6.r,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              product.name ?? '',
+                              style: TextStyle(
+                                color: AppColor.textBlack,
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 1.h),
+                            Text(
+                              'Rs. ${product.actualPrice.toInt()}',
+                              style: TextStyle(
+                                color: AppColor.primary,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: _GlassButton(
+                      icon: Icons.share_outlined,
+                      onTap: _shareProduct,
+                      isGlass: ratio < 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: ProductAddToCartBar(product: product),
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           // ─── Image Area ───────────────────────────────────────────────
@@ -143,23 +232,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         Text(
                           product.name ?? 'Product Name',
                           style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
                             color: AppColor.textBlack,
-                            height: 1.2,
+                            height: 1.3,
                           ),
                         ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 4.h),
                         Text(
                           '${product.unitValue?.toInt()} ${product.unit}',
                           style: TextStyle(
-                            fontSize: 15.sp,
+                            fontSize: 13.sp,
                             color: AppColor.textMuted,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
 
-                        SizedBox(height: 14.h),
+                        SizedBox(height: 12.h),
 
                         // Price row
                         Row(
@@ -168,42 +257,37 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             Text(
                               'Rs. ${product.actualPrice.toInt()}',
                               style: TextStyle(
-                                fontSize: 26.sp,
+                                fontSize: 22.sp,
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.textBlack,
                               ),
                             ),
                             if (hasDiscount) ...[
-                              SizedBox(width: 10.w),
+                              SizedBox(width: 8.w),
                               Padding(
-                                padding: EdgeInsets.only(bottom: 3.h),
+                                padding: EdgeInsets.only(bottom: 2.h),
                                 child: Text(
                                   'MRP Rs.${product.pricePerUnit?.toInt()}',
                                   style: TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 13.sp,
                                     color: AppColor.textMuted,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10.w),
+                              SizedBox(width: 8.w),
                               Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w, vertical: 5.h),
+                                    horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF1E8B5A),
-                                      Color(0xFF27AE70)
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.r),
+                                  color: const Color(0xFFE8F5E9),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                   '${product.discount?.value?.toInt()}${product.discount?.type == 'flat' ? ' Rs' : '%'} OFF',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: const Color(0xFF2E7D32),
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -212,10 +296,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ],
                           ],
                         ),
+                        SizedBox(height: 2.h),
                         Text(
                           'Inclusive of all taxes',
                           style: TextStyle(
-                              fontSize: 10.sp, color: AppColor.textMuted),
+                            fontSize: 9.sp,
+                            color: AppColor.textMuted,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ],
                     ),
@@ -259,80 +347,80 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   SizedBox(height: 20.h),
                   const ProductWhyShopSection(),
                   SizedBox(height: 28.h),
-
-                  // ── Similar Products ──
-                  Row(
-                    children: [
-                      Container(
-                        width: 3.w,
-                        height: 16.h,
-                        decoration: BoxDecoration(
-                          color: AppColor.primary,
-                          borderRadius: BorderRadius.circular(2.r),
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Similar Products',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColor.textBlack,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
                 ],
               ),
             ),
           ),
 
-          // Similar Products List
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: ProductItemCard.preferredHeight,
-              child: product.categoryIds?.isNotEmpty == true
-                  ? ref
-                      .watch(
-                          similarProductsProvider(product.categoryIds!.first))
-                      .when(
-                        data: (products) {
-                          final filtered = products
-                              .where((p) => p.id != product.id)
-                              .toList();
-                          if (filtered.isEmpty) {
-                            return Center(
-                              child: Text(
-                                'No similar products found',
-                                style: TextStyle(
-                                    color: AppColor.textMuted, fontSize: 13.sp),
-                              ),
-                            );
-                          }
-                          return ListView.builder(
-                            scrollDirection: Axis.horizontal,
+          // Similar Products
+          if (product.categoryIds?.isNotEmpty == true)
+            ref.watch(similarProductsProvider(product.categoryIds!.first)).when(
+                  data: (products) {
+                    final filtered = products
+                        .where((p) => p.id != product.id)
+                        .toList();
+                    if (filtered.isEmpty) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            itemCount: filtered.length,
-                            itemBuilder: (context, index) {
-                              final p = filtered[index];
-                              return ProductItemCard(
-                                product: p,
-                                onTap: () => context.pushNamed(
-                                  LVRoute.productDetailScreen.route,
-                                  extra: p,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 3.w,
+                                  height: 16.h,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.primary,
+                                    borderRadius: BorderRadius.circular(2.r),
+                                  ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (e, s) => const SizedBox.shrink(),
-                      )
-                  : const SizedBox.shrink(),
-            ),
-          ),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  'Similar Products',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColor.textBlack,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          SizedBox(
+                            height: ProductItemCard.preferredHeight,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              itemCount: filtered.length,
+                              itemBuilder: (context, index) {
+                                final p = filtered[index];
+                                return ProductItemCard(
+                                  product: p,
+                                  onTap: () => context.pushNamed(
+                                    LVRoute.productDetailScreen.route,
+                                    extra: p,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, s) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+                )
+          else
+            const SliverToBoxAdapter(child: SizedBox.shrink()),
+
           SliverToBoxAdapter(child: SizedBox(height: 20.h)),
         ],
       ),
@@ -345,26 +433,35 @@ class _GlassButton extends StatelessWidget {
   final VoidCallback onTap;
   final double? size;
   final double? iconSize;
+  final bool isGlass;
 
   const _GlassButton({
     required this.icon,
     required this.onTap,
     this.size,
     this.iconSize,
+    this.isGlass = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         width: size ?? 38.w,
         height: size ?? 38.w,
         decoration: BoxDecoration(
-          color: const Color(0xFFF0FAF5).withOpacity(0.9),
+          color: isGlass
+              ? const Color(0xFFF0FAF5).withValues(alpha: 0.9)
+              : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: AppColor.primary, size: iconSize ?? 20.sp),
+        child: Icon(
+          icon,
+          color: isGlass ? AppColor.primary : AppColor.textBlack,
+          size: iconSize ?? 20.sp,
+        ),
       ),
     );
   }
