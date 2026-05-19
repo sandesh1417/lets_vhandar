@@ -6,10 +6,10 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-import 'package:lets_vhandar/widgets/premium_search_bar.dart';
-import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'widgets/brand_card.dart';
 import 'widgets/category_card.dart';
@@ -132,14 +132,66 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       ),
                     );
                   },
-                  loading: () => const HorizontalListShimmer(),
+                  loading: () => _buildLoadingShimmer(),
                   error: (err, _) => Center(child: Text("Error: $err")),
                 );
               },
-              loading: () => const GridShimmer(crossAxisCount: 3, isCircle: false),
+              loading: () => _buildLoadingShimmer(),
               error: (err, _) => Center(child: Text("Error: $err")),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer() {
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Featured Brands',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColor.textBlack,
+                  ),
+                ),
+                Text(
+                  'View All',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const HorizontalListShimmer(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Divider(color: Colors.grey.shade100, thickness: 1),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Text(
+              'Shop by Category',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColor.textBlack,
+              ),
+            ),
+          ),
+          const GridShimmer(crossAxisCount: 3, isCircle: false),
         ],
       ),
     );
