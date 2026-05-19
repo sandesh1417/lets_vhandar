@@ -247,15 +247,15 @@ class AccountTab extends ConsumerWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {}, // Navigate to edit profile
-            icon:
-                Icon(Icons.edit_outlined, color: AppColor.primary, size: 20.sp),
-            style: IconButton.styleFrom(
-              backgroundColor: AppColor.primary.withOpacity(0.05),
-              padding: EdgeInsets.all(8.w),
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () {}, // Navigate to edit profile
+          //   icon:
+          //       Icon(Icons.edit_outlined, color: AppColor.primary, size: 20.sp),
+          //   style: IconButton.styleFrom(
+          //     backgroundColor: AppColor.primary.withOpacity(0.05),
+          //     padding: EdgeInsets.all(8.w),
+          //   ),
+          // ),
         ],
       ),
     );
