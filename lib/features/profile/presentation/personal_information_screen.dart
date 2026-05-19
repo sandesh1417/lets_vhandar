@@ -27,7 +27,7 @@ class PersonalInformationScreen extends ConsumerWidget {
             _buildInfoCard(context, user),
             SizedBox(height: 10.h),
             AccountSection(
-              title: 'Danger Zone',
+              // title: 'Danger Zone',
               children: [
                 AccountMenuItem(
                   showRightArrow: false,

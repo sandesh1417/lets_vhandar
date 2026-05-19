@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AccountSection extends StatelessWidget {
-  final String title;
+  final String? title;
   final List<Widget> children;
 
   const AccountSection({
     super.key,
-    required this.title,
+    this.title,
     required this.children,
   });
 
@@ -16,18 +16,20 @@ class AccountSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(left: 24.w, bottom: 16.h, top: 16.h),
-          child: Text(
-            title.toUpperCase(),
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade500,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
+        title == null
+            ? const SizedBox()
+            : Padding(
+                padding: EdgeInsets.only(left: 24.w, bottom: 16.h, top: 16.h),
+                child: Text(
+                  title!.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade500,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 16.w),
           decoration: BoxDecoration(

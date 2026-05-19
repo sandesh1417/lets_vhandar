@@ -159,26 +159,22 @@ class AccountTab extends ConsumerWidget {
                 ),
               ],
             ),
-
+            SizedBox(height: 16.h),
             // Danger Zone
             AccountSection(
-              title: 'Danger Zone',
               children: [
                 AccountMenuItem(
                   icon: Icons.logout,
                   title: 'Logout',
+                  titleColor: Colors.red.shade600,
+                  iconColor: Colors.red.shade600,
+                  showRightArrow: false,
+                  showDivider: false,
                   onTap: () => _showLogoutDialog(context, ref),
                 ),
-                // AccountMenuItem(
-                //   icon: Icons.delete_forever_outlined,
-                //   title: 'Delete Account',
-                //   titleColor: Colors.red,
-                //   iconColor: Colors.red,
-                //   showDivider: false,
-                //   onTap: () => _showDeleteAccountDialog(context, ref),
-                // ),
               ],
             ),
+            SizedBox(height: 16.h),
 
             const AccountSupportCard(),
 
