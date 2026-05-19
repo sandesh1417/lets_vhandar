@@ -6,6 +6,7 @@ import 'package:lets_vhandar/features/home/data/repositories/product_repository.
 import 'package:lets_vhandar/features/home/domain/models/category_modal.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/domain/models/sub_category_modal.dart';
+import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 
 final categoryBySlugProvider =
     FutureProvider.family<CategoryData, String>((ref, slug) async {
@@ -73,7 +74,7 @@ final categoryProductsProvider =
 
   switch (result) {
     case Success(value: final products):
-      return products;
+      return expandProductsWithVariants(products);
     case Error(failure: final failure):
       throw failure;
   }

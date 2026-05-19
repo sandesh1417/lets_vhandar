@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 
 class SearchState {
   final bool isLoading;
@@ -61,12 +62,13 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
       if (!mounted) return;
 
-      result.when(
-        success: (products) {
+      await result.when(
+        success: (products) async {
+          final expanded = await expandProductsWithVariants(products);
           state = state.copyWith(
             isLoading: false,
-            results: products,
-            sortedResults: _sortList(products, state.selectedSort),
+            results: expanded,
+            sortedResults: _sortList(expanded, state.selectedSort),
           );
         },
         failure: (failure) {

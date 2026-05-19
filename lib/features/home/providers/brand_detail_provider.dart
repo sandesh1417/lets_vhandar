@@ -4,6 +4,7 @@ import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
+import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 
 final brandSelectedSortProvider = StateProvider.autoDispose
     .family<String?, String>((ref, slug) => 'relevance');
@@ -25,7 +26,7 @@ final brandProductsProvider =
 
   switch (result) {
     case Success(value: final products):
-      return products;
+      return expandProductsWithVariants(products);
     case Error(failure: final failure):
       throw failure;
   }
