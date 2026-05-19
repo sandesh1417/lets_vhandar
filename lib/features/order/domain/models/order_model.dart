@@ -1,4 +1,3 @@
-
 // ─── Place Order Response ─────────────────────────────────────────────────────
 
 class PlaceOrderResponse {
@@ -238,8 +237,23 @@ class OrderProduct {
   String? get firstImageUrl {
     if (images == null || images!.isEmpty) return null;
     final first = images!.first;
-    if (first is String) return first;
-    if (first is Map<String, dynamic>) return first['url'];
+    if (first is String) {
+      if (first.startsWith('http')) return first;
+      if (first.startsWith('/')) {
+        return 'https://vhandar.sgp1.digitaloceanspaces.com/$first';
+      }
+      return 'https://vhandar.sgp1.digitaloceanspaces.com//$first';
+    }
+    if (first is Map) {
+      final url = first['url'];
+      if (url is String) {
+        if (url.startsWith('http')) return url;
+        if (url.startsWith('/')) {
+          return 'https://vhandar.sgp1.digitaloceanspaces.com/$url';
+        }
+        return 'https://vhandar.sgp1.digitaloceanspaces.com//$url';
+      }
+    }
     return null;
   }
 }

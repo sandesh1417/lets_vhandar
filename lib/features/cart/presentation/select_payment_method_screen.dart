@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
@@ -14,7 +15,6 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
-import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 
 class SelectPaymentMethodScreen extends ConsumerStatefulWidget {
   const SelectPaymentMethodScreen({super.key});
@@ -44,7 +44,9 @@ class _ProductImage extends StatelessWidget {
 
     final String fullUrl = imageUrl!.startsWith('http')
         ? imageUrl!
-        : 'https://vhandar.sgp1.digitaloceanspaces.com$imageUrl';
+        : imageUrl!.startsWith('/')
+            ? 'https://vhandar.sgp1.digitaloceanspaces.com/$imageUrl'
+            : 'https://vhandar.sgp1.digitaloceanspaces.com//$imageUrl';
 
     return Container(
       width: 52.w,
@@ -323,7 +325,7 @@ class _SelectPaymentMethodScreenState
                           final product = item.product;
                           final String? firstImg =
                               product.images?.isNotEmpty == true
-                                  ? product.images!.first.path
+                                  ? product.images!.first.url
                                   : null;
 
                           return Row(
@@ -512,7 +514,8 @@ class _SelectPaymentMethodScreenState
         isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
     final bool isFreeDelivery = totalPrice >= deliveryThreshold;
     final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
-    final double grandTotal = totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
+    final double grandTotal =
+        totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
 
     final vatAmount = double.parse((totalPrice * 0.13).toStringAsFixed(2));
 
