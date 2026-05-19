@@ -12,7 +12,6 @@ final brandSelectedSortProvider = StateProvider.autoDispose
 final brandSearchQueryProvider =
     StateProvider.autoDispose.family<String, String>((ref, slug) => '');
 
-
 final brandProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, slug) async {
   final brandAsync = ref.watch(brandBySlugProvider(slug));

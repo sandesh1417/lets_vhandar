@@ -233,16 +233,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   SizedBox(height: 12.h),
 
                   // ── Variant Selector ──
-                  if (widget.product.hasVariant == true)
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 20.h),
-                      child: ProductVariantSelector(
-                        baseProduct: widget.product,
-                        selected: _currentProduct,
-                        onVariantChanged: (v) =>
-                            setState(() => _currentProduct = v),
-                      ),
-                    ),
+                  ProductVariantSelector(
+                    baseProduct: widget.product,
+                    selected: _currentProduct,
+                    onVariantChanged: (v) =>
+                        setState(() => _currentProduct = v),
+                  ),
                 ],
               ),
             ),

@@ -166,4 +166,25 @@ class ProductRepository {
       return Error(NetworkFailure(e.toString()));
     }
   }
+
+  Future<Result<ProductData, Failure>> getProductById(String id) async {
+    try {
+      final response = await _apiClient.get('${ApiUrl.products}/$id');
+      switch (response) {
+        case Success(value: final data):
+          if (data is Map<String, dynamic>) {
+            if (data['data'] != null) {
+              return Success(ProductData.fromMap(data['data']));
+            }
+            return Success(ProductData.fromMap(data));
+          }
+          return Error(const NetworkFailure("Invalid product detail format"));
+        case Error(failure: final failure):
+          return Error(failure);
+      }
+    } catch (e) {
+      if (e is Failure) return Error(e);
+      return Error(NetworkFailure(e.toString()));
+    }
+  }
 }

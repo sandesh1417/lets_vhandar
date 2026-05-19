@@ -5,24 +5,65 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
 final productVariantsProvider =
     FutureProvider.family<List<ProductData>, ProductData>(
-        (ref, parentProduct) async {
-  if (parentProduct.hasVariant != true) return [parentProduct];
-
+        (ref, baseProduct) async {
   final repository = locator<ProductRepository>();
-  // Fetch variants using the current product's ID as parentId
-  final parentId = parentProduct.parentId ?? parentProduct.id;
-  final result = await repository.getProductVariants(parentId!);
 
-  return result.when(
-    success: (variants) {
-      // Create a combined list starting with the parent product
-      final combined = [parentProduct, ...variants];
-      // Optional: Sort them logically if needed, e.g., by price
-      combined.sort((a, b) => a.actualPrice.compareTo(b.actualPrice));
-      return combined;
-    },
-    failure: (failure) => throw failure.message,
+  // If the product is a child variant, we resolve the family using parentId
+  if (baseProduct.parentId != null) {
+    final parentId = baseProduct.parentId!;
+    final variantsResult = await repository.getProductVariants(parentId);
+    List<ProductData> variantsList = [];
+    variantsResult.when(
+      success: (variants) => variantsList = variants,
+      failure: (_) {},
+    );
+
+    // Fetch the parent product
+    ProductData? parentProduct;
+    final parentResult = await repository.getProductById(parentId);
+    parentResult.when(
+      success: (parent) => parentProduct = parent,
+      failure: (_) {},
+    );
+
+    final List<ProductData> combined = [];
+    if (parentProduct != null) {
+      combined.add(parentProduct!);
+    }
+    for (final v in variantsList) {
+      if (v.id != parentProduct?.id) {
+        combined.add(v);
+      }
+    }
+    if (!combined.any((p) => p.id == baseProduct.id)) {
+      combined.add(baseProduct);
+    }
+    combined.sort((a, b) => a.actualPrice.compareTo(b.actualPrice));
+    return combined;
+  }
+
+  // If it's a parent product (parentId == null), we fetch its child variants dynamically
+  final variantsResult = await repository.getProductVariants(baseProduct.id!);
+  List<ProductData> variantsList = [];
+  variantsResult.when(
+    success: (variants) => variantsList = variants,
+    failure: (_) {},
   );
+
+  if (variantsList.isEmpty) {
+    // No variants found, standalone product
+    return [baseProduct];
+  }
+
+  // Variants exist! Combine the parent (baseProduct) and all child variants.
+  final List<ProductData> combined = [baseProduct];
+  for (final v in variantsList) {
+    if (v.id != baseProduct.id) {
+      combined.add(v);
+    }
+  }
+  combined.sort((a, b) => a.actualPrice.compareTo(b.actualPrice));
+  return combined;
 });
 
 /// Dynamically expands a list of products by fetching and adding their variants
@@ -41,15 +82,34 @@ Future<List<ProductData>> expandProductsWithVariants(
       continue;
     }
 
-    if (product.hasVariant == true) {
+    if (product.hasVariant == true || product.parentId != null) {
       final parentId = product.parentId ?? product.id;
       if (parentId != null && !fetchedParentIds.contains(parentId)) {
         fetchedParentIds.add(parentId);
 
         final result = await repository.getProductVariants(parentId);
-        result.when(
-          success: (variants) {
-            // Add current product
+        
+        // Fetch the parent product if current product is a child variant,
+        // so that the parent product itself can also be shown as a card!
+        ProductData? parentProd;
+        if (product.parentId != null) {
+          final parentRes = await repository.getProductById(parentId);
+          parentRes.when(
+            success: (parent) => parentProd = parent,
+            failure: (_) {},
+          );
+        } else {
+          parentProd = product;
+        }
+
+        await result.when(
+          success: (variants) async {
+            // Add the parent product first (if found/available)
+            if (parentProd != null && !addedIds.contains(parentProd!.id)) {
+              addedIds.add(parentProd!.id!);
+              expanded.add(parentProd!);
+            }
+            // Add current product (which might be the child variant)
             if (!addedIds.contains(product.id)) {
               addedIds.add(product.id!);
               expanded.add(product);
@@ -63,6 +123,10 @@ Future<List<ProductData>> expandProductsWithVariants(
             }
           },
           failure: (_) {
+            if (parentProd != null && !addedIds.contains(parentProd!.id)) {
+              addedIds.add(parentProd!.id!);
+              expanded.add(parentProd!);
+            }
             if (!addedIds.contains(product.id)) {
               addedIds.add(product.id!);
               expanded.add(product);
@@ -85,4 +149,5 @@ Future<List<ProductData>> expandProductsWithVariants(
 
   return expanded;
 }
+
 

@@ -420,7 +420,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
                       SizedBox(height: 6.h),
-                      widget.product.hasVariant == true
+                      (widget.product.hasVariant == true ||
+                              widget.product.parentId != null)
                           ? GestureDetector(
                               onTap: _showVariantBottomSheet,
                               child: Container(
