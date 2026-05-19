@@ -5,8 +5,8 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'presentation/widgets/order_card.dart';
 
@@ -188,7 +188,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               },
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 12.h),
 
           // Filters Horizontal Selector Row
           SingleChildScrollView(
@@ -303,7 +303,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                     decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                       color: _selectedStatus != null
                           ? AppColor.primary
                           : Colors.white,
@@ -369,7 +369,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                     decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                       color: _selectedPaymentStatus != null
                           ? AppColor.primary
                           : Colors.white,
