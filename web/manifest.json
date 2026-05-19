@@ -1,6 +1,6 @@
 {
-    "name": "lets_vhandar",
-    "short_name": "lets_vhandar",
+    "name": "Vhandar",
+    "short_name": "Vhandar",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
