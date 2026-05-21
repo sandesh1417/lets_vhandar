@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
@@ -59,9 +61,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         unselectedItemColor: AppColor.lgrayTxt,
         showUnselectedLabels: true,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+          BottomNavigationBarItem(
+            // icon: const Icon(Icons.home_outlined),
+            icon: SvgPicture.asset(
+              'assets/icons/vhandar-home-active.svg',
+              width: 24.w,
+              height: 24.h,
+              // color: AppColor.lgrayTxt,
+            ),
+            activeIcon: SvgPicture.asset(
+              'assets/icons/vhandar-home-active.svg',
+              width: 24.w,
+              height: 24.h,
+              // color: AppColor.primary,
+            ),
             label: 'Home',
           ),
           const BottomNavigationBarItem(

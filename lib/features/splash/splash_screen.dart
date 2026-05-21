@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
@@ -61,33 +62,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Clean, non-stretched "V" Logo from assets
-                  Image.asset(
-                    KImageConstant.vandharLogo,
-                    width: 130.w,
-                    height: 130.w,
+                  SvgPicture.asset(
+                    KImageConstant.splashScreen,
+                    width: 150.w,
+                    height: 150.w,
                     fit: BoxFit.contain,
                   ),
                   SizedBox(height: 10.h),
                   // Thick white custom brand header text matching Volte font & styling exactly
-                  Text(
-                    'Vhandar', // Spelled all-lowercase to match the photo exactly!
-                    style: TextStyle(
-                      fontFamily: 'Volte',
-                      fontSize: 52.sp,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing:
-                          -1.8, // Tight letter spacing to replicate logo styling
-                      height: 1.0,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.18),
-                          offset: const Offset(0, 4),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Text(
+                  //   'Vhandar', // Spelled all-lowercase to match the photo exactly!
+                  //   style: TextStyle(
+                  //     fontFamily: 'Volte',
+                  //     fontSize: 52.sp,
+                  //     fontWeight: FontWeight.w900,
+                  //     color: Colors.white,
+                  //     letterSpacing:
+                  //         -1.8, // Tight letter spacing to replicate logo styling
+                  //     height: 1.0,
+                  //     shadows: [
+                  //       Shadow(
+                  //         color: Colors.black.withOpacity(0.18),
+                  //         offset: const Offset(0, 4),
+                  //         blurRadius: 10,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(height: 8.h),
                   // Subtitle tagline styled precisely in Volte font and secondary brand color
                   Text(
