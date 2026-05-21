@@ -28,6 +28,7 @@ import 'package:lets_vhandar/features/profile/presentation/product_suggestion_sc
 import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
 import 'package:lets_vhandar/features/cart/presentation/select_payment_method_screen.dart';
+import 'package:lets_vhandar/features/kids_zone/presentation/kids_zone_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -55,7 +56,8 @@ enum LVRoute {
   barcodeScannerScreen,
   searchScreen,
   selectPaymentMethodScreen,
-  helpSupportScreen;
+  helpSupportScreen,
+  kidsZoneScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -272,6 +274,12 @@ class LVGoRouter {
         name: LVRoute.selectPaymentMethodScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const SelectPaymentMethodScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.kidsZoneScreen.route,
+        name: LVRoute.kidsZoneScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const KidsZoneScreen(),
       ),
       // Add other routes as they are implemented
     ],

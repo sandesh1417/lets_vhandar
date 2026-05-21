@@ -56,6 +56,21 @@ class AccountTab extends ConsumerWidget {
               ],
             ),
 
+            // Kids Fun Zone
+            AccountSection(
+              title: 'Kids Fun Zone 🎮',
+              children: [
+                AccountMenuItem(
+                  icon: Icons.sports_esports_outlined,
+                  title: 'Kids Play & Learn Zone',
+                  showDivider: false,
+                  onTap: () {
+                    context.push(LVRoute.kidsZoneScreen.route);
+                  },
+                ),
+              ],
+            ),
+
             // Settings
             AccountSection(
               title: 'Account Settings',
