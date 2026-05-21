@@ -56,19 +56,109 @@ class AccountTab extends ConsumerWidget {
               ],
             ),
 
-            // Kids Fun Zone
-            AccountSection(
-              title: 'Kids Fun Zone 🎮',
-              children: [
-                AccountMenuItem(
-                  icon: Icons.sports_esports_outlined,
-                  title: 'Kids Play & Learn Zone',
-                  showDivider: false,
+            // Kids Fun Zone Premium Banner
+            SizedBox(height: 16.h),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFA726), Color(0xFFFF9800)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.orange.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
                   onTap: () {
                     context.push(LVRoute.kidsZoneScreen.route);
                   },
+                  borderRadius: BorderRadius.circular(20.r),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                    child: Row(
+                      children: [
+                        // Left: Playful controller / game icon bubble
+                        Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.sports_esports,
+                            color: Colors.white,
+                            size: 32.sp,
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        // Middle: Text details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'KIDS FUN ZONE 🎮',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  SizedBox(width: 6.w),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 6.w, vertical: 2.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent.shade400,
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Text(
+                                      'NEW',
+                                      style: TextStyle(
+                                        fontSize: 8.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                'Play fun games, learn & earn discount coupons!',
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Right: Small arrow
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                          size: 16.sp,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
+              ),
             ),
 
             // Settings
