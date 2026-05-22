@@ -39,9 +39,9 @@ class HomeCategoriesGrid extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.68,
+              childAspectRatio: 0.7,
               crossAxisSpacing: 10.w,
-              mainAxisSpacing: 16.h,
+              mainAxisSpacing: 0.h,
             ),
             itemCount: categories.length,
             itemBuilder: (context, index) {
@@ -49,7 +49,8 @@ class HomeCategoriesGrid extends ConsumerWidget {
               final bgColor =
                   _kCategoryBgColors[index % _kCategoryBgColors.length];
               return GestureDetector(
-                onTap: () => navigateToSlug(context, category.slug, isBrand: false),
+                onTap: () =>
+                    navigateToSlug(context, category.slug, isBrand: false),
                 child: Column(
                   children: [
                     Container(
@@ -60,7 +61,7 @@ class HomeCategoriesGrid extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(10.w),
+                        padding: EdgeInsets.all(0.w),
                         child: CustomImageViewer(
                           path: category.images?.first.url,
                           fit: BoxFit.contain,

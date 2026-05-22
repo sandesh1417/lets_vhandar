@@ -371,7 +371,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       ),
                     ),
                   ),
-                if (product.isVegeterian != null)
+                if (product.isVegeterian != null && product.isVegeterian!)
                   Positioned(
                     bottom: 6.h,
                     right: 6.w,

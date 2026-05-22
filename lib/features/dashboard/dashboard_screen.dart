@@ -59,21 +59,28 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColor.primary,
         unselectedItemColor: AppColor.lgrayTxt,
-        showUnselectedLabels: true,
+        iconSize: 24.w,
+        selectedIconTheme: IconThemeData(size: 24.w),
+        unselectedIconTheme: IconThemeData(size: 24.w),
+        // iconSize: 24.w,
         items: [
           BottomNavigationBarItem(
             // icon: const Icon(Icons.home_outlined),
-            icon: SvgPicture.asset(
-              'assets/icons/vhandar-home-active.svg',
-              width: 24.w,
-              height: 24.h,
-              // color: AppColor.lgrayTxt,
+            icon: Padding(
+              padding: EdgeInsets.zero,
+              child: SvgPicture.asset(
+                'assets/icons/vhandar-home-active.svg',
+                width: 24.w,
+                height: 24.h,
+                fit: BoxFit.fill,
+                // color: AppColor.lgrayTxt,
+              ),
             ),
-            activeIcon: SvgPicture.asset(
-              'assets/icons/vhandar-home-active.svg',
-              width: 24.w,
-              height: 24.h,
-              // color: AppColor.primary,
+            activeIcon: Padding(
+              padding: EdgeInsets.zero,
+              child: SvgPicture.asset(
+                'assets/icons/vhandar-home-active.svg',
+              ),
             ),
             label: 'Home',
           ),
@@ -91,13 +98,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             icon: Badge(
               isLabelVisible: cartItemCount > 0,
               label: Text('$cartItemCount'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColor.secondary,
               child: const Icon(Icons.shopping_cart_outlined),
             ),
             activeIcon: Badge(
               isLabelVisible: cartItemCount > 0,
               label: Text('$cartItemCount'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColor.secondary,
               child: const Icon(Icons.shopping_cart),
             ),
             label: 'Cart',
