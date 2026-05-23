@@ -61,12 +61,17 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
   int _coinsEarned = 0;
   int _timeLeft = 45;
   int _totalPopped = 0;
+  int _missedThisLevel = 0;
+  int _poppedThisLevel = 0;
+  int _level = 1;
 
   final List<FloatingFruit> _fruits = [];
   final List<PopParticle> _particles = [];
   Timer? _gameTimer;
-  Timer? _spawnTimer;
   Timer? _updateTimer;
+  double _spawnAccumulator = 0;
+  double _spawnInterval = 1.2;
+  int _prevSecond = 0;
   final Random _random = Random();
 
   final List<String> _fruitEmojis = [
@@ -82,7 +87,6 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
   @override
   void dispose() {
     _gameTimer?.cancel();
-    _spawnTimer?.cancel();
     _updateTimer?.cancel();
     super.dispose();
   }
@@ -98,6 +102,12 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
       _coinsEarned = 0;
       _timeLeft = 45;
       _totalPopped = 0;
+      _missedThisLevel = 0;
+      _poppedThisLevel = 0;
+      _level = 1;
+      _spawnAccumulator = 0;
+      _spawnInterval = 1.2;
+      _prevSecond = 0;
       _fruits.clear();
       _particles.clear();
     });
@@ -108,31 +118,49 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
       if (_timeLeft <= 0 || _lives <= 0) _endGame();
     });
 
-    _spawnFruit();
-    _spawnTimer = Timer.periodic(const Duration(milliseconds: 900), (_) {
-      if (_isPlaying && mounted) _spawnFruit();
-    });
-
     _updateTimer = Timer.periodic(const Duration(milliseconds: 33), (_) {
       if (!_isPlaying || !mounted) return;
       setState(() {
+        final elapsed = 45 - _timeLeft;
+        final difficulty = (elapsed / 45).clamp(0.0, 1.0);
+
+        // Progressive spawn interval: 1.2s → 0.3s
+        _spawnInterval = 1.2 - difficulty * 0.9;
+        _spawnAccumulator += 0.033;
+        while (_spawnAccumulator >= _spawnInterval) {
+          _spawnAccumulator -= _spawnInterval;
+          _spawnFruit(difficulty);
+        }
+
+        // Move fruits upward
         for (final fruit in _fruits) {
           fruit.y -= fruit.speed;
         }
-        // Count escaped non-rotten fruits
+
+        // Escaped fruits cost lives
         final escaped = _fruits.where(
           (f) => f.y < -80 && !f.isPopped && !f.isRotten,
         ).length;
         if (escaped > 0) {
           _lives = max(0, _lives - escaped);
+          _missedThisLevel += escaped;
         }
         _fruits.removeWhere((f) => f.y < -80 || f.isPopped);
 
+        // Particles fade
         for (final p in _particles) {
           p.opacity -= 0.04;
           p.scale = max(0, p.scale - 0.02);
         }
         _particles.removeWhere((p) => p.opacity <= 0);
+
+        // Level progression — every 10 popped fruits
+        final newLevel = 1 + (_totalPopped ~/ 10);
+        if (newLevel != _level) {
+          _level = newLevel;
+          _missedThisLevel = 0;
+          _poppedThisLevel = 0;
+        }
 
         if (_lives <= 0 && _isPlaying) {
           Future.microtask(_endGame);
@@ -141,30 +169,38 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
     });
   }
 
-  void _spawnFruit() {
+  void _spawnFruit(double difficulty) {
     if (!mounted) return;
     final size = MediaQuery.of(context).size;
     final isGolden = _random.nextDouble() < 0.12;
     final isRotten = !isGolden && _random.nextDouble() < 0.1;
 
     final fruitSize = 36.0 + _random.nextDouble() * 20.0;
+    final isFast = difficulty > 0.3 && _random.nextDouble() < difficulty * 0.25;
 
     String emoji;
     if (isGolden) {
       emoji = '⭐';
     } else if (isRotten) {
       emoji = '🫘';
+    } else if (isFast) {
+      emoji = '🔥';
     } else {
       emoji = _fruitEmojis[_random.nextInt(_fruitEmojis.length)];
     }
+
+    final baseSpeed = 2.5 + difficulty * 3.0;
+    final speed = isFast
+        ? (baseSpeed + 1.0) + _random.nextDouble() * 2.0
+        : baseSpeed + _random.nextDouble() * 1.5;
 
     setState(() {
       _fruits.add(FloatingFruit(
         x: _random.nextDouble() * (size.width - 60) + 20,
         y: size.height + 20,
         emoji: emoji,
-        speed: 2.5 + _random.nextDouble() * 2.0,
-        size: fruitSize,
+        speed: speed,
+        size: isFast ? fruitSize * 0.75 : fruitSize,
         isGolden: isGolden,
         isRotten: isRotten,
       ));
@@ -184,6 +220,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
         _score += points;
         _combo++;
         _totalPopped++;
+        _poppedThisLevel++;
         if (_combo > _bestCombo) _bestCombo = _combo;
         _particles.add(PopParticle(
           x: fruit.x,
@@ -199,7 +236,6 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
     _isPlaying = false;
     _isGameOver = true;
     _gameTimer?.cancel();
-    _spawnTimer?.cancel();
     _updateTimer?.cancel();
 
     final coins = max(1, _score ~/ 15);
@@ -269,7 +305,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                 ),
               )),
 
-          // HUD — plain pixel positions, no ScreenUtil
+          // HUD — top row: timer | score | combo
           if (_isPlaying || _isGameOver)
             Positioned(
               top: topPadding + 44,
@@ -286,27 +322,69 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               ),
             ),
 
-          // Lives row
-          if (_isPlaying)
+          // Level badge + lives
+          if (_isPlaying) ...[
             Positioned(
               top: topPadding + 96,
               left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: _level >= 8
+                        ? [Colors.redAccent, Colors.deepOrangeAccent]
+                        : _level >= 5
+                            ? [Colors.orangeAccent, Colors.amberAccent]
+                            : [Colors.cyanAccent, Colors.lightBlueAccent],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Lv.$_level',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: topPadding + 96,
               right: 12,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: List.generate(
                   5,
                   (i) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Icon(
                       i < _lives ? Icons.favorite : Icons.favorite_border,
-                      color: i < _lives ? Colors.redAccent : Colors.white38,
-                      size: 20,
+                      color: i < _lives ? Colors.redAccent : Colors.white24,
+                      size: 18,
                     ),
                   ),
                 ),
               ),
             ),
+            // Difficulty progress bar
+            Positioned(
+              top: topPadding + 130,
+              left: 12,
+              right: 12,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: (_poppedThisLevel / 10.0).clamp(0.0, 1.0),
+                  backgroundColor: Colors.white10,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    _level >= 8 ? Colors.redAccent : Colors.cyanAccent,
+                  ),
+                  minHeight: 4,
+                ),
+              ),
+            ),
+          ],
 
           // Welcome screen
           if (!_isPlaying && !_isGameOver) _buildWelcomeScreen(),
@@ -381,12 +459,19 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                 'Pop fruits, earn coins!',
                 style: TextStyle(fontSize: 13, color: Colors.white54),
               ),
+              const SizedBox(height: 4),
+              const Text(
+                'Difficulty increases every 10 pops',
+                style: TextStyle(fontSize: 11, color: Colors.white38),
+              ),
               const SizedBox(height: 24),
               _buildInstruction('👆', 'Tap fruits to pop them for points!'),
               const SizedBox(height: 8),
               _buildInstruction('⭐', 'Golden fruits give 50 bonus points!'),
               const SizedBox(height: 8),
               _buildInstruction('💨', 'Avoid rotten items or lose 10 points!'),
+              const SizedBox(height: 8),
+              _buildInstruction('🔥', 'Fast fruits appear at higher levels!'),
               const SizedBox(height: 8),
               _buildInstruction('❤️', 'Don\'t miss 5 fruits or game ends!'),
               const SizedBox(height: 28),
@@ -456,7 +541,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               ),
               const SizedBox(height: 6),
               Text(
-                'Best Combo: x$_bestCombo  •  Popped: $_totalPopped',
+                'Lv.$_level reached  •  Best Combo: x$_bestCombo  •  $_totalPopped popped',
                 style: const TextStyle(fontSize: 13, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
