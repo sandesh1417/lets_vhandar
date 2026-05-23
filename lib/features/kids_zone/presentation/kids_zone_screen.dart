@@ -13,6 +13,8 @@ import 'games/healthy_catcher_game.dart';
 import 'games/price_master_game.dart';
 import 'games/grocery_matcher_game.dart';
 import 'games/spelling_chef_game.dart';
+import 'games/fruit_pop_game.dart';
+import 'games/sort_it_out_game.dart';
 
 class KidsZoneScreen extends ConsumerWidget {
   const KidsZoneScreen({super.key});
@@ -227,6 +229,34 @@ class KidsZoneScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const SpellingChefGame()),
+                      );
+                    },
+                  ),
+                  _buildGameCard(
+                    context: context,
+                    title: 'Fruit Pop 🍑',
+                    desc: 'Tap fruits before they fly away!',
+                    gradient: const [Color(0xFFE94560), Color(0xFF0F3460)],
+                    icon: Icons.touch_app,
+                    category: 'Reaction',
+                    onPlay: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const FruitPopGame()),
+                      );
+                    },
+                  ),
+                  _buildGameCard(
+                    context: context,
+                    title: 'Sort It Out 🗂️',
+                    desc: 'Drag food into the right bins!',
+                    gradient: const [Color(0xFF6B2FA0), Color(0xFF9B59B6)],
+                    icon: Icons.drag_indicator,
+                    category: 'Sorting',
+                    onPlay: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SortItOutGame()),
                       );
                     },
                   ),
