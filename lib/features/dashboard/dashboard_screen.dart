@@ -48,9 +48,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               },
             )
           : null,
-      body: IndexedStack(
-        index: currentIndex,
-        children: _screens,
+      body: RepaintBoundary(
+        child: IndexedStack(
+          index: currentIndex,
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: currentIndex == 3
           ? null

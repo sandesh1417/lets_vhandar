@@ -62,7 +62,11 @@ class CategorySortBar extends ConsumerWidget {
     );
   }
 
-  void _showSortModal(BuildContext context, WidgetRef ref) {
+  void _showSortModal(BuildContext context, WidgetRef ref) =>
+      CategorySortBar.showSortModal(context, ref, categorySlug);
+
+  static void showSortModal(
+      BuildContext context, WidgetRef ref, String categorySlug) {
     final options = [
       {'val': 'relevance', 'label': 'Relevance'},
       {'val': 'price_low_high', 'label': 'Price (Low to High)'},

@@ -37,6 +37,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoryProvider);
     final brandsAsync = ref.watch(brandProvider);
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return CustomScaffoldWrapper(
       backgroundColor: AppColor.primary,
@@ -45,13 +46,19 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
       body: Column(
         children: [
           // ── Green header: logo + search ────────────────────────────
-          Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 6.h, 16.w, 12.h),
+          Container(
+            color: AppColor.primary,
+            padding: EdgeInsets.only(
+              top: statusBarHeight + 10.h,
+              left: 16.w,
+              right: 16.w,
+              bottom: 12.h,
+            ),
             child: Row(
               children: [
                 SvgPicture.asset(
                   KImageConstant.vandharIcon,
-                  height: 36.h,
+                  height: 38.h,
                 ),
                 SizedBox(width: 12.w),
                 Expanded(

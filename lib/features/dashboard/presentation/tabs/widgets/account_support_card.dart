@@ -21,7 +21,8 @@ class AccountSupportCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF075E54).withValues(alpha: 0.8), // WhatsApp Dark Green
+            const Color(0xFF075E54)
+                .withValues(alpha: 0.8), // WhatsApp Dark Green
             // Color(0xFF25D366), // WhatsApp Light Green
             AppColor.primary
           ],
@@ -29,13 +30,6 @@ class AccountSupportCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF25D366).withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Row(
         children: [

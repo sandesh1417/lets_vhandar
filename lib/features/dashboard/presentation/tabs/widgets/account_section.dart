@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 
 class AccountSection extends StatelessWidget {
   final String? title;
@@ -35,13 +36,9 @@ class AccountSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(
+              color: AppColor.border.withValues(alpha: 0.55),
+            ),
           ),
           child: Column(
             children: children,

@@ -42,6 +42,8 @@ class CustomScaffoldWrapper extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(
             textScaler: const TextScaler.linear(1),

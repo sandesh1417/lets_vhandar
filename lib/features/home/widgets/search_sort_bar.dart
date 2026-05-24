@@ -62,7 +62,11 @@ class SearchSortBar extends ConsumerWidget {
     );
   }
 
-  void _showSortModal(BuildContext context, WidgetRef ref) {
+  void _showSortModal(BuildContext context, WidgetRef ref) =>
+      showSearchSortModal(context, ref);
+}
+
+void showSearchSortModal(BuildContext context, WidgetRef ref) {
     final options = [
       {'val': 'relevance', 'label': 'Relevance'},
       {'val': 'price_low_high', 'label': 'Price (Low to High)'},
@@ -146,5 +150,4 @@ class SearchSortBar extends ConsumerWidget {
         );
       },
     );
-  }
 }

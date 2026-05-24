@@ -56,7 +56,7 @@ class PersonalInformationScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -90,11 +90,11 @@ class PersonalInformationScreen extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 40.r,
-                backgroundColor: AppColor.primary.withOpacity(0.1),
+                backgroundColor: AppColor.primary.withValues(alpha: 0.1),
                 child: Icon(Icons.person, size: 45.sp, color: AppColor.primary),
               ),
               SizedBox(width: 20.w),
-              _buildPointsBadge('844'), // Placeholder points
+              _buildPointsBadge('${user?.vandarPoints ?? 0}'),
             ],
           ),
           SizedBox(height: 30.h),

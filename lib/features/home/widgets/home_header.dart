@@ -17,8 +17,8 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final maxHeaderHeight = 118.h + statusBarHeight;
-    final minHeaderHeight = maxHeaderHeight;
+    final maxHeaderHeight = 136.h + statusBarHeight;
+    final minHeaderHeight = 72.h + statusBarHeight;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -45,11 +45,19 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final rawProgress = shrinkOffset / (maxHeight - minHeight);
-    final progress = rawProgress.clamp(0.0, 1.0);
+    final range = maxHeight - minHeight;
+    final progress = (shrinkOffset / range).clamp(0.0, 1.0);
     final eased = Curves.easeInOut.transform(progress);
-    final currentHeight =
-        maxHeight - shrinkOffset.clamp(0.0, maxHeight - minHeight);
+    final currentHeight = maxHeight - shrinkOffset.clamp(0.0, range);
+
+    // Address pill fades out in first half of scroll
+    final addressOpacity = (1.0 - eased * 2).clamp(0.0, 1.0);
+    // Inline search bar fades in in second half
+    final inlineSearchOpacity = ((eased - 0.5) * 2).clamp(0.0, 1.0);
+    // Bottom search bar (inside header) fades out fast
+    final bottomSearchOpacity = (1.0 - eased * 2.5).clamp(0.0, 1.0);
+    // Logo height: 56.h expanded → 38.h collapsed
+    final logoHeight = 56.h - 18.h * eased;
 
     return Consumer(
       builder: (context, ref, _) {
@@ -69,63 +77,85 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
           height: currentHeight,
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColor.primary,
-                ColorTween(
-                  begin: const Color.fromARGB(255, 6, 89, 58),
-                  end: const Color.fromARGB(255, 4, 65, 42),
-                ).lerp(eased)!,
-              ],
-              stops: [0.0, 1.0 - (eased * 0.15)],
-            ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(24.r * (1 - eased)),
-              bottomRight: Radius.circular(24.r * (1 - eased)),
-            ),
+            color: AppColor.primary,
             boxShadow: _buildShadow(eased),
           ),
           child: Stack(
-            clipBehavior: Clip.none,
             children: [
+              // ── Top row: logo + [address pill ↔ inline search] ────
               Positioned(
-                top: statusBarHeight + (4.h * (1 - eased)),
-                left: 20.w,
-                right: 20.w,
+                top: statusBarHeight + 10.h,
+                left: 16.w,
+                right: 16.w,
+                height: 56.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Hero(
                       tag: 'logo',
                       child: SvgPicture.asset(
                         KImageConstant.vandharIcon,
-                        height: (70.h * (1 - eased * 0.4)).clamp(28.h, 48.h),
+                        height: logoHeight,
                       ),
                     ),
-                    _AddressPill(
-                      progress: eased,
-                      selected: selected,
-                      userId: userId,
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          // Address pill — fades out when scrolling
+                          if (addressOpacity > 0)
+                            Opacity(
+                              opacity: addressOpacity,
+                              child: IgnorePointer(
+                                ignoring: eased > 0.4,
+                                child: _AddressPill(
+                                  selected: selected,
+                                  userId: userId,
+                                ),
+                              ),
+                            ),
+
+                          // Inline search bar — fades in when collapsed
+                          if (inlineSearchOpacity > 0)
+                            Opacity(
+                              opacity: inlineSearchOpacity,
+                              child: IgnorePointer(
+                                ignoring: eased < 0.7,
+                                child: PremiumSearchBar(
+                                  controller: TextEditingController(),
+                                  readOnly: true,
+                                  onTap: () => context
+                                      .pushNamed(LVRoute.searchScreen.route),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              Positioned(
-                left: 16.w,
-                right: 16.w,
-                bottom: (-25.h * (1 - eased)) + (12.h * eased),
-                child: Transform.scale(
-                  scale: 1.0 - (0.015 * (1 - eased)),
-                  child: PremiumSearchBar(
-                    controller: TextEditingController(),
-                    readOnly: true,
-                    onTap: () => context.pushNamed(LVRoute.searchScreen.route),
+
+              // ── Bottom search bar — inside header, visible when expanded ─
+              if (bottomSearchOpacity > 0)
+                Positioned(
+                  left: 16.w,
+                  right: 16.w,
+                  bottom: 14.h,
+                  child: Opacity(
+                    opacity: bottomSearchOpacity,
+                    child: IgnorePointer(
+                      ignoring: eased > 0.3,
+                      child: PremiumSearchBar(
+                        controller: TextEditingController(),
+                        readOnly: true,
+                        onTap: () =>
+                            context.pushNamed(LVRoute.searchScreen.route),
+                      ),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         );
@@ -158,20 +188,16 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class _AddressPill extends ConsumerWidget {
-  final double progress;
   final dynamic selected;
   final String userId;
 
   const _AddressPill({
-    required this.progress,
     required this.selected,
     required this.userId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isCollapsed = progress > 0.5;
-
     return GestureDetector(
       onTap: () {
         if (userId.isNotEmpty) {
@@ -203,49 +229,35 @@ class _AddressPill extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isCollapsed)
-              Opacity(
-                opacity: (1 - progress * 2).clamp(0.0, 1.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Delivering to',
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(width: 4.w),
-                    Icon(Icons.keyboard_arrow_down,
-                        color: Colors.white, size: 14.sp),
-                  ],
-                ),
-              ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (isCollapsed)
-                  Padding(
-                    padding: EdgeInsets.only(right: 4.w),
-                    child: Icon(Icons.location_on,
-                        color: Colors.white, size: 12.sp),
+                Text(
+                  'Delivering to',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
+                SizedBox(width: 4.w),
+                Icon(Icons.keyboard_arrow_down,
+                    color: Colors.white, size: 14.sp),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Text(
                   selected != null
-                      ? _truncate(selected.description ?? 'Select Address',
-                          max: isCollapsed ? 18 : 22)
+                      ? _truncate(selected.description ?? 'Select Address')
                       : 'Select Address',
                   style: TextStyle(
-                    fontSize: isCollapsed ? 11.sp : 13.sp,
+                    fontSize: 13.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (isCollapsed)
-                  Icon(Icons.keyboard_arrow_down,
-                      color: Colors.white, size: 12.sp),
               ],
             ),
           ],

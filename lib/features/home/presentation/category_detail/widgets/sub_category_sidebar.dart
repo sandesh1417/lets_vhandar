@@ -21,13 +21,13 @@ class SubCategorySidebar extends ConsumerWidget {
         if (subs.isEmpty) return const SizedBox.shrink();
 
         return Container(
-          width: 85.w,
+          width: 76.w,
           decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FA),
-            border: Border(right: BorderSide(color: Colors.grey.shade200)),
+            color: Colors.white,
+            border: Border(right: BorderSide(color: Colors.grey.shade100)),
           ),
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 12.h),
+            padding: EdgeInsets.symmetric(vertical: 8.h),
             itemCount: subs.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
@@ -56,39 +56,58 @@ class SubCategorySidebar extends ConsumerWidget {
       bool isSelected, String? imageUrl) {
     return InkWell(
       onTap: () {
-        ref.read(selectedSubCategorySlugProvider(categorySlug).notifier).state =
-            slug;
+        ref
+            .read(selectedSubCategorySlugProvider(categorySlug).notifier)
+            .state = slug;
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
+        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 3.w),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected
+              ? AppColor.primary.withValues(alpha: 0.06)
+              : Colors.transparent,
           border: isSelected
-              ? Border(left: BorderSide(color: AppColor.primary, width: 3.w))
+              ? Border(
+                  left: BorderSide(width: 3.w, color: AppColor.primary),
+                )
               : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (imageUrl != null)
-              CustomImageViewer(
-                path: imageUrl,
-                height: 32.h,
-                width: 32.w,
-                fit: BoxFit.contain,
+              Container(
+                width: 40.w,
+                height: 40.w,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    color: AppColor.primary.withValues(alpha: 0.18),
+                    width: 1,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(7.r),
+                  child: CustomImageViewer(
+                    path: imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               )
             else if (slug == null)
-              Icon(Icons.apps,
-                  color: isSelected ? AppColor.primary : Colors.grey,
-                  size: 26.sp),
-            SizedBox(height: 6.h),
+              Icon(
+                Icons.apps,
+                color: isSelected ? AppColor.primary : Colors.grey,
+                size: 24.sp,
+              ),
+            SizedBox(height: 5.h),
             Text(
               title,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 10.sp,
+                fontSize: 9.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected ? AppColor.primary : AppColor.textBlack54,
               ),

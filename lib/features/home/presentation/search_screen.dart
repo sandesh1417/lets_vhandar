@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
-import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
+import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
+import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -25,7 +28,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controller with current query from provider
     _searchController.text = ref.read(searchProvider).query;
   }
 
@@ -38,49 +40,78 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return CustomScaffoldWrapper(
-      isScrollable: false,
-      horizontalPadding: 0,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: Row(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: CustomScaffoldWrapper(
+        isScrollable: false,
+        horizontalPadding: 0,
+        body: Column(
           children: [
-            Expanded(
-              child: CustomTextField(
-                controller: _searchController,
-                autofocus: true,
-                hintText: 'Search for products...',
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                          ref.read(searchProvider.notifier).search('');
-                        },
-                      )
-                    : null,
-                onChanged: (value) {
-                  setState(() {}); // to show/hide clear button
-                  ref.read(searchProvider.notifier).search(value);
-                },
+            // ── Green header ──────────────────────────────────────────
+            Container(
+              color: AppColor.primary,
+              padding: EdgeInsets.only(
+                top: statusBarHeight + 10.h,
+                left: 12.w,
+                right: 16.w,
+                bottom: 12.h,
+              ),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => context.pop(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: PremiumSearchBar(
+                      controller: _searchController,
+                      autofocus: true,
+                      showScanIcon: true,
+                      hintText: 'Search for products...',
+                      onChanged: (value) {
+                        setState(() {});
+                        ref.read(searchProvider.notifier).search(value);
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  GestureDetector(
+                    onTap: () => showSearchSortModal(context, ref),
+                    child: Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: const Icon(
+                        Icons.tune_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.qr_code_scanner, color: AppColor.primary),
-              onPressed: () {
-                context.pushNamed(LVRoute.barcodeScannerScreen.route);
-              },
-            ),
+            // ── Body ─────────────────────────────────────────────────
+            Expanded(child: _buildBody(searchState)),
           ],
         ),
       ),
-      body: _buildBody(searchState),
     );
   }
 
@@ -99,80 +130,162 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
 
     if (state.results.isEmpty && !state.isLoading) {
-      final isSearching = _searchController.text.trim().isNotEmpty;
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 74.h),
-              SvgPicture.asset(
-                'assets/images/no_search_results.svg',
-                height: 200.h,
-                width: 200.w,
-                fit: BoxFit.contain,
-              ),
-              SizedBox(height: 24.h),
-              Text(
-                'Nothing here yet',
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
+      return Column(
+        children: [
+          _BrandsRow(query: _searchController.text),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 40.h),
+                    SvgPicture.asset(
+                      'assets/images/no_search_results.svg',
+                      height: 180.h,
+                      width: 180.w,
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(height: 24.h),
+                    Text(
+                      'Nothing here yet',
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      'Try searching again or explore our popular categories!',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.grey.shade400,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 32.h),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.pushNamed(LVRoute.productSuggestionScreen.route);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF9B141),
+                        foregroundColor: Colors.white,
+                        minimumSize: Size(200.w, 48.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Suggest Product',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 12.h),
-              Text(
-                'Try searching again or explore our popular categories for more great options!',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.w400,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 32.h),
-              ElevatedButton(
-                onPressed: () {
-                  context.pushNamed(LVRoute.productSuggestionScreen.route);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      const Color(0xFFF9B141), // Orange/Amber from image
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(200.w, 48.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24.r),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Suggest Product',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       );
     }
 
-    return Column(
-      children: [
-        if (state.isLoading) const LinearProgressIndicator(),
-        const SearchSortBar(),
-        Expanded(
-          child: ProductGrid(
-            products: state.sortedResults,
+    final cardHeight = ProductItemCard.preferredHeight;
+
+    return CustomScrollView(
+      slivers: [
+        if (state.isLoading)
+          SliverToBoxAdapter(
+            child: LinearProgressIndicator(color: AppColor.primary),
+          ),
+        SliverToBoxAdapter(
+          child: _BrandsRow(query: _searchController.text),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10.h,
+              crossAxisSpacing: 10.w,
+              mainAxisExtent: cardHeight,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final product = state.sortedResults[index];
+                return ProductItemCard(
+                  key: ValueKey(product.id),
+                  product: product,
+                  margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                  width: double.infinity,
+                  onTap: () => context.pushNamed(
+                    LVRoute.productDetailScreen.route,
+                    extra: product,
+                  ),
+                );
+              },
+              childCount: state.sortedResults.length,
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BrandsRow extends ConsumerWidget {
+  final String query;
+  const _BrandsRow({required this.query});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final brandsAsync = ref.watch(brandProvider);
+
+    return brandsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (brands) {
+        final q = query.trim().toLowerCase();
+        if (q.isEmpty) return const SizedBox.shrink();
+        final filtered = brands
+            .where((b) => (b.name ?? '').toLowerCase().contains(q))
+            .toList();
+        if (filtered.isEmpty) return const SizedBox.shrink();
+        return Container(
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 10.h),
+          child: SizedBox(
+            height: 88.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              itemCount: filtered.length,
+              separatorBuilder: (_, __) => SizedBox(width: 12.w),
+              itemBuilder: (context, index) {
+                final brand = filtered[index];
+                return BrandCard(
+                  name: brand.name ?? '',
+                  imageUrl: brand.images?.firstOrNull?.url ??
+                      brand.images?.firstOrNull?.path,
+                  onTap: () => context.pushNamed(
+                    'brandDetailScreen',
+                    pathParameters: {'slug': brand.slug ?? ''},
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

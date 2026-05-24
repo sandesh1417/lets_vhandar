@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'widgets/account_menu_item.dart';
 import 'widgets/account_section.dart';
@@ -15,6 +19,10 @@ import 'widgets/account_support_card.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
+
+  static const String _appVersion = '1.0.0';
+  static const String _shareText =
+      'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,20 +42,24 @@ class AccountTab extends ConsumerWidget {
             // User Profile Section
             _buildProfileHeader(user),
 
+            _buildVhandarPointCard(user?.vandarPoints ?? 0),
+
             SizedBox(height: 8.h),
 
             // My Activity
             AccountSection(
               title: 'My Activity',
               children: [
-                // AccountMenuItem(
-                //   icon: Icons.history_outlined,
-                //   title: 'Reorder',
-                //   onTap: () {},
-                // ),
+                AccountMenuItem(
+                  icon: Icons.receipt_long_outlined,
+                  title: 'My Orders',
+                  onTap: () {
+                    ref.read(dashboardIndexProvider.notifier).state = 2;
+                  },
+                ),
                 AccountMenuItem(
                   icon: Icons.location_on_outlined,
-                  title: 'Saved Addresses',
+                  title: 'Manage Address',
                   showDivider: false,
                   onTap: () {
                     context.push(LVRoute.savedAddressesScreen.route);
@@ -67,13 +79,6 @@ class AccountTab extends ConsumerWidget {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(20.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.orange.withOpacity(0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  )
-                ],
               ),
               child: Material(
                 color: Colors.transparent,
@@ -91,7 +96,7 @@ class AccountTab extends ConsumerWidget {
                         Container(
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -141,7 +146,7 @@ class AccountTab extends ConsumerWidget {
                                 'Play fun games, learn & earn discount coupons!',
                                 style: TextStyle(
                                   fontSize: 11.sp,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -209,6 +214,13 @@ class AccountTab extends ConsumerWidget {
                   title: 'Refer and Earn',
                   onTap: () {
                     context.push(LVRoute.referAndEarnScreen.route);
+                  },
+                ),
+                AccountMenuItem(
+                  icon: Icons.ios_share_outlined,
+                  title: 'Share',
+                  onTap: () {
+                    Share.share(_shareText);
                   },
                 ),
                 AccountMenuItem(
@@ -290,9 +302,78 @@ class AccountTab extends ConsumerWidget {
 
             const AccountSupportCard(),
 
+            SizedBox(height: 22.h),
+            _buildAppVersionFooter(),
             SizedBox(height: 70.h),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildVhandarPointCard(int points) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(16.r),
+        ),
+        border: Border(
+          left: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+          right: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+          bottom: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+        ),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            KImageConstant.pointsBadge,
+            width: 44.w,
+            height: 44.w,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SvgPicture.asset(
+                  KImageConstant.vhandarPoints,
+                  height: 22.h,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.centerLeft,
+                ),
+                SizedBox(height: 5.h),
+                Text(
+                  'Earn rewards on every order',
+                  style: TextStyle(
+                    color: AppColor.textMuted,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Text(
+              '$points pts',
+              style: TextStyle(
+                color: AppColor.primary,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -303,14 +384,15 @@ class AccountTab extends ConsumerWidget {
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16.r),
+        ),
+        border: Border(
+          left: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+          top: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+          right: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+          bottom: BorderSide(color: AppColor.border.withValues(alpha: 0.55)),
+        ),
       ),
       child: Row(
         children: [
@@ -319,11 +401,13 @@ class AccountTab extends ConsumerWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                  color: AppColor.primary.withOpacity(0.2), width: 2),
+                color: AppColor.primary.withValues(alpha: 0.2),
+                width: 2,
+              ),
             ),
             child: CircleAvatar(
               radius: 30.r,
-              backgroundColor: AppColor.primary.withOpacity(0.1),
+              backgroundColor: AppColor.primary.withValues(alpha: 0.1),
               child: Icon(Icons.person, size: 35.sp, color: AppColor.primary),
             ),
           ),
@@ -361,6 +445,33 @@ class AccountTab extends ConsumerWidget {
           //     padding: EdgeInsets.all(8.w),
           //   ),
           // ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppVersionFooter() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Column(
+        children: [
+          Text(
+            'Vhandar',
+            style: TextStyle(
+              color: AppColor.primary,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            'Version $_appVersion',
+            style: TextStyle(
+              color: AppColor.textMuted,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

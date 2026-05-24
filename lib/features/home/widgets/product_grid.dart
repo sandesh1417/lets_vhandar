@@ -13,12 +13,16 @@ class ProductGrid extends StatelessWidget {
   final List<ProductData> products;
   final bool isVertical;
   final EdgeInsetsGeometry? padding;
+  final double? mainAxisSpacing;
+  final double? crossAxisSpacing;
 
   const ProductGrid({
     super.key,
     required this.products,
     this.isVertical = true,
     this.padding,
+    this.mainAxisSpacing,
+    this.crossAxisSpacing,
   });
 
   @override
@@ -37,8 +41,8 @@ class ProductGrid extends StatelessWidget {
       padding: padding ?? EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 10.h,
-        crossAxisSpacing: 10.w,
+        mainAxisSpacing: mainAxisSpacing ?? 10.h,
+        crossAxisSpacing: crossAxisSpacing ?? 10.w,
         mainAxisExtent: cardHeight,
       ),
       itemCount: products.length,

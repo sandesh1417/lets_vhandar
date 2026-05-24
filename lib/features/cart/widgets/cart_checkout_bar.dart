@@ -25,7 +25,7 @@ class CartCheckoutBar extends ConsumerWidget {
     final double finalPrice = totalPrice - couponDiscount;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 20.h),
       child: InkWell(
           onTap: () {
             final selectedAddress = ref.read(addressProvider).selected;

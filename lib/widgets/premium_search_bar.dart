@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 
 class PremiumSearchBar extends StatefulWidget {
@@ -13,6 +12,7 @@ class PremiumSearchBar extends StatefulWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final bool showScanIcon;
+  final bool autofocus;
 
   const PremiumSearchBar({
     super.key,
@@ -23,6 +23,7 @@ class PremiumSearchBar extends StatefulWidget {
     this.readOnly = false,
     this.onTap,
     this.showScanIcon = true,
+    this.autofocus = false,
   });
 
   @override
@@ -49,8 +50,8 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      height: 44.h,
+      padding: EdgeInsets.symmetric(horizontal: 14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
@@ -64,12 +65,12 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.search_rounded,
-            color: AppColor.primary,
-            size: 22.sp,
+          SvgPicture.asset(
+            'assets/icons/search-active.svg',
+            width: 20.sp,
+            height: 20.sp,
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 10.w),
           Expanded(
             child: widget.readOnly
                 ? GestureDetector(
@@ -80,7 +81,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                       child: Text(
                         widget.hintText,
                         style: TextStyle(
-                          fontSize: 14.sp,
+                          fontSize: 13.sp,
                           color: Colors.black54,
                           fontWeight: FontWeight.w400,
                         ),
@@ -89,16 +90,17 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                   )
                 : TextField(
                     controller: widget.controller,
+                    autofocus: widget.autofocus,
                     onChanged: widget.onChanged,
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 13.sp,
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                     ),
                     decoration: InputDecoration(
                       hintText: widget.hintText,
                       hintStyle: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: 13.sp,
                         color: Colors.black54,
                         fontWeight: FontWeight.w400,
                       ),
@@ -127,16 +129,19 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
             ),
           if (widget.showScanIcon) ...[
             Container(
-              height: 24.h,
+              height: 18.h,
               width: 1,
               color: Colors.grey.shade200,
-              margin: EdgeInsets.symmetric(horizontal: 6.w),
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
             ),
-            IconButton(
+            SizedBox(
+              width: 28.w,
+              child: IconButton(
               icon: SvgPicture.asset(
                 'assets/icons/barcode.svg',
-                width: 22.sp,
-                height: 22.sp,
+                width: 18.sp,
+                height: 18.sp,
+                colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
@@ -144,6 +149,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                   () {
                     context.pushNamed(LVRoute.barcodeScannerScreen.route);
                   },
+            ),
             ),
           ],
         ],

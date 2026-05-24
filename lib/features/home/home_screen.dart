@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/home_category_product_list.dart';
 import 'package:lets_vhandar/features/home/widgets/home_header.dart';
 import 'package:lets_vhandar/features/home/widgets/home_section_title.dart';
+import 'package:lets_vhandar/features/home/widgets/home_featured_brands_list.dart';
 import 'package:lets_vhandar/features/home/widgets/home_top_selling_list.dart';
 import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
@@ -71,6 +73,13 @@ class HomeScreen extends ConsumerWidget {
                     const HomeCategoriesGrid(),
                     SizedBox(height: 16.h),
                     const HomeCategoryProductList(),
+                    SizedBox(height: 16.h),
+                    HomeSectionTitle(
+                      title: 'Featured Brands',
+                      subtitle: 'Top brands we carry',
+                      onSeeAll: () => context.push('/brands'),
+                    ),
+                    const HomeFeaturedBrandsList(),
                     SizedBox(height: 32.h),
                   ],
                 ),
