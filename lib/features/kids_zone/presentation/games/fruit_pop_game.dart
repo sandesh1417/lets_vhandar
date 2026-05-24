@@ -173,7 +173,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
     if (!mounted) return;
     final size = MediaQuery.of(context).size;
     final isGolden = _random.nextDouble() < 0.12;
-    final isRotten = !isGolden && _random.nextDouble() < 0.1;
+    final isRotten = !isGolden && _random.nextDouble() < 0.18;
 
     final fruitSize = 36.0 + _random.nextDouble() * 20.0;
     final isFast = difficulty > 0.3 && _random.nextDouble() < difficulty * 0.25;
@@ -182,7 +182,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
     if (isGolden) {
       emoji = '⭐';
     } else if (isRotten) {
-      emoji = '🫘';
+      emoji = '🤢';
     } else if (isFast) {
       emoji = '🔥';
     } else {
@@ -469,7 +469,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               const SizedBox(height: 8),
               _buildInstruction('⭐', 'Golden fruits give 50 bonus points!'),
               const SizedBox(height: 8),
-              _buildInstruction('💨', 'Avoid rotten items or lose 10 points!'),
+              _buildInstruction('🤢', 'Avoid rotten items or lose 10 points!'),
               const SizedBox(height: 8),
               _buildInstruction('🔥', 'Fast fruits appear at higher levels!'),
               const SizedBox(height: 8),
