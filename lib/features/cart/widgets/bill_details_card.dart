@@ -97,7 +97,7 @@ class BillDetailsCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -142,7 +142,7 @@ class BillDetailsCard extends ConsumerWidget {
                       children: [
                         Icon(Icons.receipt_long,
                             size: 16.sp,
-                            color: AppColor.primary.withOpacity(0.6)),
+                            color: AppColor.primary.withValues(alpha: 0.8)),
                         SizedBox(width: 8.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,10 +178,10 @@ class BillDetailsCard extends ConsumerWidget {
                         if (hasSavings)
                           Text('Rs. ${totalMrp.toInt()}',
                               style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: Colors.grey.shade700,
+                                  fontSize: 12.sp,
+                                  color: Colors.grey.shade400,
                                   decoration: TextDecoration.lineThrough,
-                                  decorationColor: Colors.grey.shade700)),
+                                  decorationColor: Colors.grey.shade400)),
                         Text('Rs. ${totalPrice.toInt()}',
                             style: TextStyle(
                                 fontSize: 13.sp, fontWeight: FontWeight.bold)),
@@ -197,7 +197,7 @@ class BillDetailsCard extends ConsumerWidget {
                       children: [
                         Icon(Icons.delivery_dining,
                             size: 16.sp,
-                            color: AppColor.primary.withOpacity(0.6)),
+                            color: AppColor.primary.withValues(alpha: 0.8)),
                         SizedBox(width: 8.w),
                         Text('Delivery charge',
                             style: TextStyle(
@@ -206,7 +206,7 @@ class BillDetailsCard extends ConsumerWidget {
                                 color: AppColor.textBlack)),
                         SizedBox(width: 4.w),
                         Icon(Icons.info_outline,
-                            size: 14.sp, color: Colors.grey.shade800),
+                            size: 14.sp, color: Colors.grey.shade400),
                       ],
                     ),
                     Row(
@@ -214,10 +214,10 @@ class BillDetailsCard extends ConsumerWidget {
                         if (isFreeDelivery && deliveryCharge > 0) ...[
                           Text('Rs.${deliveryCharge.toInt()}',
                               style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: Colors.grey.shade500,
+                                  fontSize: 12.sp,
+                                  color: Colors.grey.shade400,
                                   decoration: TextDecoration.lineThrough,
-                                  decorationColor: Colors.grey.shade900)),
+                                  decorationColor: Colors.grey.shade400)),
                           SizedBox(width: 6.w),
                           Text('FREE',
                               style: TextStyle(
@@ -247,7 +247,7 @@ class BillDetailsCard extends ConsumerWidget {
                       children: [
                         Icon(Icons.shopping_bag_outlined,
                             size: 16.sp,
-                            color: AppColor.primary.withOpacity(0.6)),
+                            color: AppColor.primary.withValues(alpha: 0.8)),
                         SizedBox(width: 8.w),
                         Text('Handling Charge',
                             style: TextStyle(
@@ -256,7 +256,7 @@ class BillDetailsCard extends ConsumerWidget {
                                 color: AppColor.textBlack)),
                         SizedBox(width: 4.w),
                         Icon(Icons.info_outline,
-                            size: 14.sp, color: Colors.grey.shade700),
+                            size: 14.sp, color: Colors.grey.shade400),
                       ],
                     ),
                     Text('Rs.${handlingCharge.toInt()}',
@@ -273,7 +273,7 @@ class BillDetailsCard extends ConsumerWidget {
                         children: [
                           Icon(Icons.local_offer_outlined,
                               size: 16.sp,
-                              color: AppColor.primary.withOpacity(0.6)),
+                              color: AppColor.primary.withValues(alpha: 0.8)),
                           SizedBox(width: 8.w),
                           Text('Coupon Discount',
                               style: TextStyle(

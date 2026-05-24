@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
@@ -18,57 +19,64 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFFF0FAF5), // very light green tint
-            Color(0xFFFCFCFC), // near white
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.0, 0.4],
-        ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: AppColor.primary,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
-      child: RefreshIndicator(
-        color: AppColor.primary,
-        onRefresh: () async {
-          ref.invalidate(bannerProvider);
-          ref.invalidate(featuredProductsProvider);
-          ref.invalidate(homeCategoryProvider);
-          ref.invalidate(allCategoryProvider);
-        },
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFF0FAF5),
+              Color(0xFFFCFCFC),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.0, 0.4],
           ),
-          slivers: [
-            const HomeHeader(),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 40.h),
-                  const HomeBannerSlider(),
-                  SizedBox(height: 20.h),
-                  const HomeSectionTitle(
-                    title: 'Featured Products',
-                    subtitle: 'Hand-picked for you today',
-                  ),
-                  const HomeFeaturedProductsList(),
-                  SizedBox(height: 20.h),
-                  const HomeSectionTitle(
-                    title: 'Shop by Category',
-                    subtitle: 'Find exactly what you need',
-                  ),
-                  const HomeCategoriesGrid(),
-                  SizedBox(height: 20.h),
-                  const HomeCategoryProductList(),
-                  SizedBox(height: 32.h),
-                ],
-              ),
+        ),
+        child: RefreshIndicator(
+          color: AppColor.primary,
+          onRefresh: () async {
+            ref.invalidate(bannerProvider);
+            ref.invalidate(featuredProductsProvider);
+            ref.invalidate(homeCategoryProvider);
+            ref.invalidate(allCategoryProvider);
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
-          ],
+            slivers: [
+              const HomeHeader(),
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16.h),
+                    const HomeBannerSlider(),
+                    SizedBox(height: 16.h),
+                    const HomeSectionTitle(
+                      title: 'Featured Products',
+                      subtitle: 'Hand-picked for you today',
+                    ),
+                    const HomeFeaturedProductsList(),
+                    SizedBox(height: 16.h),
+                    const HomeSectionTitle(
+                      title: 'Shop by Category',
+                      subtitle: 'Find exactly what you need',
+                    ),
+                    const HomeCategoriesGrid(),
+                    SizedBox(height: 16.h),
+                    const HomeCategoryProductList(),
+                    SizedBox(height: 32.h),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

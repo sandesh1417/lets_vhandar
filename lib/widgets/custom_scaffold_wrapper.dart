@@ -8,9 +8,11 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
   final bool isScrollable;
   final Color? backgroundColor;
   final bool extendBodyBehindAppBar;
+  final bool extendBody;
   final bool? resizeToAvoidBottomInset;
 
   const CustomScaffoldWrapper({
@@ -20,9 +22,11 @@ class CustomScaffoldWrapper extends StatelessWidget {
     this.horizontalPadding,
     this.bottomNavigationBar,
     this.floatingActionButton,
+    this.floatingActionButtonLocation,
     this.isScrollable = true,
     this.backgroundColor,
     this.extendBodyBehindAppBar = false,
+    this.extendBody = false,
     this.resizeToAvoidBottomInset,
   });
 
@@ -31,10 +35,12 @@ class CustomScaffoldWrapper extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor ?? AppColor.white,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
+      extendBody: extendBody,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
       body: SafeArea(
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(

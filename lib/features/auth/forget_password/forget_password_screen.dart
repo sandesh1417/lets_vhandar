@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
@@ -23,11 +24,18 @@ class ForgetPasswordScreen extends ConsumerStatefulWidget {
 class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   late TextEditingController phoneController;
   final _formKey = GlobalKey<FormState>();
+  bool _isFormFilled = false;
 
   @override
   void initState() {
     super.initState();
     phoneController = TextEditingController();
+    phoneController.addListener(_onFormChanged);
+  }
+
+  void _onFormChanged() {
+    final filled = phoneController.text.length == 10;
+    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -42,60 +50,85 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      appBar: const CustomScreenHeader(
-        title: '',
-      ),
+      appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
         child: Column(children: [
-          const Icon(Icons.lock_outline, size: 80, color: Colors.green),
+          SizedBox(height: 16.h),
+          Container(
+            width: 72.w,
+            height: 72.w,
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.lock_open_outlined,
+                size: 34.sp, color: AppColor.primary),
+          ),
           SizedBox(height: 20.h),
           Text(
             'Forgot Password',
             style: KTextStyle.roboto24blackD7W,
           ),
           SizedBox(height: 8.h),
-          Text('Enter your phone number and we\'ll send a reset code.',
-              textAlign: TextAlign.center, style: KTextStyle.roboto14Green4W),
+          Text(
+            "Enter your phone number and we'll send a reset code.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: AppColor.lgrayTxt,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Inter',
+            ),
+          ),
           SizedBox(height: 32.h),
           CustomTextField(
             controller: phoneController,
             hintText: 'Enter Mobile Number',
-            labelText: 'Number',
+            labelText: 'Mobile Number',
             prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
-              child: Text(
-                '+ 977',
-                style: KTextStyle.roboto16black5W,
-              ),
+              padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 8.w),
+              child: Text('+ 977', style: KTextStyle.roboto16black5W),
             ),
             keyBoardType: const TextInputType.numberWithOptions(),
             textInputFormatter: TenDigitInputFormatter(),
             validator: TFValidators.validatePhone,
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 20.h),
           CustomButton(
-              isLoading: forgetPasswordState.isLoading,
-              onPress: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  ref.read(forgetPasswordProvider.notifier).sendOtp(
-                    context,
-                    phoneNumber: phoneController.text,
-                    phoneCode: "+977",
-                    onSuccess: () {
-                      context.push(
-                        LVRoute.oTPScreen.route,
-                        extra: {
-                          'phoneNumber': phoneController.text,
-                          'phoneCode': '+977',
-                          'isResetPassword': true,
-                        },
-                      );
-                    },
-                  );
-                }
-              },
-              buttonTitle: 'Send Reset Code'),
+            isLoading: forgetPasswordState.isLoading,
+            btnHeight: 52.h,
+            buttonColor:
+                _isFormFilled ? AppColor.secondary : const Color(0xFFECEEED),
+            txtStyle: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Inter',
+              color: _isFormFilled
+                  ? const Color(0xFF1A1A1A)
+                  : const Color(0xFFADB5B2),
+            ),
+            onPress: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                ref.read(forgetPasswordProvider.notifier).sendOtp(
+                  context,
+                  phoneNumber: phoneController.text,
+                  phoneCode: "+977",
+                  onSuccess: () {
+                    context.push(
+                      LVRoute.oTPScreen.route,
+                      extra: {
+                        'phoneNumber': phoneController.text,
+                        'phoneCode': '+977',
+                        'isResetPassword': true,
+                      },
+                    );
+                  },
+                );
+              }
+            },
+            buttonTitle: 'Send Reset Code',
+          ),
         ]),
       ),
     );

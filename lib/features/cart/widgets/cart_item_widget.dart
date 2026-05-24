@@ -18,7 +18,7 @@ class CartItemWidget extends ConsumerWidget {
         product.discount != null && (product.discount?.value ?? 0) > 0;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -120,8 +120,8 @@ class CartItemWidget extends ConsumerWidget {
                         'Rs. ${product.pricePerUnit?.toInt()}',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          color: Colors.grey.shade700,
-                          decorationColor: Colors.grey.shade700,
+                          color: Colors.grey.shade400,
+                          decorationColor: Colors.grey.shade400,
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),

@@ -21,18 +21,17 @@ class CategoryCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          Expanded(
+          AspectRatio(
+            aspectRatio: 1,
             child: Container(
-              width: double.infinity,
-              child: ClipRRect(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE7F1ED),
                 borderRadius: BorderRadius.circular(12.r),
-                child: Padding(
-                  padding: EdgeInsets.all(8.w),
-                  child: CustomImageViewer(
-                    path: imageUrl,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+              ),
+              child: CustomImageViewer(
+                path: imageUrl,
+                fit: BoxFit.contain,
               ),
             ),
           ),

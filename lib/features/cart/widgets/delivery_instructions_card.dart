@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 
 class DeliveryInstructionsCard extends StatefulWidget {
@@ -43,8 +44,11 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           tilePadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-          leading: Icon(Icons.markunread_mailbox_outlined,
-              color: AppColor.primary, size: 28.sp),
+          leading: SvgPicture.asset(
+              'assets/icons/vhandar_delivery_info.svg',
+              width: 28.w,
+              height: 28.w,
+            ),
           title: Text(
             'Delivery Instructions',
             style: TextStyle(

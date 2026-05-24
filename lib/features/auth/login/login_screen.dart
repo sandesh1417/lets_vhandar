@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,14 +25,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
+  bool _isFormFilled = false;
+  bool _rememberMe = false;
 
   @override
   void initState() {
     super.initState();
-    _phoneController =
-        TextEditingController(text: kDebugMode ? '9861100736' : '');
-    _passwordController =
-        TextEditingController(text: kDebugMode ? 'S@ndesh1234' : '');
+    _phoneController = TextEditingController();
+    _passwordController = TextEditingController();
+    _phoneController.addListener(_onFormChanged);
+    _passwordController.addListener(_onFormChanged);
+  }
+
+  void _onFormChanged() {
+    final filled = _phoneController.text.length == 10 &&
+        _passwordController.text.isNotEmpty;
+    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -50,106 +57,201 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            SizedBox(height: 50.h),
-            SvgPicture.asset(KImageConstant.vandharIcon),
-            SizedBox(height: 15.h),
-            Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
-            SizedBox(height: 4.h),
-            Text('Log in or Sign up', style: KTextStyle.roboto16black5W),
-            SizedBox(height: 30.h),
-            CustomTextField(
-              controller: _phoneController,
-              hintText: 'Enter Mobile Number',
-              labelText: 'Number',
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
-                child: Text(
-                  '+ 977',
-                  style: KTextStyle.roboto16black5W,
+      isScrollable: false,
+      body: AutofillGroup(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 40.h),
+                      SvgPicture.asset(KImageConstant.vandharIcon),
+                      SizedBox(height: 15.h),
+                      Text('Vhandar Grocery app',
+                          style: KTextStyle.roboto22black8W),
+                      SizedBox(height: 4.h),
+                      Text('Log in or Sign up',
+                          style: KTextStyle.roboto16black5W),
+                      SizedBox(height: 30.h),
+                      CustomTextField(
+                        controller: _phoneController,
+                        hintText: 'Mobile Number',
+                        labelText: 'Mobile Number',
+                        prefixText: '+977 ',
+                        autofillHints: const [AutofillHints.username],
+                        keyBoardType: const TextInputType.numberWithOptions(),
+                        textInputFormatter: TenDigitInputFormatter(),
+                        validator: TFValidators.validatePhone,
+                      ),
+                      SizedBox(height: 12.h),
+                      CustomTextField(
+                        controller: _passwordController,
+                        hintText: 'Password',
+                        labelText: 'Password',
+                        obscureText: isPasswordVisible,
+                        autofillHints: const [AutofillHints.password],
+                        prefixIcon: Icon(Icons.lock_outline_rounded,
+                            size: 18.sp, color: AppColor.icon),
+                        onObscurePressed: () {
+                          ref
+                              .read(passwordVisibilityProvider.notifier)
+                              .update((state) => !isPasswordVisible);
+                        },
+                        validator: TFValidators.validatePassword,
+                      ),
+                      SizedBox(height: 12.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () =>
+                                setState(() => _rememberMe = !_rememberMe),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 20.w,
+                                  height: 20.w,
+                                  child: Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (v) => setState(
+                                        () => _rememberMe = v ?? false),
+                                    activeColor: AppColor.primary,
+                                    side: const BorderSide(
+                                        color: Color(0xFFCDD4D1), width: 1.5),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(4.r),
+                                    ),
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  'Remember me',
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: AppColor.lgrayTxt,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => context
+                                .push(LVRoute.forgetPasswordScreen.route),
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: AppColor.primary,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      CustomButton(
+                        isLoading: loginState.isLoading,
+                        btnHeight: 52.h,
+                        buttonColor: _isFormFilled
+                            ? AppColor.secondary
+                            : const Color(0xFFECEEED),
+                        txtStyle: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Inter',
+                          color: _isFormFilled
+                              ? const Color(0xFF1A1A1A)
+                              : const Color(0xFFADB5B2),
+                        ),
+                        onPress: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            ref.read(loginProvider.notifier).login(
+                                  context,
+                                  _phoneController.text,
+                                  _passwordController.text,
+                                );
+                          }
+                        },
+                        buttonTitle: 'Continue',
+                      ),
+                      SizedBox(height: 20.h),
+                      GestureDetector(
+                        onTap: () =>
+                            context.push(LVRoute.registerScreen.route),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(
+                              color: AppColor.lgrayTxt,
+                              fontSize: 14.sp,
+                              fontFamily: 'Inter',
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Sign Up',
+                                style: TextStyle(
+                                  color: AppColor.primary,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                    ],
+                  ),
                 ),
               ),
-              keyBoardType: const TextInputType.numberWithOptions(),
-              textInputFormatter: TenDigitInputFormatter(),
-              validator: TFValidators.validatePhone,
-            ),
-            SizedBox(height: 10.h),
-            CustomTextField(
-              controller: _passwordController,
-              hintText: 'Enter Password',
-              labelText: 'Password',
-              obscureText: isPasswordVisible,
-              onObscurePressed: () {
-                ref
-                    .read(passwordVisibilityProvider.notifier)
-                    .update((state) => !isPasswordVisible);
-              },
-              validator: TFValidators.validatePassword,
-            ),
-            SizedBox(height: 20.h),
-            CustomButton(
-                isLoading: loginState.isLoading,
-                onPress: () {
-                  // context.push(LVRoute.oTPScreen.route); //    /otp    otp
-                  if (_formKey.currentState?.validate() ?? false) {
-                    ref.read(loginProvider.notifier).login(
-                          context,
-                          _phoneController.text,
-                          _passwordController.text,
-                        );
-                  }
-                },
-                buttonTitle: 'Continue'),
-            SizedBox(height: 16.h),
-            GestureDetector(
-              child: Text(
-                'Forget Password ?',
-                style: KTextStyle.roboto14sec7W,
+              Text(
+                'By continuing, you agree to our ',
+                style: KTextStyle.roboto12lGray3W,
               ),
-              onTap: () {
-                context.push(LVRoute.forgetPasswordScreen.route);
-              },
-            ),
-            SizedBox(height: 16.h),
-            GestureDetector(
-              onTap: () => context.push(LVRoute.registerScreen.route),
-              child: RichText(
+              RichText(
                 text: TextSpan(
-                  text: 'Dont have an Account? ',
-                  style: TextStyle(color: AppColor.greenTxtColor),
+                  text: 'Privacy Policy',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: AppColor.primary,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Inter',
+                  ),
                   children: <TextSpan>[
-                    TextSpan(text: 'Sign Up', style: KTextStyle.roboto16sec5W),
-                    const TextSpan(
-                      text: '.',
-                      style: TextStyle(color: Colors.black),
+                    TextSpan(
+                      text: ' & ',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColor.lgrayTxt,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Terms of Use',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColor.primary,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 245.h),
-            Text(
-              'By continuing, you agree to our ',
-              style: KTextStyle.roboto12lGray3W,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Privacy Policy',
-                style: KTextStyle.roboto12sec4W,
-                children: <TextSpan>[
-                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
-                  TextSpan(
-                    text: 'Terms of Use',
-                    style: KTextStyle.roboto12sec4W,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20.h),
-          ],
+              SizedBox(height: 24.h),
+            ],
+          ),
         ),
       ),
     );

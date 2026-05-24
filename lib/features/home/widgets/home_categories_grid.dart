@@ -1,24 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
-// Soft background tints cycling per category card
-const _kCategoryBgColors = [
-  Color(0xFFEAF6EE),
-  Color(0xFFFFF8E7),
-  Color(0xFFEEF2FF),
-  Color(0xFFFFF0F0),
-  Color(0xFFE8F9F7),
-  Color(0xFFF5EEFF),
-  Color(0xFFFFF4E6),
-  Color(0xFFEFF9FF),
-];
+const _kCategoryBgColor = Color(0xFFE7F1ED);
 
 class HomeCategoriesGrid extends ConsumerWidget {
   const HomeCategoriesGrid({super.key});
@@ -39,33 +28,29 @@ class HomeCategoriesGrid extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.7,
+              childAspectRatio: 0.65,
               crossAxisSpacing: 10.w,
-              mainAxisSpacing: 0.h,
+              mainAxisSpacing: 8.h,
             ),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final category = categories[index];
-              final bgColor =
-                  _kCategoryBgColors[index % _kCategoryBgColors.length];
               return GestureDetector(
                 onTap: () =>
                     navigateToSlug(context, category.slug, isBrand: false),
                 child: Column(
                   children: [
                     Container(
-                      height: 64.h,
-                      width: 64.h,
+                      height: 76.h,
+                      width: 76.h,
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(16.r),
+                        color: _kCategoryBgColor,
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(0.w),
-                        child: CustomImageViewer(
-                          path: category.images?.first.url,
-                          fit: BoxFit.contain,
-                        ),
+                      child: CustomImageViewer(
+                        path: category.images?.first.url,
+                        fit: BoxFit.contain,
                       ),
                     ),
                     SizedBox(height: 6.h),

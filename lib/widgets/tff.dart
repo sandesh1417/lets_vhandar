@@ -31,6 +31,8 @@ class CustomTextField extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
   final bool autofocus;
   final bool? enabled;
+  final List<String>? autofillHints;
+  final String? prefixText;
 
   const CustomTextField({
     required this.hintText,
@@ -61,6 +63,8 @@ class CustomTextField extends StatefulWidget {
     this.contentPadding,
     this.autofocus = false,
     this.enabled,
+    this.autofillHints,
+    this.prefixText,
   });
 
   final AutovalidateMode? autovalidateMode;
@@ -85,67 +89,90 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onFieldSubmitted: widget.onSubmitted,
       onTap: widget.onTap,
       focusNode: widget.focusNode,
+      autofillHints: widget.autofillHints,
       inputFormatters: widget.textInputFormatter != null
           ? [widget.textInputFormatter!]
           : null,
       onChanged: widget.onChanged ?? (v) {},
       style: TextStyle(
-        color: Colors.black87,
+        color: const Color(0xFF1A1A1A),
         fontWeight: FontWeight.w500,
-        fontSize: 16.sp,
+        fontSize: 15.sp,
       ),
       decoration: InputDecoration(
-        filled: widget.filled,
-        fillColor: widget.fillColor,
+        filled: widget.filled ?? true,
+        fillColor: widget.fillColor ?? const Color(0xFFF7F8F8),
         contentPadding: widget.contentPadding ??
             EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
         isDense: true,
         hintText: widget.hintText,
         hintStyle: TextStyle(
-          color: Colors.grey.shade600,
+          color: const Color(0xFFADB5B2),
           fontSize: 14.sp,
+          fontWeight: FontWeight.w400,
         ),
-        prefixIcon: widget.prefixIcon != null
-            ? SizedBox(child: widget.prefixIcon)
-            : null,
+        prefixIcon: widget.prefixIcon,
+        prefixIconConstraints:
+            BoxConstraints(minWidth: 48.w, minHeight: 0),
+        prefixText: widget.prefixText,
+        prefixStyle: TextStyle(
+          color: const Color(0xFF1A1A1A),
+          fontWeight: FontWeight.w500,
+          fontSize: 15.sp,
+        ),
         suffixIcon: widget.obscureText != null
             ? GestureDetector(
                 onTap: widget.onObscurePressed ?? () {},
                 child: !widget.obscureText!
                     ? Icon(
                         Icons.visibility_off_outlined,
-                        color: AppColor.icon,
-                        size: 16.sp,
+                        color: const Color(0xFF9AA5A1),
+                        size: 18.sp,
                       )
                     : Icon(
                         Icons.visibility_outlined,
-                        color: AppColor.icon,
-                        size: 16.sp,
+                        color: const Color(0xFF9AA5A1),
+                        size: 18.sp,
                       ),
               )
             : widget.suffixIcon,
         border: widget.border ??
             OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: BorderSide(color: AppColor.border)),
-        enabledBorder: widget.enabledBorder,
+              borderRadius: BorderRadius.all(Radius.circular(10.r)),
+              borderSide: const BorderSide(color: Color(0xFFE2E8E5)),
+            ),
+        enabledBorder: widget.enabledBorder ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.r)),
+              borderSide: const BorderSide(color: Color(0xFFE2E8E5)),
+            ),
         focusedBorder: widget.focusedBorder ??
             OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: BorderSide(color: AppColor.primary, width: 1)),
+              borderRadius: BorderRadius.all(Radius.circular(10.r)),
+              borderSide: const BorderSide(
+                  color: Color(0xFF2D3748), width: 1.5),
+            ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.r)),
+          borderSide: BorderSide(color: AppColor.error, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.r)),
+          borderSide: BorderSide(color: AppColor.error, width: 1.5),
+        ),
         labelText: widget.labelText,
         labelStyle: TextStyle(
-          color: Colors.grey.shade700,
-          fontWeight: FontWeight.w500,
+          color: const Color(0xFF8C9A95),
+          fontWeight: FontWeight.w400,
           fontSize: 14.sp,
         ),
         floatingLabelStyle: TextStyle(
-          color: AppColor.primary,
+          color: const Color(0xFF2D3748),
           fontWeight: FontWeight.w600,
-          fontSize: 14.sp,
+          fontSize: 13.sp,
         ),
       ),
-      cursorColor: AppColor.primary,
+      cursorColor: const Color(0xFF2D3748),
       autovalidateMode:
           widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
       validator: widget.validator,

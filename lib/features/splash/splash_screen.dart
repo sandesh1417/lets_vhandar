@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,21 +23,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkSession();
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkSession());
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ));
+    super.dispose();
   }
 
   Future<void> _checkSession() async {
-    // Restore session data (token + user) into the login provider
     await ref.read(loginProvider.notifier).restoreSession();
-
     final token = await SessionPrefences().getToken();
-    // Keep splash for 200 seconds for branding inspection
-    await Future.delayed(const Duration(seconds: 5));
-
+    await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
     if (token != null && token.isNotEmpty) {
-      if (mounted) context.pushReplacement(LVRoute.dashboardScreen.route);
+      context.go(LVRoute.dashboardScreen.route);
     } else {
-      if (mounted) context.pushReplacement(LVRoute.loginScreen.route);
+      context.go(LVRoute.loginScreen.route);
     }
   }
 
@@ -64,35 +79,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   // Clean, non-stretched "V" Logo from assets
                   SvgPicture.asset(
                     KImageConstant.splashScreen,
-                    width: 150.w,
-                    height: 150.w,
+                    width: 180.w,
+                    height: 180.w,
                     fit: BoxFit.contain,
                   ),
                   SizedBox(height: 10.h),
-                  // Thick white custom brand header text matching Volte font & styling exactly
-                  // Text(
-                  //   'Vhandar', // Spelled all-lowercase to match the photo exactly!
-                  //   style: TextStyle(
-                  //     fontFamily: 'Volte',
-                  //     fontSize: 52.sp,
-                  //     fontWeight: FontWeight.w900,
-                  //     color: Colors.white,
-                  //     letterSpacing:
-                  //         -1.8, // Tight letter spacing to replicate logo styling
-                  //     height: 1.0,
-                  //     shadows: [
-                  //       Shadow(
-                  //         color: Colors.black.withOpacity(0.18),
-                  //         offset: const Offset(0, 4),
-                  //         blurRadius: 10,
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  SizedBox(height: 8.h),
+                 
+                  SizedBox(height: 9.h),
                   // Subtitle tagline styled precisely in Volte font and secondary brand color
                   Text(
-                    'Fastest Grocery Delivery',
+                    'Fastest Grocery Delivery App',
                     style: TextStyle(
                       fontFamily: 'Volte',
                       fontSize: 15.sp,
@@ -114,36 +110,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Version 1.0.0',
+                    'Vhandar Merchandise Pvt Ltd',
                     style: TextStyle(
-                      fontFamily: 'Volte',
+                      fontFamily: 'Inter',
                       fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.5),
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
                     ),
                   ),
                   SizedBox(height: 4.h),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontFamily: 'Volte',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white70,
-                      ),
-                      children: [
-                        const TextSpan(text: 'Developed by '),
-                        TextSpan(
-                          text: 'Vhandar Pvt. Ltd.',
-                          style: TextStyle(
-                            fontFamily: 'Volte',
-                            color: AppColor
-                                .secondary, // Matches brand secondary color
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    '1.0.0',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

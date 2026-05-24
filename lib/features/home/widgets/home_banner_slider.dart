@@ -63,8 +63,8 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             children: [
-              SizedBox(
-                height: 170.h,
+              AspectRatio(
+                aspectRatio: 16 / 9,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: banners.length,
@@ -88,35 +88,19 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                   },
                 ),
               ),
-              SizedBox(height: 10.h),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: List.generate(
-              //     banners.length,
-              //     (index) => AnimatedContainer(
-              //       duration: const Duration(milliseconds: 300),
-              //       curve: Curves.easeInOut,
-              //       width: _currentPage == index ? 20.w : 6.w,
-              //       height: 6.w,
-              //       margin: EdgeInsets.symmetric(horizontal: 3.w),
-              //       decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(3.r),
-              //         color: _currentPage == index
-              //             ? AppColor.primary
-              //             : Colors.grey.shade300,
-              //       ),
-              //     ),
-              //   ),
-              // ),
+             
             ],
           ),
         );
       },
       loading: () => Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16.r),
-          child: const CustomShimmer.rectangular(height: 140),
+        padding: EdgeInsets.symmetric(horizontal: 1.w),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.r),
+            child: const CustomShimmer.rectangular(height: double.infinity),
+          ),
         ),
       ),
       error: (err, stack) => const SizedBox.shrink(),

@@ -24,20 +24,9 @@ class CartCheckoutBar extends ConsumerWidget {
     final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
     final double finalPrice = totalPrice - couponDiscount;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Container(
-        child: InkWell(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      child: InkWell(
           onTap: () {
             final selectedAddress = ref.read(addressProvider).selected;
             if (selectedAddress == null) {
@@ -106,8 +95,7 @@ class CartCheckoutBar extends ConsumerWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Future<void> _placeOrder(BuildContext context, WidgetRef ref) async {

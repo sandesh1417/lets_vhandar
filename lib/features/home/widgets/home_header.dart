@@ -17,8 +17,8 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final maxHeaderHeight = 130.h + statusBarHeight;
-    final minHeaderHeight = 100.h + statusBarHeight;
+    final maxHeaderHeight = 118.h + statusBarHeight;
+    final minHeaderHeight = maxHeaderHeight;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -91,7 +91,7 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
             clipBehavior: Clip.none,
             children: [
               Positioned(
-                top: statusBarHeight + (10.h * (1 - eased)),
+                top: statusBarHeight + (4.h * (1 - eased)),
                 left: 20.w,
                 right: 20.w,
                 child: Row(
@@ -102,7 +102,7 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                       tag: 'logo',
                       child: SvgPicture.asset(
                         KImageConstant.vandharIcon,
-                        height: (48.h * (1 - eased * 0.4)).clamp(28.h, 48.h),
+                        height: (70.h * (1 - eased * 0.4)).clamp(28.h, 48.h),
                       ),
                     ),
                     _AddressPill(

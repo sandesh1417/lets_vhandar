@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
+      child: const ColoredBox(color: Color(0xFF0A754E)),
       builder: (_, child) {
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

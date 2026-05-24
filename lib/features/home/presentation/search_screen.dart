@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -107,9 +108,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 74.h),
-              // Illustration
-              Image.asset(
-                'assets/images/search_empty.png',
+              SvgPicture.asset(
+                'assets/images/no_search_results.svg',
                 height: 200.h,
                 width: 200.w,
                 fit: BoxFit.contain,

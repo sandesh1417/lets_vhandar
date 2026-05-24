@@ -32,6 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _confirmPasswordController;
   late TextEditingController _referalCodeController;
   bool isPasswordVisible = false;
+  bool _isFormFilled = false;
 
   @override
   void initState() {
@@ -41,6 +42,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _referalCodeController = TextEditingController();
+    _phoneController.addListener(_onFormChanged);
+    _nameController.addListener(_onFormChanged);
+    _passwordController.addListener(_onFormChanged);
+    _confirmPasswordController.addListener(_onFormChanged);
+  }
+
+  void _onFormChanged() {
+    final filled = _phoneController.text.length == 10 &&
+        _nameController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty;
+    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -73,78 +86,87 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             SizedBox(height: 30.h),
             CustomTextField(
               controller: _phoneController,
-              hintText: 'Enter Mobile Number',
-              labelText: 'Number',
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
-                child: Text(
-                  '+ 977',
-                  style: KTextStyle.roboto16black5W,
-                ),
-              ),
+              hintText: 'Mobile Number',
+              labelText: 'Mobile Number',
+              prefixText: '+977 ',
+              autofillHints: const [AutofillHints.username],
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
               validator: TFValidators.validatePhone,
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
             CustomTextField(
               controller: _nameController,
-              hintText: 'Enter Name',
-              labelText: 'Name',
-              onObscurePressed: () {},
+              hintText: 'Full Name',
+              labelText: 'Full Name',
+              autofillHints: const [AutofillHints.name],
+              prefixIcon: Icon(Icons.person_outline_rounded,
+                  size: 18.sp, color: AppColor.icon),
               suffixIcon: const SizedBox(),
               validator: TFValidators.validateName,
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
             CustomTextField(
               controller: _passwordController,
-              hintText: 'Enter Password',
+              hintText: 'Password',
               labelText: 'Password',
+              autofillHints: const [AutofillHints.newPassword],
+              prefixIcon: Icon(Icons.lock_outline_rounded,
+                  size: 18.sp, color: AppColor.icon),
               obscureText: isPasswordVisible,
               onObscurePressed: () {
-                setState(() {
-                  isPasswordVisible = !isPasswordVisible;
-                });
+                setState(() => isPasswordVisible = !isPasswordVisible);
               },
               validator: TFValidators.validatePassword,
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
             CustomTextField(
               controller: _confirmPasswordController,
               hintText: 'Confirm Password',
               labelText: 'Confirm Password',
+              autofillHints: const [AutofillHints.newPassword],
+              prefixIcon: Icon(Icons.lock_outline_rounded,
+                  size: 18.sp, color: AppColor.icon),
               obscureText: isPasswordVisible,
               onObscurePressed: () {
-                setState(() {
-                  isPasswordVisible = !isPasswordVisible;
-                });
+                setState(() => isPasswordVisible = !isPasswordVisible);
               },
               validator: (value) => TFValidators.validateConfirmPassword(
                   value, _passwordController.text),
               suffixIcon: const SizedBox(),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
             CustomTextField(
               controller: _referalCodeController,
-              hintText: 'Referral Code',
+              hintText: 'Referral Code (Optional)',
               labelText: 'Referral Code',
-              onObscurePressed: () {},
+              prefixIcon: Icon(Icons.discount_outlined,
+                  size: 18.sp, color: AppColor.icon),
               suffixIcon: const SizedBox(),
             ),
             SizedBox(height: 20.h),
             CustomButton(
               isLoading: registrationState.isLoading,
+              btnHeight: 52.h,
+              buttonColor: _isFormFilled
+                  ? AppColor.secondary
+                  : const Color(0xFFECEEED),
+              txtStyle: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Inter',
+                color: _isFormFilled
+                    ? const Color(0xFF1A1A1A)
+                    : const Color(0xFFADB5B2),
+              ),
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {
-                  // Additional check for password match
                   if (_passwordController.text !=
                       _confirmPasswordController.text) {
                     CustomSnackbar.error(context,
                         message: 'Passwords do not match');
                     return;
                   }
-
-                  // Save user data to the state
                   ref.read(registrationProvider.notifier).sendOtp(
                     context,
                     phoneNumber: _phoneController.text,
@@ -163,14 +185,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       );
                     },
                   );
-                  // ref.read(newUserInfoProvider.notifier).state = RegisterModal(
-                  //   phoneNumber: _phoneController.text,
-                  //   phoneCode: "+977",
-                  //   name: _nameController.text,
-                  //   referalCode: _referalCodeController.text,
-                  //   password: _passwordController.text,
-                  //   confirmPassword: _confirmPasswordController.text,
-                  // );
                 }
               },
               buttonTitle: 'Join Vhandar',
@@ -179,32 +193,53 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(child: Divider(color: AppColor.border, thickness: 1)),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: AppColor.border),
-                  ),
+                Expanded(
+                    child: Divider(
+                        color: const Color(0xFFE2E8E5), thickness: 1)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
                   child: Text(
-                    "OR",
+                    'OR',
                     style: TextStyle(
-                        color: AppColor.greenTxtColor,
-                        fontWeight: FontWeight.bold),
+                      color: AppColor.lgrayTxt,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12.sp,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
                 Expanded(
-                    child: Divider(color: Colors.grey.shade300, thickness: 1)),
+                    child: Divider(
+                        color: const Color(0xFFE2E8E5), thickness: 1)),
               ],
             ),
             SizedBox(height: 16.h),
-            CustomButton(
-                onPress: () {
+            SizedBox(
+              width: double.infinity,
+              height: 52.h,
+              child: OutlinedButton(
+                onPressed: () {
                   context.push(LVRoute.v4BRegistrationScreen.route);
                 },
-                buttonTitle: 'Create a Business Account'),
-            SizedBox(height: 50.h),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF3B9171), width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  backgroundColor: Colors.transparent,
+                ),
+                child: Text(
+                  'Create a Business Account',
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Inter',
+                    color: const Color(0xFF3B9171),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 32.h),
             Text(
               'By continuing, you agree to our ',
               style: KTextStyle.roboto12lGray3W,
@@ -212,12 +247,29 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             RichText(
               text: TextSpan(
                 text: 'Privacy Policy',
-                style: KTextStyle.roboto12sec4W,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: AppColor.primary,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Inter',
+                ),
                 children: <TextSpan>[
-                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
+                  TextSpan(
+                    text: ' & ',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColor.lgrayTxt,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
                   TextSpan(
                     text: 'Terms of Use',
-                    style: KTextStyle.roboto12sec4W,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColor.primary,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ],
               ),

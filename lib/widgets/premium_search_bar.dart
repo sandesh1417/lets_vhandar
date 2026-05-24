@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
@@ -52,10 +53,10 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -64,7 +65,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
       child: Row(
         children: [
           Icon(
-            Icons.search,
+            Icons.search_rounded,
             color: AppColor.primary,
             size: 22.sp,
           ),
@@ -116,7 +117,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                 }
               },
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                padding: EdgeInsets.symmetric(horizontal: 2.w),
                 child: Icon(
                   Icons.close_rounded,
                   color: Colors.grey.shade400,
@@ -129,13 +130,13 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
               height: 24.h,
               width: 1,
               color: Colors.grey.shade200,
-              margin: EdgeInsets.symmetric(horizontal: 8.w),
+              margin: EdgeInsets.symmetric(horizontal: 6.w),
             ),
             IconButton(
-              icon: Icon(
-                Icons.qr_code_scanner,
-                color: AppColor.primary,
-                size: 22.sp,
+              icon: SvgPicture.asset(
+                'assets/icons/barcode.svg',
+                width: 22.sp,
+                height: 22.sp,
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),

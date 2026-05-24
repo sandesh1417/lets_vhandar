@@ -8,183 +8,183 @@ class KTextStyle {
     fontSize: 16.sp,
     color: AppColor.white,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14white4W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.white,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14Green4W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.greenTxtColor,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14hintTxt4W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.hintText,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14BlackD5W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.text,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto12BlackD7W = TextStyle(
     fontSize: 12.sp,
     color: AppColor.text,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto12sec4W = TextStyle(
     fontSize: 12.sp,
     color: AppColor.secondary,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14black7W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.primary,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14sec7W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.secondary,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14Green6W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.greenTxtColor,
     fontWeight: FontWeight.w600,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto10blackD4W = TextStyle(
     fontSize: 10.sp,
     color: AppColor.black,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto10blackD6W = TextStyle(
     fontSize: 11.sp,
     color: AppColor.text,
     fontWeight: FontWeight.w600,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto24blackD7W = TextStyle(
     fontSize: 24.sp,
     color: AppColor.black,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto24GreenD4W = TextStyle(
     fontSize: 24.sp,
     color: AppColor.greenTxtColor,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
 
   static TextStyle roboto18white5W = TextStyle(
     fontSize: 18.sp,
     color: Colors.white,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto18pri7W = TextStyle(
     fontSize: 18.sp,
     color: AppColor.primary,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14pri5W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.primary,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
 
   static TextStyle roboto10White7W = TextStyle(
     fontSize: 10.sp,
     color: Colors.white,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto12White5W = TextStyle(
     fontSize: 12.sp,
     color: Colors.white,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14Red4W = TextStyle(
     // color: const Color(0xFFED3C0D),
     color: Colors.red,
     fontSize: 14.sp,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
     fontWeight: FontWeight.w400,
   );
   static TextStyle roboto10Orange4W = TextStyle(
     color: const Color(0xFFED3C0D),
     fontSize: 10.sp,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
     fontWeight: FontWeight.w400,
   );
   static TextStyle roboto10White5W = TextStyle(
     color: Colors.white,
     fontSize: 10.sp,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
     fontWeight: FontWeight.w500,
   );
   static TextStyle roboto14white5W = TextStyle(
     fontSize: 14.sp,
     color: Colors.white,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto16sec5W = TextStyle(
     fontSize: 16.sp,
     color: AppColor.secondary,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto16black5W = TextStyle(
     fontSize: 16.sp,
     color: Colors.black,
     fontWeight: FontWeight.w500,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto22black8W = TextStyle(
     fontSize: 22.sp,
     color: Colors.black,
     fontWeight: FontWeight.w800,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto20pri7W = TextStyle(
     fontSize: 20.sp,
     color: AppColor.primary,
     fontWeight: FontWeight.w700,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto12lGray3W = TextStyle(
     fontSize: 12.sp,
     color: AppColor.lgrayTxt,
     fontWeight: FontWeight.w300,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14Gray4W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.lgrayTxt,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
   static TextStyle roboto14GreenD4W = TextStyle(
     fontSize: 14.sp,
     color: AppColor.greenTxtColor,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
   );
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
@@ -276,11 +278,18 @@ class ProductItemCard extends ConsumerStatefulWidget {
 
 class _ProductItemCardState extends ConsumerState<ProductItemCard> {
   late ProductData _currentProduct;
+  final GlobalKey _imageKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _currentProduct = widget.product;
+  }
+
+  Offset _imageCenter() {
+    final box = _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return Offset.zero;
+    return box.localToGlobal(Offset(box.size.width / 2, box.size.height / 2));
   }
 
   void _showVariantBottomSheet() {
@@ -323,10 +332,10 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             Stack(
               children: [
                 Container(
-                  height: 100.h, // Reduced for compactness
+                  key: _imageKey,
+                  height: 100.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    // color: Colors.grey.shade50,
                     color: Colors.white,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(12.r)),
@@ -491,6 +500,14 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           if (cartCount == 0) {
                             return GestureDetector(
                               onTap: () {
+                                HapticFeedback.mediumImpact();
+                                CartFlyAnimator.fly(
+                                  context,
+                                  product.images?.isNotEmpty == true
+                                      ? product.images!.first.url
+                                      : null,
+                                  _imageCenter(),
+                                );
                                 ref
                                     .read(cartProvider.notifier)
                                     .addToCart(product);
@@ -523,6 +540,13 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
+                                      HapticFeedback.lightImpact();
+                                      CartFlyAnimator.blast(
+                                        context,
+                                        product.images?.isNotEmpty == true
+                                            ? product.images!.first.url
+                                            : null,
+                                      );
                                       ref
                                           .read(cartProvider.notifier)
                                           .updateQuantity(

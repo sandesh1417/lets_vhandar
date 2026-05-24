@@ -8,12 +8,14 @@ class CustomScreenHeader extends StatelessWidget
   final String title;
   final Widget? trailing;
   final bool showBackButton;
+  final VoidCallback? onBack;
 
   const CustomScreenHeader({
     super.key,
     required this.title,
     this.trailing,
     this.showBackButton = true,
+    this.onBack,
   });
 
   @override
@@ -39,7 +41,7 @@ class CustomScreenHeader extends StatelessWidget
             Padding(
               padding: EdgeInsets.only(right: 12.w),
               child: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
+                onTap: onBack ?? () => Navigator.of(context).pop(),
                 child: Icon(
                   Icons.arrow_back,
                   color: AppColor.primary,

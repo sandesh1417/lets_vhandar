@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
@@ -9,6 +10,7 @@ import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/cart/widgets/cancellation_policy_card.dart';
@@ -36,7 +38,8 @@ class CartScreen extends ConsumerWidget {
       isScrollable: false,
       appBar: CustomScreenHeader(
         title: 'My Cart',
-        showBackButton: false,
+        showBackButton: true,
+        onBack: () => ref.read(dashboardIndexProvider.notifier).state = 0,
         trailing: cartItems.isNotEmpty
             ? GestureDetector(
                 onTap: () => ref.read(cartProvider.notifier).clearCart(),
@@ -60,33 +63,14 @@ class CartScreen extends ConsumerWidget {
             : null,
       ),
       body: cartItems.isEmpty
-          ? _buildEmptyCart()
+          ? _buildEmptyCart(context, ref)
           : Column(
               children: [
                 Expanded(
                   child: ListView(
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 12.h),
+                    padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
                     children: [
-                      // ── Delivery Address Banner ──────────────────────
-                      _DeliveryAddressBanner(
-                        selectedAddress: selectedAddress,
-                        onTap: () {
-                          final userId = ref.read(loginProvider).user?.id;
-                          if (userId != null) {
-                            showAddressSelectorSheet(context, userId: userId);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Please login to select address')),
-                            );
-                          }
-                        },
-                      ),
-
-                      SizedBox(height: 12.h),
-
                       // ── Cart Items Card ──────────────────────────────
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 16.w),
@@ -95,7 +79,7 @@ class CartScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(16.r),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -105,14 +89,14 @@ class CartScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 0),
+                              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
                               child: Row(
                                 children: [
                                   Text(
                                     '$totalItems ${totalItems == 1 ? 'item' : 'items'} in cart',
                                     style: TextStyle(
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
                                       color: AppColor.textMuted,
                                     ),
                                   ),
@@ -135,12 +119,12 @@ class CartScreen extends ConsumerWidget {
                         ),
                       ),
 
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 10.h),
 
                       // ── Coupon Banner ────────────────────────────────
                       const _CouponBanner(),
 
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 10.h),
 
                       // ── Bill Details ─────────────────────────────────
                       Padding(
@@ -152,7 +136,7 @@ class CartScreen extends ConsumerWidget {
                         ),
                       ),
 
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 10.h),
 
                       // ── Additional Info Cards ────────────────────────
                       Padding(
@@ -167,55 +151,115 @@ class CartScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-
-                      SizedBox(height: 12.h),
                     ],
                   ),
                 ),
 
-                // ── Checkout Bar ─────────────────────────────────────
-                CartCheckoutBar(totalPrice: totalPrice),
-                SizedBox(height: 8.h)
+                // ── Sticky bottom: Address + Checkout ────────────────
+                Container(
+                   padding: EdgeInsets.only(top: 12.r), // ✅ moved here
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20.r),
+                      topRight: Radius.circular(20.r),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 4.h),
+                      _DeliveryAddressBanner(
+                        selectedAddress: selectedAddress,
+                        onTap: () {
+                          final userId = ref.read(loginProvider).user?.id;
+                          if (userId != null) {
+                            showAddressSelectorSheet(context, userId: userId);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Please login to select address')),
+                            );
+                          }
+                        },
+                      ),
+                      CartCheckoutBar(totalPrice: totalPrice),
+                      SizedBox(height: 8.h),
+                    ],
+                  ),
+                )
               ],
             ),
     );
   }
 
-  Widget _buildEmptyCart() {
+  Widget _buildEmptyCart(BuildContext context, WidgetRef ref) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.all(28.w),
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0FAF5),
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/cart-empty.svg',
+              width: 100.w,
+              height: 100.w,
             ),
-            child: Icon(
-              Icons.shopping_cart_outlined,
-              size: 56.sp,
-              color: AppColor.primary,
+            SizedBox(height: 24.h),
+            Text(
+              "You don't have any items in\nyour cart",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1A1A1A),
+                fontFamily: 'Inter',
+              ),
             ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'Your cart is empty',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColor.textBlack,
+            SizedBox(height: 6.h),
+            Text(
+              'Your favorite items are just a click away',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: const Color(0xFF8C9A95),
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Add items to your cart to get started.',
-            style: TextStyle(
-              fontSize: 13.sp,
-              color: Colors.grey.shade600,
+            SizedBox(height: 20.h),
+            ElevatedButton(
+              onPressed: () {
+                ref.read(dashboardIndexProvider.notifier).state = 0;
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.secondary,
+                elevation: 0,
+                padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+              ),
+              child: Text(
+                'Start Shopping',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -234,94 +278,229 @@ class _DeliveryAddressBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool hasAddress = selectedAddress != null;
 
+    if (hasAddress) {
+      return _HasAddressBanner(selectedAddress: selectedAddress, onTap: onTap);
+    }
+    return _NoAddressBanner(onTap: onTap);
+  }
+}
+
+class _NoAddressBanner extends StatelessWidget {
+  final VoidCallback onTap;
+  const _NoAddressBanner({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
-        padding: EdgeInsets.all(14.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color: hasAddress
-                ? AppColor.primary.withOpacity(0.2)
-                : Colors.orange.shade200,
-            width: 1,
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        child: CustomPaint(
+          painter: _DashedBorderPainter(
+            color: AppColor.primary,
+            radius: 14.r,
+            dashWidth: 6,
+            dashGap: 4,
+            strokeWidth: 1.5,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14.r),
             ),
-          ],
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(9.w),
+                  decoration: BoxDecoration(
+                    color: AppColor.primary,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.white,
+                    size: 20.sp,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Select Delivery Address',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColor.textBlack,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'Tap to select where to deliver',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColor.primary,
+                  size: 22.sp,
+                ),
+              ],
+            ),
+          ),
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8.w),
+      ),
+    );
+  }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+  final double dashWidth;
+  final double dashGap;
+  final double strokeWidth;
+
+  const _DashedBorderPainter({
+    required this.color,
+    required this.radius,
+    this.dashWidth = 6,
+    this.dashGap = 4,
+    this.strokeWidth = 1.5,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(radius),
+      ));
+
+    final metrics = path.computeMetrics().first;
+    double distance = 0;
+    while (distance < metrics.length) {
+      canvas.drawPath(
+        metrics.extractPath(distance, distance + dashWidth),
+        paint,
+      );
+      distance += dashWidth + dashGap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBorderPainter old) =>
+      old.color != color ||
+      old.radius != radius ||
+      old.dashWidth != dashWidth ||
+      old.dashGap != dashGap ||
+      old.strokeWidth != strokeWidth;
+}
+
+class _HasAddressBanner extends StatelessWidget {
+  final dynamic selectedAddress;
+  final VoidCallback onTap;
+  const _HasAddressBanner(
+      {required this.selectedAddress, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: AppColor.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(9.w),
+            decoration: BoxDecoration(
+              color: AppColor.primary,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Icon(
+              Icons.location_on_rounded,
+              color: Colors.white,
+              size: 20.sp,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Delivering to',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 1.h),
+                Text(
+                  selectedAddress.name ?? selectedAddress.addressType ?? 'Address',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColor.textBlack,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 1.h),
+                Text(
+                  selectedAddress.description ?? '',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 8.w),
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: hasAddress
-                    ? AppColor.primary.withOpacity(0.08)
-                    : Colors.orange.shade50,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Icon(
-                Icons.location_on_outlined,
-                color: hasAddress ? AppColor.primary : Colors.orange.shade600,
-                size: 20.sp,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    hasAddress ? 'Delivering to' : 'No address selected',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    hasAddress
-                        ? selectedAddress.description ?? 'Address'
-                        : 'Tap to select a delivery address',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                      color: hasAddress
-                          ? AppColor.textBlack
-                          : Colors.orange.shade700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-              decoration: BoxDecoration(
-                color: hasAddress
-                    ? AppColor.primary.withOpacity(0.08)
-                    : Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(
+                  color: AppColor.primary,
+                  width: 1.5,
+                ),
               ),
               child: Text(
-                hasAddress ? 'Change' : 'Choose',
+                'Change',
                 style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.bold,
-                  color: hasAddress ? AppColor.primary : Colors.orange.shade700,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColor.primary,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -560,7 +739,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                       decoration: BoxDecoration(
-                        color: AppColor.primary.withOpacity(0.1),
+                        color: AppColor.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Text(
@@ -670,7 +849,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
       return Stack(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.w),
+            margin: EdgeInsets.symmetric(horizontal: 0.w),
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -680,12 +859,12 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
               ),
               borderRadius: BorderRadius.circular(14.r),
               border: Border.all(
-                color: AppColor.primary.withOpacity(0.25),
+                color: AppColor.primary.withValues(alpha: 0.25),
                 width: 1.2.w,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -696,7 +875,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                 Container(
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
-                    color: AppColor.primary.withOpacity(0.1),
+                    color: AppColor.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child:
@@ -808,7 +987,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
             border: Border.all(color: Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
@@ -816,14 +995,10 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
           ),
           child: Row(
             children: [
-              Container(
-                padding: EdgeInsets.all(7.w),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3E0),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Icon(Icons.local_offer_outlined,
-                    color: Colors.orange.shade600, size: 18.sp),
+              SvgPicture.asset(
+                'assets/icons/vhandar_discount.svg',
+                width: 28.w,
+                height: 28.w,
               ),
               SizedBox(width: 12.w),
               Expanded(
