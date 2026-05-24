@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -38,13 +42,19 @@ class ProductItemCard extends ConsumerStatefulWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return Consumer(
           builder: (context, ref, _) {
+            final vc = context.vColors;
             return Container(
               padding: EdgeInsets.all(16.w),
               height: 400.h,
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(24.r)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -59,14 +69,14 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColor.textBlack,
+                              color: vc.onSurface,
                             ),
                           ),
                           Text(
                             'Choose your preferred size/pack',
                             style: TextStyle(
                               fontSize: 12.sp,
-                              color: AppColor.textMuted,
+                              color: vc.onSurfaceMuted,
                             ),
                           ),
                         ],
@@ -87,7 +97,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                   'No variants available',
                                   style: TextStyle(
                                     fontSize: 14.sp,
-                                    color: AppColor.textMuted,
+                                    color: vc.onSurfaceMuted,
                                   ),
                                 ),
                               );
@@ -114,7 +124,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                       Container(
                                         padding: EdgeInsets.all(16.w),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: vc.surfaceVariant,
                                           borderRadius:
                                               BorderRadius.circular(16.r),
                                           boxShadow: [
@@ -160,7 +170,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                       fontSize: 16.sp,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      color: AppColor.textBlack,
+                                                      color: vc.onSurface,
                                                     ),
                                                   ),
                                                   SizedBox(height: 4.h),
@@ -177,8 +187,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                           fontSize: 16.sp,
                                                           fontWeight:
                                                               FontWeight.w900,
-                                                          color: AppColor
-                                                              .textBlack,
+                                                          color: vc.onSurface,
                                                         ),
                                                       ),
                                                       if (hasDiscount) ...[
@@ -187,8 +196,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                           'MRP ${v.pricePerUnit?.toInt()}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
-                                                            color: AppColor
-                                                                .textMuted,
+                                                            color: vc.onSurfaceMuted,
                                                             decoration:
                                                                 TextDecoration
                                                                     .lineThrough,
@@ -306,7 +314,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
     final product = _currentProduct;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
-    final discountValue = product.discount?.value?.toInt();
+    final vc = context.vColors;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -316,11 +324,11 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
         margin: widget.margin ?? EdgeInsets.only(right: 12.w, bottom: 8.h),
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: vc.surface,
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 5,
               offset: const Offset(0, 2),
             ),
@@ -336,7 +344,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   height: 100.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: vc.surface,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(12.r)),
                   ),
@@ -424,7 +432,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           style: TextStyle(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w700,
-                            color: AppColor.textBlack87,
+                            color: vc.onSurface,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
@@ -445,24 +453,29 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                        '${product.unitValue?.toInt()} ${product.unit}',
+                                        product.unitValue != null
+                                            ? '${product.unitValue!.toInt()} ${product.unit ?? ''}'
+                                            : product.unit ?? '',
                                         style: TextStyle(
                                           fontSize: 10.sp,
-                                          color: AppColor.textBlack87,
+                                          color: vc.onSurface,
                                           fontWeight: FontWeight.w600,
                                         )),
                                     SizedBox(width: 4.w),
                                     Icon(Icons.keyboard_arrow_down,
                                         size: 14.sp,
-                                        color: Colors.grey.shade600),
+                                        color: vc.onSurfaceMuted),
                                   ],
                                 ),
                               ),
                             )
-                          : Text('${product.unitValue?.toInt()}${product.unit}',
+                          : Text(
+                              product.unitValue != null
+                                  ? '${product.unitValue!.toInt()}${product.unit ?? ''}'
+                                  : product.unit ?? '',
                               style: TextStyle(
                                 fontSize: 10.sp,
-                                color: AppColor.textBlack54,
+                                color: vc.onSurfaceMuted,
                                 fontWeight: FontWeight.w500,
                               )),
                     ],
@@ -475,18 +488,18 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                         children: [
                           Text('Rs. ${product.actualPrice.toInt()}',
                               style: TextStyle(
-                                fontSize: 12.sp, // Reduced from 13.sp
+                                fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AppColor.textBlack,
+                                color: vc.onSurface,
                               )),
                           if (hasDiscount)
                             Text('MRP ${product.pricePerUnit?.toInt()}',
                                 style: TextStyle(
-                                    fontSize: 9.sp, // Reduced from 10.sp
-                                    color: AppColor.textBlack87,
+                                    fontSize: 9.sp,
+                                    color: vc.onSurfaceMuted,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
-                                    decorationColor: AppColor.textStrikeThrough,
+                                    decorationColor: vc.onSurfaceMuted,
                                     decorationThickness: 2.0)),
                         ],
                       ),
@@ -500,6 +513,11 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           if (cartCount == 0) {
                             return GestureDetector(
                               onTap: () {
+                                final loginState = ref.read(loginProvider);
+                                if (loginState.isGuest || !loginState.isLoggedIn) {
+                                  context.go(LVRoute.loginScreen.route);
+                                  return;
+                                }
                                 HapticFeedback.mediumImpact();
                                 CartFlyAnimator.fly(
                                   context,
@@ -616,6 +634,11 @@ class _VariantCartButton extends ConsumerWidget {
     if (cartCount == 0) {
       return ElevatedButton(
         onPressed: () {
+          final loginState = ref.read(loginProvider);
+          if (loginState.isGuest || !loginState.isLoggedIn) {
+            context.go(LVRoute.loginScreen.route);
+            return;
+          }
           ref.read(cartProvider.notifier).addToCart(product);
         },
         style: ElevatedButton.styleFrom(

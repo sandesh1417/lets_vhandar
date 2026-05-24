@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/cart/domain/models/cart_item_model.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
@@ -13,6 +14,7 @@ class CartItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final vc = context.vColors;
     final product = item.product;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
@@ -29,9 +31,9 @@ class CartItemWidget extends ConsumerWidget {
                 width: 72.w,
                 height: 72.h,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: vc.surfaceVariant,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: Colors.grey.shade100),
+                  border: Border.all(color: vc.divider),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
@@ -88,7 +90,7 @@ class CartItemWidget extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.textBlack,
+                    color: vc.onSurface,
                     height: 1.3,
                   ),
                   maxLines: 2,
@@ -99,7 +101,7 @@ class CartItemWidget extends ConsumerWidget {
                   '${product.unitValue?.toInt() ?? 1} ${product.unit ?? ''}',
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: Colors.grey.shade700,
+                    color: vc.onSurfaceMuted,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -111,7 +113,7 @@ class CartItemWidget extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
+                        color: vc.onSurface,
                       ),
                     ),
                     if (hasDiscount) ...[
@@ -120,8 +122,8 @@ class CartItemWidget extends ConsumerWidget {
                         'Rs. ${product.pricePerUnit?.toInt()}',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          color: Colors.grey.shade400,
-                          decorationColor: Colors.grey.shade400,
+                          color: vc.onSurfaceMuted,
+                          decorationColor: vc.onSurfaceMuted,
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),

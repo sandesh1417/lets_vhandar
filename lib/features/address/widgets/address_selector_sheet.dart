@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
@@ -55,6 +56,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     final state = ref.watch(addressProvider);
 
     return DraggableScrollableSheet(
@@ -65,7 +67,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.vColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
@@ -77,7 +79,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                   width: 36.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: context.vColors.divider,
                     borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
@@ -121,9 +123,9 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 16.w, vertical: 16.h),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: vc.surfaceVariant,
                           borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: vc.divider),
                         ),
                         child: Row(
                           children: [
@@ -153,7 +155,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                           child: Text(
                             'No saved addresses yet.',
                             style: TextStyle(
-                                color: AppColor.textMuted, fontSize: 14.sp),
+                                color: vc.onSurfaceMuted, fontSize: 14.sp),
                           ),
                         ),
                       )
@@ -162,7 +164,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                         'Your saved addresses',
                         style: TextStyle(
                           fontSize: 13.sp,
-                          color: AppColor.textMuted,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -213,16 +215,17 @@ class _AddressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: 10.h),
         padding: EdgeInsets.all(14.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: vc.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColor.primary : Colors.grey.shade200,
+            color: isSelected ? AppColor.primary : vc.divider,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -232,7 +235,7 @@ class _AddressTile extends StatelessWidget {
               width: 44.w,
               height: 44.h,
               decoration: BoxDecoration(
-                color: AppColor.secondary.withOpacity(0.15),
+                color: AppColor.secondary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(icon, color: AppColor.secondary, size: 22.sp),
@@ -247,14 +250,14 @@ class _AddressTile extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14.sp,
-                      color: AppColor.textBlack87,
+                      color: vc.onSurface,
                     ),
                   ),
                   SizedBox(height: 2.h),
                   Text(
                     address.description ?? '',
                     style:
-                        TextStyle(fontSize: 12.sp, color: AppColor.textMuted),
+                        TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

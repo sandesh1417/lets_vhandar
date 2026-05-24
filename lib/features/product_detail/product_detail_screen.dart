@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
@@ -94,12 +95,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     final product = _currentProduct;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
 
     return CustomScaffoldWrapper(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: vc.scaffoldBg,
       isScrollable: false,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
@@ -115,7 +117,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
             final double curvedRatio = Curves.easeInOut.transform(ratio);
             final Color appBarBgColor =
-                Colors.white.withValues(alpha: curvedRatio);
+                vc.surface.withValues(alpha: curvedRatio);
             final double elevation = curvedRatio * 2.0;
 
             return AppBar(
@@ -157,7 +159,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             Text(
                               product.name ?? '',
                               style: TextStyle(
-                                color: AppColor.textBlack,
+                                color: vc.onSurface,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -206,7 +208,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             automaticallyImplyLeading: false,
             expandedHeight: 320.h,
             pinned: false,
-            backgroundColor: Colors.white,
+            backgroundColor: vc.surface,
             flexibleSpace: FlexibleSpaceBar(
               background: ProductImageSlider(product: product),
             ),
@@ -217,7 +219,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             child: Container(
               margin: EdgeInsets.only(top: 4.h),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: vc.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
               ),
               child: Column(
@@ -234,7 +236,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
-                            color: AppColor.textBlack,
+                            color: vc.onSurface,
                             height: 1.3,
                           ),
                         ),
@@ -243,7 +245,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           '${product.unitValue?.toInt()} ${product.unit}',
                           style: TextStyle(
                             fontSize: 13.sp,
-                            color: AppColor.textMuted,
+                            color: vc.onSurfaceMuted,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -259,7 +261,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               style: TextStyle(
                                 fontSize: 22.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AppColor.textBlack,
+                                color: vc.onSurface,
                               ),
                             ),
                             if (hasDiscount) ...[
@@ -270,7 +272,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   'MRP Rs.${product.pricePerUnit?.toInt()}',
                                   style: TextStyle(
                                     fontSize: 13.sp,
-                                    color: AppColor.textMuted,
+                                    color: vc.onSurfaceMuted,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
                                   ),
@@ -301,7 +303,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           'Inclusive of all taxes',
                           style: TextStyle(
                             fontSize: 9.sp,
-                            color: AppColor.textMuted,
+                            color: vc.onSurfaceMuted,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -317,7 +319,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Divider(
                       height: 1.h,
-                      color: Colors.grey.shade100,
+                      color: vc.divider,
                       thickness: 1,
                     ),
                   ),
@@ -384,7 +386,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   style: TextStyle(
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColor.textBlack,
+                                    color: vc.onSurface,
                                   ),
                                 ),
                               ],
@@ -413,8 +415,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                     );
                   },
-                  loading: () => const SliverToBoxAdapter(
-                    child: Center(child: CircularProgressIndicator()),
+                  loading: () => SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator(color: AppColor.primary)),
                   ),
                   error: (e, s) => const SliverToBoxAdapter(child: SizedBox.shrink()),
                 )
@@ -459,7 +461,7 @@ class _GlassButton extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isGlass ? AppColor.primary : AppColor.textBlack,
+          color: isGlass ? AppColor.primary : context.vColors.onSurface,
           size: iconSize ?? 20.sp,
         ),
       ),

@@ -1,0 +1,78 @@
+import 'dart:convert';
+
+class SavedList {
+  final String id;
+  final String name;
+  final List<SavedProduct> products;
+  final DateTime createdAt;
+
+  SavedList({
+    required this.id,
+    required this.name,
+    this.products = const [],
+    required this.createdAt,
+  });
+
+  SavedList copyWith({
+    String? name,
+    List<SavedProduct>? products,
+  }) =>
+      SavedList(
+        id: id,
+        name: name ?? this.name,
+        products: products ?? this.products,
+        createdAt: createdAt,
+      );
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'name': name,
+        'products': products.map((p) => p.toMap()).toList(),
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  factory SavedList.fromMap(Map<String, dynamic> map) => SavedList(
+        id: map['id'] as String,
+        name: map['name'] as String,
+        products: (map['products'] as List<dynamic>)
+            .map((p) => SavedProduct.fromMap(Map<String, dynamic>.from(p)))
+            .toList(),
+        createdAt: DateTime.parse(map['createdAt'] as String),
+      );
+
+  String toJson() => jsonEncode(toMap());
+  factory SavedList.fromJson(String source) =>
+      SavedList.fromMap(jsonDecode(source));
+}
+
+class SavedProduct {
+  final String id;
+  final String? name;
+  final String? unit;
+  final double? price;
+  final String? imageUrl;
+
+  const SavedProduct({
+    required this.id,
+    this.name,
+    this.unit,
+    this.price,
+    this.imageUrl,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'name': name,
+        'unit': unit,
+        'price': price,
+        'imageUrl': imageUrl,
+      };
+
+  factory SavedProduct.fromMap(Map<String, dynamic> map) => SavedProduct(
+        id: map['id'] as String,
+        name: map['name'] as String?,
+        unit: map['unit'] as String?,
+        price: (map['price'] as num?)?.toDouble(),
+        imageUrl: map['imageUrl'] as String?,
+      );
+}

@@ -24,15 +24,15 @@ class CustomScreenHeader extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0.5,
-      shadowColor: Colors.black.withValues(alpha: 0.1),
-      scrolledUnderElevation: 0,
+      backgroundColor: AppColor.primary,
+      elevation: 2,
+      shadowColor: Colors.black.withValues(alpha: 0.12),
+      scrolledUnderElevation: 2,
       automaticallyImplyLeading: false,
       systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
-        statusBarBrightness: Brightness.light, // For iOS (dark icons)
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       titleSpacing: 16.w,
       title: Row(
@@ -44,7 +44,7 @@ class CustomScreenHeader extends StatelessWidget
                 onTap: onBack ?? () => Navigator.of(context).pop(),
                 child: Icon(
                   Icons.arrow_back,
-                  color: AppColor.primary,
+                  color: Colors.white,
                   size: 24.sp,
                 ),
               ),
@@ -52,9 +52,10 @@ class CustomScreenHeader extends StatelessWidget
           Text(
             title,
             style: TextStyle(
-              color: AppColor.primary,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
+              fontFamily: 'Inter',
             ),
           ),
         ],

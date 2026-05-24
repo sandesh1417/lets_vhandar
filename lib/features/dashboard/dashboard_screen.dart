@@ -5,15 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/features/cart/cart_screen.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/dashboard/presentation/tabs/account_tab.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
 import 'package:lets_vhandar/features/order/order_screen.dart';
+import 'package:lets_vhandar/features/reorder/reorder_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -28,61 +30,83 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     const HomeScreen(),
     const CategoryScreen(),
     const OrderScreen(),
-    const CartScreen(),
+    const ReorderScreen(),
     const AccountTab(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final cartItemCount = ref.watch(totalCartItemsProvider);
     final currentIndex = ref.watch(dashboardIndexProvider);
 
     return CustomScaffoldWrapper(
       isScrollable: false,
       extendBody: true,
       floatingActionButtonLocation: const _AboveNavBarFABLocation(),
-      floatingActionButton: currentIndex != 3
-          ? CartFloatingBadge(
-              onTap: () {
-                ref.read(dashboardIndexProvider.notifier).state = 3;
-              },
-            )
-          : null,
+      floatingActionButton: CartFloatingBadge(
+        onTap: () => context.push(LVRoute.cartScreen.route),
+      ),
       body: RepaintBoundary(
         child: IndexedStack(
           index: currentIndex,
           children: _screens,
         ),
       ),
-      bottomNavigationBar: currentIndex == 3
-          ? null
-          : Material(
-              color: Colors.transparent,
-              child: _NavBar(
-                currentIndex: currentIndex,
-                cartItemCount: cartItemCount,
-                onTap: (index) {
-                  HapticFeedback.lightImpact();
-                  ref.read(dashboardIndexProvider.notifier).state = index;
-                },
-              ),
-            ),
+      bottomNavigationBar: Material(
+        color: Colors.transparent,
+        child: _NavBar(
+          currentIndex: currentIndex,
+          onTap: (index) {
+            HapticFeedback.lightImpact();
+            ref.read(dashboardIndexProvider.notifier).state = index;
+          },
+        ),
+      ),
     );
   }
 }
 
-class _NavBar extends StatelessWidget {
+class _NavBar extends StatefulWidget {
   final int currentIndex;
-  final int cartItemCount;
   final ValueChanged<int> onTap;
 
   const _NavBar({
     required this.currentIndex,
-    required this.cartItemCount,
     required this.onTap,
   });
 
-  static const _labels = ['Home', 'Category', 'Orders', 'Cart', 'Account'];
+  @override
+  State<_NavBar> createState() => _NavBarState();
+}
+
+class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
+  static const _labels = ['Home', 'Category', 'Orders', 'Reorder', 'Account'];
+
+  // Per-item press scale
+  late final List<AnimationController> _press;
+
+  @override
+  void initState() {
+    super.initState();
+    _press = List.generate(
+      _labels.length,
+      (_) => AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 100),
+        reverseDuration: const Duration(milliseconds: 220),
+        lowerBound: 0.86,
+        upperBound: 1.0,
+        value: 1.0,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final c in _press) {
+      c.dispose();
+    }
+    super.dispose();
+  }
 
   Widget _buildIcon(int i, bool isSelected) {
     const inactiveFilter = ColorFilter.mode(Color(0xFFADB5B2), BlendMode.srcIn);
@@ -112,26 +136,12 @@ class _NavBar extends StatelessWidget {
           color: isSelected ? AppColor.primary : const Color(0xFFADB5B2),
         );
       case 3:
-        return Badge(
-          isLabelVisible: cartItemCount > 0,
-          label: Text(
-            '$cartItemCount',
-            style: TextStyle(
-              fontSize: 8.sp,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          backgroundColor: AppColor.secondary,
-          textColor: const Color(0xFF1A1A1A),
-          child: SvgPicture.asset(
-            'assets/icons/vhandar_cart.svg',
-            width: 22.w,
-            height: 22.w,
-            colorFilter: isSelected
-                ? ColorFilter.mode(AppColor.primary, BlendMode.srcIn)
-                : inactiveFilter,
-          ),
+        return SvgPicture.asset(
+          isSelected
+              ? 'assets/icons/reorder-icon-active.svg'
+              : 'assets/icons/reorder-icon.svg',
+          width: 22.w,
+          height: 22.w,
         );
       default:
         return SvgPicture.asset(
@@ -150,64 +160,101 @@ class _NavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 12.h),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              height: 64.h,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(28.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.6),
-                  width: 1.2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.primary.withValues(alpha: 0.10),
-                    blurRadius: 24,
-                    offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 14.h),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 20,
+                spreadRadius: -2,
+                offset: const Offset(0, 6),
               ),
-              child: Row(
-                children: List.generate(_labels.length, (i) {
-                  final isSelected = currentIndex == i;
-                  return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => onTap(i),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildIcon(i, isSelected),
-                          SizedBox(height: 3.h),
-                          AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 200),
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              fontFamily: 'Inter',
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              color: isSelected
-                                  ? AppColor.primary
-                                  : const Color(0xFFADB5B2),
-                            ),
-                            child: Text(_labels[i]),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(32.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+              child: Container(
+                height: 68.h,
+                decoration: BoxDecoration(
+                  color: context.vColors.navBarBg,
+                  borderRadius: BorderRadius.circular(32.r),
+                  border: Border.all(
+                    color: context.vColors.navBarBorder,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: List.generate(_labels.length, (i) {
+                    final isSelected = widget.currentIndex == i;
+                    return Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTapDown: (_) => _press[i].reverse(),
+                        onTapUp: (_) {
+                          _press[i].forward();
+                          widget.onTap(i);
+                        },
+                        onTapCancel: () => _press[i].forward(),
+                        child: AnimatedBuilder(
+                          animation: _press[i],
+                          builder: (context, child) => Transform.scale(
+                            scale: _press[i].value,
+                            child: child,
                           ),
-                        ],
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 7.h,
+                              horizontal: 5.w,
+                            ),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                              decoration: isSelected
+                                  ? BoxDecoration(
+                                      color: AppColor.primary
+                                          .withValues(alpha: 0.12),
+                                      borderRadius:
+                                          BorderRadius.circular(22.r),
+                                      border: Border.all(
+                                        color: AppColor.primary
+                                            .withValues(alpha: 0.25),
+                                        width: 1,
+                                      ),
+                                    )
+                                  : const BoxDecoration(),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildIcon(i, isSelected),
+                                  SizedBox(height: 3.h),
+                                  AnimatedDefaultTextStyle(
+                                    duration:
+                                        const Duration(milliseconds: 200),
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      fontFamily: 'Inter',
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w400,
+                                      color: isSelected
+                                          ? AppColor.primary
+                                          : const Color(0xFFADB5B2),
+                                    ),
+                                    child: Text(_labels[i]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
           ),

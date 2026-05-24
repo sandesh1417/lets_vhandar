@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
@@ -153,7 +154,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       'Nothing here yet',
                       style: TextStyle(
                         fontSize: 24.sp,
-                        color: Colors.grey.shade600,
+                        color: context.vColors.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -163,7 +164,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       'Try searching again or explore our popular categories!',
                       style: TextStyle(
                         fontSize: 13.sp,
-                        color: Colors.grey.shade400,
+                        color: context.vColors.onSurfaceMuted,
                         fontWeight: FontWeight.w400,
                       ),
                       textAlign: TextAlign.center,
@@ -261,7 +262,7 @@ class _BrandsRow extends ConsumerWidget {
             .toList();
         if (filtered.isEmpty) return const SizedBox.shrink();
         return Container(
-          color: Colors.white,
+          color: context.vColors.surface,
           padding: EdgeInsets.symmetric(vertical: 10.h),
           child: SizedBox(
             height: 88.h,

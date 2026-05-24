@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -19,24 +20,26 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
       data: (subs) {
         if (subs.isEmpty) return const SizedBox.shrink();
         
+        final vc = context.vColors;
         return Container(
           height: 70.h,
           decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FA),
-            border: Border(top: BorderSide(color: Colors.grey.shade200)),
+            color: vc.surfaceVariant,
+            border: Border(top: BorderSide(color: vc.divider)),
           ),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(left: 12.w, right: 70.w), // Added right padding to clear FAB
+            padding: EdgeInsets.only(left: 12.w, right: 70.w),
             itemCount: subs.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
                 final isSelected = selectedSubSlug == null;
-                return _buildItem(ref, 'All', null, isSelected, null);
+                return _buildItem(context, ref, 'All', null, isSelected, null);
               }
               final sub = subs[index - 1];
               final isSelected = selectedSubSlug == sub.slug;
               return _buildItem(
+                context,
                 ref,
                 sub.name ?? '',
                 sub.slug,
@@ -52,7 +55,8 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildItem(WidgetRef ref, String title, String? slug, bool isSelected, String? imageUrl) {
+  Widget _buildItem(BuildContext context, WidgetRef ref, String title, String? slug, bool isSelected, String? imageUrl) {
+    final vc = context.vColors;
     return InkWell(
       onTap: () {
         ref.read(selectedSubCategorySlugProvider(categorySlug).notifier).state = slug;
@@ -61,9 +65,9 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
         width: 75.w,
         margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected ? vc.surface : Colors.transparent,
           borderRadius: BorderRadius.circular(8.r),
-          border: isSelected ? Border.all(color: AppColor.primary.withOpacity(0.3)) : null,
+          border: isSelected ? Border.all(color: AppColor.primary.withValues(alpha: 0.3)) : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +80,7 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
                 fit: BoxFit.contain,
               )
             else if (slug == null)
-              Icon(Icons.apps, color: isSelected ? AppColor.primary : Colors.grey, size: 24.sp),
+              Icon(Icons.apps, color: isSelected ? AppColor.primary : vc.onSurfaceMuted, size: 24.sp),
             SizedBox(height: 4.h),
             Text(
               title,
@@ -86,7 +90,7 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 10.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColor.primary : AppColor.textBlack54,
+                color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
               ),
             ),
           ],

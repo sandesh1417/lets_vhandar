@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 class HomeSectionTitle extends StatelessWidget {
   final String title;
@@ -16,6 +17,7 @@ class HomeSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w).copyWith(bottom: 12.h, top: 4.h),
       child: Row(
@@ -27,7 +29,7 @@ class HomeSectionTitle extends StatelessWidget {
             height: 22.h,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColor.primary, AppColor.primary.withOpacity(0.4)],
+                colors: [AppColor.primary, AppColor.primary.withValues(alpha: 0.4)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -44,7 +46,7 @@ class HomeSectionTitle extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColor.textBlack,
+                    color: vc.onSurface,
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -53,7 +55,7 @@ class HomeSectionTitle extends StatelessWidget {
                     subtitle!,
                     style: TextStyle(
                       fontSize: 12.sp,
-                      color: Colors.grey.shade500,
+                      color: vc.onSurfaceMuted,
                     ),
                   ),
               ],
@@ -65,7 +67,7 @@ class HomeSectionTitle extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                 decoration: BoxDecoration(
-                  color: AppColor.primary.withOpacity(0.08),
+                  color: AppColor.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(

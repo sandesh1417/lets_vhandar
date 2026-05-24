@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
@@ -18,8 +19,6 @@ import 'package:lets_vhandar/features/cart/widgets/cart_checkout_bar.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_item_widget.dart';
 import 'package:lets_vhandar/features/cart/widgets/delivery_instructions_card.dart';
 import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class CartScreen extends ConsumerWidget {
@@ -33,33 +32,59 @@ class CartScreen extends ConsumerWidget {
     final totalMrp = ref.watch(totalCartMrpProvider);
     final selectedAddress = ref.watch(addressProvider).selected;
 
-    return CustomScaffoldWrapper(
+    return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      isScrollable: false,
-      appBar: CustomScreenHeader(
-        title: 'My Cart',
-        showBackButton: true,
-        onBack: () => ref.read(dashboardIndexProvider.notifier).state = 0,
-        trailing: cartItems.isNotEmpty
-            ? GestureDetector(
-                onTap: () => ref.read(cartProvider.notifier).clearCart(),
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    'Clear',
-                    style: TextStyle(
-                      color: Colors.red.shade400,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.sp,
+      appBar: AppBar(
+        backgroundColor: AppColor.primary,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        scrolledUnderElevation: 2,
+        automaticallyImplyLeading: false,
+        titleSpacing: 16.w,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
+            ),
+            SizedBox(width: 12.w),
+            Text(
+              'My Cart',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ],
+        ),
+        actions: cartItems.isNotEmpty
+            ? [
+                Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: GestureDetector(
+                    onTap: () => ref.read(cartProvider.notifier).clearCart(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              )
+              ]
             : null,
       ),
       body: cartItems.isEmpty
@@ -77,13 +102,6 @@ class CartScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +256,7 @@ class CartScreen extends ConsumerWidget {
             SizedBox(height: 20.h),
             ElevatedButton(
               onPressed: () {
+                Navigator.of(context).pop();
                 ref.read(dashboardIndexProvider.notifier).state = 0;
               },
               style: ElevatedButton.styleFrom(
@@ -291,6 +310,7 @@ class _NoAddressBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -306,7 +326,7 @@ class _NoAddressBanner extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: vc.surface,
               borderRadius: BorderRadius.circular(14.r),
             ),
             child: Row(
@@ -333,7 +353,7 @@ class _NoAddressBanner extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColor.textBlack,
+                          color: vc.onSurface,
                         ),
                       ),
                       SizedBox(height: 2.h),
@@ -341,7 +361,7 @@ class _NoAddressBanner extends StatelessWidget {
                         'Tap to select where to deliver',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey.shade500,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -525,20 +545,26 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
-                left: 20.w,
-                right: 20.w,
-                top: 20.h,
+            final vc = context.vColors;
+            return Container(
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
               ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                  left: 20.w,
+                  right: 20.w,
+                  top: 20.h,
+                ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -573,7 +599,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                             contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.w, vertical: 12.h),
                             filled: true,
-                            fillColor: Colors.grey.shade50,
+                            fillColor: vc.surfaceVariant,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.r),
                               borderSide:
@@ -706,6 +732,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                   // ),
                 ],
               ),
+            ),
             );
           },
         );
@@ -862,13 +889,6 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                 color: AppColor.primary.withValues(alpha: 0.25),
                 width: 1.2.w,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
             ),
             child: Row(
               children: [
@@ -985,13 +1005,6 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(color: Colors.grey.shade100),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
           ),
           child: Row(
             children: [

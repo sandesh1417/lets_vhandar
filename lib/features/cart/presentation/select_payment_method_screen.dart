@@ -13,7 +13,6 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class SelectPaymentMethodScreen extends ConsumerStatefulWidget {
@@ -73,7 +72,8 @@ class _ProductImage extends StatelessWidget {
 
 class _SelectPaymentMethodScreenState
     extends ConsumerState<SelectPaymentMethodScreen> {
-  String _selectedMethod = 'cod'; // Cash On Delivery is selected by default
+  String? _selectedMethod;
+  bool _showPaymentHint = false;
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +87,32 @@ class _SelectPaymentMethodScreenState
 
     return CustomScaffoldWrapper(
       backgroundColor: const Color(0xFFF8F9FB),
-      appBar: const CustomScreenHeader(
-        title: 'Checkout',
-        showBackButton: true,
+      appBar: AppBar(
+        backgroundColor: AppColor.primary,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        scrolledUnderElevation: 2,
+        automaticallyImplyLeading: false,
+        titleSpacing: 16.w,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Icon(Icons.arrow_back,
+                  color: Colors.white, size: 24.sp),
+            ),
+            SizedBox(width: 12.w),
+            Text(
+              'Checkout',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ],
+        ),
       ),
       body: cartItems.isEmpty
           ? Center(
@@ -115,101 +138,6 @@ class _SelectPaymentMethodScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ─── Select Payment Method ─────────────────────────────────────
-                    Text(
-                      'Select Payment Method',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedMethod = 'cod';
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 16.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 20.w,
-                                height: 20.w,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _selectedMethod == 'cod'
-                                        ? AppColor.primary
-                                        : Colors.grey.shade400,
-                                    width: 2.w,
-                                  ),
-                                ),
-                                child: _selectedMethod == 'cod'
-                                    ? Center(
-                                        child: Container(
-                                          width: 10.w,
-                                          height: 10.w,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: AppColor.primary,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              SizedBox(width: 14.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Cash On Delivery',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColor.textBlack,
-                                      ),
-                                    ),
-                                    SizedBox(height: 2.h),
-                                    Text(
-                                      'Pay with cash/card/QR code upon delivery',
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: AppColor.textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Colors.grey.shade400,
-                                size: 22.sp,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-
                     // ─── Delivery To Home Section ──────────────────────────────────
                     if (selectedAddress != null) ...[
                       Text(
@@ -227,14 +155,7 @@ class _SelectPaymentMethodScreenState
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
+                          ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -302,14 +223,7 @@ class _SelectPaymentMethodScreenState
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
+                        ),
                       child: ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -374,11 +288,94 @@ class _SelectPaymentMethodScreenState
                     ),
                     SizedBox(height: 20.h),
 
-                    // ─── Bill Details Card (Scalloped Banner Integration) ───────────
+                    // ─── Bill Details ──────────────────────────────────────────────
                     BillDetailsCard(
                       totalItems: totalItems,
                       totalPrice: totalPrice,
                       totalMrp: totalMrp,
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // ─── Select Payment Method ─────────────────────────────────────
+                    Text(
+                      'Select Payment Method',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColor.textBlack,
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      child: InkWell(
+                        onTap: () => setState(() {
+                          _selectedMethod =
+                              _selectedMethod == 'cod' ? null : 'cod';
+                          _showPaymentHint = false;
+                        }),
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 16.h),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 20.w,
+                                height: 20.w,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: _selectedMethod == 'cod'
+                                        ? AppColor.primary
+                                        : Colors.grey.shade400,
+                                    width: 2.w,
+                                  ),
+                                ),
+                                child: _selectedMethod == 'cod'
+                                    ? Center(
+                                        child: Container(
+                                          width: 10.w,
+                                          height: 10.w,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: AppColor.primary,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Cash On Delivery',
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.textBlack,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      'Pay with cash/card/QR code upon delivery',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: AppColor.textMuted,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 80.h),
                   ],
@@ -388,48 +385,89 @@ class _SelectPaymentMethodScreenState
       bottomNavigationBar: cartItems.isEmpty
           ? null
           : Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
                 ],
               ),
               child: SafeArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 48.h,
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : () => _placeOrder(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_showPaymentHint && _selectedMethod == null)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.info_outline,
+                                size: 14.sp,
+                                color: Colors.orange.shade600),
+                            SizedBox(width: 6.w),
+                            Text(
+                              'Please select a payment method to continue',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.orange.shade700,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      elevation: 0,
-                    ),
-                    child: isLoading
-                        ? SizedBox(
-                            width: 20.w,
-                            height: 20.w,
-                            child: const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            'Place Order',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48.h,
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                if (_selectedMethod == null) {
+                                  setState(() => _showPaymentHint = true);
+                                  return;
+                                }
+                                _placeOrder(context);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedMethod == null
+                              ? Colors.grey.shade300
+                              : AppColor.primary,
+                          disabledBackgroundColor: Colors.grey.shade300,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                  ),
+                          elevation: 0,
+                        ),
+                        child: isLoading
+                            ? SizedBox(
+                                width: 20.w,
+                                height: 20.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'Place Order',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: _selectedMethod == null
+                                      ? Colors.grey.shade500
+                                      : Colors.white,
+                                ),
+                              ),
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                  ],
                 ),
               ),
             ),

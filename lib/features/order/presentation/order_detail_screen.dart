@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 import 'package:lets_vhandar/features/order/providers/order_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 import 'widgets/bill_details_card.dart';
 import 'widgets/order_product_item.dart';
@@ -23,24 +23,46 @@ class OrderDetailScreen extends ConsumerWidget {
     final settingsAsync = ref.watch(generalSettingsProvider);
 
     return CustomScaffoldWrapper(
-      appBar: CustomScreenHeader(
-        title: 'Order Details',
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.help_outline, size: 20.sp, color: AppColor.primary),
-            SizedBox(width: 4.w),
-            Text('Help',
-                style: TextStyle(
-                    color: AppColor.primary,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600)),
-          ],
+      appBar: AppBar(
+        backgroundColor: AppColor.primary,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        scrolledUnderElevation: 2,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
+        title: Text(
+          'Order Details',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.sp,
+            fontFamily: 'Inter',
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 12.w),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.help_outline, size: 20.sp, color: Colors.white),
+                SizedBox(width: 4.w),
+                Text('Help',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Inter')),
+              ],
+            ),
+          ),
+        ],
       ),
       body: orderAsync.when(
         data: (order) => _buildBody(context, order, settingsAsync.value),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator(color: AppColor.primary)),
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
@@ -52,23 +74,23 @@ class OrderDetailScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoBar(order),
+          _buildInfoBar(context, order),
           SizedBox(height: 16.h),
-          _buildStatusSummary(order),
+          _buildStatusSummary(context, order),
           SizedBox(height: 24.h),
-          _buildSectionHeader('Products'),
+          _buildSectionHeader(context, 'Products'),
           SizedBox(height: 8.h),
           _buildProductList(order),
           SizedBox(height: 24.h),
           BillDetailsCard(order: order),
           SizedBox(height: 24.h),
-          _buildSectionHeader('Delivery Address'),
+          _buildSectionHeader(context, 'Delivery Address'),
           SizedBox(height: 12.h),
-          _buildAddressSection(order),
+          _buildAddressSection(context, order),
           SizedBox(height: 24.h),
-          _buildSectionHeader('Payment Method'),
+          _buildSectionHeader(context, 'Payment Method'),
           SizedBox(height: 12.h),
-          _buildPaymentSection(order),
+          _buildPaymentSection(context, order),
           if (settings != null) ...[
             SizedBox(height: 32.h),
             _buildFreeDeliveryBanner(order, settings),
@@ -79,19 +101,19 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
     return Text(
       title,
       style: TextStyle(
         fontSize: 15.sp,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: context.vColors.onSurface,
         letterSpacing: 0.3,
       ),
     );
   }
 
-  Widget _buildInfoBar(OrderData order) {
+  Widget _buildInfoBar(BuildContext context, OrderData order) {
     final date = order.createdAt != null
         ? '${order.createdAt!.day} ${_getMonth(order.createdAt!.month)} ${order.createdAt!.year}'
         : '';
@@ -110,7 +132,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black54,
+                  color: context.vColors.onSurfaceMuted,
                 ),
               ),
               SizedBox(height: 4.h),
@@ -129,7 +151,8 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusSummary(OrderData order) {
+  Widget _buildStatusSummary(BuildContext context, OrderData order) {
+    final vc = context.vColors;
     final orderedAt = order.createdAt != null
         ? '${_getMonth(order.createdAt!.month).toUpperCase()} ${order.createdAt!.day} ${order.createdAt!.year}'
         : 'N/A';
@@ -137,9 +160,9 @@ class OrderDetailScreen extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: vc.surfaceVariant,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: vc.divider),
       ),
       child: Row(
         children: [
@@ -167,14 +190,15 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAddressSection(OrderData order) {
+  Widget _buildAddressSection(BuildContext context, OrderData order) {
+    final vc = context.vColors;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: vc.divider),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,14 +215,14 @@ class OrderDetailScreen extends ConsumerWidget {
                   style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87),
+                      color: vc.onSurface),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   order.location?.description ?? 'N/A',
                   style: TextStyle(
                       fontSize: 13.sp,
-                      color: Colors.grey.shade700,
+                      color: vc.onSurfaceMuted,
                       height: 1.4),
                 ),
               ],
@@ -209,14 +233,15 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentSection(OrderData order) {
+  Widget _buildPaymentSection(BuildContext context, OrderData order) {
+    final vc = context.vColors;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: vc.divider),
       ),
       child: Row(
         children: [
@@ -227,7 +252,7 @@ class OrderDetailScreen extends ConsumerWidget {
             style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87),
+                color: vc.onSurface),
           ),
         ],
       ),
@@ -297,6 +322,7 @@ class _StatusColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Expanded(
       child: Column(
         children: [
@@ -305,7 +331,7 @@ class _StatusColumn extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600, // Fixed dim text
+              color: vc.onSurfaceMuted,
               letterSpacing: 0.5,
             ),
           ),
@@ -319,7 +345,7 @@ class _StatusColumn extends StatelessWidget {
               style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87),
+                  color: vc.onSurface),
             ),
         ],
       ),

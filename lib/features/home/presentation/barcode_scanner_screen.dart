@@ -390,12 +390,12 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                         ),
                       ),
                       child: _isProcessing
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Color(0xFF1A1A1A)),
+                                  color: AppColor.primary),
                             )
                           : Text(
                               'Find Product',

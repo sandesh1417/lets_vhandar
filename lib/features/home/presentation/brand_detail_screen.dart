@@ -221,7 +221,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                       );
                     },
                     loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                        Center(child: CircularProgressIndicator(color: AppColor.primary)),
                     error: (err, _) =>
                         Center(child: Icon(Icons.error_outline, size: 24.sp)),
                   ),
@@ -256,7 +256,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                         );
                       },
                       loading: () =>
-                          const Center(child: CircularProgressIndicator()),
+                          Center(child: CircularProgressIndicator(color: AppColor.primary)),
                       error: (err, _) => Center(
                         child: Padding(
                           padding: EdgeInsets.all(16.w),
@@ -294,7 +294,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                   return ProductGrid(products: products);
                 },
                 loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                    Center(child: CircularProgressIndicator(color: AppColor.primary)),
                 error: (err, _) => Center(
                   child: Padding(
                     padding: EdgeInsets.all(16.w),

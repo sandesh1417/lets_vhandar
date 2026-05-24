@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 class DeliveryInstructionsCard extends StatefulWidget {
   const DeliveryInstructionsCard({super.key});
@@ -34,10 +35,11 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Container(
       // margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Theme(
@@ -54,11 +56,11 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
             style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColor.textBlack),
+                color: vc.onSurface),
           ),
           subtitle: Text(
             'Delivery partner will be notified',
-            style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+            style: TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
           ),
           children: [
             Padding(
@@ -83,12 +85,12 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                         padding: EdgeInsets.all(12.w),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.green.shade50
+                              ? AppColor.primary.withValues(alpha: 0.08)
                               : Colors.transparent,
                           border: Border.all(
                               color: isSelected
                                   ? AppColor.primary
-                                  : Colors.grey.shade300),
+                                  : vc.divider),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Column(
@@ -97,7 +99,7 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                             Icon(opt['icon'],
                                 color: isSelected
                                     ? AppColor.primary
-                                    : Colors.grey.shade500,
+                                    : vc.onSurfaceMuted,
                                 size: 24.sp),
                             SizedBox(height: 8.h),
                             Text(
@@ -108,7 +110,7 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
                                       ? AppColor.primary
-                                      : AppColor.textBlack),
+                                      : vc.onSurface),
                             ),
                             SizedBox(height: 4.h),
                             Text(
@@ -116,7 +118,7 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               style: TextStyle(
-                                  fontSize: 9.sp, color: Colors.grey.shade600),
+                                  fontSize: 9.sp, color: vc.onSurfaceMuted),
                             ),
                           ],
                         ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
@@ -85,7 +86,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 topRight: Radius.circular(20.r),
               ),
               child: Container(
-                color: const Color(0xFFFBFBFB),
+                color: context.vColors.scaffoldBg,
                 child: categoriesAsync.when(
                   data: (categories) {
                     return brandsAsync.when(
@@ -145,7 +146,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                                       style: TextStyle(
                                         fontSize: 16.sp,
                                         fontWeight: FontWeight.bold,
-                                        color: AppColor.textBlack,
+                                        color: context.vColors.onSurface,
                                       ),
                                     ),
                                   ),
@@ -206,7 +207,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           const HorizontalListShimmer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Divider(color: Colors.grey.shade100, thickness: 1),
+            child: Divider(color: context.vColors.divider, thickness: 1),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -284,7 +285,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Divider(color: Colors.grey.shade100, thickness: 1),
+          child: Divider(color: context.vColors.divider, thickness: 1),
         ),
       ],
     );

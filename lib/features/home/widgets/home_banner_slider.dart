@@ -82,7 +82,7 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
                         path: banner.images?.first.url,
                         borderRadius: 16.r,
                         width: double.infinity,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                       ),
                     );
                   },

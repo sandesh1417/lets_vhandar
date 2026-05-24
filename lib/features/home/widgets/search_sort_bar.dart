@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 
 class SearchSortBar extends ConsumerWidget {
@@ -9,6 +10,7 @@ class SearchSortBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final vc = context.vColors;
     final searchState = ref.watch(searchProvider);
     final currentSort = searchState.selectedSort;
     
@@ -24,20 +26,20 @@ class SearchSortBar extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+        color: vc.surface,
+        border: Border(bottom: BorderSide(color: vc.divider)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('Sort By', style: TextStyle(fontSize: 11.sp, color: Colors.grey.shade600)),
+          Text('Sort By', style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted)),
           SizedBox(width: 6.w),
           InkWell(
             onTap: () => _showSortModal(context, ref),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: vc.inputBorder),
                 borderRadius: BorderRadius.circular(6.r),
               ),
               child: Row(
@@ -79,14 +81,19 @@ void showSearchSortModal(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
       builder: (context) {
+        final vc = context.vColors;
         return SafeArea(
           child: SingleChildScrollView(
             child: Container(
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+              ),
               padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -98,7 +105,7 @@ void showSearchSortModal(BuildContext context, WidgetRef ref) {
                       height: 4.h,
                       margin: EdgeInsets.only(bottom: 20.h),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: vc.onSurfaceMuted.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
@@ -125,12 +132,12 @@ void showSearchSortModal(BuildContext context, WidgetRef ref) {
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                color: isSelected ? AppColor.primary : Colors.black87,
+                                color: isSelected ? AppColor.primary : vc.onSurface,
                               ),
                             ),
                             trailing: isSelected
                                 ? Icon(Icons.check_circle, color: AppColor.primary)
-                                : const Icon(Icons.radio_button_unchecked, color: Colors.grey),
+                                : Icon(Icons.radio_button_unchecked, color: vc.onSurfaceMuted),
                             onTap: () {
                               ref.read(searchProvider.notifier).setSort(opt['val']!);
                               Future.delayed(const Duration(milliseconds: 300), () {

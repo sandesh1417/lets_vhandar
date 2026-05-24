@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
-import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'presentation/widgets/order_card.dart';
 
@@ -154,8 +156,298 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     }
   }
 
+  void _showFilterSheet(BuildContext context) {
+    // Local copies so the sheet can preview selections before applying
+    String? sheetStatus = _selectedStatus;
+    String? sheetPayment = _selectedPaymentStatus;
+    DateTimeRange? sheetDateRange = _selectedDateRange;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheet) {
+            Future<void> pickDate() async {
+              final picked = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2100),
+                initialDateRange: sheetDateRange,
+                builder: (context, child) => Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: AppColor.primary,
+                      onPrimary: Colors.white,
+                      surface: Colors.white,
+                      onSurface: Colors.black87,
+                    ),
+                  ),
+                  child: child!,
+                ),
+              );
+              if (picked != null) setSheet(() => sheetDateRange = picked);
+            }
+
+            Widget filterChip(
+                String label, bool selected, VoidCallback onTap) {
+              return GestureDetector(
+                onTap: onTap,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColor.primary : context.vColors.surface,
+                    borderRadius: BorderRadius.circular(24.r),
+                    border: Border.all(
+                      color: selected
+                          ? AppColor.primary
+                          : context.vColors.divider,
+                    ),
+                  ),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Inter',
+                      color: selected ? Colors.white : context.vColors.onSurface,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            return Container(
+              decoration: BoxDecoration(
+                color: context.vColors.surface,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 28.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: context.vColors.divider,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filters',
+                        style: TextStyle(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Inter',
+                          color: context.vColors.onSurface,
+                        ),
+                      ),
+                      if (sheetStatus != null ||
+                          sheetPayment != null ||
+                          sheetDateRange != null)
+                        GestureDetector(
+                          onTap: () {
+                            setSheet(() {
+                              sheetStatus = null;
+                              sheetPayment = null;
+                              sheetDateRange = null;
+                            });
+                          },
+                          child: Text(
+                            'Clear all',
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Inter',
+                              color: Colors.red.shade500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Order Status
+                  Text(
+                    'Order Status',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Inter',
+                      color: context.vColors.onSurfaceMuted,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Wrap(
+                    spacing: 8.w,
+                    runSpacing: 8.h,
+                    children: [
+                      for (final s in [
+                        'Pending',
+                        'Processing',
+                        'Delivered',
+                        'Returned'
+                      ])
+                        filterChip(s, sheetStatus == s, () {
+                          setSheet(() => sheetStatus =
+                              sheetStatus == s ? null : s);
+                        }),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Payment Status
+                  Text(
+                    'Payment Status',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Inter',
+                      color: context.vColors.onSurfaceMuted,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Wrap(
+                    spacing: 8.w,
+                    runSpacing: 8.h,
+                    children: [
+                      for (final p in ['Paid', 'Pending', 'Due'])
+                        filterChip(p, sheetPayment == p, () {
+                          setSheet(() => sheetPayment =
+                              sheetPayment == p ? null : p);
+                        }),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Date Range
+                  Text(
+                    'Date Range',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Inter',
+                      color: context.vColors.onSurfaceMuted,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  GestureDetector(
+                    onTap: pickDate,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 14.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: sheetDateRange != null
+                            ? AppColor.primary.withValues(alpha: 0.08)
+                            : context.vColors.surfaceVariant,
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: Border.all(
+                          color: sheetDateRange != null
+                              ? AppColor.primary.withValues(alpha: 0.4)
+                              : context.vColors.inputBorder,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today_rounded,
+                              size: 16.sp,
+                              color: sheetDateRange != null
+                                  ? AppColor.primary
+                                  : context.vColors.onSurfaceMuted),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Text(
+                              sheetDateRange != null
+                                  ? '${_formatDateSlash(sheetDateRange!.start)}  →  ${_formatDateSlash(sheetDateRange!.end)}'
+                                  : 'Select date range',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Inter',
+                                color: sheetDateRange != null
+                                    ? AppColor.primary
+                                    : context.vColors.onSurfaceMuted,
+                              ),
+                            ),
+                          ),
+                          if (sheetDateRange != null)
+                            GestureDetector(
+                              onTap: () =>
+                                  setSheet(() => sheetDateRange = null),
+                              child: Icon(Icons.close_rounded,
+                                  size: 16.sp, color: AppColor.primary),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 28.h),
+
+                  // Apply button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48.h,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedStatus = sheetStatus;
+                          _selectedPaymentStatus = sheetPayment;
+                          _selectedDateRange = sheetDateRange;
+                          _startDateStr = sheetDateRange != null
+                              ? _formatDateApi(sheetDateRange!.start)
+                              : null;
+                          _endDateStr = sheetDateRange != null
+                              ? _formatDateApi(sheetDateRange!.end)
+                              : null;
+                        });
+                        Navigator.pop(ctx);
+                        _applyFilters();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.primary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Apply Filters',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Inter',
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loginState = ref.watch(loginProvider);
     final state = ref.watch(orderProvider);
     final filteredOrders = state.filteredOrders;
     final isAnyFilterActive = _selectedStatus != null ||
@@ -163,312 +455,196 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         _selectedDateRange != null ||
         _searchController.text.isNotEmpty;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFFF9FAFB),
-      appBar: const CustomScreenHeader(
-        title: 'My Orders',
-        showBackButton: false,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 10.h),
-
-          // Search Input Bar
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: PremiumSearchBar(
-              controller: _searchController,
-              hintText: 'Search by order ID or product...',
-              showScanIcon: false,
-              onChanged: (value) {
-                ref.read(orderProvider.notifier).state =
-                    state.copyWith(searchQuery: value);
-              },
+    if (loginState.isGuest || !loginState.isLoggedIn) {
+      return Scaffold(
+        backgroundColor: context.vColors.scaffoldBg,
+        appBar: AppBar(
+          backgroundColor: AppColor.primary,
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
+          automaticallyImplyLeading: false,
+          title: Text(
+            'My Orders',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.sp,
+              fontFamily: 'Inter',
             ),
           ),
-          SizedBox(height: 12.h),
-
-          // Filters Horizontal Selector Row
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
+        ),
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Clear Filters Button
-                if (isAnyFilterActive)
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: InkWell(
-                      onTap: _clearAllFilters,
-                      borderRadius: BorderRadius.circular(24.r),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 14.w, vertical: 8.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5F5),
-                          border: Border.all(
-                              color: const Color(0xFFFFC1C1), width: 1.2.w),
-                          borderRadius: BorderRadius.circular(24.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.red.withOpacity(0.04),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.close_rounded,
-                                size: 14.sp, color: Colors.red.shade700),
-                            SizedBox(width: 4.w),
-                            Text(
-                              'Clear',
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red.shade700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                SvgPicture.asset(
+                  'assets/icons/empty-cart.svg',
+                  width: 160.w,
+                  height: 160.w,
+                ),
+                SizedBox(height: 28.h),
+                Text(
+                  'To view orders you must login',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    color: context.vColors.onSurface,
+                    height: 1.3,
                   ),
-
-                // "All" Filter Button
-                InkWell(
-                  onTap: _clearAllFilters,
-                  borderRadius: BorderRadius.circular(24.r),
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color:
-                          !isAnyFilterActive ? AppColor.primary : Colors.white,
-                      border: Border.all(
-                        color: !isAnyFilterActive
-                            ? AppColor.primary
-                            : AppColor.primary.withOpacity(0.8),
-                        width: 1.2.w,
+                ),
+                SizedBox(height: 10.h),
+                Text(
+                  'Login or create an account to track and manage all your orders.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w400,
+                    color: context.vColors.onSurfaceMuted,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 28.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => context.go(LVRoute.loginScreen.route),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.secondary,
+                      foregroundColor: const Color(0xFF1A1A1A),
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
-                      borderRadius: BorderRadius.circular(24.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      elevation: 0,
                     ),
                     child: Text(
-                      'All',
+                      'Login / Sign Up',
                       style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                        color: !isAnyFilterActive
-                            ? Colors.white
-                            : AppColor.primary.withOpacity(0.8),
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Inter',
                       ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.w),
-
-                // Order Status Dropdown Button (Pending, Processing, Returned, Delivered)
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    setState(() {
-                      _selectedStatus = value;
-                    });
-                    _applyFilters();
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  offset: const Offset(0, 40),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                        value: 'Pending', child: Text('Pending')),
-                    const PopupMenuItem(
-                        value: 'Processing', child: Text('Processing')),
-                    const PopupMenuItem(
-                        value: 'Returned', child: Text('Returned')),
-                    const PopupMenuItem(
-                        value: 'Delivered', child: Text('Delivered')),
-                  ],
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: _selectedStatus != null
-                          ? AppColor.primary
-                          : Colors.white,
-                      border: Border.all(
-                        color: _selectedStatus != null
-                            ? AppColor.primary
-                            : AppColor.primary.withOpacity(0.8),
-                        width: 1.2.w,
-                      ),
-                      borderRadius: BorderRadius.circular(24.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          _selectedStatus ?? 'Status',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: _selectedStatus != null
-                                ? Colors.white
-                                : AppColor.primary.withOpacity(0.8),
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 14.sp,
-                          color: _selectedStatus != null
-                              ? Colors.white
-                              : AppColor.primary.withOpacity(0.8),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.w),
-
-                // Payment Status Dropdown Button (Paid, Pending, Due)
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    setState(() {
-                      _selectedPaymentStatus = value;
-                    });
-                    _applyFilters();
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  offset: const Offset(0, 40),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'Paid', child: Text('Paid')),
-                    const PopupMenuItem(
-                        value: 'Pending', child: Text('Pending')),
-                    const PopupMenuItem(value: 'Due', child: Text('Due')),
-                  ],
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: _selectedPaymentStatus != null
-                          ? AppColor.primary
-                          : Colors.white,
-                      border: Border.all(
-                        color: _selectedPaymentStatus != null
-                            ? AppColor.primary
-                            : AppColor.primary.withOpacity(0.8),
-                        width: 1.2.w,
-                      ),
-                      borderRadius: BorderRadius.circular(24.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          _selectedPaymentStatus ?? 'Payment',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: _selectedPaymentStatus != null
-                                ? Colors.white
-                                : AppColor.primary.withOpacity(0.8),
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 14.sp,
-                          color: _selectedPaymentStatus != null
-                              ? Colors.white
-                              : AppColor.primary.withOpacity(0.8),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.w),
-
-                // Date Range Button Selector
-                InkWell(
-                  onTap: _selectDateRange,
-                  borderRadius: BorderRadius.circular(24.r),
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: _selectedDateRange != null
-                          ? AppColor.primary
-                          : Colors.white,
-                      border: Border.all(
-                        color: AppColor.primary,
-                        width: 1.2.w,
-                      ),
-                      borderRadius: BorderRadius.circular(24.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          _selectedDateRange != null
-                              ? "${_formatDateSlash(_selectedDateRange!.start)} - ${_formatDateSlash(_selectedDateRange!.end)}"
-                              : "mm / dd / yyyy - mm / dd / yyyy",
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: _selectedDateRange != null
-                                ? Colors.white
-                                : AppColor.primary,
-                          ),
-                        ),
-                        SizedBox(width: 6.w),
-                        Icon(
-                          Icons.calendar_today_rounded,
-                          size: 14.sp,
-                          color: _selectedDateRange != null
-                              ? Colors.white
-                              : AppColor.primary,
-                        ),
-                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 10.h),
+        ),
+      );
+    }
 
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color(0xFFF9FAFB),
+      appBar: AppBar(
+        backgroundColor: AppColor.primary,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        scrolledUnderElevation: 2,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'My Orders',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.sp,
+            fontFamily: 'Inter',
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(52.h),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 10.h),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 38.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 10.w),
+                        Icon(Icons.search_rounded,
+                            color: Colors.grey.shade400, size: 18.sp),
+                        SizedBox(width: 6.w),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            textAlignVertical: TextAlignVertical.center,
+                            style: TextStyle(
+                                color: const Color(0xFF1A1A1A),
+                                fontSize: 13.sp,
+                                fontFamily: 'Inter'),
+                            decoration: InputDecoration(
+                              hintText: 'Search orders...',
+                              hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 13.sp,
+                                  fontFamily: 'Inter'),
+                              border: InputBorder.none,
+                              isCollapsed: true,
+                            ),
+                            onChanged: (value) {
+                              ref.read(orderProvider.notifier).state =
+                                  state.copyWith(searchQuery: value);
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                GestureDetector(
+                  onTap: () => _showFilterSheet(context),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(9.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.30)),
+                        ),
+                        child: Icon(Icons.tune_rounded,
+                            color: Colors.white, size: 20.sp),
+                      ),
+                      if (isAnyFilterActive)
+                        Positioned(
+                          top: -2,
+                          right: -2,
+                          child: Container(
+                            width: 8.w,
+                            height: 8.w,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF5B237),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           // Main Orders List Area
           Expanded(
             child: state.isLoading
@@ -493,8 +669,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                             } else {
                               return Padding(
                                 padding: EdgeInsets.symmetric(vertical: 24.h),
-                                child: const Center(
-                                    child: CircularProgressIndicator()),
+                                child: Center(
+                                    child: CircularProgressIndicator(color: AppColor.primary)),
                               );
                             }
                           },
@@ -522,13 +698,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   Container(
                     padding: EdgeInsets.all(24.w),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: context.vColors.surfaceVariant,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.assignment_outlined,
                       size: 60.sp,
-                      color: Colors.grey.shade400,
+                      color: context.vColors.onSurfaceMuted,
                     ),
                   ),
                   SizedBox(height: 20.h),
@@ -537,7 +713,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: context.vColors.onSurface,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -548,7 +724,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13.sp,
-                        color: Colors.grey.shade500,
+                        color: context.vColors.onSurfaceMuted,
                       ),
                     ),
                   ),

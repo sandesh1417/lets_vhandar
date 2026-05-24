@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/account_menu_item.dart';
-import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/account_section.dart';
-import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
-import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 class PersonalInformationScreen extends ConsumerWidget {
@@ -17,174 +13,275 @@ class PersonalInformationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(loginProvider).user;
 
-    return CustomScaffoldWrapper(
-      backgroundColor: Colors.grey.shade50,
-      appBar: const CustomScreenHeader(title: 'Personal Information'),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 20.h),
-            _buildInfoCard(context, user),
-            SizedBox(height: 10.h),
-            AccountSection(
-              // title: 'Danger Zone',
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: CustomScreenHeader(
+        title: 'Personal Information',
+        trailing: GestureDetector(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Edit profile coming soon')),
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                AccountMenuItem(
-                  showRightArrow: false,
-                  icon: Icons.delete_forever_outlined,
-                  title: 'Delete Account',
-                  titleColor: Colors.red,
-                  iconColor: Colors.red,
-                  showDivider: false,
-                  onTap: () => showDeleteAccountDialog(context, ref),
+                Icon(Icons.edit_outlined, color: Colors.white, size: 14.sp),
+                SizedBox(width: 4.w),
+                Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 30.h),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Green cover + floating avatar card
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 100.h,
+                  width: double.infinity,
+                  color: AppColor.primary,
+                ),
+                Positioned(
+                  bottom: -50.h,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.12),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 46.r,
+                        backgroundColor:
+                            AppColor.primary.withValues(alpha: 0.1),
+                        child: Icon(Icons.person,
+                            size: 50.sp, color: AppColor.primary),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 62.h),
+
+            // Name + phone under avatar
+            Text(
+              user?.name ?? 'User',
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1A1A1A),
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              user?.phoneNumber ?? '',
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+                color: Colors.grey.shade500,
+              ),
+            ),
+
+            SizedBox(height: 28.h),
+
+            // Info card
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  _InfoRow(
+                    icon: Icons.person_outline,
+                    label: 'Full Name',
+                    value: user?.name ?? '-',
+                    showDivider: true,
+                  ),
+                  _InfoRow(
+                    icon: Icons.phone_outlined,
+                    label: 'Phone Number',
+                    value: user?.phoneNumber != null
+                        ? '${user?.phoneCode ?? ''} ${user?.phoneNumber}'
+                        : '-',
+                    showDivider: true,
+                  ),
+                  _InfoRow(
+                    icon: Icons.email_outlined,
+                    label: 'Email Address',
+                    value: user?.email?.isNotEmpty == true
+                        ? user!.email!
+                        : '-',
+                    showDivider: true,
+                  ),
+                  _InfoRow(
+                    icon: Icons.cake_outlined,
+                    label: 'Date of Birth',
+                    value: user?.birthDate ?? '-',
+                    showDivider: true,
+                  ),
+                  _InfoRow(
+                    icon: Icons.wc_outlined,
+                    label: 'Gender',
+                    value: user?.gender ?? '-',
+                    showDivider: false,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Delete account button
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: GestureDetector(
+                onTap: () => showDeleteAccountDialog(context, ref),
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: Colors.red.shade100),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.delete_forever_outlined,
+                          color: Colors.red.shade600, size: 20.sp),
+                      SizedBox(width: 8.w),
+                      Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 40.h),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildInfoCard(BuildContext context, dynamic user) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Personal Information',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              ActionButton(
-                icon: Icons.edit_outlined,
-                label: 'Edit Profile',
-                onPressed: () {
-                  // Navigate to Edit Profile
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 40.r,
-                backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-                child: Icon(Icons.person, size: 45.sp, color: AppColor.primary),
-              ),
-              SizedBox(width: 20.w),
-              _buildPointsBadge('${user?.vandarPoints ?? 0}'),
-            ],
-          ),
-          SizedBox(height: 30.h),
-          _buildInfoRow('Name', user?.name ?? '-'),
-          _buildInfoRow('Phone Number', user?.phoneNumber ?? '-'),
-          _buildInfoRow('Email Address', user?.email ?? '-'),
-          _buildInfoRow('Date of Birth', '-'),
-          _buildInfoRow('Gender', '-'),
-        ],
-      ),
-    );
-  }
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool showDivider;
 
-  Widget _buildPointsBadge(String points) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.all(4.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D4D3B),
-              borderRadius: BorderRadius.circular(6.r),
-            ),
-            child: Icon(Icons.workspace_premium,
-                color: Colors.orange, size: 16.sp),
-          ),
-          SizedBox(width: 8.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.showDivider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          child: Row(
             children: [
-              Text(
-                'vhandarpoints',
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0D4D3B),
+              Container(
+                width: 38.w,
+                height: 38.w,
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
+                child: Icon(icon, color: AppColor.primary, size: 18.sp),
               ),
-              Text(
-                points,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 15.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120.w,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.black54,
-              ),
-            ),
+        ),
+        if (showDivider)
+          Divider(
+            height: 1,
+            indent: 68.w,
+            endIndent: 16.w,
+            color: Colors.grey.shade100,
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

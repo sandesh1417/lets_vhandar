@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/layout_toggle_button.dart';
 
@@ -37,12 +38,13 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: vc.surface,
       elevation: 0,
       centerTitle: false,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black),
+        icon: Icon(Icons.arrow_back, color: vc.onSurface),
         onPressed: () => context.pop(),
       ),
       title: _isSearchExpanded
@@ -52,9 +54,9 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
               decoration: InputDecoration(
                 hintText: 'Search products...',
                 border: InputBorder.none,
-                hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                hintStyle: TextStyle(fontSize: 14.sp, color: vc.onSurfaceMuted),
               ),
-              style: TextStyle(fontSize: 14.sp),
+              style: TextStyle(fontSize: 14.sp, color: vc.onSurface),
               onChanged: (value) {
                 ref
                     .read(searchQueryProvider(widget.categorySlug).notifier)
@@ -72,8 +74,10 @@ class _CategorySearchAppBarState extends ConsumerState<CategorySearchAppBar> {
       actions: [
         const LayoutToggleButton(),
         IconButton(
-          icon: Icon(_isSearchExpanded ? Icons.close : Icons.search,
-              color: Colors.black),
+          icon: Icon(
+            _isSearchExpanded ? Icons.close : Icons.search,
+            color: vc.onSurface,
+          ),
           onPressed: () {
             setState(() {
               if (_isSearchExpanded) {

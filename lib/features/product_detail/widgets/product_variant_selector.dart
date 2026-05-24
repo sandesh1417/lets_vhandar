@@ -155,7 +155,7 @@ class ProductVariantSelector extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => Center(child: CircularProgressIndicator(color: AppColor.primary)),
           error: (e, s) => const SizedBox.shrink(),
         );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 
 class OrderProductItem extends StatelessWidget {
@@ -9,16 +10,17 @@ class OrderProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: vc.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -32,8 +34,8 @@ class OrderProductItem extends StatelessWidget {
             height: 70.h,
             padding: EdgeInsets.all(6.w),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              border: Border.all(color: Colors.grey.shade100),
+              color: vc.surfaceVariant,
+              border: Border.all(color: vc.divider),
               borderRadius: BorderRadius.circular(10.r),
             ),
             child: product.firstImageUrl != null
@@ -55,7 +57,7 @@ class OrderProductItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: vc.onSurface,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -67,7 +69,7 @@ class OrderProductItem extends StatelessWidget {
                       '${product.unit}',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Colors.grey.shade600,
+                        color: vc.onSurfaceMuted,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -75,14 +77,14 @@ class OrderProductItem extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        color: vc.surfaceVariant,
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Text(
                         'Qty: ${product.count}',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          color: Colors.black54,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -102,7 +104,7 @@ class OrderProductItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: vc.onSurface,
                 ),
               ),
               _buildDiscountLabel(),

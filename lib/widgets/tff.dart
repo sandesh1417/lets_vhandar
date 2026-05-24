@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../core/constants/color_constant.dart';
+import '../core/theme/vhandar_colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hintText;
@@ -95,19 +96,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
           : null,
       onChanged: widget.onChanged ?? (v) {},
       style: TextStyle(
-        color: const Color(0xFF1A1A1A),
+        color: context.vColors.onSurface,
         fontWeight: FontWeight.w500,
         fontSize: 15.sp,
       ),
       decoration: InputDecoration(
         filled: widget.filled ?? true,
-        fillColor: widget.fillColor ?? const Color(0xFFF7F8F8),
+        fillColor: widget.fillColor ?? context.vColors.inputFill,
         contentPadding: widget.contentPadding ??
             EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
         isDense: true,
         hintText: widget.hintText,
         hintStyle: TextStyle(
-          color: const Color(0xFFADB5B2),
+          color: context.vColors.onSurfaceMuted,
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -116,7 +117,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             BoxConstraints(minWidth: 48.w, minHeight: 0),
         prefixText: widget.prefixText,
         prefixStyle: TextStyle(
-          color: const Color(0xFF1A1A1A),
+          color: context.vColors.onSurface,
           fontWeight: FontWeight.w500,
           fontSize: 15.sp,
         ),
@@ -126,12 +127,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 child: !widget.obscureText!
                     ? Icon(
                         Icons.visibility_off_outlined,
-                        color: const Color(0xFF9AA5A1),
+                        color: context.vColors.onSurfaceMuted,
                         size: 18.sp,
                       )
                     : Icon(
                         Icons.visibility_outlined,
-                        color: const Color(0xFF9AA5A1),
+                        color: context.vColors.onSurfaceMuted,
                         size: 18.sp,
                       ),
               )
@@ -139,18 +140,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
         border: widget.border ??
             OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.r)),
-              borderSide: const BorderSide(color: Color(0xFFE2E8E5)),
+              borderSide: BorderSide(color: context.vColors.inputBorder),
             ),
         enabledBorder: widget.enabledBorder ??
             OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.r)),
-              borderSide: const BorderSide(color: Color(0xFFE2E8E5)),
+              borderSide: BorderSide(color: context.vColors.inputBorder),
             ),
         focusedBorder: widget.focusedBorder ??
             OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.r)),
-              borderSide: const BorderSide(
-                  color: Color(0xFF2D3748), width: 1.5),
+              borderSide: BorderSide(
+                  color: context.vColors.inputBorderFocused, width: 1.5),
             ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.r)),
@@ -162,17 +163,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         labelText: widget.labelText,
         labelStyle: TextStyle(
-          color: const Color(0xFF8C9A95),
+          color: context.vColors.onSurfaceMuted,
           fontWeight: FontWeight.w400,
           fontSize: 14.sp,
         ),
         floatingLabelStyle: TextStyle(
-          color: const Color(0xFF2D3748),
+          color: context.vColors.inputBorderFocused,
           fontWeight: FontWeight.w600,
           fontSize: 13.sp,
         ),
       ),
-      cursorColor: const Color(0xFF2D3748),
+      cursorColor: context.vColors.inputBorderFocused,
       autovalidateMode:
           widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
       validator: widget.validator,

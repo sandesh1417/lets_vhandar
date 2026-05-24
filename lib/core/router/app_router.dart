@@ -27,8 +27,14 @@ import 'package:lets_vhandar/features/profile/presentation/personal_information_
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
 import 'package:lets_vhandar/features/splash/splash_screen.dart';
+import 'package:lets_vhandar/features/cart/cart_screen.dart';
 import 'package:lets_vhandar/features/cart/presentation/select_payment_method_screen.dart';
 import 'package:lets_vhandar/features/kids_zone/presentation/kids_zone_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/vhandar_points_screen.dart';
+import 'package:lets_vhandar/features/my_list/presentation/my_lists_screen.dart';
+import 'package:lets_vhandar/features/my_list/presentation/list_detail_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/family_members_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/wallet_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -57,7 +63,13 @@ enum LVRoute {
   searchScreen,
   selectPaymentMethodScreen,
   helpSupportScreen,
-  kidsZoneScreen;
+  kidsZoneScreen,
+  cartScreen,
+  vhandarPointsScreen,
+  myListsScreen,
+  listDetailScreen,
+  familyMembersScreen,
+  walletScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -280,6 +292,44 @@ class LVGoRouter {
         name: LVRoute.kidsZoneScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const KidsZoneScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.cartScreen.route,
+        name: LVRoute.cartScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const CartScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.vhandarPointsScreen.route,
+        name: LVRoute.vhandarPointsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const VhandarPointsScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.myListsScreen.route,
+        name: LVRoute.myListsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const MyListsScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.listDetailScreen.route,
+        name: LVRoute.listDetailScreen.route,
+        builder: (BuildContext context, GoRouterState state) {
+          final listId = state.extra as String;
+          return ListDetailScreen(listId: listId);
+        },
+      ),
+      GoRoute(
+        path: LVRoute.familyMembersScreen.route,
+        name: LVRoute.familyMembersScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const FamilyMembersScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.walletScreen.route,
+        name: LVRoute.walletScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const WalletScreen(),
       ),
       // Add other routes as they are implemented
     ],

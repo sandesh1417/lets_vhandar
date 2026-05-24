@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 import '../core/constants/app_style.dart';
 
@@ -35,11 +35,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return AppBar(
-      
-      backgroundColor: backgroundColor ?? AppColor.white,
+      backgroundColor: backgroundColor ?? vc.surface,
       elevation: elevation ?? 2,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shadowColor: Colors.black.withValues(alpha: 0.1),
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
       titleSpacing: titleSpacing ?? (hideBackBtn ? 16.w : 0),
@@ -66,7 +66,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   padding: EdgeInsets.only(left: 10.w),
                   child: Icon(
                     Icons.arrow_back,
-                    color: AppColor.black,
+                    color: vc.onSurface,
                   ),
                 ),
               ),

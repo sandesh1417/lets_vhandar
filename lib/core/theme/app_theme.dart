@@ -1,19 +1,22 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+
+const _seed = Color(0xFF0A754E);
 
 class AppTheme {
   const AppTheme._();
 
   static ThemeData get lightTheme {
-    return FlexThemeData.light(
-      scheme: FlexScheme.flutterDash,
+    final base = FlexThemeData.light(
+      colors: FlexSchemeColor.from(primary: _seed),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 7,
+      blendLevel: 4,
       subThemesData: const FlexSubThemesData(
-        blendOnLevel: 10,
+        blendOnLevel: 8,
         blendOnColors: false,
-        useTextTheme: true,
+        useMaterial3Typography: true,
         useM2StyleDividerInM3: true,
         alignedDropdown: true,
         useInputDecoratorThemeInDialogs: true,
@@ -23,16 +26,25 @@ class AppTheme {
       swapLegacyOnMaterial3: true,
       fontFamily: GoogleFonts.inter().fontFamily,
     );
+    return base.copyWith(
+      scaffoldBackgroundColor: VhandarColors.light.scaffoldBg,
+      cardColor: VhandarColors.light.surface,
+      cardTheme: base.cardTheme.copyWith(
+        color: VhandarColors.light.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      extensions: const [VhandarColors.light],
+    );
   }
 
   static ThemeData get darkTheme {
-    return FlexThemeData.dark(
-      scheme: FlexScheme.flutterDash,
+    final base = FlexThemeData.dark(
+      colors: FlexSchemeColor.from(primary: _seed),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 13,
+      blendLevel: 10,
       subThemesData: const FlexSubThemesData(
-        blendOnLevel: 20,
-        useTextTheme: true,
+        blendOnLevel: 15,
+        useMaterial3Typography: true,
         useM2StyleDividerInM3: true,
         alignedDropdown: true,
         useInputDecoratorThemeInDialogs: true,
@@ -41,6 +53,15 @@ class AppTheme {
       useMaterial3: true,
       swapLegacyOnMaterial3: true,
       fontFamily: GoogleFonts.inter().fontFamily,
+    );
+    return base.copyWith(
+      scaffoldBackgroundColor: VhandarColors.dark.scaffoldBg,
+      cardColor: VhandarColors.dark.surface,
+      cardTheme: base.cardTheme.copyWith(
+        color: VhandarColors.dark.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      extensions: const [VhandarColors.dark],
     );
   }
 }

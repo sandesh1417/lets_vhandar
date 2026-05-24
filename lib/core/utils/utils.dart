@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 splitName({required String fullName}) {
   List<String> parts = fullName.split(" ");
@@ -10,26 +11,43 @@ splitName({required String fullName}) {
 }
 
 /// Centralized navigation helper to handle slugs and full URLs from APIs
-void navigateToSlug(BuildContext context, String? slug, {bool isBrand = true}) {
+Future<void> navigateToSlug(BuildContext context, String? slug,
+    {bool isBrand = true}) async {
   if (slug == null || slug.isEmpty) return;
 
-  // Handle full URLs if they are passed as slugs
+  // Category URL
   if (slug.contains('vhandar.com/category/')) {
-    final extractedSlug = slug.split('vhandar.com/category/').last;
-    context.push('/category-detail/$extractedSlug');
+    final s = slug.split('vhandar.com/category/').last;
+    if (context.mounted) context.push('/category-detail/$s');
     return;
   }
 
-  if (slug.contains('vhandar.com/product/')) {
-    // Handle product if needed, e.g., context.push('/product-detail/$extractedSlug');
+  // Brand URL
+  if (slug.contains('vhandar.com/brand/')) {
+    final s = slug.split('vhandar.com/brand/').last;
+    if (context.mounted) context.push('/brand-detail/$s');
     return;
   }
 
-  // Normal navigation based on type
-  if (isBrand) {
-    context.push('/brand-detail/$slug');
-  } else {
-    context.push('/category-detail/$slug');
+  // Product URL — extend when product-detail route is ready
+  if (slug.contains('vhandar.com/product/')) return;
+
+  // Any other external URL → open in browser
+  if (slug.startsWith('http://') || slug.startsWith('https://')) {
+    final uri = Uri.parse(slug);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+    return;
+  }
+
+  // Plain slug — route by type
+  if (context.mounted) {
+    if (isBrand) {
+      context.push('/brand-detail/$slug');
+    } else {
+      context.push('/category-detail/$slug');
+    }
   }
 }
 

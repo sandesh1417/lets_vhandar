@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -37,8 +39,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     final addressState = ref.watch(addressProvider);
     final user = ref.watch(loginProvider).user;
 
+    final vc = context.vColors;
     return CustomScaffoldWrapper(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: vc.scaffoldBg,
       isScrollable: false,
       appBar: const CustomScreenHeader(title: 'Saved Addresses'),
       body: Builder(
@@ -117,29 +120,23 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
   }
 
   Widget _buildEmptyState() {
+    final vc = context.vColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.all(24.w),
-            decoration: BoxDecoration(
-              color: AppColor.primary.withOpacity(0.08),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.location_off_outlined,
-              size: 56.sp,
-              color: AppColor.primary,
-            ),
+          SvgPicture.asset(
+            'assets/icons/location_pin.svg',
+            width: 100.w,
+            height: 134.w,
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 24.h),
           Text(
             'No Saved Addresses',
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: AppColor.textBlack,
+              color: vc.onSurface,
             ),
           ),
           SizedBox(height: 8.h),
@@ -148,7 +145,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13.sp,
-              color: Colors.grey.shade500,
+              color: vc.onSurfaceMuted,
               height: 1.5,
             ),
           ),
@@ -216,16 +213,17 @@ class _AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     final typeColor = _getTypeColor(address.addressType);
 
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -240,7 +238,7 @@ class _AddressCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: typeColor.withOpacity(0.1),
+                color: typeColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(_getIcon(address.addressType),
@@ -260,7 +258,7 @@ class _AddressCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColor.textBlack,
+                          color: vc.onSurface,
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -270,7 +268,7 @@ class _AddressCard extends StatelessWidget {
                           padding: EdgeInsets.symmetric(
                               horizontal: 8.w, vertical: 2.h),
                           decoration: BoxDecoration(
-                            color: typeColor.withOpacity(0.1),
+                            color: typeColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Text(
@@ -290,7 +288,7 @@ class _AddressCard extends StatelessWidget {
                     address.description ?? '',
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: Colors.grey.shade600,
+                      color: vc.onSurfaceMuted,
                       height: 1.4,
                     ),
                     maxLines: 3,
@@ -343,7 +341,7 @@ class _ActionIconButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(7.w),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Icon(icon, size: 18.sp, color: color),

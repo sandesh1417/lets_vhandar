@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
@@ -58,6 +58,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return CustomScaffoldWrapper(
       horizontalPadding: 16.w,
       isScrollable: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        actions: [
+          TextButton(
+            onPressed: () =>
+                ref.read(loginProvider.notifier).enterGuestMode(context),
+            child: Text(
+              'Skip',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: AppColor.primary,
+              ),
+            ),
+          ),
+          SizedBox(width: 8.w),
+        ],
+      ),
       body: AutofillGroup(
         child: Form(
           key: _formKey,
@@ -70,11 +91,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       SizedBox(height: 40.h),
                       SvgPicture.asset(KImageConstant.vandharIcon),
                       SizedBox(height: 15.h),
-                      Text('Vhandar Grocery app',
-                          style: KTextStyle.roboto22black8W),
+                      Text(
+                        'Vhandar Grocery app',
+                        style: TextStyle(
+                          fontSize: 22.sp,
+                          color: context.vColors.onSurface,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                       SizedBox(height: 4.h),
-                      Text('Log in or Sign up',
-                          style: KTextStyle.roboto16black5W),
+                      Text(
+                        'Log in or Sign up',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: context.vColors.onSurface,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                       SizedBox(height: 30.h),
                       CustomTextField(
                         controller: _phoneController,
@@ -135,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   'Remember me',
                                   style: TextStyle(
                                     fontSize: 13.sp,
-                                    color: AppColor.lgrayTxt,
+                                    color: context.vColors.onSurfaceMuted,
                                     fontWeight: FontWeight.w400,
                                     fontFamily: 'Inter',
                                   ),
@@ -164,14 +199,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         btnHeight: 52.h,
                         buttonColor: _isFormFilled
                             ? AppColor.secondary
-                            : const Color(0xFFECEEED),
+                            : context.vColors.surfaceVariant,
                         txtStyle: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Inter',
                           color: _isFormFilled
                               ? const Color(0xFF1A1A1A)
-                              : const Color(0xFFADB5B2),
+                              : context.vColors.onSurfaceMuted,
                         ),
                         onPress: () {
                           if (_formKey.currentState?.validate() ?? false) {
@@ -192,7 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           text: TextSpan(
                             text: "Don't have an account? ",
                             style: TextStyle(
-                              color: AppColor.lgrayTxt,
+                              color: context.vColors.onSurfaceMuted,
                               fontSize: 14.sp,
                               fontFamily: 'Inter',
                             ),
@@ -217,7 +252,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               Text(
                 'By continuing, you agree to our ',
-                style: KTextStyle.roboto12lGray3W,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: context.vColors.onSurfaceMuted,
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Inter',
+                ),
               ),
               RichText(
                 text: TextSpan(
@@ -233,7 +273,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       text: ' & ',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: AppColor.lgrayTxt,
+                        color: context.vColors.onSurfaceMuted,
                         fontFamily: 'Inter',
                       ),
                     ),

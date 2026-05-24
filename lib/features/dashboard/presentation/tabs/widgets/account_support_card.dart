@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountSupportCard extends StatelessWidget {
@@ -19,12 +18,10 @@ class AccountSupportCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
-            const Color(0xFF075E54)
-                .withValues(alpha: 0.8), // WhatsApp Dark Green
-            // Color(0xFF25D366), // WhatsApp Light Green
-            AppColor.primary
+            Color(0xFF023D2B),
+            Color(0xFF075E54),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

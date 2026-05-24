@@ -46,9 +46,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _checkSession() async {
     await ref.read(loginProvider.notifier).restoreSession();
     final token = await SessionPrefences().getToken();
+    final isGuest = await SessionPrefences().getGuestMode();
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
-    if (token != null && token.isNotEmpty) {
+    if ((token != null && token.isNotEmpty) || isGuest) {
       context.go(LVRoute.dashboardScreen.route);
     } else {
       context.go(LVRoute.loginScreen.route);

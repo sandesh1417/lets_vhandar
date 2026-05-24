@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
@@ -16,13 +17,14 @@ class ProductAddToCartBar extends ConsumerWidget {
     final cartCount =
         ref.read(cartProvider.notifier).getCartItemCount(product.id!);
 
+    final vc = context.vColors;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         border: Border(
           top: BorderSide(
-            color: Colors.grey.shade100,
+            color: vc.divider,
             width: 1.h,
           ),
         ),
@@ -49,7 +51,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColor.textBlack,
+                      color: vc.onSurface,
                     ),
                   ),
                   if (product.discount != null &&
@@ -59,7 +61,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                       'MRP Rs.${product.pricePerUnit?.toInt()}',
                       style: TextStyle(
                         fontSize: 11.sp,
-                        color: AppColor.textMuted,
+                        color: vc.onSurfaceMuted,
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),

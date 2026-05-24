@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -92,8 +93,8 @@ class _GenericWebViewScreenState extends State<GenericWebViewScreen> {
         children: [
           WebViewWidget(controller: _controller),
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
+            Center(
+              child: CircularProgressIndicator(color: AppColor.primary),
             ),
           if (_error != null)
             Center(

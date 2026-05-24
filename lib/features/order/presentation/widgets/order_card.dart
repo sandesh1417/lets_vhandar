@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 
 import 'order_status_badge.dart';
@@ -13,6 +14,7 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     final createdAt = order.createdAt;
     final formattedDate = createdAt != null ? _formatDate(createdAt) : '—';
     final itemCount =
@@ -23,21 +25,20 @@ class OrderCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: vc.surface,
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: vc.divider),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: ID and Date
             Padding(
               padding: EdgeInsets.all(12.w),
               child: Row(
@@ -51,7 +52,7 @@ class OrderCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: vc.onSurface,
                         ),
                       ),
                       SizedBox(height: 2.h),
@@ -59,7 +60,7 @@ class OrderCard extends StatelessWidget {
                         formattedDate,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey.shade600,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -70,14 +71,12 @@ class OrderCard extends StatelessWidget {
               ),
             ),
 
-            const Divider(height: 1, thickness: 0.5),
+            Divider(height: 1, thickness: 0.5, color: vc.divider),
 
-            // Content: Product Icons and Total
             Padding(
               padding: EdgeInsets.all(12.w),
               child: Row(
                 children: [
-                  // Product Mini Icons
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,14 +98,13 @@ class OrderCard extends StatelessWidget {
                                       height: 32.h,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: Colors.white,
+                                        color: vc.surface,
                                         border: Border.all(
-                                            color: Colors.grey.shade200,
-                                            width: 1.5),
+                                            color: vc.divider, width: 1.5),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.05),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.05),
                                             blurRadius: 4,
                                           ),
                                         ],
@@ -117,14 +115,17 @@ class OrderCard extends StatelessWidget {
                                                 imageUrl,
                                                 fit: BoxFit.cover,
                                                 errorBuilder: (_, __, ___) =>
-                                                    const Icon(
+                                                    Icon(
                                                         Icons
                                                             .shopping_bag_outlined,
-                                                        size: 16),
+                                                        size: 16,
+                                                        color:
+                                                            vc.onSurfaceMuted),
                                               )
-                                            : const Icon(
+                                            : Icon(
                                                 Icons.shopping_bag_outlined,
-                                                size: 16),
+                                                size: 16,
+                                                color: vc.onSurfaceMuted),
                                       ),
                                     ),
                                   );
@@ -137,7 +138,7 @@ class OrderCard extends StatelessWidget {
                           '$itemCount Item${itemCount != 1 ? 's' : ''}  •  ${order.paymentMethod ?? 'N/A'}',
                           style: TextStyle(
                             fontSize: 12.sp,
-                            color: Colors.grey.shade700,
+                            color: vc.onSurfaceMuted,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -145,7 +146,6 @@ class OrderCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Total Amount
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -153,7 +153,7 @@ class OrderCard extends StatelessWidget {
                         'Total Payable',
                         style: TextStyle(
                           fontSize: 10.sp,
-                          color: Colors.grey.shade500,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -171,12 +171,11 @@ class OrderCard extends StatelessWidget {
               ),
             ),
 
-            // Footer Button
             Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 10.h),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: vc.surfaceVariant,
                 borderRadius:
                     BorderRadius.vertical(bottom: Radius.circular(16.r)),
               ),
@@ -199,18 +198,8 @@ class OrderCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
+      'Jan','Feb','Mar','Apr','May','Jun',
+      'Jul','Aug','Sep','Oct','Nov','Dec'
     ];
     final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
     final ampm = date.hour >= 12 ? 'PM' : 'AM';

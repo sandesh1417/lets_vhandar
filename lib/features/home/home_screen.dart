@@ -14,7 +14,82 @@ import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 // import 'package:lets_vhandar/features/home/widgets/home_featured_products_list.dart';
+
+class _SuggestProductCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(20.w, 24.h, 16.w, 24.h),
+      decoration: BoxDecoration(
+        color: context.isDark ? const Color(0xFF1A2E25) : const Color(0xFFE8F5EF),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "didn't find what you\nwere looking for?",
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w800,
+                    color: context.isDark ? const Color(0xFFB2DFCB) : const Color(0xFF1A3D2E),
+                    height: 1.3,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  "Suggest something & we'll look into it",
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w400,
+                    color: vc.onSurfaceMuted,
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                OutlinedButton(
+                  onPressed: () =>
+                      context.push(LVRoute.productSuggestionScreen.route),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColor.secondary,
+                    side: BorderSide(color: AppColor.secondary, width: 1.5),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 20.w, vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Suggest a Product',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Text(
+            '😔',
+            style: TextStyle(fontSize: 80.sp),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -28,17 +103,7 @@ class HomeScreen extends ConsumerWidget {
         statusBarBrightness: Brightness.dark,
       ),
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFF0FAF5),
-              Color(0xFFFCFCFC),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.0, 0.4],
-          ),
-        ),
+        color: context.vColors.scaffoldBg,
         child: RefreshIndicator(
           color: AppColor.primary,
           onRefresh: () async {
@@ -80,7 +145,9 @@ class HomeScreen extends ConsumerWidget {
                       onSeeAll: () => context.push('/brands'),
                     ),
                     const HomeFeaturedBrandsList(),
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 24.h),
+                    _SuggestProductCard(),
+                    SizedBox(height: 16.h),
                   ],
                 ),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 class PremiumSearchBar extends StatefulWidget {
   final TextEditingController controller;
@@ -49,11 +50,12 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Container(
       height: 44.h,
       padding: EdgeInsets.symmetric(horizontal: 14.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
@@ -82,7 +84,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                         widget.hintText,
                         style: TextStyle(
                           fontSize: 13.sp,
-                          color: Colors.black54,
+                          color: vc.onSurfaceMuted,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -94,14 +96,14 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                     onChanged: widget.onChanged,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: Colors.black,
+                      color: vc.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                     decoration: InputDecoration(
                       hintText: widget.hintText,
                       hintStyle: TextStyle(
                         fontSize: 13.sp,
-                        color: Colors.black54,
+                        color: vc.onSurfaceMuted,
                         fontWeight: FontWeight.w400,
                       ),
                       border: InputBorder.none,
@@ -122,7 +124,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                 padding: EdgeInsets.symmetric(horizontal: 2.w),
                 child: Icon(
                   Icons.close_rounded,
-                  color: Colors.grey.shade400,
+                  color: vc.onSurfaceMuted,
                   size: 20.sp,
                 ),
               ),
@@ -131,7 +133,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
             Container(
               height: 18.h,
               width: 1,
-              color: Colors.grey.shade200,
+              color: vc.divider,
               margin: EdgeInsets.symmetric(horizontal: 4.w),
             ),
             SizedBox(
@@ -141,7 +143,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                 'assets/icons/barcode.svg',
                 width: 18.sp,
                 height: 18.sp,
-                colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(vc.onSurface, BlendMode.srcIn),
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),

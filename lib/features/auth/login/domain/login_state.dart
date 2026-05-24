@@ -5,12 +5,14 @@ import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
 class LoginState extends Equatable {
   final bool isLoading;
   final bool isLoggedIn;
+  final bool isGuest;
   final String? errorMessage;
   final UserModel? user;
 
   const LoginState({
     this.isLoading = false,
     this.isLoggedIn = false,
+    this.isGuest = false,
     this.errorMessage,
     this.user,
   });
@@ -18,12 +20,14 @@ class LoginState extends Equatable {
   LoginState copyWith({
     bool? isLoading,
     bool? isLoggedIn,
+    bool? isGuest,
     String? errorMessage,
     UserModel? user,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      isGuest: isGuest ?? this.isGuest,
       user: user ?? this.user,
       errorMessage: errorMessage,
     );
@@ -32,6 +36,7 @@ class LoginState extends Equatable {
   LoginState copyWithChange({
     bool? isLoading,
     bool? isLoggedIn,
+    bool? isGuest,
     String? errorMessage,
     UserModel? user,
     bool clearError = false,
@@ -39,11 +44,12 @@ class LoginState extends Equatable {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      isGuest: isGuest ?? this.isGuest,
       user: user ?? this.user,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, isLoggedIn, errorMessage, user];
+  List<Object?> get props => [isLoading, isLoggedIn, isGuest, errorMessage, user];
 }

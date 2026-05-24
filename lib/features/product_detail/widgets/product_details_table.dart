@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
 class ProductDetailsTable extends StatelessWidget {
@@ -25,6 +26,7 @@ class ProductDetailsTable extends StatelessWidget {
     ];
 
     if (rows.isEmpty) return const SizedBox.shrink();
+    final vc = context.vColors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +47,7 @@ class ProductDetailsTable extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColor.textBlack,
+                color: vc.onSurface,
               ),
             ),
           ],
@@ -53,9 +55,9 @@ class ProductDetailsTable extends StatelessWidget {
         SizedBox(height: 12.h),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: vc.surface,
             borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: vc.divider),
           ),
           child: Column(
             children: rows.asMap().entries.map((entry) {
@@ -66,9 +68,7 @@ class ProductDetailsTable extends StatelessWidget {
                 padding:
                     EdgeInsets.symmetric(horizontal: 14.w, vertical: 11.h),
                 decoration: BoxDecoration(
-                  color: i.isEven
-                      ? Colors.white
-                      : Colors.grey.shade50,
+                  color: i.isEven ? vc.surface : vc.surfaceVariant,
                   borderRadius: BorderRadius.only(
                     topLeft: i == 0 ? Radius.circular(14.r) : Radius.zero,
                     topRight: i == 0 ? Radius.circular(14.r) : Radius.zero,
@@ -88,7 +88,7 @@ class ProductDetailsTable extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColor.textBlack54,
+                          color: vc.onSurfaceMuted,
                         ),
                       ),
                     ),
@@ -98,7 +98,7 @@ class ProductDetailsTable extends StatelessWidget {
                         row['value']!,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: AppColor.textBlack87,
+                          color: vc.onSurface,
                           height: 1.4,
                         ),
                       ),

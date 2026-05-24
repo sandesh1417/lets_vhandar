@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -20,11 +21,12 @@ class SubCategorySidebar extends ConsumerWidget {
       data: (subs) {
         if (subs.isEmpty) return const SizedBox.shrink();
 
+        final vc = context.vColors;
         return Container(
           width: 76.w,
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(right: BorderSide(color: Colors.grey.shade100)),
+            color: vc.surface,
+            border: Border(right: BorderSide(color: vc.divider)),
           ),
           child: ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -32,11 +34,12 @@ class SubCategorySidebar extends ConsumerWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 final isSelected = selectedSubSlug == null;
-                return _buildSidebarItem(ref, 'All', null, isSelected, null);
+                return _buildSidebarItem(context, ref, 'All', null, isSelected, null);
               }
               final sub = subs[index - 1];
               final isSelected = selectedSubSlug == sub.slug;
               return _buildSidebarItem(
+                context,
                 ref,
                 sub.name ?? '',
                 sub.slug,
@@ -52,8 +55,9 @@ class SubCategorySidebar extends ConsumerWidget {
     );
   }
 
-  Widget _buildSidebarItem(WidgetRef ref, String title, String? slug,
-      bool isSelected, String? imageUrl) {
+  Widget _buildSidebarItem(BuildContext context, WidgetRef ref, String title,
+      String? slug, bool isSelected, String? imageUrl) {
+    final vc = context.vColors;
     return InkWell(
       onTap: () {
         ref
@@ -97,7 +101,7 @@ class SubCategorySidebar extends ConsumerWidget {
             else if (slug == null)
               Icon(
                 Icons.apps,
-                color: isSelected ? AppColor.primary : Colors.grey,
+                color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
                 size: 24.sp,
               ),
             SizedBox(height: 5.h),
@@ -109,7 +113,7 @@ class SubCategorySidebar extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 9.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColor.primary : AppColor.textBlack54,
+                color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
               ),
             ),
           ],

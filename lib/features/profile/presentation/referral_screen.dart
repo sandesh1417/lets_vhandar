@@ -18,7 +18,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
 
     return CustomScaffoldWrapper(
       isScrollable: true,
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomScreenHeader(title: 'Refer and Earn'),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

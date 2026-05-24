@@ -40,10 +40,21 @@ class SessionPrefences {
     return null;
   }
 
+  Future<void> setGuestMode({required bool isGuest}) async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    await prefs.setBool('guest_mode', isGuest);
+  }
+
+  Future<bool> getGuestMode() async {
+    SharedPreferences prefs = await _initSharedPreferences();
+    return prefs.getBool('guest_mode') ?? false;
+  }
+
   Future<void> clearSession() async {
     SharedPreferences prefs = await _initSharedPreferences();
     await prefs.remove('apple');
     await prefs.remove('user_data');
+    await prefs.remove('guest_mode');
   }
 
   Future<void> setLayoutPreference(bool isVertical) async {
