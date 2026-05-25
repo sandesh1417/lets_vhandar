@@ -45,3 +45,9 @@ app.*.map.json
 # Secrets and Environment Variables
 .env
 ios/Flutter/Secrets.xcconfig
+
+
+# Keystore files
+key.properties
+*.jks
+*.keystore
