@@ -25,7 +25,7 @@ class WalletScreen extends StatelessWidget {
                 fontSize: 16.sp,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF1A1A1A),
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 20.h),
@@ -62,11 +62,7 @@ class _BalanceCard extends StatelessWidget {
               Container(
                 width: 48.w,
                 height: 48.w,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                padding: EdgeInsets.all(8.w),
+  
                 child: SvgPicture.asset(
                   'assets/icons/wallet.svg',
                   fit: BoxFit.contain,
@@ -138,7 +134,7 @@ class _EmptyTransactions extends StatelessWidget {
               fontSize: 15.sp,
               fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
+              color: context.vColors.onSurface,
             ),
           ),
           SizedBox(height: 6.h),

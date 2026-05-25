@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 class CustomShimmer extends StatefulWidget {
   final double width;
@@ -47,6 +48,12 @@ class _CustomShimmerState extends State<CustomShimmer>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final shimmerBase =
+        isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade200;
+    final shimmerHighlight =
+        isDark ? const Color(0xFF383838) : Colors.grey.shade100;
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -56,16 +63,8 @@ class _CustomShimmerState extends State<CustomShimmer>
           decoration: ShapeDecoration(
             shape: widget.shapeBorder,
             gradient: LinearGradient(
-              colors: [
-                Colors.grey.shade200,
-                Colors.grey.shade100,
-                Colors.grey.shade200,
-              ],
-              stops: const [
-                0.0,
-                0.5,
-                1.0,
-              ],
+              colors: [shimmerBase, shimmerHighlight, shimmerBase],
+              stops: const [0.0, 0.5, 1.0],
               begin: Alignment(-2.0 + _controller.value * 4.0, -0.3),
               end: Alignment(0.0 + _controller.value * 4.0, 0.3),
             ),
@@ -129,6 +128,7 @@ class OrderListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return ListView.separated(
       padding: EdgeInsets.all(16.w),
       physics: const NeverScrollableScrollPhysics(),
@@ -139,9 +139,9 @@ class OrderListShimmer extends StatelessWidget {
         return Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: vc.surface,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: vc.divider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class OrderListShimmer extends StatelessWidget {
               SizedBox(height: 8.h),
               const CustomShimmer.rectangular(height: 12, width: 150),
               SizedBox(height: 12.h),
-              Divider(color: Colors.grey.shade100, height: 1),
+              Divider(color: vc.divider, height: 1),
               SizedBox(height: 12.h),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,6 +221,7 @@ class ProductHorizontalListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return SizedBox(
       height: 226.h,
       child: ListView.separated(
@@ -233,9 +234,9 @@ class ProductHorizontalListShimmer extends StatelessWidget {
           return Container(
             width: 140.w,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: vc.surface,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: Colors.grey.shade100),
+              border: Border.all(color: vc.divider),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,6 +282,7 @@ class ProductGridShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return GridView.builder(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       shrinkWrap: true,
@@ -295,9 +297,9 @@ class ProductGridShimmer extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: vc.surface,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: vc.divider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

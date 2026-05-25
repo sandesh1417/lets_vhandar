@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
@@ -17,25 +18,11 @@ import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'widgets/brand_card.dart';
 import 'widgets/category_card.dart';
 
-class CategoryScreen extends ConsumerStatefulWidget {
+class CategoryScreen extends ConsumerWidget {
   const CategoryScreen({super.key});
 
   @override
-  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
-}
-
-class _CategoryScreenState extends ConsumerState<CategoryScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(allCategoryProvider);
     final brandsAsync = ref.watch(brandProvider);
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -64,14 +51,11 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 SizedBox(width: 12.w),
                 Expanded(
                   child: PremiumSearchBar(
-                    controller: _searchController,
-                    hintText: "Search for categories...",
+                    controller: TextEditingController(),
+                    hintText: "Search for products...",
+                    readOnly: true,
                     showScanIcon: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.trim().toLowerCase();
-                      });
-                    },
+                    onTap: () => context.pushNamed(LVRoute.searchScreen.route),
                   ),
                 ),
               ],
@@ -91,35 +75,6 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                   data: (categories) {
                     return brandsAsync.when(
                       data: (brands) {
-                        final filteredBrands = _searchQuery.isEmpty
-                            ? brands
-                            : brands
-                                .where((brand) => (brand.name ?? '')
-                                    .toLowerCase()
-                                    .contains(_searchQuery))
-                                .toList();
-
-                        final filteredCategories = _searchQuery.isEmpty
-                            ? categories
-                            : categories
-                                .where((cat) => (cat.name ?? '')
-                                    .toLowerCase()
-                                    .contains(_searchQuery))
-                                .toList();
-
-                        if (filteredBrands.isEmpty &&
-                            filteredCategories.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              "No matching categories or brands found",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          );
-                        }
-
                         return RefreshIndicator(
                           color: AppColor.primary,
                           onRefresh: () async {
@@ -133,11 +88,11 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (filteredBrands.isNotEmpty) ...[
-                                  _buildBrandSection(context, filteredBrands),
+                                if (brands.isNotEmpty) ...[
+                                  _buildBrandSection(context, brands),
                                   SizedBox(height: 8.h),
                                 ],
-                                if (filteredCategories.isNotEmpty) ...[
+                                if (categories.isNotEmpty) ...[
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16.w, vertical: 8.h),
@@ -150,20 +105,19 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                                       ),
                                     ),
                                   ),
-                                  _buildCategoryGrid(
-                                      context, filteredCategories),
+                                  _buildCategoryGrid(context, categories),
                                 ],
-                                SizedBox(height: 32.h),
+                                SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
                               ],
                             ),
                           ),
                         );
                       },
-                      loading: () => _buildLoadingShimmer(),
-                      error: (err, _) => Center(child: Text("Error: $err")),
+                      loading: () => _buildLoadingShimmer(context),
+                      error: (err, _) => Center(child: Text('Error: $err')),
                     );
                   },
-                  loading: () => _buildLoadingShimmer(),
+                  loading: () => _buildLoadingShimmer(context),
                   error: (err, _) => Center(child: Text("Error: $err")),
                 ),
               ),
@@ -174,7 +128,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     );
   }
 
-  Widget _buildLoadingShimmer() {
+  Widget _buildLoadingShimmer(BuildContext context) {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
@@ -190,7 +144,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: AppColor.textBlack,
+                    color: context.vColors.onSurface,
                   ),
                 ),
                 Text(
@@ -216,7 +170,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColor.textBlack,
+                color: context.vColors.onSurface,
               ),
             ),
           ),
@@ -242,7 +196,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
-                  color: AppColor.textBlack,
+                  color: context.vColors.onSurface,
                 ),
               ),
               TextButton(

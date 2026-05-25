@@ -93,7 +93,7 @@ class OrderDetailScreen extends ConsumerWidget {
           _buildPaymentSection(context, order),
           if (settings != null) ...[
             SizedBox(height: 32.h),
-            _buildFreeDeliveryBanner(order, settings),
+            _buildFreeDeliveryBanner(context, order, settings),
           ],
           SizedBox(height: 32.h),
         ],
@@ -259,7 +259,7 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFreeDeliveryBanner(OrderData order, dynamic settings) {
+  Widget _buildFreeDeliveryBanner(BuildContext context, OrderData order, dynamic settings) {
     final threshold = settings.deliveryThreshold ?? 0;
     final itemsTotal = order.totalAmount ?? 0;
 
@@ -267,25 +267,28 @@ class OrderDetailScreen extends ConsumerWidget {
 
     final remaining = threshold - itemsTotal;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF9E7),
+        color: isDark ? const Color(0xFF4A3700).withValues(alpha: 0.4) : const Color(0xFFFFF9E7),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: const Color(0xFFFFECB3)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF7A5C00).withValues(alpha: 0.6) : const Color(0xFFFFECB3),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.local_shipping_outlined,
-              size: 18.sp, color: Colors.amber.shade900),
+              size: 18.sp, color: isDark ? const Color(0xFFFFCC02) : Colors.amber.shade900),
           SizedBox(width: 10.w),
           Text(
             'Add Rs.$remaining more for Free Delivery',
             style: TextStyle(
               fontSize: 13.sp,
-              color: Colors.amber.shade900,
+              color: isDark ? const Color(0xFFFFCC02) : Colors.amber.shade900,
               fontWeight: FontWeight.bold,
             ),
           ),

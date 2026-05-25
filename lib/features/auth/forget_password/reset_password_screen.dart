@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -64,16 +66,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.green.withValues(alpha: 0.1),
+                color: AppColor.primary.withValues(alpha: 0.1),
               ),
               child:
-                  const Icon(Icons.lock_reset, size: 50, color: Colors.green),
+                  Icon(Icons.lock_reset, size: 50, color: AppColor.primary),
             ),
             SizedBox(height: 24.h),
-            Text('Set New Password', style: KTextStyle.roboto24blackD7W),
+            Text('Set New Password', style: KTextStyle.roboto24blackD7W.copyWith(color: context.vColors.onSurface)),
             SizedBox(height: 8.h),
             Text('Create a new password for your account.',
-                style: KTextStyle.roboto14Gray4W),
+                style: KTextStyle.roboto14Gray4W.copyWith(color: context.vColors.onSurfaceMuted)),
             SizedBox(height: 32.h),
             CustomTextField(
               controller: passwordController,

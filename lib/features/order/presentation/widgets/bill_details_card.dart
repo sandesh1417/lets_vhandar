@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 
 class BillDetailsCard extends StatelessWidget {
@@ -12,7 +13,7 @@ class BillDetailsCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.vColors.surface,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
@@ -21,7 +22,7 @@ class BillDetailsCard extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: context.vColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +32,7 @@ class BillDetailsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: context.vColors.onSurface,
             ),
           ),
           SizedBox(height: 16.h),
@@ -56,7 +57,7 @@ class BillDetailsCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: context.vColors.onSurface,
                 ),
               ),
               Text(
@@ -74,7 +75,7 @@ class BillDetailsCard extends StatelessWidget {
             'Incl. all taxes and charges',
             style: TextStyle(
               fontSize: 11.sp,
-              color: Colors.grey.shade600,
+              color: context.vColors.onSurfaceMuted,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -97,6 +98,7 @@ class _BillRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
       child: Row(
@@ -106,7 +108,7 @@ class _BillRow extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14.sp,
-              color: Colors.grey.shade700, // Fixed dim color
+              color: vc.onSurfaceMuted,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -115,7 +117,7 @@ class _BillRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.bold,
-              color: isVat ? Colors.black87 : Colors.black,
+              color: vc.onSurface,
             ),
           ),
         ],

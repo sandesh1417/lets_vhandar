@@ -171,25 +171,7 @@ class OrderCard extends StatelessWidget {
               ),
             ),
 
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              decoration: BoxDecoration(
-                color: vc.surfaceVariant,
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(16.r)),
-              ),
-              child: Center(
-                child: Text(
-                  'View Details',
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primary,
-                  ),
-                ),
-              ),
-            ),
+            
           ],
         ),
       ),

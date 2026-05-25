@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+
 
 class ProductWhyShopSection extends StatelessWidget {
   const ProductWhyShopSection({super.key});
@@ -22,21 +24,21 @@ class ProductWhyShopSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeight.w700,
-              color: AppColor.textBlack,
+              color: context.vColors.onSurface,
             ),
           ),
           SizedBox(height: 14.h),
-          _buildItem(
+          _buildItem(context,
             Icons.delivery_dining_outlined,
             'Superfast Delivery',
             'Delivered to your doorstep from nearby dark stores.',
           ),
-          _buildItem(
+          _buildItem(context,
             Icons.sell_outlined,
             'Best Prices & Offers',
             'Direct deals from manufacturers — lowest prices guaranteed.',
           ),
-          _buildItem(
+          _buildItem(context,
             Icons.category_outlined,
             'Wide Assortment',
             '5000+ products across all major categories.',
@@ -47,7 +49,7 @@ class ProductWhyShopSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(IconData icon, String title, String subtitle,
+  Widget _buildItem(BuildContext context, IconData icon, String title, String subtitle,
       {bool isLast = false}) {
     return Padding(
       padding: EdgeInsets.only(bottom: isLast ? 0 : 14.h),
@@ -72,7 +74,7 @@ class ProductWhyShopSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.textBlack,
+                    color: context.vColors.onSurface,
                   ),
                 ),
                 SizedBox(height: 2.h),
@@ -80,7 +82,7 @@ class ProductWhyShopSection extends StatelessWidget {
                   subtitle,
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: AppColor.textMuted,
+                    color: context.vColors.onSurfaceMuted,
                     height: 1.4,
                   ),
                 ),

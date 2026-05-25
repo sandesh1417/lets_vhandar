@@ -33,7 +33,7 @@ class CartScreen extends ConsumerWidget {
     final selectedAddress = ref.watch(addressProvider).selected;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
         elevation: 2,
@@ -100,7 +100,7 @@ class CartScreen extends ConsumerWidget {
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 16.w),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: context.vColors.surface,
                           borderRadius: BorderRadius.circular(16.r),
                         ),
                         child: Column(
@@ -128,7 +128,7 @@ class CartScreen extends ConsumerWidget {
                               separatorBuilder: (_, __) => Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                                 child: Divider(
-                                    height: 1, color: Colors.grey.shade100),
+                                    height: 1, color: context.vColors.divider),
                               ),
                               itemBuilder: (context, index) =>
                                   CartItemWidget(item: cartItems[index]),
@@ -177,7 +177,7 @@ class CartScreen extends ConsumerWidget {
                 Container(
                    padding: EdgeInsets.only(top: 12.r), // ✅ moved here
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.vColors.surface,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20.r),
                       topRight: Radius.circular(20.r),
@@ -238,7 +238,7 @@ class CartScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF1A1A1A),
+                color: context.vColors.onSurface,
                 fontFamily: 'Inter',
               ),
             ),
@@ -438,6 +438,7 @@ class _HasAddressBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
@@ -468,7 +469,7 @@ class _HasAddressBanner extends StatelessWidget {
                   'Delivering to',
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: Colors.grey.shade600,
+                    color: vc.onSurfaceMuted,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -478,7 +479,7 @@ class _HasAddressBanner extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColor.textBlack,
+                    color: vc.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -488,7 +489,7 @@ class _HasAddressBanner extends StatelessWidget {
                   selectedAddress.description ?? '',
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: Colors.grey.shade600,
+                    color: vc.onSurfaceMuted,
                     fontWeight: FontWeight.w400,
                   ),
                   maxLines: 1,
@@ -503,7 +504,7 @@ class _HasAddressBanner extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: vc.surface,
                 borderRadius: BorderRadius.circular(10.r),
                 border: Border.all(
                   color: AppColor.primary,
@@ -577,7 +578,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColor.textBlack,
+                          color: vc.onSurface,
                         ),
                       ),
                       IconButton(
@@ -595,7 +596,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                           decoration: InputDecoration(
                             hintText: 'Enter coupon code (e.g. SUBARNABHD)',
                             hintStyle: TextStyle(
-                                fontSize: 13.sp, color: Colors.grey.shade400),
+                                fontSize: 13.sp, color: vc.onSurfaceMuted),
                             contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.w, vertical: 12.h),
                             filled: true,
@@ -603,12 +604,12 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.r),
                               borderSide:
-                                  BorderSide(color: Colors.grey.shade200),
+                                  BorderSide(color: vc.inputBorder),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.r),
                               borderSide:
-                                  BorderSide(color: Colors.grey.shade200),
+                                  BorderSide(color: vc.inputBorder),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.r),
@@ -681,21 +682,29 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
+                        color: context.isDark
+                            ? const Color(0xFF4A0000).withValues(alpha: 0.5)
+                            : Colors.red.shade50,
                         borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Colors.red.shade100),
+                        border: Border.all(
+                          color: context.isDark
+                              ? const Color(0xFF8B0000).withValues(alpha: 0.6)
+                              : Colors.red.shade100,
+                        ),
                       ),
                       child: Row(
                         children: [
                           Icon(Icons.error_outline,
-                              color: Colors.red, size: 16.sp),
+                              color: Colors.red.shade300, size: 16.sp),
                           SizedBox(width: 8.w),
                           Expanded(
                             child: Text(
                               sheetError!,
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                color: Colors.red.shade800,
+                                color: context.isDark
+                                    ? Colors.red.shade300
+                                    : Colors.red.shade800,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -879,8 +888,10 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
             margin: EdgeInsets.symmetric(horizontal: 0.w),
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEBFDF3), Color(0xFFF5FCF8)],
+              gradient: LinearGradient(
+                colors: context.isDark
+                    ? [const Color(0xFF0D2E1E), const Color(0xFF112818)]
+                    : [const Color(0xFFEBFDF3), const Color(0xFFF5FCF8)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -941,7 +952,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                         'Saved Rs. ${appliedCoupon.discountAmount.toInt() ?? '-'} on this order',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          color: Colors.grey.shade700,
+                          color: context.vColors.onSurfaceMuted,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -972,8 +983,8 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
             child: Container(
               width: 12.w,
               height: 12.h,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF8F9FB), // Matches scaffold background
+              decoration: BoxDecoration(
+                color: context.vColors.scaffoldBg,
                 shape: BoxShape.circle,
               ),
             ),
@@ -984,8 +995,8 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
             child: Container(
               width: 12.w,
               height: 12.h,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF8F9FB), // Matches scaffold background
+              decoration: BoxDecoration(
+                color: context.vColors.scaffoldBg,
                 shape: BoxShape.circle,
               ),
             ),
@@ -1002,9 +1013,9 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.vColors.surface,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: context.vColors.divider),
           ),
           child: Row(
             children: [
@@ -1020,12 +1031,12 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.textBlack,
+                    color: context.vColors.onSurface,
                   ),
                 ),
               ),
               Icon(Icons.keyboard_arrow_right,
-                  color: Colors.grey.shade400, size: 20.sp),
+                  color: context.vColors.onSurfaceMuted, size: 20.sp),
             ],
           ),
         ),

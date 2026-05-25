@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 class DeliveryPartnerSafetyCard extends StatelessWidget {
   const DeliveryPartnerSafetyCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: vc.surface,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Theme(
@@ -27,11 +28,11 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
             style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColor.textBlack),
+                color: vc.onSurface),
           ),
           subtitle: Text(
             'Learn more about how we ensure their safety',
-            style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+            style: TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
           ),
           children: [
             Padding(
@@ -50,27 +51,26 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack),
+                        color: vc.onSurface),
                   ),
                   SizedBox(height: 4.h),
                   Text(
                     'At Vhandar, Rider\'s safety is our responsibility',
-                    style:
-                        TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+                    style: TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.h),
-                  _buildSafetyPoint(
+                  _buildSafetyPoint(context,
                     'assets/icons/vhandar_speed.svg',
                     'Delivery partners ride safely at an average speed of 15kmph per delivery',
                   ),
                   SizedBox(height: 8.h),
-                  _buildSafetyPoint(
+                  _buildSafetyPoint(context,
                     'assets/icons/vhandar_clock.svg',
                     'No penalties for late deliveries & no incentives for on-time deliveries',
                   ),
                   SizedBox(height: 8.h),
-                  _buildSafetyPoint(
+                  _buildSafetyPoint(context,
                     'assets/icons/vhandar_announce.svg',
                     'Delivery partners are not informed about promised delivery time',
                   ),
@@ -83,11 +83,12 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSafetyPoint(String svgPath, String text) {
+  Widget _buildSafetyPoint(BuildContext context, String svgPath, String text) {
+    final vc = context.vColors;
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
+        color: vc.surfaceVariant,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -100,7 +101,7 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
               text,
               style: TextStyle(
                   fontSize: 11.sp,
-                  color: AppColor.textBlack,
+                  color: vc.onSurface,
                   fontWeight: FontWeight.w500),
             ),
           ),

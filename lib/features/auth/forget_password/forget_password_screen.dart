@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
@@ -68,7 +69,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
           SizedBox(height: 20.h),
           Text(
             'Forgot Password',
-            style: KTextStyle.roboto24blackD7W,
+            style: KTextStyle.roboto24blackD7W.copyWith(color: context.vColors.onSurface),
           ),
           SizedBox(height: 8.h),
           Text(
@@ -76,7 +77,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14.sp,
-              color: AppColor.lgrayTxt,
+              color: context.vColors.onSurfaceMuted,
               fontWeight: FontWeight.w400,
               fontFamily: 'Inter',
             ),
@@ -88,7 +89,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
             labelText: 'Mobile Number',
             prefixIcon: Padding(
               padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 8.w),
-              child: Text('+ 977', style: KTextStyle.roboto16black5W),
+              child: Text('+ 977', style: KTextStyle.roboto16black5W.copyWith(color: context.vColors.onSurface)),
             ),
             keyBoardType: const TextInputType.numberWithOptions(),
             textInputFormatter: TenDigitInputFormatter(),
@@ -99,14 +100,14 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
             isLoading: forgetPasswordState.isLoading,
             btnHeight: 52.h,
             buttonColor:
-                _isFormFilled ? AppColor.secondary : const Color(0xFFECEEED),
+                _isFormFilled ? AppColor.secondary : context.vColors.surfaceVariant,
             txtStyle: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
               fontFamily: 'Inter',
               color: _isFormFilled
                   ? const Color(0xFF1A1A1A)
-                  : const Color(0xFFADB5B2),
+                  : context.vColors.onSurfaceMuted,
             ),
             onPress: () {
               if (_formKey.currentState?.validate() ?? false) {

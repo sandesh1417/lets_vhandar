@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -41,7 +41,7 @@ class CategoryCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               fontWeight: FontWeight.w500,
-              color: AppColor.textBlack87,
+              color: context.vColors.onSurface,
               height: 1.1,
             ),
             textAlign: TextAlign.center,

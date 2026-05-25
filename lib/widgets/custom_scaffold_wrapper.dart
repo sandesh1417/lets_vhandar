@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/color_constant.dart';
 
 class CustomScaffoldWrapper extends StatelessWidget {
   final Widget body;
@@ -33,7 +32,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor ?? AppColor.white,
+      backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       extendBody: extendBody,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,

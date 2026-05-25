@@ -224,7 +224,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: AppColor.bg,
+        backgroundColor: context.vColors.scaffoldBg,
         body: Column(
           children: [
             // ── Green header ─────────────────────────────────────────
@@ -308,7 +308,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
     if (products.isEmpty) return _buildEmptyState();
 
     return GridView.builder(
-      padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, bottomPad + 90.h),
+      padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, bottomPad + 150.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 8.w,
@@ -364,7 +364,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                 fontSize: 14.sp,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
-                color: AppColor.hintText,
+                color: context.vColors.onSurfaceMuted,
                 height: 1.5,
               ),
             ),

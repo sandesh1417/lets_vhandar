@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/product_suggestion_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -80,7 +81,7 @@ class _ProductSuggestionScreenState extends ConsumerState<ProductSuggestionScree
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 10.h),
@@ -88,7 +89,7 @@ class _ProductSuggestionScreenState extends ConsumerState<ProductSuggestionScree
               'Let us know what products you would like to see on Vhandar. We will try our best to bring them for you.',
               style: TextStyle(
                 fontSize: 13.sp,
-                color: Colors.black54,
+                color: context.vColors.onSurfaceMuted,
                 height: 1.4,
               ),
             ),

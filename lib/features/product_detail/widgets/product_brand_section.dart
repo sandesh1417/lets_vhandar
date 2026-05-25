@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -22,26 +22,25 @@ class ProductBrandSection extends ConsumerWidget {
                 margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
                 padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: context.vColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: Colors.grey.shade100),
+                  border: Border.all(color: context.vColors.divider),
                 ),
                 child: Row(
                   children: [
                     // Minimized Brand Logo
-                    Container(
-                      width: 42.w,
-                      height: 42.w,
-                      padding: EdgeInsets.all(6.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: CustomImageViewer(
-                        path: brand.images?.isNotEmpty == true
-                            ? brand.images!.first.url
-                            : null,
-                        fit: BoxFit.contain,
+               ClipRRect(
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: Container(
+                        width: 42.w,
+                        height: 42.w,
+                        color: context.vColors.surface,
+                        child: CustomImageViewer(
+                          path: brand.images?.isNotEmpty == true
+                              ? brand.images!.first.url
+                              : null,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     SizedBox(width: 12.w),
@@ -56,14 +55,14 @@ class ProductBrandSection extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
-                              color: AppColor.textBlack87,
+                              color: context.vColors.onSurface,
                             ),
                           ),
                           Text(
-                            'Explore Brand',
+                            'Explore all products',
                             style: TextStyle(
                               fontSize: 11.sp,
-                              color: AppColor.textMuted,
+                              color: context.vColors.onSurfaceMuted,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -71,7 +70,7 @@ class ProductBrandSection extends ConsumerWidget {
                       ),
                     ),
                     Icon(Icons.arrow_forward_ios,
-                        color: Colors.grey.shade400, size: 14.sp),
+                        color: context.vColors.onSurfaceMuted, size: 14.sp),
                   ],
                 ),
               ),

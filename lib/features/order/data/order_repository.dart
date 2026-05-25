@@ -17,7 +17,7 @@ class OrderRepository {
       case Success(value: final data):
         final response = PlaceOrderResponse.fromMap(data);
         if (response.data == null) {
-          return Error(
+          return const Error(
               ServerFailure("Order placed but server response data is empty"));
         }
         return Success(response.data!);
@@ -73,7 +73,7 @@ class OrderRepository {
       case Success(value: final data):
         final response = PlaceOrderResponse.fromMap(data);
         if (response.data == null) {
-          return Error(ServerFailure("Order detail data is empty"));
+          return const Error(ServerFailure("Order detail data is empty"));
         }
         return Success(response.data!);
       case Error(failure: final failure):

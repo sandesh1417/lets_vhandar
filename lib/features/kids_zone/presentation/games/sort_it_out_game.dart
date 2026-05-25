@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
 
 enum FoodCategory { fruits, vegetables, dairy, grains, snacks }

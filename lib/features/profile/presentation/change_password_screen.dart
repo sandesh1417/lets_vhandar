@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/change_password_provider.dart';
@@ -54,14 +55,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               SizedBox(height: 24.h),
               Text('Current Password',
                   style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: Colors.black)),
+                      .copyWith(color: context.vColors.onSurface)),
               SizedBox(height: 8.h),
               CustomTextField(
                 controller: _oldPasswordController,
                 hintText: 'Enter current Password',
                 obscureText: !_isOldPasswordVisible,
                 prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: Colors.grey),
+                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
                 onObscurePressed: () {
                   setState(
                       () => _isOldPasswordVisible = !_isOldPasswordVisible);
@@ -77,14 +78,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               SizedBox(height: 20.h),
               Text('New Password',
                   style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: Colors.black)),
+                      .copyWith(color: context.vColors.onSurface)),
               SizedBox(height: 8.h),
               CustomTextField(
                 controller: _newPasswordController,
                 hintText: 'Enter new Password',
                 obscureText: !_isNewPasswordVisible,
                 prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: Colors.grey),
+                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
                 onObscurePressed: () {
                   setState(
                       () => _isNewPasswordVisible = !_isNewPasswordVisible);
@@ -100,14 +101,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               SizedBox(height: 20.h),
               Text('Retype Password',
                   style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: Colors.black)),
+                      .copyWith(color: context.vColors.onSurface)),
               SizedBox(height: 8.h),
               CustomTextField(
                 controller: _confirmPasswordController,
                 hintText: 'Confirm Password',
                 obscureText: !_isConfirmPasswordVisible,
                 prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: Colors.grey),
+                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
                 onObscurePressed: () {
                   setState(() =>
                       _isConfirmPasswordVisible = !_isConfirmPasswordVisible);

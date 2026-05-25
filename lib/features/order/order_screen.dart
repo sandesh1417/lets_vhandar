@@ -541,7 +541,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
         elevation: 2,
@@ -659,8 +659,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         color: AppColor.primary,
                         child: ListView.builder(
                           controller: _scrollController,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 4.h),
+                          padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w,
+                              MediaQuery.of(context).padding.bottom + 150.h),
                           itemCount: filteredOrders.length +
                               (state.isLoadingMore ? 1 : 0),
                           itemBuilder: (context, index) {

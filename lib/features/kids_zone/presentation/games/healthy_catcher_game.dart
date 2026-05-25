@@ -48,7 +48,7 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
   final double _basketHeight = 50.0;
 
   // Fall lists
-  List<FallingItem> _items = [];
+  final List<FallingItem> _items = [];
   Timer? _gameTimer;
   Timer? _spawnTimer;
   final Random _random = Random();

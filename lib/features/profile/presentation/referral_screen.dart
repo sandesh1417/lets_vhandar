@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -148,25 +148,29 @@ class ReferAndEarnScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: context.vColors.onSurface,
                   ),
                 ),
                 SizedBox(height: 20.h),
                 _buildStep(
+                  context: context,
                   icon: Icons.send_outlined,
                   text:
                       'Share the referral code with your friend and ask them to enter it during Vhandar signup.',
                 ),
                 _buildStep(
+                  context: context,
                   icon: Icons.workspace_premium_outlined,
                   text:
                       'You get 100 Vhandar Points for every friend upon completion of their first order.',
                 ),
                 _buildStep(
+                  context: context,
                   icon: Icons.local_offer_outlined,
                   text: 'They get attractive discounts off their first purchase.',
                 ),
                 _buildStep(
+                  context: context,
                   icon: Icons.redeem_outlined,
                   text:
                       'Vhandar Points can be redeemed on your subsequent purchase at the rate of Rs.1 for 10 Vhandar Points.',
@@ -181,7 +185,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
             margin: EdgeInsets.symmetric(horizontal: 20.w),
             padding: EdgeInsets.all(24.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.vColors.surface,
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
@@ -199,7 +203,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: context.vColors.onSurface,
                   ),
                 ),
                 SizedBox(height: 40.h),
@@ -209,21 +213,21 @@ class ReferAndEarnScreen extends ConsumerWidget {
                       Icon(
                         Icons.sentiment_dissatisfied_outlined,
                         size: 48.sp,
-                        color: Colors.grey.shade400,
+                        color: context.vColors.onSurfaceMuted,
                       ),
                       SizedBox(height: 12.h),
                       Text(
                         'No referrals yet.',
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: Colors.grey.shade500,
+                          color: context.vColors.onSurfaceMuted,
                         ),
                       ),
                       Text(
                         'Share with friends to start saving!',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey.shade400,
+                          color: context.vColors.onSurfaceMuted,
                         ),
                       ),
                     ],
@@ -239,7 +243,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStep({required IconData icon, required String text}) {
+  Widget _buildStep({required BuildContext context, required IconData icon, required String text}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
       child: Row(
@@ -259,7 +263,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
               text,
               style: TextStyle(
                 fontSize: 13.sp,
-                color: Colors.black87,
+                color: context.vColors.onSurface,
                 height: 1.4,
               ),
             ),

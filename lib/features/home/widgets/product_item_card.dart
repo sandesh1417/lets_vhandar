@@ -144,8 +144,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                 padding: EdgeInsets.all(4.w),
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade100),
+                                                      color: vc.divider),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12.r),
@@ -321,14 +320,14 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
       child: Container(
         width: widget.width ?? 140.w,
         height: ProductItemCard.preferredHeight,
-        margin: widget.margin ?? EdgeInsets.only(right: 12.w, bottom: 8.h),
+        margin: widget.margin ?? EdgeInsets.only(right: 6.w, bottom: 6.h),
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: vc.surface,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(6.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 5,
               offset: const Offset(0, 2),
             ),
@@ -341,16 +340,20 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
               children: [
                 Container(
                   key: _imageKey,
-                  height: 100.h,
+                  height: 105.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: vc.surface,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(12.r)),
+                       color: Colors.white,
+                   borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(6.r),
+                      topRight: Radius.circular(6.r),
+                      bottomLeft: Radius.zero,
+                      bottomRight: Radius.zero,
+                    ),
                   ),
                   child: CustomImageViewer(
                     path: product.images?.first.url,
-                    borderRadius: 12.r,
+                    borderRadius: 0.r,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -368,8 +371,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12.r),
-                            bottomRight: Radius.circular(12.r)),
+                            topLeft: Radius.circular(6.r),
+                            bottomRight: Radius.circular(8.r)),
                       ),
                       child: Column(
                         children: [
@@ -395,7 +398,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                     child: Container(
                       padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: vc.surface,
                         border: Border.all(
                           color: product.isVegeterian!
                               ? const Color(0xFF008B58)
@@ -446,7 +449,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     horizontal: 8.w, vertical: 3.h),
                                 decoration: BoxDecoration(
                                   border:
-                                      Border.all(color: Colors.grey.shade300),
+                                      Border.all(color: vc.divider),
                                   borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Row(
@@ -535,14 +538,15 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     horizontal: 12.w, vertical: 6.h),
                                 decoration: BoxDecoration(
                                   border: Border.all(color: AppColor.primary),
-                                  borderRadius: BorderRadius.circular(4.r),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                   'ADD',
                                   style: TextStyle(
-                                      color: AppColor.primary,
-                                      fontSize: 11.sp, // Reduced from 12.sp
-                                      fontWeight: FontWeight.bold),
+                                    color: AppColor.primary,
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
                             );
@@ -642,7 +646,7 @@ class _VariantCartButton extends ConsumerWidget {
           ref.read(cartProvider.notifier).addToCart(product);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: context.vColors.surface,
           side: BorderSide(color: AppColor.primary),
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           shape: RoundedRectangleBorder(

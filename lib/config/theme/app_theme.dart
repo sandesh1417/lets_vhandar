@@ -38,7 +38,7 @@ class AppTheme {
       bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
     ),
     appBarTheme: AppBarTheme(
-      color: AppColor.primary,
+      backgroundColor: AppColor.primary,
       iconTheme: IconThemeData(color: AppColor.white),
       backgroundColor: AppColor.bg,
     ),

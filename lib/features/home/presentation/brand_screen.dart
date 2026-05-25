@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
@@ -34,7 +35,7 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return CustomScaffoldWrapper(
-      backgroundColor: const Color(0xFFFBFBFB),
+      backgroundColor: context.vColors.scaffoldBg,
       isScrollable: false,
       resizeToAvoidBottomInset: false,
       body: Column(

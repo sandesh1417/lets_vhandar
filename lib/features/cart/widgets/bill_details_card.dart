@@ -93,6 +93,9 @@ class BillDetailsCard extends ConsumerWidget {
     required double couponDiscount,
   }) {
     final vc = context.vColors;
+    final isDark = context.isDark;
+    final stripBg = isDark ? const Color(0xFF3A2800) : const Color(0xFFFDF0D5);
+    final stripFg = isDark ? const Color(0xFFE8A840) : const Color(0xFF7F4F1D);
     return Container(
       decoration: BoxDecoration(
         color: vc.surface,
@@ -236,7 +239,7 @@ class BillDetailsCard extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                   color: finalDeliveryCharge == 0
                                       ? AppColor.secondary
-                                      : AppColor.textBlack)),
+                                      : vc.onSurface)),
                       ],
                     ),
                   ],
@@ -305,7 +308,7 @@ class BillDetailsCard extends ConsumerWidget {
                             style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1B4332))),
+                                color: vc.onSurface)),
                         SizedBox(height: 2.h),
                         Text('Incl. all taxes and charges',
                             style: TextStyle(
@@ -316,7 +319,7 @@ class BillDetailsCard extends ConsumerWidget {
                         style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0F5A29))),
+                            color: AppColor.primary)),
                   ],
                 ),
               ],
@@ -333,7 +336,7 @@ class BillDetailsCard extends ConsumerWidget {
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
-                  color: const Color(0xFFFDF0D5),
+                  color: stripBg,
                   child: Column(
                     children: [
                       Row(
@@ -342,14 +345,14 @@ class BillDetailsCard extends ConsumerWidget {
                           Icon(
                             Icons.local_offer,
                             size: 14.sp,
-                            color: const Color(0xFF7F4F1D),
+                            color: stripFg,
                           ),
                           SizedBox(width: 8.w),
                           Expanded(
                             child: RichText(
                               text: TextSpan(
                                 style: TextStyle(
-                                  color: const Color(0xFF7F4F1D),
+                                  color: stripFg,
                                   fontSize: 12.sp,
                                 ),
                                 children: [

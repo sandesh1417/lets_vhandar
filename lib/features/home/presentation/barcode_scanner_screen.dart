@@ -350,7 +350,7 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                         fontFamily: 'Inter'),
                     decoration: InputDecoration(
                       hintText: 'Enter barcode number',
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.white38, fontFamily: 'Inter'),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),

@@ -229,13 +229,13 @@ class _HowToEarnSection extends StatelessWidget {
               fontSize: 16.sp,
               fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF1A1A1A),
+              color: context.vColors.onSurface,
             ),
           ),
           SizedBox(height: 12.h),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.vColors.surface,
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
@@ -288,13 +288,13 @@ class _HowToUseSection extends StatelessWidget {
               fontSize: 16.sp,
               fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF1A1A1A),
+              color: context.vColors.onSurface,
             ),
           ),
           SizedBox(height: 12.h),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.vColors.surface,
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
@@ -368,7 +368,7 @@ class _EarnItem extends StatelessWidget {
                         fontSize: 13.sp,
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: context.vColors.onSurface,
                       ),
                     ),
                     SizedBox(height: 2.h),

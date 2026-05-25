@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
 import 'package:lets_vhandar/features/auth/otp/widgets/otp_section_widget.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -154,12 +154,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                 const Icon(Icons.mail_outline, size: 50, color: Colors.orange),
           ),
           SizedBox(height: 24.h),
-          Text('OTP Verification', style: KTextStyle.roboto24blackD7W),
+          Text('OTP Verification', style: KTextStyle.roboto24blackD7W.copyWith(color: context.vColors.onSurface)),
           SizedBox(height: 8.h),
           Text.rich(
             TextSpan(
               text: 'Code sent to ',
-              style: KTextStyle.roboto14Gray4W,
+              style: KTextStyle.roboto14Gray4W.copyWith(color: context.vColors.onSurfaceMuted),
               children: [
                 TextSpan(
                   text: '${widget.phoneCode ?? "+977"} ${widget.phoneNumber}',
@@ -188,14 +188,14 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
             buttonTitle: 'Verify Code',
           ),
           SizedBox(height: 24.h),
-          Text('Didn\'t receive the code?', style: KTextStyle.roboto14Gray4W),
+          Text('Didn\'t receive the code?', style: KTextStyle.roboto14Gray4W.copyWith(color: context.vColors.onSurfaceMuted)),
           SizedBox(height: 8.h),
           GestureDetector(
             onTap: _resendOTP,
             child: Text(
               'Resend OTP',
               style: KTextStyle.roboto16sec5W.copyWith(
-                color: _canResendOTP ? Colors.orange : Colors.grey,
+                color: _canResendOTP ? Colors.orange : context.vColors.onSurfaceMuted,
                 fontWeight: FontWeight.bold,
               ),
             ),

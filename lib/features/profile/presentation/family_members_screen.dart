@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -37,7 +38,7 @@ class FamilyMembersScreen extends ConsumerWidget {
                           fontSize: 15.sp,
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1A1A1A),
+                          color: context.vColors.onSurface,
                         ),
                       ),
                       SizedBox(height: 10.h),
@@ -80,7 +81,7 @@ class _HeroBanner extends StatelessWidget {
             fontSize: 22.sp,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF1A1A1A),
+            color: context.vColors.onSurface,
             height: 1.3,
           ),
         ),
@@ -92,7 +93,7 @@ class _HeroBanner extends StatelessWidget {
             fontSize: 13.sp,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w400,
-            color: Colors.grey.shade500,
+            color: context.vColors.onSurfaceMuted,
             height: 1.6,
           ),
         ),
@@ -111,7 +112,7 @@ class _EmptyMembersCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.vColors.surface,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
@@ -123,17 +124,17 @@ class _EmptyMembersCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _BenefitRow(
+          const _BenefitRow(
             icon: Icons.shopping_cart_outlined,
             text: 'Share a single cart & checkout together',
           ),
           SizedBox(height: 12.h),
-          _BenefitRow(
+          const _BenefitRow(
             icon: Icons.local_offer_outlined,
             text: 'Everyone gets exclusive family offers',
           ),
           SizedBox(height: 12.h),
-          _BenefitRow(
+          const _BenefitRow(
             icon: Icons.star_outline_rounded,
             text: 'Pool Vhandar Points across the family',
           ),
@@ -194,7 +195,7 @@ class _BenefitRow extends StatelessWidget {
               fontSize: 13.sp,
               fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF1A1A1A),
+              color: context.vColors.onSurface,
             ),
           ),
         ),
@@ -218,7 +219,7 @@ class _MemberTile extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 10.h),
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.vColors.surface,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
@@ -253,14 +254,14 @@ class _MemberTile extends StatelessWidget {
                     fontSize: 13.sp,
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: context.vColors.onSurface,
                   ),
                 ),
                 if ((phone as String).isNotEmpty)
                   Text(
                     phone,
                     style: TextStyle(
-                        fontSize: 11.sp, color: Colors.grey.shade500),
+                        fontSize: 11.sp, color: context.vColors.onSurfaceMuted),
                   ),
               ],
             ),
@@ -354,7 +355,7 @@ class _AddMemberSheetState extends State<_AddMemberSheet> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.vColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
@@ -367,7 +368,7 @@ class _AddMemberSheetState extends State<_AddMemberSheet> {
                 width: 36.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: context.vColors.divider,
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -379,7 +380,7 @@ class _AddMemberSheetState extends State<_AddMemberSheet> {
                 fontSize: 17.sp,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF1A1A1A),
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 4.h),
@@ -387,7 +388,7 @@ class _AddMemberSheetState extends State<_AddMemberSheet> {
               'They\'ll receive an invite to join your family account.',
               style: TextStyle(
                   fontSize: 12.sp,
-                  color: Colors.grey.shade500,
+                  color: context.vColors.onSurfaceMuted,
                   fontFamily: 'Inter'),
             ),
             SizedBox(height: 20.h),
@@ -473,27 +474,27 @@ class _Field extends StatelessWidget {
             fontSize: 12.sp,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF1A1A1A),
+            color: context.vColors.onSurface,
           ),
         ),
         SizedBox(height: 6.h),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          style: TextStyle(fontSize: 14.sp, fontFamily: 'Inter'),
+          style: TextStyle(fontSize: 14.sp, fontFamily: 'Inter', color: context.vColors.onSurface),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle:
-                TextStyle(fontSize: 13.sp, color: Colors.grey.shade400),
+                TextStyle(fontSize: 13.sp, color: context.vColors.onSurfaceMuted),
             prefixIcon:
                 Icon(icon, color: AppColor.primary, size: 18.sp),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: context.vColors.inputBorder),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: context.vColors.inputBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),

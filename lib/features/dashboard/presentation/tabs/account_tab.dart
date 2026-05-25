@@ -160,7 +160,7 @@ class AccountTab extends ConsumerWidget {
               ),
               SizedBox(height: 22.h),
               _buildAppVersionFooter(),
-              SizedBox(height: 100.h),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
             ],
           ),
         ),
@@ -396,7 +396,7 @@ class AccountTab extends ConsumerWidget {
 
             SizedBox(height: 22.h),
             _buildAppVersionFooter(),
-            SizedBox(height: 100.h),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
           ],
         ),
       ),
@@ -708,7 +708,7 @@ class _ThemeOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? AppColor.primary.withValues(alpha: 0.08)
-              : Colors.grey.shade100,
+              : context.vColors.surfaceVariant,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: selected ? AppColor.primary : Colors.transparent,

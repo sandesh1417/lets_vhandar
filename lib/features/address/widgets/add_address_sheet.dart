@@ -8,6 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
@@ -343,7 +344,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF9FAFB), // Matching Order History screen
+            color: context.vColors.scaffoldBg,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
             boxShadow: [
               BoxShadow(
@@ -366,7 +367,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                     width: 40.w,
                     height: 5.h,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: context.vColors.divider,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
@@ -385,12 +386,12 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
-                            color: AppColor.textBlack,
+                            color: context.vColors.onSurface,
                           ),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: Icon(Icons.close, color: Colors.grey.shade400),
+                          icon: Icon(Icons.close, color: context.vColors.onSurfaceMuted),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -476,9 +477,9 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                     margin:
                         EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.vColors.surface,
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(color: context.vColors.divider),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.02),
@@ -499,7 +500,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 13.sp,
-                              color: AppColor.textBlack,
+                              color: context.vColors.onSurface,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -530,7 +531,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: context.vColors.surface,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(24.r)),
                       ),

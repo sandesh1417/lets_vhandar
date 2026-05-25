@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
@@ -32,7 +33,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
       children: [
         // White background behind image
         Container(
-          color: Colors.white,
+          color: context.vColors.surface,
           child: PageView.builder(
             controller: _pageController,
             itemCount: images.isEmpty ? 1 : images.length,
@@ -67,7 +68,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
                     borderRadius: BorderRadius.circular(3.r),
                     color: _currentPage == i
                         ? const Color(0xFF0A754E)
-                        : Colors.grey.shade300,
+                        : context.vColors.divider,
                   ),
                 );
               }),
@@ -96,7 +97,7 @@ class _VegNonVegTag extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(3.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.vColors.surface,
         border: Border.all(color: color, width: 1.5.w),
         borderRadius: BorderRadius.circular(4.r),
         boxShadow: [

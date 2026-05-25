@@ -109,7 +109,7 @@ class ProductAddToCartBar extends ConsumerWidget {
             else
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FAF5),
+                  color: context.vColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: AppColor.primary.withValues(alpha: 0.25),

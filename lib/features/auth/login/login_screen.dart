@@ -129,7 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         obscureText: isPasswordVisible,
                         autofillHints: const [AutofillHints.password],
                         prefixIcon: Icon(Icons.lock_outline_rounded,
-                            size: 18.sp, color: AppColor.icon),
+                            size: 18.sp, color: context.vColors.onSurfaceMuted),
                         onObscurePressed: () {
                           ref
                               .read(passwordVisibilityProvider.notifier)
@@ -154,8 +154,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     onChanged: (v) => setState(
                                         () => _rememberMe = v ?? false),
                                     activeColor: AppColor.primary,
-                                    side: const BorderSide(
-                                        color: Color(0xFFCDD4D1), width: 1.5),
+                                    side: BorderSide(
+                                        color: context.vColors.divider, width: 1.5),
                                     shape: RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(4.r),

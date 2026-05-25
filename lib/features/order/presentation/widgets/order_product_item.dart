@@ -132,7 +132,7 @@ class OrderProductItem extends StatelessWidget {
       'Saved Rs.$amount',
       style: TextStyle(
         fontSize: 10.sp,
-        color: Colors.green,
+        color: const Color(0xFF0A754E),
         fontWeight: FontWeight.bold,
       ),
     );

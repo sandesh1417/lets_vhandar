@@ -283,13 +283,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE8F5E9),
+                                  color: AppColor.primary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                   '${product.discount?.value?.toInt()}${product.discount?.type == 'flat' ? ' Rs' : '%'} OFF',
                                   style: TextStyle(
-                                    color: const Color(0xFF2E7D32),
+                                    color: AppColor.primary,
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.bold,
                                   ),

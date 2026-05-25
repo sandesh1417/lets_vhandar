@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 import 'address_form_field.dart';
 import 'address_type_chip.dart';
@@ -60,7 +61,7 @@ class AddressForm extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
+                        color: context.vColors.onSurface,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -68,14 +69,14 @@ class AddressForm extends StatelessWidget {
                       'Help us find your location precisely',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: AppColor.textMuted,
+                        color: context.vColors.onSurfaceMuted,
                       ),
                     ),
                   ],
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: Colors.grey.shade400),
+                  icon: Icon(Icons.close, color: context.vColors.onSurfaceMuted),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
@@ -89,7 +90,7 @@ class AddressForm extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13.sp,
-                color: AppColor.textBlack87,
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 8.h),
@@ -131,7 +132,7 @@ class AddressForm extends StatelessWidget {
 
             Text(
               'Receiver name for seamless delivery experience.',
-              style: TextStyle(fontSize: 12.sp, color: AppColor.textMuted),
+              style: TextStyle(fontSize: 12.sp, color: context.vColors.onSurfaceMuted),
             ),
             SizedBox(height: 8.h),
             AddressFormField(
@@ -151,7 +152,7 @@ class AddressForm extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13.sp,
-                color: AppColor.textBlack87,
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 8.h),

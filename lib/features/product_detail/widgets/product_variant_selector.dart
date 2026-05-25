@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 
@@ -43,7 +44,7 @@ class ProductVariantSelector extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColor.textBlack,
+                          color: context.vColors.onSurface,
                         ),
                       ),
                     ],
@@ -66,11 +67,11 @@ class ProductVariantSelector extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColor.primary.withOpacity(0.06)
-                                  : Colors.white,
+                                  : context.vColors.surface,
                               border: Border.all(
                                 color: isSelected
                                     ? AppColor.primary
-                                    : Colors.grey.shade200,
+                                    : context.vColors.divider,
                                 width: isSelected ? 1.5 : 1,
                               ),
                               borderRadius: BorderRadius.circular(12.r),
@@ -117,7 +118,7 @@ class ProductVariantSelector extends ConsumerWidget {
                                     fontWeight: FontWeight.w700,
                                     color: isSelected
                                         ? AppColor.primary
-                                        : AppColor.textBlack,
+                                        : context.vColors.onSurface,
                                   ),
                                 ),
                                 SizedBox(height: 3.h),
@@ -137,7 +138,7 @@ class ProductVariantSelector extends ConsumerWidget {
                                         'MRP ${v.pricePerUnit?.toInt()}',
                                         style: TextStyle(
                                           fontSize: 11.sp,
-                                          color: AppColor.textMuted,
+                                          color: context.vColors.onSurfaceMuted,
                                           decoration: TextDecoration.lineThrough,
                                         ),
                                       ),

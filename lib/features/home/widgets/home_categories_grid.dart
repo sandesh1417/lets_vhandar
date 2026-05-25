@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
-const _kCategoryBgColor = Color(0xFFE7F1ED);
 
 class HomeCategoriesGrid extends ConsumerWidget {
   const HomeCategoriesGrid({super.key});
@@ -45,7 +44,7 @@ class HomeCategoriesGrid extends ConsumerWidget {
                       width: 76.h,
                       clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        color: _kCategoryBgColor,
+                        color: context.vColors.surfaceVariant,
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: CustomImageViewer(
@@ -59,7 +58,7 @@ class HomeCategoriesGrid extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w600,
-                        color: AppColor.textBlack87,
+                        color: context.vColors.onSurface,
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 2,

@@ -145,8 +145,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     SizedBox(height: 40.h),
                     SvgPicture.asset(
                       'assets/images/no_search_results.svg',
-                      height: 180.h,
-                      width: 180.w,
+                      height: 100.h,
+                      width: 100.w,
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 24.h),
@@ -177,7 +177,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF9B141),
                         foregroundColor: Colors.white,
-                        minimumSize: Size(200.w, 48.h),
+                        minimumSize: Size(120.w, 44.h),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24.r),
                         ),

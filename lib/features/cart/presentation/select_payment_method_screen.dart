@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
@@ -34,7 +35,7 @@ class _ProductImage extends StatelessWidget {
         width: 52.w,
         height: 52.w,
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: context.vColors.surfaceVariant,
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Icon(Icons.image, color: Colors.grey.shade400, size: 24.sp),
@@ -51,9 +52,9 @@ class _ProductImage extends StatelessWidget {
       width: 52.w,
       height: 52.w,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.vColors.surface,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: context.vColors.divider),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.r),
@@ -84,9 +85,10 @@ class _SelectPaymentMethodScreenState
     final totalMrp = ref.watch(totalCartMrpProvider);
     final orderState = ref.watch(orderProvider);
     final isLoading = orderState.isPlacingOrder;
+    final vc = context.vColors;
 
     return CustomScaffoldWrapper(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
         elevation: 2,
@@ -145,7 +147,7 @@ class _SelectPaymentMethodScreenState
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColor.textBlack,
+                          color: vc.onSurface,
                         ),
                       ),
                       SizedBox(height: 10.h),
@@ -153,7 +155,7 @@ class _SelectPaymentMethodScreenState
                         width: double.infinity,
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: vc.surface,
                           borderRadius: BorderRadius.circular(12.r),
                           ),
                         child: Column(
@@ -169,7 +171,7 @@ class _SelectPaymentMethodScreenState
                                   style: TextStyle(
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColor.textBlack,
+                                    color: vc.onSurface,
                                   ),
                                 ),
                               ],
@@ -215,13 +217,13 @@ class _SelectPaymentMethodScreenState
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
+                        color: vc.onSurface,
                       ),
                     ),
                     SizedBox(height: 10.h),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: vc.surface,
                         borderRadius: BorderRadius.circular(12.r),
                         ),
                       child: ListView.separated(
@@ -256,7 +258,7 @@ class _SelectPaymentMethodScreenState
                                       style: TextStyle(
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.bold,
-                                        color: AppColor.textBlack,
+                                        color: vc.onSurface,
                                       ),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
@@ -302,13 +304,13 @@ class _SelectPaymentMethodScreenState
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
+                        color: vc.onSurface,
                       ),
                     ),
                     SizedBox(height: 10.h),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: vc.surface,
                         borderRadius: BorderRadius.circular(12.r),
                         ),
                       child: InkWell(
@@ -358,7 +360,7 @@ class _SelectPaymentMethodScreenState
                                       style: TextStyle(
                                         fontSize: 15.sp,
                                         fontWeight: FontWeight.bold,
-                                        color: AppColor.textBlack,
+                                        color: vc.onSurface,
                                       ),
                                     ),
                                     SizedBox(height: 2.h),
@@ -387,7 +389,7 @@ class _SelectPaymentMethodScreenState
           : Container(
               padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: vc.surface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.04),

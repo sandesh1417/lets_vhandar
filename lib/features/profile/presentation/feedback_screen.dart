@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -84,9 +85,15 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
             Container(
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF9F2),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? context.vColors.surfaceVariant
+                    : const Color(0xFFFFF9F2),
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.orange.shade100),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? context.vColors.divider
+                      : Colors.orange.shade100,
+                ),
               ),
               child: Column(
                 children: [
@@ -95,7 +102,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: context.vColors.onSurface,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -104,7 +111,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black54,
+                      color: context.vColors.onSurfaceMuted,
                     ),
                   ),
                   SizedBox(height: 20.h),
@@ -126,7 +133,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black45,
+                      color: context.vColors.onSurfaceMuted,
                     ),
                   ),
                   SizedBox(height: 30.h),
@@ -134,7 +141,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     'Sorry to hear it. What was the problem?',
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: Colors.black45,
+                      color: context.vColors.onSurfaceMuted,
                     ),
                   ),
                   SizedBox(height: 15.h),
@@ -151,9 +158,9 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                           setState(() => _selectedCategory = selected ? cat : '');
                         },
                         selectedColor: Colors.orange.shade50,
-                        backgroundColor: Colors.white,
+                        backgroundColor: context.vColors.surface,
                         labelStyle: TextStyle(
-                          color: isSelected ? Colors.orange : Colors.black87,
+                          color: isSelected ? Colors.orange : context.vColors.onSurface,
                           fontSize: 12.sp,
                         ),
                         shape: RoundedRectangleBorder(
@@ -210,7 +217,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12.sp,
-                color: Colors.black54,
+                color: context.vColors.onSurfaceMuted,
               ),
             ),
             SizedBox(height: 20.h),

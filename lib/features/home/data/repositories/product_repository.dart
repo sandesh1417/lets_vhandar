@@ -178,7 +178,7 @@ class ProductRepository {
             }
             return Success(ProductData.fromMap(data));
           }
-          return Error(const NetworkFailure("Invalid product detail format"));
+          return const Error(NetworkFailure("Invalid product detail format"));
         case Error(failure: final failure):
           return Error(failure);
       }

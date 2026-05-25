@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lets_vhandar/core/constants/app_style.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -58,22 +58,65 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
+    final vc = context.vColors;
 
     return CustomScaffoldWrapper(
-      appBar: const CustomAppBar(),
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        backgroundColor: AppColor.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Business Registration',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Inter',
+          ),
+        ),
+      ),
       horizontalPadding: 16.w,
       body: Form(
         key: _formKey,
         child: Column(
           children: [
             SizedBox(height: 30.h),
-            SvgPicture.asset(KImageConstant.vandharIcon),
-            SizedBox(height: 15.h),
-            Text('Vhandar Grocery app', style: KTextStyle.roboto22black8W),
+
+            // V4B Logo
+            SvgPicture.asset(
+              'assets/images/v4b_icon.svg',
+              width: 90.w,
+              height: 90.w,
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Title
+            Text(
+              'Vhandar For Business',
+              style: TextStyle(
+                fontSize: 22.sp,
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Inter',
+                color: vc.onSurface,
+              ),
+            ),
             SizedBox(height: 4.h),
-            Text('Create an Business Account',
-                style: KTextStyle.roboto16black5W),
+            Text(
+              'Create a business account',
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'Inter',
+                color: vc.onSurfaceMuted,
+              ),
+            ),
+
             SizedBox(height: 30.h),
+
             CustomTextField(
               controller: _phoneController,
               hintText: 'Enter Mobile Number',
@@ -82,7 +125,9 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                 padding: EdgeInsets.only(left: 12.w, top: 12.h, right: 12.w),
                 child: Text(
                   '+ 977',
-                  style: KTextStyle.roboto16black5W,
+                  style: KTextStyle.roboto16black5W.copyWith(
+                    color: vc.onSurface,
+                  ),
                 ),
               ),
               keyBoardType: const TextInputType.numberWithOptions(),
@@ -95,9 +140,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
               controller: _emailController,
               hintText: 'Enter Email Address',
               labelText: 'Email',
-              onObscurePressed: () {
-                // ref.read(passwordVisibilityProvider.notifier).update((state) => !isPasswordVisible);
-              },
+              onObscurePressed: () {},
               validator: TFValidators.validateEmail,
             ),
             SizedBox(height: 10.h),
@@ -156,36 +199,37 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
             ),
             SizedBox(height: 20.h),
             CustomButton(
-                buttonColor: AppColor.primary,
-                onPress: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Additional check for password match
-                    if (_passwordController.text !=
-                        _confirmPasswprdController.text) {
-                      CustomSnackbar.error(context,
-                          message: 'Passwords do not match');
-                      return;
-                    }
-
-                    // context.push(LVRoute.oTPScreen.route); //    /otp    otp
-                    // ref.read(authStateProvider.notifier).login(
-                    //       _emailController.text,
-                    //       __passwordController.text,
-                    //     );
+              buttonColor: AppColor.primary,
+              onPress: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  if (_passwordController.text !=
+                      _confirmPasswprdController.text) {
+                    CustomSnackbar.error(context,
+                        message: 'Passwords do not match');
+                    return;
                   }
-                },
-                buttonTitle: 'Join Vhandar'),
+                }
+              },
+              buttonTitle: 'Join Vhandar',
+            ),
             SizedBox(height: 20.h),
             Text(
               'By continuing, you agree to our ',
-              style: KTextStyle.roboto12lGray3W,
+              style: KTextStyle.roboto12lGray3W.copyWith(
+                color: vc.onSurfaceMuted,
+              ),
             ),
             RichText(
               text: TextSpan(
                 text: 'Privacy Policy',
                 style: KTextStyle.roboto12sec4W,
                 children: <TextSpan>[
-                  TextSpan(text: ' & ', style: KTextStyle.roboto14hintTxt4W),
+                  TextSpan(
+                    text: ' & ',
+                    style: KTextStyle.roboto14hintTxt4W.copyWith(
+                      color: vc.onSurfaceMuted,
+                    ),
+                  ),
                   TextSpan(
                     text: 'Terms of Use',
                     style: KTextStyle.roboto12sec4W,

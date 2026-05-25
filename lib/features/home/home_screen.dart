@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/home_category_product_list.dart';
@@ -81,9 +82,11 @@ class _SuggestProductCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12.w),
-          Text(
-            '😔',
-            style: TextStyle(fontSize: 80.sp),
+          SvgPicture.asset(
+            'assets/images/suggest_product.svg',
+            width: 110.w,
+            height: 110.w,
+            fit: BoxFit.contain,
           ),
         ],
       ),
@@ -147,7 +150,7 @@ class HomeScreen extends ConsumerWidget {
                     const HomeFeaturedBrandsList(),
                     SizedBox(height: 24.h),
                     _SuggestProductCard(),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
                   ],
                 ),
               ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/brand_detail_provider.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
@@ -47,7 +48,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return CustomScaffoldWrapper(
-      backgroundColor: Colors.white,
+      backgroundColor: context.vColors.scaffoldBg,
       isScrollable: false,
       body: Column(
         children: [
@@ -201,7 +202,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                 // Brands Sidebar
                 Container(
                   width: 76.w,
-                  color: Colors.white,
+                  color: context.vColors.surface,
                   child: brandsAsync.when(
                     data: (brands) {
                       return ListView.builder(
@@ -229,7 +230,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                 // Product Grid Area
                 Expanded(
                   child: Container(
-                    color: const Color(0xFFF5F6F8),
+                    color: context.vColors.scaffoldBg,
                     child: productsAsync.when(
                       data: (products) {
                         if (products.isEmpty) {
@@ -272,7 +273,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
               ],
             )
           : Container(
-              color: const Color(0xFFF5F6F8),
+              color: context.vColors.scaffoldBg,
               child: productsAsync.when(
                 data: (products) {
                   if (products.isEmpty) {
@@ -325,7 +326,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.vColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
@@ -344,7 +345,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                       height: 4.h,
                       margin: EdgeInsets.only(bottom: 20.h),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: context.vColors.divider,
                         borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
@@ -377,7 +378,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                                     : FontWeight.normal,
                                 color: isSelected
                                     ? AppColor.primary
-                                    : Colors.black87,
+                                    : context.vColors.onSurface,
                               ),
                             ),
                             trailing: isSelected
@@ -464,7 +465,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
               style: TextStyle(
                 fontSize: 9.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColor.primary : AppColor.textBlack54,
+                color: isSelected ? AppColor.primary : context.vColors.onSurfaceMuted,
               ),
             ),
           ],

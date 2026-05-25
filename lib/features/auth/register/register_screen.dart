@@ -10,7 +10,6 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
-import 'package:lets_vhandar/widgets/custom_appbar.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -117,7 +116,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               labelText: 'Full Name',
               autofillHints: const [AutofillHints.name],
               prefixIcon: Icon(Icons.person_outline_rounded,
-                  size: 18.sp, color: AppColor.icon),
+                  size: 18.sp, color: context.vColors.onSurfaceMuted),
               suffixIcon: const SizedBox(),
               validator: TFValidators.validateName,
             ),
@@ -128,7 +127,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               labelText: 'Password',
               autofillHints: const [AutofillHints.newPassword],
               prefixIcon: Icon(Icons.lock_outline_rounded,
-                  size: 18.sp, color: AppColor.icon),
+                  size: 18.sp, color: context.vColors.onSurfaceMuted),
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 setState(() => isPasswordVisible = !isPasswordVisible);
@@ -142,7 +141,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               labelText: 'Confirm Password',
               autofillHints: const [AutofillHints.newPassword],
               prefixIcon: Icon(Icons.lock_outline_rounded,
-                  size: 18.sp, color: AppColor.icon),
+                  size: 18.sp, color: context.vColors.onSurfaceMuted),
               obscureText: isPasswordVisible,
               onObscurePressed: () {
                 setState(() => isPasswordVisible = !isPasswordVisible);
@@ -157,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               hintText: 'Referral Code (Optional)',
               labelText: 'Referral Code',
               prefixIcon: Icon(Icons.discount_outlined,
-                  size: 18.sp, color: AppColor.icon),
+                  size: 18.sp, color: context.vColors.onSurfaceMuted),
               suffixIcon: const SizedBox(),
             ),
             SizedBox(height: 20.h),

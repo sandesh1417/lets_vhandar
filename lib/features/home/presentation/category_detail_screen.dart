@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -211,7 +212,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                       SubCategorySidebar(categorySlug: widget.categorySlug),
                       Expanded(
                         child: Container(
-                          color: const Color(0xFFF5F6F8),
+                          color: context.vColors.scaffoldBg,
                           child: CategoryProductGrid(
                             categorySlug: widget.categorySlug,
                           ),
@@ -220,7 +221,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                     ],
                   )
                 : Container(
-                    color: const Color(0xFFF5F6F8),
+                    color: context.vColors.scaffoldBg,
                     child: CategoryProductGrid(
                         categorySlug: widget.categorySlug),
                   ),

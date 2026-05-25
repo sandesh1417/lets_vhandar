@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -69,7 +70,7 @@ class PersonalInformationScreen extends ConsumerWidget {
                       padding: EdgeInsets.all(4.w),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: context.vColors.surface,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.12),
@@ -100,7 +101,7 @@ class PersonalInformationScreen extends ConsumerWidget {
                 fontSize: 20.sp,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF1A1A1A),
+                color: context.vColors.onSurface,
               ),
             ),
             SizedBox(height: 4.h),
@@ -120,7 +121,7 @@ class PersonalInformationScreen extends ConsumerWidget {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.vColors.surface,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
@@ -229,6 +230,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     return Column(
       children: [
         Padding(
@@ -255,7 +257,7 @@ class _InfoRow extends StatelessWidget {
                         fontSize: 11.sp,
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade500,
+                        color: vc.onSurfaceMuted,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -265,7 +267,7 @@ class _InfoRow extends StatelessWidget {
                         fontSize: 14.sp,
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: vc.onSurface,
                       ),
                     ),
                   ],
@@ -279,7 +281,7 @@ class _InfoRow extends StatelessWidget {
             height: 1,
             indent: 68.w,
             endIndent: 16.w,
-            color: Colors.grey.shade100,
+            color: vc.divider,
           ),
       ],
     );

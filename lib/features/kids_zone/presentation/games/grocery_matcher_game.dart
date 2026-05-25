@@ -30,7 +30,7 @@ class GroceryMatcherGame extends ConsumerStatefulWidget {
 class _GroceryMatcherGameState extends ConsumerState<GroceryMatcherGame> {
   final List<String> _emojis = ['🍎', '🥛', '🍪', '🍌', '🥕', '🍞', '🍩', '🍉'];
   List<MemoryCard> _cards = [];
-  List<int> _selectedIndices = [];
+  final List<int> _selectedIndices = [];
   int _flips = 0;
   int _matchesCount = 0;
   bool _isBusy = false;

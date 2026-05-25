@@ -1,6 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets_vhandar/core/utils/result.dart';
-import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/profile/data/feedback_repository.dart';
 
 final feedbackRepositoryProvider = Provider((ref) => FeedbackRepository());
