@@ -79,7 +79,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final productUrl =
         "https://vhandar.com/product/${product.slug ?? product.id ?? ''}";
     const playStoreUrl =
-        "https://play.google.com/store/apps/details?id=com.vhandar.app";
+        "https://play.google.com/store/apps/details?id=vhandar.com";
 
     final shareText = "Check out *${product.name}* on Let's Vhandar!\n\n"
         "Price: Rs. ${product.actualPrice}\n"

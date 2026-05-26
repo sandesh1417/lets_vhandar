@@ -44,15 +44,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkSession() async {
-    await ref.read(loginProvider.notifier).restoreSession();
-    final token = await SessionPrefences().getToken();
-    final isGuest = await SessionPrefences().getGuestMode();
-    await Future.delayed(const Duration(seconds: 3));
-    if (!mounted) return;
-    if ((token != null && token.isNotEmpty) || isGuest) {
-      context.go(LVRoute.dashboardScreen.route);
-    } else {
-      context.go(LVRoute.loginScreen.route);
+    try {
+      // Restore session data (token + user) into the login provider
+      await ref.read(loginProvider.notifier).restoreSession();
+
+      final token = await SessionPrefences().getToken();
+      // Keep splash for 5 seconds for branding inspection
+      await Future.delayed(const Duration(seconds: 5));
+
+      if (token != null && token.isNotEmpty) {
+        if (mounted) context.pushReplacement(LVRoute.dashboardScreen.route);
+      } else {
+        if (mounted) context.pushReplacement(LVRoute.loginScreen.route);
+      }
+    } catch (e, stack) {
+      debugPrint("Error during session check in splash: $e\n$stack");
+      if (mounted) context.pushReplacement(LVRoute.loginScreen.route);
     }
   }
 
@@ -85,7 +92,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     fit: BoxFit.contain,
                   ),
                   SizedBox(height: 10.h),
-                 
+
                   SizedBox(height: 9.h),
                   // Subtitle tagline styled precisely in Volte font and secondary brand color
                   Text(
