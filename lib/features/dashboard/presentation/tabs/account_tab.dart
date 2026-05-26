@@ -597,9 +597,6 @@ class AccountTab extends ConsumerWidget {
       confirmLabel: 'Yes, Logout',
       onConfirm: () async {
         await ref.read(loginProvider.notifier).logout();
-        if (context.mounted) {
-          context.go(LVRoute.loginScreen.route);
-        }
       },
     );
   }
