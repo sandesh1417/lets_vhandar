@@ -17,9 +17,12 @@ class AppTheme {
       // displayLarge: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
       displayMedium: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
       displaySmall: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
-      titleLarge: TextStyle(fontSize: 24.sp, color: Colors.black87, fontWeight: FontWeight.w600),
-      titleMedium: TextStyle(fontSize: 20.sp, color: Colors.black87, fontWeight: FontWeight.w600),
-      titleSmall: TextStyle(fontSize: 16.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      titleLarge: TextStyle(
+          fontSize: 24.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      titleMedium: TextStyle(
+          fontSize: 20.sp, color: Colors.black87, fontWeight: FontWeight.w600),
+      titleSmall: TextStyle(
+          fontSize: 16.sp, color: Colors.black87, fontWeight: FontWeight.w600),
       labelLarge: TextStyle(fontSize: 16.sp, color: Colors.black87),
       labelMedium: TextStyle(fontSize: 14.sp, color: Colors.black87),
       labelSmall: TextStyle(fontSize: 12.sp, color: Colors.black87),
@@ -40,8 +43,8 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: AppColor.primary,
       iconTheme: IconThemeData(color: AppColor.white),
-      backgroundColor: AppColor.bg,
     ),
-    colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primary, secondary: AppColor.secondary),
+    colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColor.primary, secondary: AppColor.secondary),
   );
 }
