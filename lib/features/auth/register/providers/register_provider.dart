@@ -44,7 +44,7 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
         break;
       case Error(failure: final failure):
         CustomSnackbar.error(context,
-            message: failure.message ?? 'OPT sending failed');
+            message: failure.message);
         state = state.copyWith(
           isLoading: false,
           errorMessage: failure.message,

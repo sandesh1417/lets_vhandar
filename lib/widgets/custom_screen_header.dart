@@ -38,10 +38,21 @@ class CustomScreenHeader extends StatelessWidget
       title: Row(
         children: [
           if (showBackButton)
-            Padding(
-              padding: EdgeInsets.only(right: 12.w),
-              child: GestureDetector(
-                onTap: onBack ?? () => Navigator.of(context).pop(),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                if (onBack != null) {
+                  onBack!();
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Container(
+                width: 44.w,
+                height: 44.h,
+                margin: EdgeInsets.only(right: 4.w),
+                alignment: Alignment.centerLeft,
                 child: Icon(
                   Icons.arrow_back,
                   color: Colors.white,

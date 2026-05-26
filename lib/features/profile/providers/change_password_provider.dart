@@ -37,8 +37,8 @@ class ChangePasswordNotifier extends StateNotifier<AsyncValue<void>> {
         onSuccess?.call();
       },
       failure: (failure) {
-        state = AsyncValue.error(failure.message ?? 'Failed to change password', StackTrace.current);
-        CustomSnackbar.error(context, message: failure.message ?? 'Failed to change password');
+        state = AsyncValue.error(failure.message, StackTrace.current);
+        CustomSnackbar.error(context, message: failure.message);
       },
     );
   }

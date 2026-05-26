@@ -31,9 +31,9 @@ class AppColor {
 ///////////////=====================/////////////
 ///////////////=====================/////////////
 ///////////////=====================/////////////
-  static Color white07 = Colors.white.withOpacity(0.7);
-  static Color white03 = Colors.white.withOpacity(0.3);
-  static Color white02 = Colors.white.withOpacity(0.2);
+  static Color white07 = Colors.white.withValues(alpha: 0.7);
+  static Color white03 = Colors.white.withValues(alpha: 0.3);
+  static Color white02 = Colors.white.withValues(alpha: 0.2);
   static Color text = Colors.white;
   // static Color btn = white02;
 

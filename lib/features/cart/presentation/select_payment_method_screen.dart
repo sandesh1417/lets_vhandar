@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -99,9 +100,17 @@ class _SelectPaymentMethodScreenState
         title: Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Icon(Icons.arrow_back,
-                  color: Colors.white, size: 24.sp),
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 44.w,
+                height: 44.h,
+                alignment: Alignment.centerLeft,
+                child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
+              ),
             ),
             SizedBox(width: 12.w),
             Text(

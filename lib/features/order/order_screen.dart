@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -85,6 +86,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     _fetchOrders();
   }
 
+  // ignore: unused_element
   void _clearAllFilters() {
     setState(() {
       _selectedStatus = null;
@@ -126,6 +128,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     return "${allMonths[date.month - 1]} ${date.day} ${date.year}";
   }
 
+  // ignore: unused_element
   Future<void> _selectDateRange() async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -544,10 +547,16 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
+        surfaceTintColor: Colors.transparent,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.12),
-        scrolledUnderElevation: 2,
+        scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         title: Text(
           'My Orders',
           style: TextStyle(
@@ -567,33 +576,43 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   child: Container(
                     height: 38.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.isDark
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
                       children: [
                         SizedBox(width: 10.w),
                         Icon(Icons.search_rounded,
-                            color: Colors.grey.shade400, size: 18.sp),
+                            color: context.isDark
+                                ? Colors.white60
+                                : Colors.grey.shade400,
+                            size: 18.sp),
                         SizedBox(width: 6.w),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
                             textAlignVertical: TextAlignVertical.center,
                             style: TextStyle(
-                                color: const Color(0xFF1A1A1A),
+                                color: context.isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1A1A1A),
                                 fontSize: 13.sp,
                                 fontFamily: 'Inter'),
                             decoration: InputDecoration(
                               hintText: 'Search orders...',
                               hintStyle: TextStyle(
-                                  color: Colors.grey.shade400,
+                                  color: context.isDark
+                                      ? Colors.white54
+                                      : Colors.grey.shade400,
                                   fontSize: 13.sp,
                                   fontFamily: 'Inter'),
                               border: InputBorder.none,
                               isCollapsed: true,
                             ),
                             onChanged: (value) {
+                              // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
                               ref.read(orderProvider.notifier).state =
                                   state.copyWith(searchQuery: value);
                             },

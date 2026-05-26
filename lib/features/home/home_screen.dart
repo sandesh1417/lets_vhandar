@@ -138,9 +138,11 @@ class HomeScreen extends ConsumerWidget {
                       title: 'Shop by Category',
                       subtitle: 'Find exactly what you need',
                     ),
-                    const HomeCategoriesGrid(),
+                    // ignore: prefer_const_constructors
+                    HomeCategoriesGrid(),
                     SizedBox(height: 16.h),
-                    const HomeCategoryProductList(),
+                    // ignore: prefer_const_constructors
+                    HomeCategoryProductList(),
                     SizedBox(height: 16.h),
                     HomeSectionTitle(
                       title: 'Featured Brands',
@@ -150,7 +152,19 @@ class HomeScreen extends ConsumerWidget {
                     const HomeFeaturedBrandsList(),
                     SizedBox(height: 24.h),
                     _SuggestProductCard(),
-                    SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
+                    SizedBox(height: 16.h),
+                    Opacity(
+                      opacity: 0.5,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 200.h,
+                        child: SvgPicture.asset(
+                          'assets/images/delivering_happiness.svg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 80.h),
                   ],
                 ),
               ),

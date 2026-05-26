@@ -72,7 +72,7 @@ class ProductData {
   final int? quantity;
   final List<String>? categoryIds;
   final List<String>? subCategoryIds;
-  final bool? isVegeterian;
+  final bool? isVegetarian;
   final double? pricePerUnit;
   final double? businessPricePerUnit;
   final String? type;
@@ -133,7 +133,7 @@ class ProductData {
     this.quantity,
     this.categoryIds,
     this.subCategoryIds,
-    this.isVegeterian,
+    this.isVegetarian,
     this.pricePerUnit,
     this.businessPricePerUnit,
     this.type,
@@ -199,7 +199,7 @@ class ProductData {
         subCategoryIds: json["subCategoryIds"] == null
             ? []
             : List<String>.from(json["subCategoryIds"]!.map((x) => x)),
-        isVegeterian: json["isVegeterian"],
+        isVegetarian: json["isVegeterian"],
         pricePerUnit: json["pricePerUnit"]?.toDouble(),
         businessPricePerUnit: json["businessPricePerUnit"]?.toDouble(),
         type: json["type"],
@@ -275,7 +275,7 @@ class ProductData {
         "quantity": quantity,
         "categoryIds": categoryIds,
         "subCategoryIds": subCategoryIds,
-        "isVegeterian": isVegeterian,
+        "isVegeterian": isVegetarian,
         "pricePerUnit": pricePerUnit,
         "businessPricePerUnit": businessPricePerUnit,
         "type": type,

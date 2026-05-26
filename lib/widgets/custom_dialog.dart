@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
 /// A premium, reusable confirmation dialog.
 ///
@@ -57,92 +58,95 @@ class CustomDialog {
   }) {
     final effectiveIconColor = iconColor ?? AppColor.primary;
     final effectiveIconBg =
-        iconBgColor ?? effectiveIconColor.withOpacity(0.08);
+        iconBgColor ?? effectiveIconColor.withValues(alpha: 0.08);
     final effectiveGradient = confirmGradient ??
-        [effectiveIconColor, effectiveIconColor.withOpacity(0.8)];
+        [effectiveIconColor, effectiveIconColor.withValues(alpha: 0.8)];
 
     return showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
-      builder: (dialogContext) => Dialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-        insetPadding: EdgeInsets.symmetric(horizontal: 28.w),
-        child: Padding(
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ── Icon ──────────────────────────────────────
-              Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: effectiveIconBg,
-                  shape: BoxShape.circle,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+      builder: (dialogContext) {
+        final vc = Theme.of(dialogContext).extension<VhandarColors>() ?? VhandarColors.light;
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+          insetPadding: EdgeInsets.symmetric(horizontal: 28.w),
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Icon ──────────────────────────────────────
+                Container(
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(
+                    color: effectiveIconBg,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: effectiveIconColor, size: 32.sp),
                 ),
-                child: Icon(icon, color: effectiveIconColor, size: 32.sp),
-              ),
 
-              SizedBox(height: 16.h),
+                SizedBox(height: 16.h),
 
-              // ── Title ─────────────────────────────────────
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.textBlack,
+                // ── Title ─────────────────────────────────────
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: vc.onSurface,
+                  ),
                 ),
-              ),
 
-              SizedBox(height: 10.h),
+                SizedBox(height: 10.h),
 
-              // ── Message ───────────────────────────────────
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
+                // ── Message ───────────────────────────────────
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: vc.onSurfaceMuted,
+                    height: 1.5,
+                  ),
                 ),
-              ),
 
-              SizedBox(height: 24.h),
+                SizedBox(height: 24.h),
 
-              // ── Confirm Button ────────────────────────────
-              _DialogButton(
-                label: confirmLabel,
-                gradient: LinearGradient(
-                  colors: effectiveGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                // ── Confirm Button ────────────────────────────
+                _DialogButton(
+                  label: confirmLabel,
+                  gradient: LinearGradient(
+                    colors: effectiveGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shadowColor: effectiveIconColor.withValues(alpha: 0.3),
+                  textColor: Colors.white,
+                  onTap: () async {
+                    Navigator.pop(dialogContext);
+                    await onConfirm();
+                  },
                 ),
-                shadowColor: effectiveIconColor.withOpacity(0.3),
-                textColor: Colors.white,
-                onTap: () async {
-                  Navigator.pop(dialogContext);
-                  await onConfirm();
-                },
-              ),
 
-              SizedBox(height: 10.h),
+                SizedBox(height: 10.h),
 
-              // ── Cancel Button ─────────────────────────────
-              _DialogButton(
-                label: cancelLabel,
-                backgroundColor: Colors.grey.shade100,
-                textColor: AppColor.textBlack,
-                onTap: () {
-                  Navigator.pop(dialogContext);
-                  onCancel?.call();
-                },
-              ),
-            ],
+                // ── Cancel Button ─────────────────────────────
+                _DialogButton(
+                  label: cancelLabel,
+                  backgroundColor: vc.surfaceVariant,
+                  textColor: vc.onSurface,
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                    onCancel?.call();
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

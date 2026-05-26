@@ -10,7 +10,7 @@ class AppTheme {
     brightness: Brightness.light,
     useMaterial3: true,
     colorScheme: AppColors.lightColorScheme,
-    fontFamily: "Volte",
+    fontFamily: "Inter",
     // scaffoldBackgroundColor: ,
 
     textTheme: TextTheme(

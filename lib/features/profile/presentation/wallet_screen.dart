@@ -59,10 +59,9 @@ class _BalanceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
+              SizedBox(
                 width: 48.w,
                 height: 48.w,
-  
                 child: SvgPicture.asset(
                   'assets/icons/wallet.svg',
                   fit: BoxFit.contain,

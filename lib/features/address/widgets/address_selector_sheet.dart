@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
@@ -34,7 +35,6 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
   @override
   void initState() {
     super.initState();
-    // Load addresses when sheet opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final addressState = ref.read(addressProvider);
       if (!addressState.isFetched && !addressState.isLoading) {
@@ -67,78 +67,152 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: context.vColors.surface,
+            color: vc.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
             children: [
-              // Handle
+              // Drag handle
               Center(
                 child: Container(
-                  margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
+                  margin: EdgeInsets.only(top: 10.h, bottom: 4.h),
                   width: 36.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: context.vColors.divider,
+                    color: vc.divider,
                     borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
-              // Header row
+
+              // Header
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Select delivery address',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
+                    Container(
+                      width: 44.w,
+                      height: 44.w,
+                      decoration: BoxDecoration(
+                        color: AppColor.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.location_on_rounded,
+                        color: AppColor.primary,
+                        size: 22.sp,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Select delivery address',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: vc.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            'Choose where to deliver your order',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: vc.onSurfaceMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close),
+                      child: Container(
+                        width: 36.w,
+                        height: 36.w,
+                        decoration: BoxDecoration(
+                          color: vc.surfaceVariant,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 18.sp,
+                          color: vc.onSurface,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
 
+              Divider(height: 1, thickness: 1, color: vc.divider),
+
               Expanded(
                 child: ListView(
                   controller: scrollController,
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   children: [
-                    // --- Add Address Button ---
+                    // Add new address button (dashed border)
                     GestureDetector(
                       onTap: () async {
-                        Navigator.pop(context); // Close selector first
+                        Navigator.pop(context);
                         await showAddAddressSheet(context,
                             userId: widget.userId);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 16.h),
+                            horizontal: 16.w, vertical: 14.h),
                         decoration: BoxDecoration(
-                          color: vc.surfaceVariant,
+                          color: AppColor.primary.withValues(alpha: 0.04),
                           borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: vc.divider),
+                          border: Border.all(
+                            color: AppColor.primary.withValues(alpha: 0.5),
+                            width: 1.5,
+                            strokeAlign: BorderSide.strokeAlignInside,
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.add,
-                                color: AppColor.primary, size: 22.sp),
-                            SizedBox(width: 12.w),
-                            Text(
-                              'Add Address',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.primary,
+                            Container(
+                              width: 40.w,
+                              height: 40.w,
+                              decoration: BoxDecoration(
+                                color: vc.surface,
+                                borderRadius: BorderRadius.circular(10.r),
+                                border: Border.all(color: vc.divider),
                               ),
+                              child: Icon(
+                                Icons.add,
+                                color: AppColor.primary,
+                                size: 22.sp,
+                              ),
+                            ),
+                            SizedBox(width: 14.w),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Add new address',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColor.primary,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  'Save a location for faster checkout',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: AppColor.primary
+                                        .withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -147,18 +221,12 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                     SizedBox(height: 20.h),
 
                     if (state.isLoading)
-                      const Center(child: CircularProgressIndicator())
-                    else if (state.addresses.isEmpty)
                       Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(24.w),
-                          child: Text(
-                            'No saved addresses yet.',
-                            style: TextStyle(
-                                color: vc.onSurfaceMuted, fontSize: 14.sp),
-                          ),
-                        ),
+                        child: CircularProgressIndicator(
+                            color: AppColor.primary),
                       )
+                    else if (state.addresses.isEmpty)
+                      _EmptyState(vc: vc)
                     else ...[
                       Text(
                         'Your saved addresses',
@@ -182,7 +250,8 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                             onEdit: () async {
                               Navigator.pop(context);
                               await showAddAddressSheet(context,
-                                  userId: widget.userId, existingAddress: addr);
+                                  userId: widget.userId,
+                                  existingAddress: addr);
                             },
                           )),
                     ],
@@ -194,6 +263,45 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
           ),
         );
       },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final VhandarColors vc;
+  const _EmptyState({required this.vc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.h),
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_address.svg',
+            width: 200.w,
+            height: 140.w,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            'No saved addresses yet',
+            style: TextStyle(
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w700,
+              color: vc.onSurface,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            'Add an address to get started',
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: vc.onSurfaceMuted,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -222,7 +330,9 @@ class _AddressTile extends StatelessWidget {
         margin: EdgeInsets.only(bottom: 10.h),
         padding: EdgeInsets.all(14.w),
         decoration: BoxDecoration(
-          color: vc.surface,
+          color: isSelected
+              ? AppColor.primary.withValues(alpha: 0.04)
+              : vc.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected ? AppColor.primary : vc.divider,
@@ -233,12 +343,12 @@ class _AddressTile extends StatelessWidget {
           children: [
             Container(
               width: 44.w,
-              height: 44.h,
+              height: 44.w,
               decoration: BoxDecoration(
-                color: AppColor.secondary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8.r),
+                color: AppColor.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10.r),
               ),
-              child: Icon(icon, color: AppColor.secondary, size: 22.sp),
+              child: Icon(icon, color: AppColor.primary, size: 22.sp),
             ),
             SizedBox(width: 12.w),
             Expanded(
@@ -248,7 +358,7 @@ class _AddressTile extends StatelessWidget {
                   Text(
                     _capitalize(address.addressType ?? 'Address'),
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 14.sp,
                       color: vc.onSurface,
                     ),
@@ -256,8 +366,8 @@ class _AddressTile extends StatelessWidget {
                   SizedBox(height: 2.h),
                   Text(
                     address.description ?? '',
-                    style:
-                        TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
+                    style: TextStyle(
+                        fontSize: 12.sp, color: vc.onSurfaceMuted),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -265,18 +375,25 @@ class _AddressTile extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8.w),
-            OutlinedButton(
-              onPressed: onEdit,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColor.secondary,
-                side: BorderSide(color: AppColor.secondary),
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r)),
+            GestureDetector(
+              onTap: onEdit,
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: vc.surfaceVariant,
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(color: vc.divider),
+                ),
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: vc.onSurface,
+                  ),
+                ),
               ),
-              child: Text('Edit',
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
             ),
           ],
         ),

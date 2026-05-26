@@ -506,7 +506,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                 Text(
                   'Long-press & drag to the right bin!',
                   style: TextStyle(
-                      fontSize: 12, color: Colors.white.withOpacity(0.5)),
+                      fontSize: 12, color: Colors.white.withValues(alpha: 0.5)),
                 ),
                 const SizedBox(height: 12),
 
@@ -529,12 +529,12 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                                 decoration: BoxDecoration(
                                   color: isHovering
                                       ? bin.color == Colors.greenAccent
-                                          ? Colors.greenAccent.withOpacity(0.35)
+                                          ? Colors.greenAccent.withValues(alpha: 0.35)
                                           : bin.color == Colors.redAccent
                                               ? Colors.redAccent
-                                                  .withOpacity(0.35)
-                                              : Colors.white.withOpacity(0.2)
-                                      : bin.color.withOpacity(
+                                                  .withValues(alpha: 0.35)
+                                              : Colors.white.withValues(alpha: 0.2)
+                                      : bin.color.withValues(alpha: 
                                           bin.color == Colors.white24
                                               ? 0.12
                                               : 0.3),
@@ -542,7 +542,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                                   border: Border.all(
                                     color: isHovering
                                         ? Colors.white
-                                        : bin.color.withOpacity(0.5),
+                                        : bin.color.withValues(alpha: 0.5),
                                     width: isHovering ? 2 : 1,
                                   ),
                                 ),
@@ -616,7 +616,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                     border: Border.all(color: Colors.white12, width: 0.5),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 30,
                           offset: const Offset(0, 10)),
                     ],
@@ -689,7 +689,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 30,
                           offset: const Offset(0, 10)),
                     ],
@@ -784,7 +784,10 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                     child: const Icon(Icons.arrow_back_rounded,
                         color: Colors.white, size: 22),
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ),
@@ -807,7 +810,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -854,9 +857,9 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: bg.withOpacity(0.3),
+        color: bg.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: bg.withOpacity(0.6), width: 1),
+        border: Border.all(color: bg.withValues(alpha: 0.6), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -875,7 +878,7 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white12, width: 0.5),
       ),

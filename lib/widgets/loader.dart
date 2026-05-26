@@ -13,15 +13,15 @@ class LoadingOverlay {
     if (!_dialogIsOpen) {
       log("showing Loader");
       showDialog(
-        barrierColor: Colors.black54.withOpacity(0.2),
+        barrierColor: Colors.black54.withValues(alpha: 0.2),
         barrierDismissible: false,
         context: context,
         builder: (context) {
           _dialogIsOpen = true;
-          return WillPopScope(
-            onWillPop: () async {
-              _dialogIsOpen = false;
-              return true;
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) _dialogIsOpen = false;
             },
             child: Center(
               child: Container(

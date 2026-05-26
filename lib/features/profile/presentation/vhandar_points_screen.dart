@@ -245,7 +245,7 @@ class _HowToEarnSection extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
+            child: const Column(
               children: [
                 _EarnItem(
                   icon: Icons.shopping_bag_outlined,
@@ -304,7 +304,7 @@ class _HowToUseSection extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
+            child: const Column(
               children: [
                 _EarnItem(
                   icon: Icons.redeem_outlined,

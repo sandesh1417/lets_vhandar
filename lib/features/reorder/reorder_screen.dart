@@ -251,27 +251,36 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                         height: 44.h,
                         padding: EdgeInsets.symmetric(horizontal: 12.w),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: context.isDark
+                              ? Colors.white.withValues(alpha: 0.15)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Row(
                           children: [
                             Icon(Icons.search,
-                                color: context.vColors.onSurfaceMuted, size: 20.sp),
+                                color: context.isDark
+                                    ? Colors.white60
+                                    : context.vColors.onSurfaceMuted,
+                                size: 20.sp),
                             SizedBox(width: 8.w),
                             Expanded(
                               child: TextField(
                                 controller: _searchController,
                                 style: TextStyle(
                                   fontSize: 13.sp,
-                                  color: Colors.black,
+                                  color: context.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                   fontWeight: FontWeight.w600,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'Search previous orders...',
                                   hintStyle: TextStyle(
                                     fontSize: 13.sp,
-                                    color: Colors.black54,
+                                    color: context.isDark
+                                        ? Colors.white54
+                                        : Colors.black54,
                                     fontWeight: FontWeight.w400,
                                   ),
                                   border: InputBorder.none,

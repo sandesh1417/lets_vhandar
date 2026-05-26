@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,61 +15,62 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
+
     return CustomScaffoldWrapper(
-      backgroundColor: const Color(0xFFF7FAF8),
+      backgroundColor: vc.scaffoldBg,
       appBar: const CustomScreenHeader(title: 'About'),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           children: [
-            SizedBox(height: 56.h),
+            SizedBox(height: 48.h),
+
+            // Logo
             Container(
-              width: 152.w,
-              height: 152.w,
-              padding: EdgeInsets.all(20.w),
+              width: 120.w,
+              height: 120.w,
+              padding: EdgeInsets.all(18.w),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28.r),
+                color: vc.surface,
+                borderRadius: BorderRadius.circular(24.r),
+                border: Border.all(color: vc.divider),
               ),
               child: SvgPicture.asset(
                 KImageConstant.vandharIcon,
                 fit: BoxFit.contain,
               ),
             ),
-            SizedBox(height: 28.h),
+            SizedBox(height: 20.h),
+
+            // App name
             Text(
               'Vhandar',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColor.primary,
-                fontSize: 30.sp,
+                fontSize: 28.sp,
                 fontWeight: FontWeight.w800,
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 4.h),
+
+            // Tagline
             Text(
-              'Grocery Delivery App',
+              'Quick & easy way to get groceries delivered',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColor.greenTxtColor,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 14.h),
-            Text(
-              'Fresh groceries, daily essentials, and household needs delivered quickly to your doorstep.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColor.textMuted,
-                fontSize: 14.sp,
-                height: 1.45,
+                color: vc.onSurfaceMuted,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
+                height: 1.4,
               ),
             ),
-            SizedBox(height: 18.h),
+            SizedBox(height: 12.h),
+
+            // Version pill
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
               decoration: BoxDecoration(
                 color: AppColor.secondary.withValues(alpha: 0.16),
                 borderRadius: BorderRadius.circular(20.r),
@@ -77,54 +79,83 @@ class AboutUsScreen extends StatelessWidget {
                 'Version $_appVersion',
                 style: TextStyle(
                   color: const Color(0xFF6F4B00),
-                  fontSize: 13.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             SizedBox(height: 32.h),
+
+            // Social icons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const _SocialIcon(
-                  icon: Icons.facebook,
+                _SocialButton(
                   label: 'Facebook',
+                  brandColor: const Color(0xFF1877F2),
                   url: 'https://www.facebook.com/letsvhandar',
+                  child: Text(
+                    'f',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
                 SizedBox(width: 14.w),
-                const _SocialIcon(
-                  icon: Icons.camera_alt_outlined,
+                _SocialButton(
                   label: 'Instagram',
+                  brandColor: const Color(0xFFE1306C),
                   url: 'https://www.instagram.com/letsvhandar',
+                  child: Icon(Icons.camera_alt, color: Colors.white, size: 20.sp),
                 ),
                 SizedBox(width: 14.w),
-                const _SocialIcon(
-                  text: 'in',
+                _SocialButton(
                   label: 'LinkedIn',
+                  brandColor: const Color(0xFF0A66C2),
                   url: 'https://www.linkedin.com/company/letsvhandar',
+                  child: Text(
+                    'in',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
                 SizedBox(width: 14.w),
-                const _SocialIcon(
-                  icon: Icons.chat_bubble_outline,
+                _SocialButton(
                   label: 'WhatsApp',
-                  url:
-                      'https://www.whatsapp.com/channel/0029VagJOst11ulRcmoNKm1R',
+                  brandColor: const Color(0xFF25D366),
+                  url: 'https://www.whatsapp.com/channel/0029VagJOst11ulRcmoNKm1R',
+                  child: Icon(Icons.chat_rounded, color: Colors.white, size: 20.sp),
                 ),
               ],
             ),
-            SizedBox(height: 56.h),
-            Padding(
-              padding: EdgeInsets.only(bottom: 32.h),
-              child: Text(
-                'Vhandar Merchandise Pvt Ltd',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColor.textMuted,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+            SizedBox(height: 48.h),
+
+            // Company info
+            Text(
+              'Vhandar Merchandise Pvt Ltd',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: vc.onSurface,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
               ),
             ),
+            SizedBox(height: 4.h),
+            Text(
+              'Reg.no: 354027/81/82',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: vc.onSurfaceMuted,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 32.h),
           ],
         ),
       ),
@@ -132,41 +163,35 @@ class AboutUsScreen extends StatelessWidget {
   }
 }
 
-class _SocialIcon extends StatelessWidget {
-  final IconData? icon;
-  final String? text;
+class _SocialButton extends StatelessWidget {
   final String label;
+  final Color brandColor;
   final String url;
+  final Widget child;
 
-  const _SocialIcon({
-    this.icon,
-    this.text,
+  const _SocialButton({
     required this.label,
+    required this.brandColor,
     required this.url,
-  }) : assert(icon != null || text != null);
+    required this.child,
+  });
 
-  Future<void> _openLink(BuildContext context) async {
+  Future<void> _open(BuildContext context) async {
     final uri = Uri.parse(url);
-
     try {
-      final didLaunch = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!didLaunch && context.mounted) {
-        _showLaunchError(context);
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open $label')),
+        );
       }
     } catch (_) {
       if (context.mounted) {
-        _showLaunchError(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open $label')),
+        );
       }
     }
-  }
-
-  void _showLaunchError(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not open $label')),
-    );
   }
 
   @override
@@ -174,34 +199,17 @@ class _SocialIcon extends StatelessWidget {
     return Semantics(
       label: label,
       button: true,
-      child: Material(
-        color: Colors.white,
-        shape: CircleBorder(
-          side: BorderSide(color: AppColor.border),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => _openLink(context),
-          child: SizedBox(
-            width: 44.w,
-            height: 44.w,
-            child: Center(
-              child: icon != null
-                  ? Icon(
-                      icon,
-                      color: AppColor.primary,
-                      size: 22.sp,
-                    )
-                  : Text(
-                      text!,
-                      style: TextStyle(
-                        color: AppColor.primary,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-            ),
+      child: GestureDetector(
+        onTap: () => _open(context),
+        child: Container(
+          width: 48.w,
+          height: 48.w,
+          decoration: BoxDecoration(
+            color: brandColor,
+            shape: BoxShape.circle,
           ),
+          alignment: Alignment.center,
+          child: child,
         ),
       ),
     );

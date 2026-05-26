@@ -50,7 +50,7 @@ class KidsZoneScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(24.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.3),
+                    color: Colors.orange.withValues(alpha: 0.3),
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ),
@@ -81,7 +81,7 @@ class KidsZoneScreen extends ConsumerWidget {
                               'KIDS COINS WALLET',
                               style: TextStyle(
                                 fontSize: 10.sp,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.1,
                               ),
@@ -101,7 +101,7 @@ class KidsZoneScreen extends ConsumerWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.25),
+                          color: Colors.white.withValues(alpha: 0.25),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Text(
@@ -123,7 +123,7 @@ class KidsZoneScreen extends ConsumerWidget {
                         'Level Progress',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -358,7 +358,7 @@ class KidsZoneScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
-            color: gradient[0].withOpacity(0.3),
+            color: gradient[0].withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -388,7 +388,7 @@ class KidsZoneScreen extends ConsumerWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Text(
@@ -417,7 +417,7 @@ class KidsZoneScreen extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 10.sp,
                   ),
                 ),
@@ -448,7 +448,7 @@ class KidsZoneScreen extends ConsumerWidget {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 6,
             offset: const Offset(0, 3),
           )
@@ -504,7 +504,7 @@ class KidsZoneScreen extends ConsumerWidget {
                     message: 'Coupon code $couponCode copied to clipboard!');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary.withOpacity(0.1),
+                backgroundColor: AppColor.primary.withValues(alpha: 0.1),
                 foregroundColor: AppColor.primary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(

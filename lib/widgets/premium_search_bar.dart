@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -77,7 +78,10 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
             child: widget.readOnly
                 ? GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: widget.onTap,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      widget.onTap?.call();
+                    },
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -147,10 +151,14 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              onPressed: widget.onScanTap ??
-                  () {
-                    context.pushNamed(LVRoute.barcodeScannerScreen.route);
-                  },
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                if (widget.onScanTap != null) {
+                  widget.onScanTap!();
+                } else {
+                  context.pushNamed(LVRoute.barcodeScannerScreen.route);
+                }
+              },
             ),
             ),
           ],

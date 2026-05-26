@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationSuggestion {
@@ -45,7 +46,7 @@ class LocationSearchService {
         return data.map((item) => LocationSuggestion.fromJson(item)).toList();
       }
     } catch (e) {
-      print('OSM Search error: $e');
+      debugPrint('OSM Search error: $e');
     }
     return [];
   }

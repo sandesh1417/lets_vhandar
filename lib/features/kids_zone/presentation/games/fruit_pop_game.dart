@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
 
@@ -61,6 +62,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
   int _coinsEarned = 0;
   int _timeLeft = 45;
   int _totalPopped = 0;
+  // ignore: unused_field
   int _missedThisLevel = 0;
   int _poppedThisLevel = 0;
   int _level = 1;
@@ -71,6 +73,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
   Timer? _updateTimer;
   double _spawnAccumulator = 0;
   double _spawnInterval = 1.2;
+  // ignore: unused_field
   int _prevSecond = 0;
   final Random _random = Random();
 
@@ -407,7 +410,10 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                     ),
                     child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22),
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ),
@@ -434,7 +440,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
             border: Border.all(color: Colors.white12, width: 0.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 blurRadius: 30,
                 offset: const Offset(0, 10),
               ),
@@ -513,7 +519,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 30,
                 offset: const Offset(0, 10),
               ),
@@ -607,7 +613,7 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white12, width: 0.5),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
@@ -12,9 +13,9 @@ class ProductWhyShopSection extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColor.primary.withOpacity(0.04),
+        color: AppColor.primary.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColor.primary.withOpacity(0.1)),
+        border: Border.all(color: AppColor.primary.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,17 +30,17 @@ class ProductWhyShopSection extends StatelessWidget {
           ),
           SizedBox(height: 14.h),
           _buildItem(context,
-            Icons.delivery_dining_outlined,
-            'Superfast Delivery',
+            'assets/images/why_delivery.svg',
+            'Express Delivery',
             'Delivered to your doorstep from nearby dark stores.',
           ),
           _buildItem(context,
-            Icons.sell_outlined,
+            'assets/images/why_price.svg',
             'Best Prices & Offers',
             'Direct deals from manufacturers — lowest prices guaranteed.',
           ),
           _buildItem(context,
-            Icons.category_outlined,
+            'assets/images/why_assortment.svg',
             'Wide Assortment',
             '5000+ products across all major categories.',
             isLast: true,
@@ -49,20 +50,17 @@ class ProductWhyShopSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(BuildContext context, IconData icon, String title, String subtitle,
+  Widget _buildItem(BuildContext context, String svgAsset, String title, String subtitle,
       {bool isLast = false}) {
     return Padding(
       padding: EdgeInsets.only(bottom: isLast ? 0 : 14.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: AppColor.primary.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(icon, color: AppColor.primary, size: 20.sp),
+          SvgPicture.asset(
+            svgAsset,
+            width: 36.w,
+            height: 36.w,
           ),
           SizedBox(width: 12.w),
           Expanded(

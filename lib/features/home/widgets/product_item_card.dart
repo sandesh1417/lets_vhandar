@@ -343,8 +343,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   height: 105.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                       color: Colors.white,
-                   borderRadius: BorderRadius.only(
+                    color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6.r),
                       topRight: Radius.circular(6.r),
                       bottomLeft: Radius.zero,
@@ -391,7 +391,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       ),
                     ),
                   ),
-                if (product.isVegeterian != null && product.isVegeterian!)
+                if (product.isVegetarian != null && product.isVegetarian!)
                   Positioned(
                     bottom: 6.h,
                     right: 6.w,
@@ -400,7 +400,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       decoration: BoxDecoration(
                         color: vc.surface,
                         border: Border.all(
-                          color: product.isVegeterian!
+                          color: product.isVegetarian!
                               ? const Color(0xFF008B58)
                               : const Color(0xFFE53935),
                           width: 1.w,
@@ -411,7 +411,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                         width: 5.w,
                         height: 5.w,
                         decoration: BoxDecoration(
-                          color: product.isVegeterian!
+                          color: product.isVegetarian!
                               ? const Color(0xFF008B58)
                               : const Color(0xFFE53935),
                           shape: BoxShape.circle,
@@ -592,6 +592,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
+                                      HapticFeedback.lightImpact();
                                       ref
                                           .read(cartProvider.notifier)
                                           .updateQuantity(

@@ -69,7 +69,7 @@ class CustomSnackbar {
     show(
       context,
       message: message,
-      backgroundColor: AppColor.primary.withOpacity(0.8),
+      backgroundColor: AppColor.primary.withValues(alpha: 0.8),
       icon: Icons.check_circle_outline_outlined,
       duration: duration,
     );
@@ -81,7 +81,7 @@ class CustomSnackbar {
     show(
       context,
       message: message,
-      backgroundColor: Colors.red.withOpacity(0.7),
+      backgroundColor: Colors.red.withValues(alpha: 0.7),
       icon: Icons.error_outline,
       duration: duration,
     );
@@ -93,7 +93,7 @@ class CustomSnackbar {
     show(
       context,
       message: message,
-      backgroundColor: AppColor.primary.withOpacity(0.8),
+      backgroundColor: AppColor.primary.withValues(alpha: 0.8),
       icon: Icons.info_outline,
       duration: duration,
     );

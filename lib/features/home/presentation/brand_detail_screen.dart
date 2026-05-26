@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -64,9 +65,15 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () => context.pop(),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.pop();
+                  },
+                  child: Container(
+                    width: 44.w,
+                    height: 44.h,
+                    alignment: Alignment.center,
                     child: const Icon(Icons.arrow_back_ios_new_rounded,
                         color: Colors.white, size: 20),
                   ),

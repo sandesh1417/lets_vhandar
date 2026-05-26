@@ -64,7 +64,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
                             'upon their first order.',
                             style: TextStyle(
                               fontSize: 16.sp,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                             ),
                           ),
                         ],
@@ -73,7 +73,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
                     Icon(
                       Icons.card_giftcard,
                       size: 80.sp,
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                     ),
                   ],
                 ),
@@ -82,14 +82,14 @@ class ReferAndEarnScreen extends ConsumerWidget {
                   'Referral Code',
                   style: TextStyle(
                     fontSize: 14.sp,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: Colors.white,
@@ -189,7 +189,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -252,7 +252,7 @@ class ReferAndEarnScreen extends ConsumerWidget {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(icon, color: Colors.orange.shade700, size: 20.sp),

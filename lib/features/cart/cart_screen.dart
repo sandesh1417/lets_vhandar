@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,6 +32,7 @@ class CartScreen extends ConsumerWidget {
     final totalPrice = ref.watch(totalCartPriceProvider);
     final totalMrp = ref.watch(totalCartMrpProvider);
     final selectedAddress = ref.watch(addressProvider).selected;
+    final addressError = ref.watch(cartAddressErrorProvider);
 
     return Scaffold(
       backgroundColor: context.vColors.scaffoldBg,
@@ -44,8 +46,17 @@ class CartScreen extends ConsumerWidget {
         title: Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 44.w,
+                height: 44.h,
+                alignment: Alignment.centerLeft,
+                child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
+              ),
             ),
             SizedBox(width: 12.w),
             Text(
@@ -194,9 +205,30 @@ class CartScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: 4.h),
+                      if (addressError && selectedAddress == null)
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline,
+                                  color: Colors.red.shade600, size: 15.sp),
+                              SizedBox(width: 6.w),
+                              Text(
+                                'Please select a delivery address to continue',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       _DeliveryAddressBanner(
                         selectedAddress: selectedAddress,
+                        isError: addressError && selectedAddress == null,
                         onTap: () {
+                          ref.read(cartAddressErrorProvider.notifier).state = false;
                           final userId = ref.read(loginProvider).user?.id;
                           if (userId != null) {
                             showAddressSelectorSheet(context, userId: userId);
@@ -289,24 +321,27 @@ class CartScreen extends ConsumerWidget {
 class _DeliveryAddressBanner extends StatelessWidget {
   final dynamic selectedAddress;
   final VoidCallback onTap;
+  final bool isError;
 
-  const _DeliveryAddressBanner(
-      {required this.selectedAddress, required this.onTap});
+  const _DeliveryAddressBanner({
+    required this.selectedAddress,
+    required this.onTap,
+    this.isError = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool hasAddress = selectedAddress != null;
-
-    if (hasAddress) {
+    if (selectedAddress != null) {
       return _HasAddressBanner(selectedAddress: selectedAddress, onTap: onTap);
     }
-    return _NoAddressBanner(onTap: onTap);
+    return _NoAddressBanner(onTap: onTap, isError: isError);
   }
 }
 
 class _NoAddressBanner extends StatelessWidget {
   final VoidCallback onTap;
-  const _NoAddressBanner({required this.onTap});
+  final bool isError;
+  const _NoAddressBanner({required this.onTap, this.isError = false});
 
   @override
   Widget build(BuildContext context) {
@@ -315,18 +350,32 @@ class _NoAddressBanner extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w),
+        decoration: isError
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(14.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ],
+              )
+            : null,
         child: CustomPaint(
           painter: _DashedBorderPainter(
-            color: AppColor.primary,
+            color: isError ? Colors.red : AppColor.primary,
             radius: 14.r,
             dashWidth: 6,
             dashGap: 4,
-            strokeWidth: 1.5,
+            strokeWidth: isError ? 2.0 : 1.5,
           ),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: vc.surface,
+              color: isError
+                  ? Colors.red.withValues(alpha: 0.04)
+                  : vc.surface,
               borderRadius: BorderRadius.circular(14.r),
             ),
             child: Row(
@@ -641,7 +690,9 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                                 });
 
                                 if (errorMsg == null) {
+                                  // ignore: use_build_context_synchronously
                                   Navigator.pop(sheetContext);
+                                  if (!context.mounted) return;
                                   CustomSnackbar.success(context,
                                       message:
                                           'Coupon "$code" applied successfully! Saved Rs. ${ref.read(appliedCouponProvider)?.discountAmount.toInt() ?? 100} 🎉');
@@ -749,82 +800,6 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
     );
   }
 
-  Widget _buildOfferTile({
-    required String code,
-    required String title,
-    required String desc,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: AppColor.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Text(
-                        code,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.primary,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  desc,
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: onTap,
-            child: Text(
-              'USE CODE',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColor.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<String?> _applyCouponCode(BuildContext context, String code) async {
     try {
       final dio = locator<DioClient>().dio;
@@ -927,7 +902,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                               borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Text(
-                              appliedCoupon.code ?? '-',
+                              appliedCoupon.code,
                               style: TextStyle(
                                 fontSize: 11.sp,
                                 fontWeight: FontWeight.bold,
@@ -949,7 +924,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                       ),
                       SizedBox(height: 6.h),
                       Text(
-                        'Saved Rs. ${appliedCoupon.discountAmount.toInt() ?? '-'} on this order',
+                        'Saved Rs. ${appliedCoupon.discountAmount.toInt()} on this order',
                         style: TextStyle(
                           fontSize: 11.sp,
                           color: context.vColors.onSurfaceMuted,

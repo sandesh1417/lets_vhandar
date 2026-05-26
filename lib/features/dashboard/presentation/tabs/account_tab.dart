@@ -123,6 +123,18 @@ class AccountTab extends ConsumerWidget {
               ),
               SizedBox(height: 16.h),
               AccountSection(
+                title: 'Appearance',
+                children: [
+                  AccountMenuItem(
+                    icon: Icons.brightness_6_outlined,
+                    title: 'Appearance',
+                    showDivider: false,
+                    onTap: () => _showAppearanceSheet(context, ref),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
+              AccountSection(
                 title: 'Support & Info',
                 children: [
                   AccountMenuItem(
@@ -132,7 +144,7 @@ class AccountTab extends ConsumerWidget {
                   ),
                   AccountMenuItem(
                     icon: Icons.info_outline,
-                    title: 'About Us',
+                    title: 'About',
                     onTap: () => context.push(LVRoute.aboutUsScreen.route),
                   ),
                   AccountMenuItem(
@@ -211,7 +223,7 @@ class AccountTab extends ConsumerWidget {
 
             // My Activity
             AccountSection(
-              title: 'My Activity',
+              title: 'Manage',
               children: [
                 AccountMenuItem(
                   icon: Icons.receipt_long_outlined,
@@ -339,7 +351,7 @@ class AccountTab extends ConsumerWidget {
               children: [
                 AccountMenuItem(
                   icon: Icons.info_outline,
-                  title: 'About Us',
+                  title: 'About',
                   onTap: () {
                     context.push(LVRoute.aboutUsScreen.route);
                   },

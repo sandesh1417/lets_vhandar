@@ -40,13 +40,13 @@ class LoginNotifier extends StateNotifier<LoginState> {
         state = state.copyWith(
           isLoading: false,
           isLoggedIn: true,
+          isGuest: false,
           user: data.user,
         );
+        if (!context.mounted) return;
         CustomSnackbar.success(context, message: "Login Successful");
         // Navigate using GoRouter
-        if (context.mounted) {
-          context.go(LVRoute.dashboardScreen.route);
-        }
+        context.go(LVRoute.dashboardScreen.route);
         break;
       case Error(failure: final failure):
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
@@ -90,12 +90,11 @@ class LoginNotifier extends StateNotifier<LoginState> {
     final result = await _authRepository.deleteAccount();
     switch (result) {
       case Success(value: final data):
+        await logout();
+        if (!context.mounted) return;
         CustomSnackbar.success(context,
             message: data.message ?? "Account deleted successfully");
-        await logout();
-        if (context.mounted) {
-          context.go(LVRoute.loginScreen.route);
-        }
+        context.go(LVRoute.loginScreen.route);
         break;
       case Error(failure: final failure):
         state = state.copyWith(isLoading: false, errorMessage: failure.message);

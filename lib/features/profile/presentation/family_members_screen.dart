@@ -412,7 +412,7 @@ class _AddMemberSheetState extends State<_AddMemberSheet> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: wire up API invite
+                  // API invite not yet wired up
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

@@ -41,7 +41,7 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
           isLoading: false,
           errorMessage: failure.message,
         );
-        CustomSnackbar.error(context, message: failure.message ?? 'OTP sending failed');
+        CustomSnackbar.error(context, message: failure.message);
       },
     );
   }
@@ -72,7 +72,7 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
           isLoading: false,
           errorMessage: failure.message,
         );
-        CustomSnackbar.error(context, message: failure.message ?? 'OTP Verification failed');
+        CustomSnackbar.error(context, message: failure.message);
       },
     );
   }
@@ -110,7 +110,7 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
           isLoading: false,
           errorMessage: failure.message,
         );
-        CustomSnackbar.error(context, message: failure.message ?? 'Password reset failed');
+        CustomSnackbar.error(context, message: failure.message);
       },
     );
   }

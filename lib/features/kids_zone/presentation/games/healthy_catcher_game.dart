@@ -250,12 +250,12 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(16.r),
                         border: Border.all(color: Colors.green.shade300, width: 2.w),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                           )
                         ],
@@ -273,12 +273,12 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(16.r),
                         border: Border.all(color: Colors.red.shade200, width: 2.w),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                           )
                         ],
@@ -312,13 +312,13 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: item.color.withOpacity(0.3),
+                            color: item.color.withValues(alpha: 0.3),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           )
                         ],
                         border: Border.all(
-                          color: item.color.withOpacity(0.6),
+                          color: item.color.withValues(alpha: 0.6),
                           width: 2.5,
                         ),
                       ),
@@ -349,7 +349,7 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       border: Border.all(color: const Color(0xFFD7CCC8), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         )
@@ -413,7 +413,7 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       borderRadius: BorderRadius.circular(24.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 20,
                         )
                       ],
@@ -505,7 +505,7 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       borderRadius: BorderRadius.circular(24.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 20,
                         )
                       ],

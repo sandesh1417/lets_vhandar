@@ -19,7 +19,7 @@
 //   @override
 //   Future<GenericResponseModal> login(
 //       String phoneNumber, String password) async {
-//     // TODO: Implement login endpoint when available.
+//     // Login endpoint not yet defined — throws until implemented.
 //     // For now assuming it's similar to others
 //     throw UnimplementedError("Login API endpoint not defined yet");
 //   }

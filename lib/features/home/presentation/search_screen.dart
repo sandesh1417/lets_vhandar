@@ -66,9 +66,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.pop();
+                    },
+                    child: Container(
+                      width: 44.w,
+                      height: 44.h,
+                      alignment: Alignment.center,
                       child: const Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: Colors.white,

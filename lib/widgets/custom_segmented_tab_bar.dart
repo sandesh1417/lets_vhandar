@@ -32,7 +32,7 @@ class CustomSegmentedTabBar extends StatelessWidget {
           color: AppColor.primary,
           boxShadow: [
             BoxShadow(
-              color: AppColor.primary.withOpacity(0.3),
+              color: AppColor.primary.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

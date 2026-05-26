@@ -80,3 +80,6 @@ final totalCartPriceProvider = Provider<double>((ref) {
   final cartItems = ref.watch(cartProvider);
   return cartItems.fold(0, (sum, item) => sum + item.totalPrice);
 });
+
+// True when user taps Checkout without a delivery address selected
+final cartAddressErrorProvider = StateProvider<bool>((ref) => false);

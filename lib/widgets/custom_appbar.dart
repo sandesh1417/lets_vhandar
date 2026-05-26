@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
@@ -58,10 +59,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               InkWell(
                 radius: 10.r,
                 borderRadius: BorderRadius.circular(100),
-                onTap: backBtnFx ??
-                    () {
+                onTap: () {
+                    HapticFeedback.lightImpact();
+                    if (backBtnFx != null) {
+                      backBtnFx!();
+                    } else {
                       context.pop();
-                    },
+                    }
+                  },
                 child: Padding(
                   padding: EdgeInsets.only(left: 10.w),
                   child: Icon(

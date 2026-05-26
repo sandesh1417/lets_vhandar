@@ -66,7 +66,7 @@ class ProductVariantSelector extends ConsumerWidget {
                                 horizontal: 14.w, vertical: 10.h),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColor.primary.withOpacity(0.06)
+                                  ? AppColor.primary.withValues(alpha: 0.06)
                                   : context.vColors.surface,
                               border: Border.all(
                                 color: isSelected
@@ -78,7 +78,7 @@ class ProductVariantSelector extends ConsumerWidget {
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: AppColor.primary.withOpacity(0.12),
+                                        color: AppColor.primary.withValues(alpha: 0.12),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       )
@@ -129,7 +129,7 @@ class ProductVariantSelector extends ConsumerWidget {
                                       style: TextStyle(
                                         fontSize: 13.sp,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColor.textBlack,
+                                        color: context.vColors.onSurface,
                                       ),
                                     ),
                                     if (hasDiscount) ...[

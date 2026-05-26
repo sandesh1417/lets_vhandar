@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
@@ -18,7 +20,6 @@ import 'widgets/product_add_to_cart_bar.dart';
 import 'widgets/product_details_table.dart';
 import 'widgets/product_image_slider.dart';
 import 'widgets/product_variant_selector.dart';
-import 'widgets/product_why_shop_section.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductData product;
@@ -32,6 +33,7 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   late ProductData _currentProduct;
+  bool _detailsExpanded = false;
   final ValueNotifier<double> _scrollOffset = ValueNotifier<double>(0.0);
   late ScrollController _scrollController;
 
@@ -99,11 +101,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final product = _currentProduct;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
+    final totalItems = ref.watch(totalCartItemsProvider);
 
     return CustomScaffoldWrapper(
       backgroundColor: vc.scaffoldBg,
       isScrollable: false,
       extendBodyBehindAppBar: true,
+      floatingActionButton: totalItems > 0
+          ? CartFloatingBadge(
+              onTap: () => context.push(LVRoute.cartScreen.route),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56.0),
         child: ValueListenableBuilder<double>(
@@ -129,7 +138,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               leading: Center(
                 child: _GlassButton(
                   icon: Icons.arrow_back,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pop(context);
+                  },
                   isGlass: ratio < 0.5,
                 ),
               ),
@@ -311,20 +323,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                   ),
 
-                  // ── Brand Section ──
-                  if (product.brandId != null)
-                    ProductBrandSection(brandId: product.brandId!),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Divider(
-                      height: 1.h,
-                      color: vc.divider,
-                      thickness: 1,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-
                   // ── Variant Selector ──
                   ProductVariantSelector(
                     baseProduct: widget.product,
@@ -332,23 +330,78 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     onVariantChanged: (v) =>
                         setState(() => _currentProduct = v),
                   ),
-                ],
-              ),
-            ),
-          ),
 
-          // ─── Body Content ─────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 12.h),
-                  ProductDetailsTable(product: product),
-                  SizedBox(height: 20.h),
-                  const ProductWhyShopSection(),
-                  SizedBox(height: 28.h),
+                  // ── Brand Section ──
+                  if (product.brandId != null)
+                    ProductBrandSection(brandId: product.brandId!),
+
+                  // ── Collapsible Product Details Card ──
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: 10.h, horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: vc.surfaceVariant,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: vc.divider),
+                    ),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => setState(
+                              () => _detailsExpanded = !_detailsExpanded),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 12.h),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Product Details',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: vc.onSurface,
+                                    ),
+                                  ),
+                                ),
+                                AnimatedRotation(
+                                  turns: _detailsExpanded ? 0.5 : 0,
+                                  duration: const Duration(milliseconds: 250),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    color: vc.onSurfaceMuted,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        AnimatedCrossFade(
+                          duration: const Duration(milliseconds: 250),
+                          crossFadeState: _detailsExpanded
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: Column(
+                            children: [
+                              Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: vc.divider),
+                              ProductDetailsTable(
+                                  product: product, hideHeader: true),
+                              SizedBox(height: 8.h),
+                            ],
+                          ),
+                          secondChild:
+                              const SizedBox(width: double.infinity),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 4.h),
                 ],
               ),
             ),
@@ -368,6 +421,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          SizedBox(height: 20.h),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
                             child: Row(
@@ -423,7 +477,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           else
             const SliverToBoxAdapter(child: SizedBox.shrink()),
 
-          SliverToBoxAdapter(child: SizedBox(height: 20.h)),
+          SliverToBoxAdapter(
+            child: SizedBox(height: totalItems > 0 ? 120.h : 24.h),
+          ),
         ],
       ),
     );
@@ -440,7 +496,9 @@ class _GlassButton extends StatelessWidget {
   const _GlassButton({
     required this.icon,
     required this.onTap,
+    // ignore: unused_element_parameter
     this.size,
+    // ignore: unused_element_parameter
     this.iconSize,
     this.isGlass = true,
   });

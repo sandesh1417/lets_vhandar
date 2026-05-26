@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
 class ProductDetailsTable extends StatelessWidget {
   final ProductData product;
+  final bool hideHeader;
 
-  const ProductDetailsTable({super.key, required this.product});
+  const ProductDetailsTable({
+    super.key,
+    required this.product,
+    this.hideHeader = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,73 +35,48 @@ class ProductDetailsTable extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 3.w,
-              height: 16.h,
-              decoration: BoxDecoration(
-                color: AppColor.primary,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-            SizedBox(width: 8.w),
-            Text(
+        if (!hideHeader)
+          Padding(
+            padding: EdgeInsets.only(bottom: 12.h),
+            child: Text(
               'Product Details',
               style: TextStyle(
-                fontSize: 15.sp,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
                 color: vc.onSurface,
               ),
             ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        Container(
-          decoration: BoxDecoration(
-            color: vc.surface,
-            borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(color: vc.divider),
           ),
-          child: Column(
-            children: rows.asMap().entries.map((entry) {
-              final i = entry.key;
-              final row = entry.value;
-              final isLast = i == rows.length - 1;
-              return Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 14.w, vertical: 11.h),
-                decoration: BoxDecoration(
-                  color: i.isEven ? vc.surface : vc.surfaceVariant,
-                  borderRadius: BorderRadius.only(
-                    topLeft: i == 0 ? Radius.circular(14.r) : Radius.zero,
-                    topRight: i == 0 ? Radius.circular(14.r) : Radius.zero,
-                    bottomLeft:
-                        isLast ? Radius.circular(14.r) : Radius.zero,
-                    bottomRight:
-                        isLast ? Radius.circular(14.r) : Radius.zero,
-                  ),
-                ),
+        ...rows.asMap().entries.map((entry) {
+          final i = entry.key;
+          final row = entry.value;
+          return Column(
+            children: [
+              if (i != 0)
+                Divider(height: 1, thickness: 1, color: vc.divider),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.w, vertical: 11.h),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 100.w,
+                      width: 110.w,
                       child: Text(
                         row['label']!,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                           color: vc.onSurfaceMuted,
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
                         row['value']!,
                         style: TextStyle(
                           fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
                           color: vc.onSurface,
                           height: 1.4,
                         ),
@@ -105,10 +84,10 @@ class ProductDetailsTable extends StatelessWidget {
                     ),
                   ],
                 ),
-              );
-            }).toList(),
-          ),
-        ),
+              ),
+            ],
+          );
+        }),
       ],
     );
   }

@@ -26,6 +26,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
   @override
   Widget build(BuildContext context) {
     final images = widget.product.images ?? [];
+    // ignore: unused_local_variable
     final hasDiscount = widget.product.discount != null &&
         (widget.product.discount?.value ?? 0) > 0;
 
@@ -75,12 +76,12 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
             ),
           ),
 
-        // Veg/Non-Veg Tag
-        if (widget.product.isVegeterian != null)
+        // Veg Tag (only shown for vegetarian products)
+        if (widget.product.isVegetarian == true)
           Positioned(
             bottom: 16.h,
             right: 16.w,
-            child: _VegNonVegTag(isVegetarian: widget.product.isVegeterian!),
+            child: const _VegNonVegTag(isVegetarian: true),
           ),
       ],
     );
@@ -100,13 +101,6 @@ class _VegNonVegTag extends StatelessWidget {
         color: context.vColors.surface,
         border: Border.all(color: color, width: 1.5.w),
         borderRadius: BorderRadius.circular(4.r),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.15),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
-        ],
       ),
       child: Container(
         width: 8.w,
