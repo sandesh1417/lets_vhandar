@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/features/auth/login/domain/login_state.dart';
+import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
@@ -83,6 +84,43 @@ class LoginNotifier extends StateNotifier<LoginState> {
     await SessionPrefences().clearSession();
     Rsession.token = null;
     state = const LoginState();
+  }
+
+  Future<bool> updateProfile(
+      BuildContext context, Map<String, dynamic> data) async {
+    state = state.copyWith(isLoading: true);
+    final result = await _authRepository.updateProfile(data);
+    switch (result) {
+      case Success():
+        final current = state.user;
+        if (current != null) {
+          // Use containsKey so explicit null clears the field locally
+          final updatedMap = current.toMap()
+            ..addAll({
+              if (data.containsKey('name')) 'name': data['name'],
+              if (data.containsKey('email')) 'email': data['email'],
+              if (data.containsKey('gender')) 'gender': data['gender'],
+              if (data.containsKey('birthDate')) 'birthDate': data['birthDate'],
+              if (data.containsKey('businessDetail'))
+                'businessDetail': data['businessDetail'],
+            });
+          final updated = UserModel.fromMap(updatedMap);
+          await SessionPrefences().setUser(user: updated);
+          state = state.copyWith(isLoading: false, user: updated);
+        } else {
+          state = state.copyWith(isLoading: false);
+        }
+        if (context.mounted) {
+          CustomSnackbar.success(context, message: 'Profile updated successfully');
+        }
+        return true;
+      case Error(failure: final failure):
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+        if (context.mounted) {
+          CustomSnackbar.error(context, message: failure.message);
+        }
+        return false;
+    }
   }
 
   Future<void> deleteAccount(BuildContext context) async {

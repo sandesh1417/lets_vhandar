@@ -17,8 +17,13 @@ class CartItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vc = context.vColors;
     final product = item.product;
-    final hasDiscount =
-        product.discount != null && (product.discount?.value ?? 0) > 0;
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final displayPrice = isBusiness
+        ? (product.businessPricePerUnit ?? product.actualPrice)
+        : product.actualPrice;
+    final hasDiscount = !isBusiness &&
+        product.discount != null &&
+        (product.discount?.value ?? 0) > 0;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -110,7 +115,7 @@ class CartItemWidget extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      'Rs. ${product.actualPrice.toInt()}',
+                      'Rs. ${displayPrice.toInt()}',
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,

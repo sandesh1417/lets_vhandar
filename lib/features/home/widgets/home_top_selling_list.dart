@@ -17,17 +17,19 @@ class HomeFeaturedProductsList extends ConsumerWidget {
 
     return productsAsync.when(
       data: (products) {
-        if (products.isEmpty) return const SizedBox.shrink();
+        final visible = products
+            .where((p) => !p.isOutOfStock && p.parentId == null)
+            .toList();
+        if (visible.isEmpty) return const SizedBox.shrink();
 
         return SizedBox(
           height: ProductItemCard.preferredHeight,
-
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
-            itemCount: products.length,
+            itemCount: visible.length,
             itemBuilder: (context, index) {
-              final product = products[index];
+              final product = visible[index];
               return ProductItemCard(
                 product: product,
                 onTap: () {

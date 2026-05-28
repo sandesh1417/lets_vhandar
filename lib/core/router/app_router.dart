@@ -23,6 +23,7 @@ import 'package:lets_vhandar/features/profile/presentation/change_password_scree
 import 'package:lets_vhandar/widgets/generic_webview_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/faq_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/feedback_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/edit_profile_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/personal_information_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/referral_screen.dart';
@@ -69,7 +70,8 @@ enum LVRoute {
   myListsScreen,
   listDetailScreen,
   familyMembersScreen,
-  walletScreen;
+  walletScreen,
+  editProfileScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -330,6 +332,12 @@ class LVGoRouter {
         name: LVRoute.walletScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const WalletScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.editProfileScreen.route,
+        name: LVRoute.editProfileScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const EditProfileScreen(),
       ),
       // Add other routes as they are implemented
     ],

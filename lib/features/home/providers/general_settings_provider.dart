@@ -16,3 +16,4 @@ final generalSettingsProvider =
       throw failure;
   }
 });
+

@@ -198,6 +198,59 @@ class _AddressPill extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(loginProvider).user;
+    final isBusiness = user?.isBusiness == true;
+
+    if (isBusiness) {
+      final bd = user?.businessDetail;
+      final address = (bd?['locationAddress'] ?? bd?['addressName'] ?? '') as String;
+      final businessName = (bd?['businessName'] ?? '') as String;
+      final displayAddress = address.isNotEmpty ? address : (businessName.isNotEmpty ? businessName : 'Business Location');
+
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.08),
+            width: 0.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.store_outlined, color: Colors.white70, size: 11.sp),
+                SizedBox(width: 4.w),
+                Text(
+                  'Business Location',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 1.h),
+            Text(
+              _truncate(displayAddress),
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Personal user — tappable address selector
     return GestureDetector(
       onTap: () {
         if (userId.isNotEmpty) {
@@ -245,20 +298,15 @@ class _AddressPill extends ConsumerWidget {
                     color: Colors.white, size: 14.sp),
               ],
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  selected != null
-                      ? _truncate(selected.description ?? 'Select Address')
-                      : 'Select Address',
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            Text(
+              selected != null
+                  ? _truncate(selected.description ?? 'Select Address')
+                  : 'Select Address',
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

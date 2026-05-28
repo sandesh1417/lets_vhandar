@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 
@@ -20,6 +21,7 @@ class ProductVariantSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isBusiness = ref.watch(isBusinessUserProvider);
     return ref.watch(productVariantsProvider(baseProduct)).when(
           data: (variants) {
             if (variants.length <= 1) return const SizedBox.shrink();
@@ -55,97 +57,119 @@ class ProductVariantSelector extends ConsumerWidget {
                     child: Row(
                       children: variants.map((v) {
                         final isSelected = v.id == selected.id;
-                        final hasDiscount =
-                            v.discount != null && (v.discount?.value ?? 0) > 0;
+                        final isOutOfStock = v.isOutOfStock;
+                        final displayPrice = isBusiness
+                            ? (v.businessPricePerUnit ?? v.actualPrice)
+                            : v.actualPrice;
+                        final hasDiscount = !isBusiness &&
+                            v.discount != null &&
+                            (v.discount?.value ?? 0) > 0;
                         return GestureDetector(
-                          onTap: () => onVariantChanged(v),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: EdgeInsets.only(right: 12.w),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14.w, vertical: 10.h),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColor.primary.withValues(alpha: 0.06)
-                                  : context.vColors.surface,
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColor.primary
-                                    : context.vColors.divider,
-                                width: isSelected ? 1.5 : 1,
-                              ),
-                              borderRadius: BorderRadius.circular(12.r),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColor.primary.withValues(alpha: 0.12),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      )
-                                    ]
-                                  : [],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (hasDiscount)
-                                  Container(
-                                    margin: EdgeInsets.only(bottom: 4.h),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 6.w, vertical: 2.h),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFFE53935),
-                                          Color(0xFFFF7043)
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.circular(4.r),
-                                    ),
-                                    child: Text(
-                                      'Save Rs.${v.discount?.value?.toInt()}',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                Text(
-                                  '${v.unitValue?.toInt()} ${v.unit}',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: isSelected
-                                        ? AppColor.primary
-                                        : context.vColors.onSurface,
-                                  ),
+                          onTap: isOutOfStock ? null : () => onVariantChanged(v),
+                          child: Opacity(
+                            opacity: isOutOfStock ? 0.45 : 1.0,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: EdgeInsets.only(right: 12.w),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 10.h),
+                              decoration: BoxDecoration(
+                                color: isOutOfStock
+                                    ? context.vColors.surfaceVariant
+                                    : isSelected
+                                        ? AppColor.primary.withValues(alpha: 0.06)
+                                        : context.vColors.surface,
+                                border: Border.all(
+                                  color: isOutOfStock
+                                      ? context.vColors.divider
+                                      : isSelected
+                                          ? AppColor.primary
+                                          : context.vColors.divider,
+                                  width: isSelected && !isOutOfStock ? 1.5 : 1,
                                 ),
-                                SizedBox(height: 3.h),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Rs.${v.actualPrice.toInt()}',
-                                      style: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: context.vColors.onSurface,
+                                borderRadius: BorderRadius.circular(12.r),
+                                boxShadow: isSelected && !isOutOfStock
+                                    ? [
+                                        BoxShadow(
+                                          color: AppColor.primary.withValues(alpha: 0.12),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        )
+                                      ]
+                                    : [],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (hasDiscount && !isOutOfStock)
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 4.h),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 6.w, vertical: 2.h),
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFFE53935),
+                                            Color(0xFFFF7043)
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.r),
                                       ),
-                                    ),
-                                    if (hasDiscount) ...[
-                                      SizedBox(width: 4.w),
-                                      Text(
-                                        'MRP ${v.pricePerUnit?.toInt()}',
+                                      child: Text(
+                                        'Save Rs.${v.discount?.value?.toInt()}',
                                         style: TextStyle(
-                                          fontSize: 11.sp,
-                                          color: context.vColors.onSurfaceMuted,
-                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.white,
+                                          fontSize: 9.sp,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ],
-                                  ],
-                                ),
-                              ],
+                                    ),
+                                  Text(
+                                    '${v.unitValue?.toInt()} ${v.unit}',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: isSelected && !isOutOfStock
+                                          ? AppColor.primary
+                                          : context.vColors.onSurface,
+                                    ),
+                                  ),
+                                  SizedBox(height: 3.h),
+                                  if (isOutOfStock)
+                                    Text(
+                                      'Out of Stock',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.red.shade400,
+                                      ),
+                                    )
+                                  else
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Rs.${displayPrice.toInt()}',
+                                          style: TextStyle(
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: context.vColors.onSurface,
+                                          ),
+                                        ),
+                                        if (hasDiscount) ...[
+                                          SizedBox(width: 4.w),
+                                          Text(
+                                            'MRP ${v.pricePerUnit?.toInt()}',
+                                            style: TextStyle(
+                                              fontSize: 11.sp,
+                                              color: context.vColors.onSurfaceMuted,
+                                              decoration: TextDecoration.lineThrough,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );

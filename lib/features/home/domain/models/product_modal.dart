@@ -335,6 +335,8 @@ class ProductData {
     }
     return pricePerUnit!;
   }
+
+  bool get isOutOfStock => (quantity ?? 0) == 0;
 }
 
 class ProductDiscount {

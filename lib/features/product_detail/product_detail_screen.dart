@@ -99,8 +99,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final vc = context.vColors;
     final product = _currentProduct;
-    final hasDiscount =
-        product.discount != null && (product.discount?.value ?? 0) > 0;
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final isOutOfStock = product.isOutOfStock;
+    final displayPrice = isBusiness
+        ? (product.businessPricePerUnit ?? product.actualPrice)
+        : product.actualPrice;
+    final hasDiscount = !isBusiness &&
+        product.discount != null &&
+        (product.discount?.value ?? 0) > 0;
     final totalItems = ref.watch(totalCartItemsProvider);
 
     return CustomScaffoldWrapper(
@@ -180,7 +186,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ),
                             SizedBox(height: 1.h),
                             Text(
-                              'Rs. ${product.actualPrice.toInt()}',
+                              'Rs. ${displayPrice.toInt()}',
                               style: TextStyle(
                                 color: AppColor.primary,
                                 fontSize: 11.sp,
@@ -269,7 +275,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              'Rs. ${product.actualPrice.toInt()}',
+                              'Rs. ${displayPrice.toInt()}',
                               style: TextStyle(
                                 fontSize: 22.sp,
                                 fontWeight: FontWeight.bold,
@@ -310,15 +316,34 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ],
                           ],
                         ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Inclusive of all taxes',
-                          style: TextStyle(
-                            fontSize: 9.sp,
-                            color: vc.onSurfaceMuted,
-                            fontStyle: FontStyle.italic,
+                        SizedBox(height: 4.h),
+                        if (isOutOfStock)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8.w, vertical: 3.h),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(6.r),
+                              border: Border.all(color: Colors.red.shade200),
+                            ),
+                            child: Text(
+                              'Out of Stock',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red.shade600,
+                              ),
+                            ),
+                          )
+                        else
+                          Text(
+                            'Inclusive of all taxes',
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              color: vc.onSurfaceMuted,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),

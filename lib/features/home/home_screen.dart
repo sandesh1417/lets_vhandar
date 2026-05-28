@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
@@ -94,11 +95,84 @@ class _SuggestProductCard extends StatelessWidget {
   }
 }
 
-class HomeScreen extends ConsumerWidget {
+class _BackToTopButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _BackToTopButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24.r),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 9.h),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.28),
+              borderRadius: BorderRadius.circular(24.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              Icons.keyboard_arrow_up_rounded,
+              size: 22.sp,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final _scrollController = ScrollController();
+  bool _showBackToTop = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final max = _scrollController.position.maxScrollExtent;
+    if (max <= 0) return;
+    final show = _scrollController.offset / max >= 0.4;
+    if (show != _showBackToTop) {
+      setState(() => _showBackToTop = show);
+    }
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: AppColor.primary,
@@ -107,69 +181,91 @@ class HomeScreen extends ConsumerWidget {
       ),
       child: Container(
         color: context.vColors.scaffoldBg,
-        child: RefreshIndicator(
-          color: AppColor.primary,
-          onRefresh: () async {
-            ref.invalidate(bannerProvider);
-            ref.invalidate(featuredProductsProvider);
-            ref.invalidate(homeCategoryProvider);
-            ref.invalidate(allCategoryProvider);
-          },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            slivers: [
-              const HomeHeader(),
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 16.h),
-                    const HomeBannerSlider(),
-                    SizedBox(height: 16.h),
-                    const HomeSectionTitle(
-                      title: 'Featured Products',
-                      subtitle: 'Hand-picked for you today',
-                    ),
-                    const HomeFeaturedProductsList(),
-                    SizedBox(height: 16.h),
-                    const HomeSectionTitle(
-                      title: 'Shop by Category',
-                      subtitle: 'Find exactly what you need',
-                    ),
-                    // ignore: prefer_const_constructors
-                    HomeCategoriesGrid(),
-                    SizedBox(height: 16.h),
-                    // ignore: prefer_const_constructors
-                    HomeCategoryProductList(),
-                    SizedBox(height: 16.h),
-                    HomeSectionTitle(
-                      title: 'Featured Brands',
-                      subtitle: 'Top brands we carry',
-                      onSeeAll: () => context.push('/brands'),
-                    ),
-                    const HomeFeaturedBrandsList(),
-                    SizedBox(height: 24.h),
-                    _SuggestProductCard(),
-                    SizedBox(height: 16.h),
-                    Opacity(
-                      opacity: 0.5,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 200.h,
-                        child: SvgPicture.asset(
-                          'assets/images/delivering_happiness.svg',
-                          fit: BoxFit.contain,
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              color: AppColor.primary,
+              onRefresh: () async {
+                ref.invalidate(bannerProvider);
+                ref.invalidate(featuredProductsProvider);
+                ref.invalidate(homeCategoryProvider);
+                ref.invalidate(allCategoryProvider);
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                slivers: [
+                  const HomeHeader(),
+                  SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 16.h),
+                        const HomeBannerSlider(),
+                        SizedBox(height: 16.h),
+                        const HomeSectionTitle(
+                          title: 'Featured Products',
+                          subtitle: 'Hand-picked for you today',
                         ),
-                      ),
+                        const HomeFeaturedProductsList(),
+                        SizedBox(height: 16.h),
+                        const HomeSectionTitle(
+                          title: 'Shop by Category',
+                          subtitle: 'Find exactly what you need',
+                        ),
+                        // ignore: prefer_const_constructors
+                        HomeCategoriesGrid(),
+                        SizedBox(height: 16.h),
+                        // ignore: prefer_const_constructors
+                        HomeCategoryProductList(),
+                        SizedBox(height: 16.h),
+                        HomeSectionTitle(
+                          title: 'Featured Brands',
+                          subtitle: 'Top brands we carry',
+                          onSeeAll: () => context.push('/brands'),
+                        ),
+                        const HomeFeaturedBrandsList(),
+                        SizedBox(height: 24.h),
+                        _SuggestProductCard(),
+                        SizedBox(height: 16.h),
+                        Opacity(
+                          opacity: 0.5,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 200.h,
+                            child: SvgPicture.asset(
+                              'assets/images/delivering_happiness.svg',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: MediaQuery.of(context).padding.bottom + 80.h),
+                      ],
                     ),
-                    SizedBox(height: MediaQuery.of(context).padding.bottom + 80.h),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            // Frosted glass back-to-top button
+            Positioned(
+              top: topPadding + 62.h,
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                opacity: _showBackToTop ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                child: IgnorePointer(
+                  ignoring: !_showBackToTop,
+                  child: Center(
+                    child: _BackToTopButton(onTap: _scrollToTop),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -20,79 +20,88 @@ class CartCheckoutBar extends ConsumerWidget {
     final appliedCoupon = ref.watch(appliedCouponProvider);
     final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
     final double finalPrice = totalPrice - couponDiscount;
+    final isBusiness = ref.watch(isBusinessUserProvider);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 20.h),
       child: InkWell(
-          onTap: () {
+        onTap: () {
+          if (isBusiness) {
+            final slot = ref.read(selectedDeliverySlotProvider);
+            if (slot == null) {
+              ref.read(cartAddressErrorProvider.notifier).state = true;
+              return;
+            }
+          } else {
             final selectedAddress = ref.read(addressProvider).selected;
             if (selectedAddress == null) {
               ref.read(cartAddressErrorProvider.notifier).state = true;
               return;
             }
-            ref.read(cartAddressErrorProvider.notifier).state = false;
-            context.push(LVRoute.selectPaymentMethodScreen.route);
-          },
-          borderRadius: BorderRadius.circular(12.r),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            decoration: BoxDecoration(
-              color: AppColor.primary,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+          }
+          ref.read(cartAddressErrorProvider.notifier).state = false;
+          context.push(LVRoute.selectPaymentMethodScreen.route);
+        },
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: AppColor.primary,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Rs. ${finalPrice.toInt()}',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'TOTAL',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  if (isLoading)
+                    SizedBox(
+                      width: 18.w,
+                      height: 18.h,
+                      child: const CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  else
                     Text(
-                      'Rs. ${finalPrice.toInt()}',
+                      'Proceed to Pay',
                       style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    Text(
-                      'TOTAL',
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    if (isLoading)
-                      SizedBox(
-                        width: 18.w,
-                        height: 18.h,
-                        child: const CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    else
-                      Text(
-                        'Proceed to Pay',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    SizedBox(width: 8.w),
-                    if (!isLoading)
-                      Icon(Icons.arrow_forward_ios,
-                          size: 14.sp, color: Colors.white),
-                  ],
-                ),
-              ],
-            ),
+                  SizedBox(width: 8.w),
+                  if (!isLoading)
+                    Icon(Icons.arrow_forward_ios,
+                        size: 14.sp, color: Colors.white),
+                ],
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

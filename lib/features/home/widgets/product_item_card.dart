@@ -19,6 +19,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
   final VoidCallback? onTap;
   final double? width;
   final EdgeInsetsGeometry? margin;
+  final bool hideVariantPicker;
 
   const ProductItemCard({
     super.key,
@@ -26,6 +27,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
     this.onTap,
     this.width,
     this.margin,
+    this.hideVariantPicker = false,
   });
 
   static double get preferredHeight => 226.h;
@@ -47,39 +49,64 @@ class ProductItemCard extends ConsumerStatefulWidget {
         return Consumer(
           builder: (context, ref, _) {
             final vc = context.vColors;
+            final isBusiness = ref.watch(isBusinessUserProvider);
             return Container(
-              padding: EdgeInsets.all(16.w),
-              height: 400.h,
+              padding: EdgeInsets.only(
+                left: 16.w,
+                right: 16.w,
+                top: 16.h,
+                bottom: 16.h + MediaQuery.of(context).padding.bottom,
+              ),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.75,
+              ),
               decoration: BoxDecoration(
                 color: vc.surface,
                 borderRadius:
                     BorderRadius.vertical(top: Radius.circular(24.r)),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // drag handle
+                  Center(
+                    child: Container(
+                      width: 36.w,
+                      height: 4.h,
+                      margin: EdgeInsets.only(bottom: 12.h),
+                      decoration: BoxDecoration(
+                        color: vc.divider,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.name ?? 'Select Variant',
-                            style: TextStyle(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
-                              color: vc.onSurface,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name ?? 'Select Variant',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: vc.onSurface,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Choose your preferred size/pack',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: vc.onSurfaceMuted,
+                            Text(
+                              'Choose your preferred size/pack',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: vc.onSurfaceMuted,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       IconButton(
                         onPressed: () => Navigator.pop(context),
@@ -87,12 +114,13 @@ class ProductItemCard extends ConsumerStatefulWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20.h),
-                  Expanded(
-                    child: ref.watch(productVariantsProvider(product)).when(
-                          data: (variants) {
-                            if (variants.isEmpty) {
-                              return Center(
+                  SizedBox(height: 16.h),
+                  ref.watch(productVariantsProvider(product)).when(
+                        data: (variants) {
+                          if (variants.isEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 24.h),
+                              child: Center(
                                 child: Text(
                                   'No variants available',
                                   style: TextStyle(
@@ -100,166 +128,200 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                     color: vc.onSurfaceMuted,
                                   ),
                                 ),
-                              );
-                            }
-                            return ListView.separated(
+                              ),
+                            );
+                          }
+                          return ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.52,
+                            ),
+                            child: ListView.separated(
+                              shrinkWrap: true,
                               itemCount: variants.length,
                               separatorBuilder: (_, __) =>
-                                  SizedBox(height: 16.h),
+                                  SizedBox(height: 12.h),
                               itemBuilder: (context, index) {
                                 final v = variants[index];
+                                final isOutOfStock = v.isOutOfStock;
+                                final displayPrice = isBusiness
+                                    ? (v.businessPricePerUnit ?? v.actualPrice)
+                                    : v.actualPrice;
                                 final hasDiscount = v.discount != null &&
                                     (v.discount?.value ?? 0) > 0;
-                                final savings = v.pricePerUnit!.toInt() -
-                                    v.actualPrice.toInt();
+                                final savings = hasDiscount
+                                    ? v.pricePerUnit!.toInt() - v.actualPrice.toInt()
+                                    : 0;
 
                                 return GestureDetector(
-                                  onTap: () {
-                                    onVariantSelected(v);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(16.w),
-                                        decoration: BoxDecoration(
-                                          color: vc.surfaceVariant,
-                                          borderRadius:
-                                              BorderRadius.circular(16.r),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black
-                                                  .withValues(alpha: 0.05),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            if (v.images?.isNotEmpty ==
-                                                true) ...[
-                                              Container(
-                                                padding: EdgeInsets.all(4.w),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: vc.divider),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.r),
-                                                ),
-                                                child: CustomImageViewer(
-                                                  path: v.images!.first.url,
-                                                  width: 50.w,
-                                                  height: 50.h,
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                              SizedBox(width: 16.w),
-                                            ],
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    '${v.unitValue?.toInt()} ${v.unit}',
-                                                    style: TextStyle(
-                                                      fontSize: 16.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: vc.onSurface,
+                                  onTap: isOutOfStock
+                                      ? null
+                                      : () {
+                                          onVariantSelected(v);
+                                          Navigator.pop(context);
+                                        },
+                                  child: Opacity(
+                                    opacity: isOutOfStock ? 0.5 : 1.0,
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.all(16.w),
+                                          decoration: BoxDecoration(
+                                            color: context.isDark
+                                                ? vc.surfaceVariant
+                                                : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(16.r),
+                                            boxShadow: context.isDark
+                                                ? []
+                                                : [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.06),
+                                                      blurRadius: 10,
+                                                      offset:
+                                                          const Offset(0, 4),
                                                     ),
+                                                  ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              if (v.images?.isNotEmpty ==
+                                                  true) ...[
+                                                Container(
+                                                  padding: EdgeInsets.all(4.w),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: vc.divider),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12.r),
                                                   ),
-                                                  SizedBox(height: 4.h),
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .baseline,
-                                                    textBaseline:
-                                                        TextBaseline.alphabetic,
-                                                    children: [
-                                                      Text(
-                                                        'Rs ${v.actualPrice.toInt()}',
-                                                        style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight:
-                                                              FontWeight.w900,
-                                                          color: vc.onSurface,
-                                                        ),
-                                                      ),
-                                                      if (hasDiscount) ...[
-                                                        SizedBox(width: 8.w),
-                                                        Text(
-                                                          'MRP ${v.pricePerUnit?.toInt()}',
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: vc.onSurfaceMuted,
-                                                            decoration:
-                                                                TextDecoration
-                                                                    .lineThrough,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ],
+                                                  child: CustomImageViewer(
+                                                    path: v.images!.first.url,
+                                                    width: 50.w,
+                                                    height: 50.h,
+                                                    fit: BoxFit.contain,
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                            _VariantCartButton(product: v),
-                                          ],
-                                        ),
-                                      ),
-                                      if (hasDiscount)
-                                        Positioned(
-                                          top: 0,
-                                          left: 0,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10.w,
-                                                vertical: 4.h),
-                                            decoration: BoxDecoration(
-                                              gradient: const LinearGradient(
-                                                colors: [
-                                                  Color(0xFFE53935),
-                                                  Color(0xFFFF7043)
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(16.r),
-                                                bottomRight:
-                                                    Radius.circular(12.r),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text('SAVE',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 8.sp,
-                                                        fontWeight:
-                                                            FontWeight.w900)),
-                                                SizedBox(width: 4.w),
-                                                Text('Rs $savings',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 10.sp,
-                                                        fontWeight:
-                                                            FontWeight.w900)),
+                                                ),
+                                                SizedBox(width: 16.w),
                                               ],
-                                            ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${v.unitValue?.toInt()} ${v.unit}',
+                                                      style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: vc.onSurface,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 4.h),
+                                                    if (isOutOfStock)
+                                                      Text(
+                                                        'Out of Stock',
+                                                        style: TextStyle(
+                                                          fontSize: 13.sp,
+                                                          fontWeight: FontWeight.w600,
+                                                          color: Colors.red.shade500,
+                                                        ),
+                                                      )
+                                                    else
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .baseline,
+                                                        textBaseline:
+                                                            TextBaseline.alphabetic,
+                                                        children: [
+                                                          Text(
+                                                            'Rs ${displayPrice.toInt()}',
+                                                            style: TextStyle(
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight.w900,
+                                                              color: vc.onSurface,
+                                                            ),
+                                                          ),
+                                                          if (hasDiscount) ...[
+                                                            SizedBox(width: 8.w),
+                                                            Text(
+                                                              'MRP ${v.pricePerUnit?.toInt()}',
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
+                                                                color: vc.onSurfaceMuted,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .lineThrough,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ],
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                              if (!isOutOfStock)
+                                                _VariantCartButton(product: v),
+                                            ],
                                           ),
                                         ),
-                                    ],
+                                        if (hasDiscount && !isOutOfStock)
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10.w,
+                                                  vertical: 4.h),
+                                              decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  colors: [
+                                                    Color(0xFFE53935),
+                                                    Color(0xFFFF7043)
+                                                  ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                ),
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(16.r),
+                                                  bottomRight:
+                                                      Radius.circular(12.r),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text('SAVE',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 8.sp,
+                                                          fontWeight:
+                                                              FontWeight.w900)),
+                                                  SizedBox(width: 4.w),
+                                                  Text('Rs $savings',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 10.sp,
+                                                          fontWeight:
+                                                              FontWeight.w900)),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
-                            );
-                          },
+                            ),
+                          );
+                        },
                           loading: () =>
                               const Center(child: CustomCircularLoader()),
                           error: (e, s) => Center(
@@ -272,7 +334,6 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             ),
                           ),
                         ),
-                  ),
                 ],
               ),
             );
@@ -311,12 +372,22 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
   @override
   Widget build(BuildContext context) {
     final product = _currentProduct;
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final isOutOfStock = product.isOutOfStock;
+    final displayPrice = isBusiness
+        ? (product.businessPricePerUnit ?? product.actualPrice)
+        : product.actualPrice;
     final hasDiscount =
         product.discount != null && (product.discount?.value ?? 0) > 0;
     final vc = context.vColors;
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: widget.onTap != null
+          ? () {
+              HapticFeedback.lightImpact();
+              widget.onTap!();
+            }
+          : null,
       child: Container(
         width: widget.width ?? 140.w,
         height: ProductItemCard.preferredHeight,
@@ -351,13 +422,41 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       bottomRight: Radius.zero,
                     ),
                   ),
-                  child: CustomImageViewer(
-                    path: product.images?.first.url,
-                    borderRadius: 0.r,
-                    fit: BoxFit.contain,
+                  child: Opacity(
+                    opacity: isOutOfStock ? 0.45 : 1.0,
+                    child: CustomImageViewer(
+                      path: product.images?.first.url,
+                      borderRadius: 0.r,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-                if (hasDiscount)
+                // Out of stock banner
+                if (isOutOfStock)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.55),
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      child: Text(
+                        'OUT OF STOCK',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                // Discount badge (only for in-stock retail items)
+                if (hasDiscount && !isOutOfStock)
                   Positioned(
                     top: 0,
                     left: 0,
@@ -440,31 +539,34 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
                       SizedBox(height: 6.h),
+                      // Variant pill: only shown when NOT in slider mode
                       (widget.product.hasVariant == true ||
-                              widget.product.parentId != null)
+                                  widget.product.parentId != null) &&
+                              !widget.hideVariantPicker
                           ? GestureDetector(
                               onTap: _showVariantBottomSheet,
                               child: Container(
+                                width: double.infinity,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8.w, vertical: 3.h),
                                 decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: vc.divider),
+                                  border: Border.all(color: vc.divider),
                                   borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Row(
-                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                        product.unitValue != null
-                                            ? '${product.unitValue!.toInt()} ${product.unit ?? ''}'
-                                            : product.unit ?? '',
-                                        style: TextStyle(
-                                          fontSize: 10.sp,
-                                          color: vc.onSurface,
-                                          fontWeight: FontWeight.w600,
-                                        )),
-                                    SizedBox(width: 4.w),
+                                    Expanded(
+                                      child: Text(
+                                          product.unitValue != null
+                                              ? '${product.unitValue!.toInt()} ${product.unit ?? ''}'
+                                              : product.unit ?? '',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: vc.onSurface,
+                                            fontWeight: FontWeight.w600,
+                                          )),
+                                    ),
                                     Icon(Icons.keyboard_arrow_down,
                                         size: 14.sp,
                                         color: vc.onSurfaceMuted),
@@ -489,13 +591,13 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Rs. ${product.actualPrice.toInt()}',
+                          Text('Rs. ${displayPrice.toInt()}',
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 color: vc.onSurface,
                               )),
-                          if (hasDiscount)
+                          if (hasDiscount && !isOutOfStock)
                             Text('MRP ${product.pricePerUnit?.toInt()}',
                                 style: TextStyle(
                                     fontSize: 9.sp,
@@ -506,112 +608,138 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     decorationThickness: 2.0)),
                         ],
                       ),
-                      Consumer(
-                        builder: (context, ref, _) {
-                          // Watch the cartItems to trigger rebuilds on quantity changes
-                          ref.watch(cartProvider);
-                          final cartCount = ref
-                              .read(cartProvider.notifier)
-                              .getCartItemCount(product.id!);
-                          if (cartCount == 0) {
-                            return GestureDetector(
-                              onTap: () {
-                                final loginState = ref.read(loginProvider);
-                                if (loginState.isGuest || !loginState.isLoggedIn) {
-                                  context.go(LVRoute.loginScreen.route);
-                                  return;
-                                }
-                                HapticFeedback.mediumImpact();
-                                CartFlyAnimator.fly(
-                                  context,
-                                  product.images?.isNotEmpty == true
-                                      ? product.images!.first.url
-                                      : null,
-                                  _imageCenter(),
-                                );
-                                ref
-                                    .read(cartProvider.notifier)
-                                    .addToCart(product);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w, vertical: 6.h),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: AppColor.primary),
-                                  borderRadius: BorderRadius.circular(6.r),
-                                ),
-                                child: Text(
-                                  'ADD',
-                                  style: TextStyle(
-                                    color: AppColor.primary,
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w800,
+                      if (isOutOfStock)
+                        // Disabled out-of-stock button
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                          child: Text(
+                            'Out of\nStock',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        )
+                      else
+                        Consumer(
+                          builder: (context, ref, _) {
+                            ref.watch(cartProvider);
+                            final cartCount = ref
+                                .read(cartProvider.notifier)
+                                .getCartItemCount(product.id!);
+                            if (cartCount == 0) {
+                              return GestureDetector(
+                                onTap: () {
+                                  final loginState = ref.read(loginProvider);
+                                  if (loginState.isGuest || !loginState.isLoggedIn) {
+                                    context.go(LVRoute.loginScreen.route);
+                                    return;
+                                  }
+                                  // Open variant popup for variant products
+                                  if (widget.product.hasVariant == true ||
+                                      widget.product.parentId != null) {
+                                    HapticFeedback.lightImpact();
+                                    _showVariantBottomSheet();
+                                    return;
+                                  }
+                                  HapticFeedback.mediumImpact();
+                                  CartFlyAnimator.fly(
+                                    context,
+                                    product.images?.isNotEmpty == true
+                                        ? product.images!.first.url
+                                        : null,
+                                    _imageCenter(),
+                                  );
+                                  ref
+                                      .read(cartProvider.notifier)
+                                      .addToCart(product);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w, vertical: 6.h),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColor.primary),
+                                    borderRadius: BorderRadius.circular(6.r),
                                   ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Container(
-                              height: 30.h,
-                              decoration: BoxDecoration(
-                                color: AppColor.primary,
-                                borderRadius: BorderRadius.circular(4.r),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      HapticFeedback.lightImpact();
-                                      CartFlyAnimator.blast(
-                                        context,
-                                        product.images?.isNotEmpty == true
-                                            ? product.images!.first.url
-                                            : null,
-                                      );
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount - 1);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 6.w, vertical: 4.h),
-                                      color: Colors.transparent,
-                                      child: Icon(Icons.remove,
-                                          color: Colors.white, size: 16.sp),
-                                    ),
-                                  ),
-                                  Text(
-                                    '$cartCount',
+                                  child: Text(
+                                    'ADD',
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.bold,
+                                      color: AppColor.primary,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w800,
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      HapticFeedback.lightImpact();
-                                      ref
-                                          .read(cartProvider.notifier)
-                                          .updateQuantity(
-                                              product.id!, cartCount + 1);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 6.w, vertical: 4.h),
-                                      color: Colors.transparent,
-                                      child: Icon(Icons.add,
-                                          color: Colors.white, size: 16.sp),
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                height: 30.h,
+                                decoration: BoxDecoration(
+                                  color: AppColor.primary,
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        CartFlyAnimator.blast(
+                                          context,
+                                          product.images?.isNotEmpty == true
+                                              ? product.images!.first.url
+                                              : null,
+                                        );
+                                        ref
+                                            .read(cartProvider.notifier)
+                                            .updateQuantity(
+                                                product.id!, cartCount - 1);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 4.h),
+                                        color: Colors.transparent,
+                                        child: Icon(Icons.remove,
+                                            color: Colors.white, size: 16.sp),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                                    Text(
+                                      '$cartCount',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        ref
+                                            .read(cartProvider.notifier)
+                                            .updateQuantity(
+                                                product.id!, cartCount + 1);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 4.h),
+                                        color: Colors.transparent,
+                                        child: Icon(Icons.add,
+                                            color: Colors.white, size: 16.sp),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        ),
                     ],
                   ),
                 ],
@@ -636,59 +764,73 @@ class _VariantCartButton extends ConsumerWidget {
     final cartCount =
         ref.read(cartProvider.notifier).getCartItemCount(product.id!);
 
+    final btnHeight = 34.h;
     if (cartCount == 0) {
-      return ElevatedButton(
-        onPressed: () {
-          final loginState = ref.read(loginProvider);
-          if (loginState.isGuest || !loginState.isLoggedIn) {
-            context.go(LVRoute.loginScreen.route);
-            return;
-          }
-          ref.read(cartProvider.notifier).addToCart(product);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: context.vColors.surface,
-          side: BorderSide(color: AppColor.primary),
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
+      return SizedBox(
+        height: btnHeight,
+        child: ElevatedButton(
+          onPressed: () {
+            final loginState = ref.read(loginProvider);
+            if (loginState.isGuest || !loginState.isLoggedIn) {
+              context.go(LVRoute.loginScreen.route);
+              return;
+            }
+            HapticFeedback.mediumImpact();
+            ref.read(cartProvider.notifier).addToCart(product);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.vColors.surface,
+            side: BorderSide(color: AppColor.primary),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.r),
+            ),
           ),
+          child: Text('ADD', style: TextStyle(color: AppColor.primary, fontSize: 12.sp, fontWeight: FontWeight.w800)),
         ),
-        child: Text('ADD', style: TextStyle(color: AppColor.primary)),
       );
     } else {
-      return Container(
-        decoration: BoxDecoration(
-          color: AppColor.primary,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () => ref
-                  .read(cartProvider.notifier)
-                  .updateQuantity(product.id!, cartCount - 1),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                color: Colors.transparent,
-                child: const Icon(Icons.remove, color: Colors.white, size: 16),
+      return SizedBox(
+        height: btnHeight,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColor.primary,
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  ref
+                      .read(cartProvider.notifier)
+                      .updateQuantity(product.id!, cartCount - 1);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  color: Colors.transparent,
+                  child: Icon(Icons.remove, color: Colors.white, size: 14.sp),
+                ),
               ),
-            ),
-            Text('$cartCount',
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-            GestureDetector(
-              onTap: () => ref
-                  .read(cartProvider.notifier)
-                  .updateQuantity(product.id!, cartCount + 1),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                color: Colors.transparent,
-                child: const Icon(Icons.add, color: Colors.white, size: 16),
+              Text('$cartCount',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp)),
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  ref
+                      .read(cartProvider.notifier)
+                      .updateQuantity(product.id!, cartCount + 1);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  color: Colors.transparent,
+                  child: Icon(Icons.add, color: Colors.white, size: 14.sp),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }

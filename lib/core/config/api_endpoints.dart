@@ -28,6 +28,7 @@ class ApiUrl {
   static String feedbacks = 'feedbacks';
   static String faqs = 'faqs';
   static String productSuggestions = 'product-suggestions';
+  static String timeSlots = 'time-slots';
 }
 
 // https://api.vhandar.com/orders

@@ -97,6 +97,56 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
     }
   }
 
+  Future<void> registerBusinessWithOtp(
+    BuildContext context, {
+    required String otp,
+    required String phoneNumber,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String businessName,
+    required String businessCategory,
+    required String panNumber,
+    required String vatNumber,
+    String? phoneCode,
+    double? lat,
+    double? long,
+    String? address,
+    VoidCallback? onSuccess,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    final result = await _authRepository.registerBusiness(
+      phoneNumber: phoneNumber,
+      phoneCode: phoneCode ?? '+977',
+      otp: otp,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      businessName: businessName,
+      businessCategory: businessCategory,
+      name: businessName,
+      panNumber: panNumber,
+      vatNumber: vatNumber,
+      lat: lat?.toString(),
+      long: long?.toString(),
+      address: address,
+    );
+
+    switch (result) {
+      case Success(value: final data):
+        state = state.copyWith(isLoading: false, isRegistered: true);
+        CustomSnackbar.success(context,
+            message: data.message ?? 'Business registered successfully');
+        onSuccess?.call();
+        break;
+      case Error(failure: final failure):
+        CustomSnackbar.error(context, message: failure.message);
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+        break;
+    }
+  }
+
   void reset() {
     state = const RegistrationState();
   }

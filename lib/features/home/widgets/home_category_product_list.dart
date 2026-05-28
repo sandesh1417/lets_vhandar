@@ -42,7 +42,10 @@ class _CategorySection extends ConsumerWidget {
 
     return productsAsync.when(
       data: (products) {
-        if (products.isEmpty) return const SizedBox.shrink();
+        final visible = products
+            .where((p) => !p.isOutOfStock && p.parentId == null)
+            .toList();
+        if (visible.isEmpty) return const SizedBox.shrink();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,19 +58,18 @@ class _CategorySection extends ConsumerWidget {
             ),
             SizedBox(
               height: ProductItemCard.preferredHeight,
-
               child: ListView.builder(
                 padding: EdgeInsets.only(left: 16.w, right: 4.w),
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemCount: products.length,
+                itemCount: visible.length,
                 itemBuilder: (context, index) {
                   return ProductItemCard(
+                    product: visible[index],
                     onTap: () {
                       context.push(LVRoute.productDetailScreen.route,
-                          extra: products[index]);
+                          extra: visible[index]);
                     },
-                    product: products[index],
                   );
                 },
               ),

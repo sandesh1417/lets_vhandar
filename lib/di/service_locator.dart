@@ -9,6 +9,7 @@ import 'package:lets_vhandar/features/home/data/repositories/brand_repository.da
 import 'package:lets_vhandar/features/home/data/repositories/category_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/general_settings_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:lets_vhandar/features/home/data/repositories/time_slot_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/warehouse_repository.dart';
 import 'package:lets_vhandar/features/order/data/order_repository.dart';
 
@@ -66,6 +67,12 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<GeneralSettingsRepository>()) {
     locator.registerLazySingleton<GeneralSettingsRepository>(
       () => GeneralSettingsRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<TimeSlotRepository>()) {
+    locator.registerLazySingleton<TimeSlotRepository>(
+      () => TimeSlotRepository(locator<ApiClient>()),
     );
   }
 

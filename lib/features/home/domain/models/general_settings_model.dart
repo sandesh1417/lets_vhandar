@@ -30,6 +30,7 @@ class GeneralSettings {
   final num? businessDeliveryCharge;
   final bool? showMainBanners;
   final bool? showSliderBanners;
+  final List<String>? deliveryTimeSlots;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -44,6 +45,7 @@ class GeneralSettings {
     this.businessDeliveryCharge,
     this.showMainBanners,
     this.showSliderBanners,
+    this.deliveryTimeSlots,
     this.createdAt,
     this.updatedAt,
   });
@@ -59,6 +61,9 @@ class GeneralSettings {
         businessDeliveryCharge: json["businessDeliveryCharge"],
         showMainBanners: json["showMainBanners"],
         showSliderBanners: json["showSliderBanners"],
+        deliveryTimeSlots: json["deliveryTimeSlots"] == null
+            ? null
+            : List<String>.from(json["deliveryTimeSlots"].map((x) => x.toString())),
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),

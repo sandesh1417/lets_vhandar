@@ -271,7 +271,7 @@ class _BrandsRow extends ConsumerWidget {
           color: context.vColors.surface,
           padding: EdgeInsets.symmetric(vertical: 10.h),
           child: SizedBox(
-            height: 88.h,
+            height: 96.h,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16.w),

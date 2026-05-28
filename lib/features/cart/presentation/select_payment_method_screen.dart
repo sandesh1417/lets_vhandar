@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
+import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -87,6 +88,13 @@ class _SelectPaymentMethodScreenState
     final orderState = ref.watch(orderProvider);
     final isLoading = orderState.isPlacingOrder;
     final vc = context.vColors;
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final selectedSlotId = ref.watch(selectedDeliverySlotProvider);
+    final slots = ref.watch(timeSlotProvider).valueOrNull ?? [];
+    final selectedSlotObj = slots.where((s) => s.id == selectedSlotId).firstOrNull;
+    final selectedSlotLabel = selectedSlotObj != null
+        ? '${selectedSlotObj.slotName}  ${selectedSlotObj.displayTime}'.trim()
+        : selectedSlotId;
 
     return CustomScaffoldWrapper(
       backgroundColor: context.vColors.scaffoldBg,
@@ -149,8 +157,63 @@ class _SelectPaymentMethodScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ─── Delivery To Home Section ──────────────────────────────────
-                    if (selectedAddress != null) ...[
+                    // ─── Delivery Info Section ─────────────────────────────────────
+                    if (isBusiness && selectedSlotId != null) ...[
+                      Text(
+                        'Delivery Time Slot',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: vc.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          color: AppColor.primary.withValues(alpha: 0.07),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(10.w),
+                              decoration: BoxDecoration(
+                                color: AppColor.primary,
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: Icon(Icons.schedule_rounded,
+                                  color: Colors.white, size: 20.sp),
+                            ),
+                            SizedBox(width: 12.w),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Scheduled Delivery',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    color: vc.onSurfaceMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  selectedSlotLabel ?? '',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: vc.onSurface,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                    ] else if (!isBusiness && selectedAddress != null) ...[
                       Text(
                         'Delivery To Home',
                         style: TextStyle(
@@ -166,7 +229,7 @@ class _SelectPaymentMethodScreenState
                         decoration: BoxDecoration(
                           color: vc.surface,
                           borderRadius: BorderRadius.circular(12.r),
-                          ),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -195,7 +258,7 @@ class _SelectPaymentMethodScreenState
                                 if (selectedAddress.landMark != null)
                                   selectedAddress.landMark,
                                 selectedAddress.description,
-                              ].join(', '),
+                              ].where((e) => e != null && e.isNotEmpty).join(', '),
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 color: AppColor.textMuted,
@@ -282,7 +345,7 @@ class _SelectPaymentMethodScreenState
                                     ),
                                     SizedBox(height: 4.h),
                                     Text(
-                                      'Rs. ${item.totalPrice.toInt()}',
+                                      'Rs. ${item.priceFor(isBusiness).toInt()}',
                                       style: TextStyle(
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.bold,
@@ -486,19 +549,27 @@ class _SelectPaymentMethodScreenState
   }
 
   Future<void> _placeOrder(BuildContext context) async {
+    final loginState = ref.read(loginProvider);
+    final isBusiness = loginState.user?.isBusiness ?? false;
+    final selectedSlot = ref.read(selectedDeliverySlotProvider);
     final selectedAddress = ref.read(addressProvider).selected;
-    if (selectedAddress == null) {
-      CustomSnackbar.error(context,
-          message: 'Please select a delivery address first');
-      return;
+
+    if (isBusiness) {
+      if (selectedSlot == null) {
+        CustomSnackbar.error(context, message: 'Please select a delivery time slot');
+        return;
+      }
+    } else {
+      if (selectedAddress == null) {
+        CustomSnackbar.error(context, message: 'Please select a delivery address first');
+        return;
+      }
     }
 
     final cartItems = ref.read(cartProvider);
     if (cartItems.isEmpty) return;
 
-    final loginState = ref.read(loginProvider);
     final userId = loginState.user?.id;
-
     if (userId == null) {
       CustomSnackbar.error(context, message: 'Please login to place order');
       return;
@@ -506,43 +577,48 @@ class _SelectPaymentMethodScreenState
 
     final products = cartItems.map((item) {
       final productMap = item.product.toMap();
-
-      // The Order API expects images as a list of Strings (paths), not objects
       final imagesList = item.product.images?.map((e) => e.path).toList() ?? [];
       final featuredImagesList =
           item.product.featuredImages?.map((e) => e.path).toList() ?? [];
-
-      // Clean up the map: replace image objects with paths, remove unrecognized keys
       productMap['images'] = imagesList;
       productMap['featuredImages'] = featuredImagesList;
-      productMap.remove(
-          'hasVariant'); // Per server error: "Unrecognized key(s) in object: 'hasVariant'"
-
+      productMap.remove('hasVariant');
+      final linePrice = item.priceFor(isBusiness);
       return {
         ...productMap,
         'count': item.quantity,
-        'totalPrice': item.totalPrice,
-        'netPrice': item.totalPrice,
+        'totalPrice': linePrice,
+        'netPrice': linePrice,
       };
     }).toList();
 
-    final location = {
-      'lat': selectedAddress.lat,
-      'long': selectedAddress.long,
-      'userId': selectedAddress.userId ?? userId,
-      'name': selectedAddress.name,
-      'description': selectedAddress.description,
-      'addressType': selectedAddress.addressType,
-      'landMark': selectedAddress.landMark,
-      'locality': selectedAddress.locality,
-      'phoneNumber': selectedAddress.phoneNumber,
-      'houseNumber': selectedAddress.houseNumber,
-      'floor': selectedAddress.floor,
-    };
+    // Business orders use business location from profile; personal orders use selected address
+    final bd = loginState.user?.businessDetail;
+    final location = isBusiness
+        ? {
+            'lat': (bd?['lat'] ?? bd?['latitude']) as num?,
+            'long': (bd?['long'] ?? bd?['longitude']) as num?,
+            'userId': userId,
+            'name': bd?['businessName'] ?? '',
+            'description': (bd?['locationAddress'] ?? bd?['addressName']) as String? ?? '',
+            'addressType': 'others',
+          }
+        : {
+            'lat': selectedAddress!.lat,
+            'long': selectedAddress.long,
+            'userId': selectedAddress.userId ?? userId,
+            'name': selectedAddress.name,
+            'description': selectedAddress.description,
+            'addressType': selectedAddress.addressType,
+            'landMark': selectedAddress.landMark,
+            'locality': selectedAddress.locality,
+            'phoneNumber': selectedAddress.phoneNumber,
+            'houseNumber': selectedAddress.houseNumber,
+            'floor': selectedAddress.floor,
+          };
 
     final totalPrice = ref.read(totalCartPriceProvider);
     final settingsAsync = ref.read(generalSettingsProvider);
-    final isBusiness = loginState.user?.isBusiness ?? false;
     final appliedCoupon = ref.read(appliedCouponProvider);
     final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
 
@@ -577,11 +653,11 @@ class _SelectPaymentMethodScreenState
           totalPayableAmount: grandTotal,
           handlingCharge: handlingCharge,
           deliveryCharge: finalDeliveryCharge,
-          cartId:
-              userId, // Using userId as cartId for now since it's a valid ObjectId
+          cartId: userId,
           location: location,
           appliedCouponCode: appliedCoupon?.code ?? '',
           couponDiscount: couponDiscount,
+          deliveryTimeSlot: isBusiness ? selectedSlot : null,
         );
 
     if (!context.mounted) return;

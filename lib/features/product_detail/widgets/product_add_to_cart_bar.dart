@@ -19,10 +19,16 @@ class ProductAddToCartBar extends ConsumerWidget {
     ref.watch(cartProvider);
     final cartCount =
         ref.read(cartProvider.notifier).getCartItemCount(product.id!);
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final isOutOfStock = product.isOutOfStock;
+    final displayPrice = isBusiness
+        ? (product.businessPricePerUnit ?? product.actualPrice)
+        : product.actualPrice;
 
     final vc = context.vColors;
-    final hasDiscount =
-        product.discount != null && (product.discount?.value ?? 0) > 0;
+    final hasDiscount = !isBusiness &&
+        product.discount != null &&
+        (product.discount?.value ?? 0) > 0;
     final savedAmount = hasDiscount
         ? ((product.pricePerUnit ?? 0) - product.actualPrice).toInt()
         : 0;
@@ -58,14 +64,24 @@ class ProductAddToCartBar extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Rs. ${product.actualPrice.toInt()}',
+                    'Rs. ${displayPrice.toInt()}',
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: vc.onSurface,
                     ),
                   ),
-                  if (hasDiscount) ...[
+                  if (isOutOfStock) ...[
+                    SizedBox(height: 2.h),
+                    Text(
+                      'Out of Stock',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade500,
+                      ),
+                    ),
+                  ] else if (hasDiscount) ...[
                     SizedBox(height: 2.h),
                     Text(
                       'MRP Rs.${product.pricePerUnit?.toInt()}',
@@ -97,83 +113,99 @@ class ProductAddToCartBar extends ConsumerWidget {
               ),
             ),
 
-            // Add / Stepper
+            // Add / Stepper / Out of stock
             SizedBox(
               width: 140.w,
               height: 44.h,
-              child: cartCount == 0
-                  ? GestureDetector(
-                      onTap: () {
-                        HapticFeedback.mediumImpact();
-                        ref.read(cartProvider.notifier).addToCart(product);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColor.primary,
-                              AppColor.primary.withValues(alpha: 0.85)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColor.primary.withValues(alpha: 0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Add to Cart',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
-                          ),
+              child: isOutOfStock
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Out of Stock',
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     )
-                  : Container(
-                      decoration: BoxDecoration(
-                        color: context.vColors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: AppColor.primary.withValues(alpha: 0.25),
-                          width: 1.w,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _StepButton(
-                            icon: Icons.remove,
-                            onTap: () => ref
-                                .read(cartProvider.notifier)
-                                .updateQuantity(product.id!, cartCount - 1),
-                          ),
-                          Text(
-                            '$cartCount',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColor.primary,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
+                  : cartCount == 0
+                      ? GestureDetector(
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            ref.read(cartProvider.notifier).addToCart(product);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColor.primary,
+                                  AppColor.primary.withValues(alpha: 0.85)
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColor.primary.withValues(alpha: 0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                           ),
-                          _StepButton(
-                            icon: Icons.add,
-                            onTap: () => ref
-                                .read(cartProvider.notifier)
-                                .updateQuantity(product.id!, cartCount + 1),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: context.vColors.surfaceVariant,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: AppColor.primary.withValues(alpha: 0.25),
+                              width: 1.w,
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _StepButton(
+                                icon: Icons.remove,
+                                onTap: () => ref
+                                    .read(cartProvider.notifier)
+                                    .updateQuantity(product.id!, cartCount - 1),
+                              ),
+                              Text(
+                                '$cartCount',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColor.primary,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              _StepButton(
+                                icon: Icons.add,
+                                onTap: () => ref
+                                    .read(cartProvider.notifier)
+                                    .updateQuantity(product.id!, cartCount + 1),
+                              ),
+                            ],
+                          ),
+                        ),
             ),
           ],
         ),

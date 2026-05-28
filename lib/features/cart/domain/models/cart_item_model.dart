@@ -20,4 +20,10 @@ class CartItem {
   }
 
   double get totalPrice => product.actualPrice * quantity;
+
+  double get businessTotalPrice =>
+      (product.businessPricePerUnit ?? product.actualPrice) * quantity;
+
+  double priceFor(bool isBusiness) =>
+      isBusiness ? businessTotalPrice : totalPrice;
 }

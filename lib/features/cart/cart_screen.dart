@@ -11,6 +11,7 @@ import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/cart/widgets/delivery_slot_selector.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
@@ -33,6 +34,7 @@ class CartScreen extends ConsumerWidget {
     final totalMrp = ref.watch(totalCartMrpProvider);
     final selectedAddress = ref.watch(addressProvider).selected;
     final addressError = ref.watch(cartAddressErrorProvider);
+    final isBusiness = ref.watch(isBusinessUserProvider);
 
     return Scaffold(
       backgroundColor: context.vColors.scaffoldBg,
@@ -205,42 +207,49 @@ class CartScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: 4.h),
-                      if (addressError && selectedAddress == null)
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-                          child: Row(
-                            children: [
-                              Icon(Icons.error_outline,
-                                  color: Colors.red.shade600, size: 15.sp),
-                              SizedBox(width: 6.w),
-                              Text(
-                                'Please select a delivery address to continue',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      if (isBusiness) ...[
+                        DeliverySlotSelector(
+                          isError: addressError,
                         ),
-                      _DeliveryAddressBanner(
-                        selectedAddress: selectedAddress,
-                        isError: addressError && selectedAddress == null,
-                        onTap: () {
-                          ref.read(cartAddressErrorProvider.notifier).state = false;
-                          final userId = ref.read(loginProvider).user?.id;
-                          if (userId != null) {
-                            showAddressSelectorSheet(context, userId: userId);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Please login to select address')),
-                            );
-                          }
-                        },
-                      ),
+                        SizedBox(height: 8.h),
+                      ] else ...[
+                        if (addressError && selectedAddress == null)
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_outline,
+                                    color: Colors.red.shade600, size: 15.sp),
+                                SizedBox(width: 6.w),
+                                Text(
+                                  'Please select a delivery address to continue',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        _DeliveryAddressBanner(
+                          selectedAddress: selectedAddress,
+                          isError: addressError && selectedAddress == null,
+                          onTap: () {
+                            ref.read(cartAddressErrorProvider.notifier).state = false;
+                            final userId = ref.read(loginProvider).user?.id;
+                            if (userId != null) {
+                              showAddressSelectorSheet(context, userId: userId);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Please login to select address')),
+                              );
+                            }
+                          },
+                        ),
+                      ],
                       CartCheckoutBar(totalPrice: totalPrice),
                       SizedBox(height: 8.h),
                     ],

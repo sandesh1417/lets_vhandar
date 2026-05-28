@@ -109,9 +109,10 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+      value: SystemUiOverlayStyle(
+        statusBarColor: AppColor.primary,
         statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -145,51 +146,58 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
         // Dark overlay with cutout
         _ScannerOverlay(),
 
-        // Top bar
-        SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => context.pop(),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Scan Barcode',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    _cameraController.toggleTorch();
-                    setState(() => _torchOn = !_torchOn);
-                  },
-                  icon: Icon(
-                    _torchOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+        // Top bar — green header
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColor.primary,
+                  AppColor.primary.withValues(alpha: 0.92),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
-          ),
-        ),
-
-        // Hint text
-        Align(
-          alignment: const Alignment(0, 0.25),
-          child: Text(
-            'Align barcode within the frame',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
-              fontSize: 13.sp,
-              fontFamily: 'Inter',
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white),
+                    ),
+                    Text(
+                      'Scan Barcode',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _cameraController.toggleTorch();
+                        setState(() => _torchOn = !_torchOn);
+                      },
+                      icon: Icon(
+                        _torchOn
+                            ? Icons.flash_on_rounded
+                            : Icons.flash_off_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -217,41 +225,83 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
             ),
           ),
 
-        // Bottom buttons
+        // White footer panel
         if (!_isProcessing)
           Align(
             alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
-                child: GestureDetector(
-                  onTap: () => setState(() => _isManualEntry = true),
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(14.r),
-                      border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.keyboard_outlined,
-                            color: Colors.white, size: 18.sp),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'Enter Barcode Manually',
-                          style: TextStyle(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.zero),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // "Type your barcode" pill
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          setState(() => _isManualEntry = true);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 28.w, vertical: 12.h),
+                          decoration: BoxDecoration(
                             color: Colors.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
+                            borderRadius: BorderRadius.circular(50.r),
+                            border: Border.all(
+                                color: Colors.grey.shade300, width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Type your barcode',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Inter',
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 20.h),
+                      // Footer info row
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(10.r),
+                            decoration: BoxDecoration(
+                              color: AppColor.primary.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Icon(Icons.qr_code_scanner_rounded,
+                                color: AppColor.primary, size: 22.sp),
+                          ),
+                          SizedBox(width: 14.w),
+                          Expanded(
+                            child: Text(
+                              'Scan barcodes, QR codes & product labels',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12.sp,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -475,6 +525,25 @@ class _OverlayPainter extends CustomPainter {
     // Bottom-right
     canvas.drawLine(Offset(r - bracketLen, b), Offset(r, b), bracketPaint);
     canvas.drawLine(Offset(r, b), Offset(r, b - bracketLen), bracketPaint);
+
+    // Center crosshair +
+    const crossLen = 14.0;
+    const crossW = 1.8;
+    final crossPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.75)
+      ..strokeWidth = crossW
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(Offset(cx - crossLen, cy), Offset(cx + crossLen, cy),
+        crossPaint);
+    canvas.drawLine(Offset(cx, cy - crossLen), Offset(cx, cy + crossLen),
+        crossPaint);
+    // Center dot
+    canvas.drawCircle(
+      Offset(cx, cy),
+      2.5,
+      Paint()..color = Colors.white.withValues(alpha: 0.9),
+    );
   }
 
   @override

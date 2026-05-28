@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
@@ -13,17 +17,15 @@ class PersonalInformationScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(loginProvider).user;
+    final isBusiness = user?.isBusiness == true;
+    final businessDetail = user?.businessDetail;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomScreenHeader(
-        title: 'Personal Information',
+        title: isBusiness ? 'Business Information' : 'Personal Information',
         trailing: GestureDetector(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Edit profile coming soon')),
-            );
-          },
+          onTap: () => context.push(LVRoute.editProfileScreen.route),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             decoration: BoxDecoration(
@@ -79,12 +81,12 @@ class PersonalInformationScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 46.r,
-                        backgroundColor:
-                            AppColor.primary.withValues(alpha: 0.1),
-                        child: Icon(Icons.person,
-                            size: 50.sp, color: AppColor.primary),
+                      child: SvgPicture.asset(
+                        isBusiness
+                            ? KImageConstant.businessProfile
+                            : KImageConstant.userProfile,
+                        width: 92.w,
+                        height: 92.w,
                       ),
                     ),
                   ),
@@ -94,9 +96,13 @@ class PersonalInformationScreen extends ConsumerWidget {
 
             SizedBox(height: 62.h),
 
-            // Name + phone under avatar
+            // Name + phone/category under avatar
             Text(
-              user?.name ?? 'User',
+              isBusiness
+                  ? (businessDetail?['businessName'] as String? ??
+                      user?.name ??
+                      'Business')
+                  : (user?.name ?? 'User'),
               style: TextStyle(
                 fontSize: 20.sp,
                 fontFamily: 'Inter',
@@ -106,7 +112,9 @@ class PersonalInformationScreen extends ConsumerWidget {
             ),
             SizedBox(height: 4.h),
             Text(
-              user?.phoneNumber ?? '',
+              isBusiness
+                  ? (businessDetail?['businessCategory'] as String? ?? '')
+                  : (user?.phoneNumber ?? ''),
               style: TextStyle(
                 fontSize: 13.sp,
                 fontFamily: 'Inter',
@@ -131,44 +139,84 @@ class PersonalInformationScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  _InfoRow(
-                    icon: Icons.person_outline,
-                    label: 'Full Name',
-                    value: user?.name ?? '-',
-                    showDivider: true,
-                  ),
-                  _InfoRow(
-                    icon: Icons.phone_outlined,
-                    label: 'Phone Number',
-                    value: user?.phoneNumber != null
-                        ? '${user?.phoneCode ?? ''} ${user?.phoneNumber}'
-                        : '-',
-                    showDivider: true,
-                  ),
-                  _InfoRow(
-                    icon: Icons.email_outlined,
-                    label: 'Email Address',
-                    value: user?.email?.isNotEmpty == true
-                        ? user!.email!
-                        : '-',
-                    showDivider: true,
-                  ),
-                  _InfoRow(
-                    icon: Icons.cake_outlined,
-                    label: 'Date of Birth',
-                    value: user?.birthDate ?? '-',
-                    showDivider: true,
-                  ),
-                  _InfoRow(
-                    icon: Icons.wc_outlined,
-                    label: 'Gender',
-                    value: user?.gender ?? '-',
-                    showDivider: false,
-                  ),
-                ],
-              ),
+              child: isBusiness
+                  ? Column(
+                      children: [
+                        _InfoRow(
+                          icon: Icons.store_outlined,
+                          label: 'Business Name',
+                          value: businessDetail?['businessName'] as String? ??
+                              '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.phone_outlined,
+                          label: 'Mobile Number',
+                          value: user?.phoneNumber != null
+                              ? '${user?.phoneCode ?? ''} ${user!.phoneNumber}'
+                              : '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.category_outlined,
+                          label: 'Category',
+                          value:
+                              businessDetail?['businessCategory'] as String? ??
+                                  '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.badge_outlined,
+                          label: _panVatLabel(businessDetail),
+                          value: _panVatValue(businessDetail),
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.location_on_outlined,
+                          label: 'Business Location',
+                          value: _locationAddress(businessDetail),
+                          showDivider: false,
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        _InfoRow(
+                          icon: Icons.person_outline,
+                          label: 'Full Name',
+                          value: user?.name ?? '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.phone_outlined,
+                          label: 'Phone Number',
+                          value: user?.phoneNumber != null
+                              ? '${user?.phoneCode ?? ''} ${user?.phoneNumber}'
+                              : '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.email_outlined,
+                          label: 'Email Address',
+                          value: user?.email?.isNotEmpty == true
+                              ? user!.email!
+                              : '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.cake_outlined,
+                          label: 'Date of Birth',
+                          value: user?.birthDate ?? '-',
+                          showDivider: true,
+                        ),
+                        _InfoRow(
+                          icon: Icons.wc_outlined,
+                          label: 'Gender',
+                          value: user?.gender ?? '-',
+                          showDivider: false,
+                        ),
+                      ],
+                    ),
             ),
 
             SizedBox(height: 24.h),
@@ -286,6 +334,24 @@ class _InfoRow extends StatelessWidget {
       ],
     );
   }
+}
+
+String _locationAddress(Map<String, dynamic>? detail) {
+  return (detail?['locationAddress'] ?? detail?['addressName'] ?? '-') as String;
+}
+
+String _panVatLabel(Map<String, dynamic>? detail) {
+  final pan = detail?['panNumber'] as String?;
+  if (pan != null && pan.isNotEmpty) return 'PAN No.';
+  return 'VAT No.';
+}
+
+String _panVatValue(Map<String, dynamic>? detail) {
+  final pan = detail?['panNumber'] as String?;
+  final vat = detail?['vatNumber'] as String?;
+  if (pan != null && pan.isNotEmpty) return pan;
+  if (vat != null && vat.isNotEmpty) return vat;
+  return '-';
 }
 
 void showDeleteAccountDialog(BuildContext context, WidgetRef ref) {

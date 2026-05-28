@@ -163,6 +163,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
     String paymentMethod = 'cashOnDelivery',
     String appliedCouponCode = '',
     double couponDiscount = 0,
+    String? deliveryTimeSlot,
   }) async {
     state = state.copyWith(isPlacingOrder: true, clearError: true);
 
@@ -179,11 +180,11 @@ class OrderNotifier extends StateNotifier<OrderState> {
       'dueAmount': 0,
       'cartId': cartId,
       'products': products,
-      'deliveryTime': '',
+      'deliveryTime': deliveryTimeSlot ?? '',
       'paymentMethod': paymentMethod,
       'totalSavedAmount': 0,
       'couponDiscount': couponDiscount,
-      'deliveryTimeSlot': null,
+      'deliveryTimeSlot': deliveryTimeSlot,
       'location': location,
     };
 

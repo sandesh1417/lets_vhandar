@@ -28,6 +28,7 @@ class AccountTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final loginState = ref.watch(loginProvider);
     final user = loginState.user;
+    final isBusiness = user?.isBusiness == true;
 
     final vc = context.vColors;
 
@@ -192,28 +193,32 @@ class AccountTab extends ConsumerWidget {
                   width: double.infinity,
                   color: AppColor.primary,
                 ),
-                Container(
-                  margin: EdgeInsets.only(
-                      top: 80.h, left: 16.w, right: 16.w),
-                  decoration: BoxDecoration(
-                    color: vc.surface,
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildProfileHeader(context, user),
-                      GestureDetector(
-                        onTap: () => context.push(LVRoute.vhandarPointsScreen.route),
-                        child: _buildVhandarPointCard(context, user?.vandarPoints ?? 0),
-                      ),
-                    ],
+                GestureDetector(
+                  onTap: () => context.push(LVRoute.personalInformationScreen.route),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: 80.h, left: 16.w, right: 16.w),
+                    decoration: BoxDecoration(
+                      color: vc.surface,
+                      borderRadius: BorderRadius.circular(16.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _buildProfileHeader(context, user),
+                        if (!isBusiness)
+                          GestureDetector(
+                            onTap: () => context.push(LVRoute.vhandarPointsScreen.route),
+                            child: _buildVhandarPointCard(context, user?.vandarPoints ?? 0),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -239,20 +244,22 @@ class AccountTab extends ConsumerWidget {
                     context.push(LVRoute.myListsScreen.route);
                   },
                 ),
-                AccountMenuItem(
-                  icon: Icons.location_on_outlined,
-                  title: 'Manage Address',
-                  onTap: () {
-                    context.push(LVRoute.savedAddressesScreen.route);
-                  },
-                ),
-                AccountMenuItem(
-                  icon: Icons.group_outlined,
-                  title: 'Family Members',
-                  onTap: () {
-                    context.push(LVRoute.familyMembersScreen.route);
-                  },
-                ),
+                if (!isBusiness)
+                  AccountMenuItem(
+                    icon: Icons.location_on_outlined,
+                    title: 'Manage Address',
+                    onTap: () {
+                      context.push(LVRoute.savedAddressesScreen.route);
+                    },
+                  ),
+                if (!isBusiness)
+                  AccountMenuItem(
+                    icon: Icons.group_outlined,
+                    title: 'Family Members',
+                    onTap: () {
+                      context.push(LVRoute.familyMembersScreen.route);
+                    },
+                  ),
                 AccountMenuItem(
                   icon: Icons.account_balance_wallet_outlined,
                   title: 'Wallet',
@@ -269,8 +276,12 @@ class AccountTab extends ConsumerWidget {
               title: 'Account Settings',
               children: [
                 AccountMenuItem(
-                  icon: Icons.person_outline,
-                  title: 'Personal Information',
+                  icon: isBusiness
+                      ? Icons.business_outlined
+                      : Icons.person_outline,
+                  title: isBusiness
+                      ? 'Business Information'
+                      : 'Personal Information',
                   onTap: () {
                     context.push(LVRoute.personalInformationScreen.route);
                   },
@@ -474,63 +485,204 @@ class AccountTab extends ConsumerWidget {
     );
   }
 
+  int _completionPercent(user) {
+    final isBusiness = user?.isBusiness == true;
+    final bd = user?.businessDetail as Map<String, dynamic>?;
+    if (isBusiness) {
+      final fields = [
+        bd?['businessName'] as String?,
+        user?.phoneNumber as String?,
+        bd?['businessCategory'] as String?,
+        (bd?['panNumber'] as String?)?.isNotEmpty == true
+            ? bd!['panNumber'] as String
+            : bd?['vatNumber'] as String?,
+        user?.email as String?,
+      ];
+      final filled = fields.where((f) => f != null && f.isNotEmpty).length;
+      return ((filled / fields.length) * 100).round();
+    } else {
+      final fields = [
+        user?.name as String?,
+        user?.phoneNumber as String?,
+        user?.email as String?,
+        user?.birthDate as String?,
+        user?.gender as String?,
+      ];
+      final filled = fields.where((f) => f != null && f.isNotEmpty).length;
+      return ((filled / fields.length) * 100).round();
+    }
+  }
+
   Widget _buildProfileHeader(BuildContext context, user) {
     final vc = context.vColors;
+    final isBusiness = user?.isBusiness == true;
+    final businessDetail = user?.businessDetail as Map<String, dynamic>?;
+    final displayName = isBusiness
+        ? (businessDetail?['businessName'] as String? ?? user?.name ?? 'Business')
+        : (user?.name ?? 'User Name');
+    final displayPhone = user?.phoneNumber ?? 'Phone Number';
+    final category = businessDetail?['businessCategory'] as String?;
+    final pan = businessDetail?['panNumber'] as String?;
+    final vat = businessDetail?['vatNumber'] as String?;
+    final email = user?.email as String?;
+    final birthDate = user?.birthDate as String?;
+    final percent = _completionPercent(user);
+    final isVerified = percent == 100;
+
     return Container(
-      padding: EdgeInsets.all(20.w),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(3.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColor.primary.withValues(alpha: 0.2),
-                width: 2,
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 30.r,
-              backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-              child: Icon(Icons.person, size: 35.sp, color: AppColor.primary),
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
+        padding: EdgeInsets.fromLTRB(20.w, 20.w, 20.w, 16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  user?.name ?? 'User Name',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: vc.onSurface,
-                  ),
+                SvgPicture.asset(
+                  isBusiness
+                      ? KImageConstant.businessProfile
+                      : KImageConstant.userProfile,
+                  width: 60.w,
+                  height: 60.w,
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  user?.phoneNumber ?? 'Phone Number',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: vc.onSurfaceMuted,
-                    fontWeight: FontWeight.w500,
+                SizedBox(width: 14.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              displayName,
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold,
+                                color: vc.onSurface,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isVerified) ...[
+                            SizedBox(width: 5.w),
+                            Icon(Icons.verified_rounded,
+                                size: 17.sp,
+                                color: AppColor.primary),
+                          ],
+                        ],
+                      ),
+                      SizedBox(height: 4.h),
+                      _IconInfoRow(
+                        icon: Icons.phone_outlined,
+                        text: displayPhone,
+                        vc: vc,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      if (email != null && email.isNotEmpty) ...[
+                        SizedBox(height: 3.h),
+                        _IconInfoRow(
+                          icon: Icons.email_outlined,
+                          text: email,
+                          vc: vc,
+                        ),
+                      ],
+                      if (!isBusiness &&
+                          birthDate != null &&
+                          birthDate.isNotEmpty) ...[
+                        SizedBox(height: 3.h),
+                        _IconInfoRow(
+                          icon: Icons.cake_outlined,
+                          text: birthDate,
+                          vc: vc,
+                        ),
+                      ],
+                      if (isBusiness) ...[
+                        if (category != null && category.isNotEmpty) ...[
+                          SizedBox(height: 5.h),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8.w, vertical: 3.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF3CD),
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: Text(
+                              _capitalize(category),
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF856404),
+                              ),
+                            ),
+                          ),
+                        ],
+                        if ((pan != null && pan.isNotEmpty) ||
+                            (vat != null && vat.isNotEmpty)) ...[
+                          SizedBox(height: 4.h),
+                          Text(
+                            pan != null && pan.isNotEmpty
+                                ? 'PAN: $pan'
+                                : 'VAT: $vat',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: vc.onSurfaceMuted,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ],
                   ),
                 ),
               ],
             ),
+            if (!isVerified) ...[
+              SizedBox(height: 14.h),
+              _buildCompletionBar(context, percent, vc),
+            ],
+          ],
+        ),
+      );
+  }
+
+  Widget _buildCompletionBar(
+      BuildContext context, int percent, VhandarColors vc) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Complete your profile',
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w600,
+                color: vc.onSurfaceMuted,
+              ),
+            ),
+            Text(
+              '$percent%',
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColor.primary,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 6.h),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4.r),
+          child: LinearProgressIndicator(
+            value: percent / 100,
+            minHeight: 5.h,
+            backgroundColor: AppColor.primary.withValues(alpha: 0.1),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(AppColor.primary),
           ),
-          // IconButton(
-          //   onPressed: () {}, // Navigate to edit profile
-          //   icon:
-          //       Icon(Icons.edit_outlined, color: AppColor.primary, size: 20.sp),
-          //   style: IconButton.styleFrom(
-          //     backgroundColor: AppColor.primary.withOpacity(0.05),
-          //     padding: EdgeInsets.all(8.w),
-          //   ),
-          // ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -751,6 +903,46 @@ class _ThemeOption extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+String _capitalize(String s) =>
+    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+
+class _IconInfoRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VhandarColors vc;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+
+  const _IconInfoRow({
+    required this.icon,
+    required this.text,
+    required this.vc,
+    this.fontSize,
+    this.fontWeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 12.sp, color: vc.onSurfaceMuted),
+        SizedBox(width: 5.w),
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: fontSize ?? 11.sp,
+              color: vc.onSurfaceMuted,
+              fontWeight: fontWeight ?? FontWeight.w400,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }
