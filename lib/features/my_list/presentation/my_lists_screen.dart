@@ -94,62 +94,14 @@ class MyListsScreen extends ConsumerWidget {
   }
 
   void _showCreateDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text(
-          'New List',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
-          ),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          textCapitalization: TextCapitalization.sentences,
-          decoration: InputDecoration(
-            hintText: 'List name (e.g. Weekly Groceries)',
-            hintStyle: TextStyle(fontSize: 13.sp, color: Colors.grey.shade400),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: AppColor.primary, width: 1.5),
-            ),
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 13.sp)),
-          ),
-          TextButton(
-            onPressed: () async {
-              final name = controller.text.trim();
-              if (name.isEmpty) return;
-              Navigator.pop(ctx);
-              await ref.read(myListProvider.notifier).createList(name);
-            },
-            child: Text(
-              'Create',
-              style: TextStyle(
-                color: AppColor.primary,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _NewListSheet(
+        onCreated: (name) async {
+          await ref.read(myListProvider.notifier).createList(name);
+        },
       ),
     );
   }
@@ -276,6 +228,190 @@ class _ListCard extends StatelessWidget {
                 color: vc.onSurfaceMuted, size: 20.sp),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// New List bottom sheet
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _NewListSheet extends StatefulWidget {
+  final Future<void> Function(String name) onCreated;
+
+  const _NewListSheet({required this.onCreated});
+
+  @override
+  State<_NewListSheet> createState() => _NewListSheetState();
+}
+
+class _NewListSheetState extends State<_NewListSheet> {
+  final _controller = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final name = _controller.text.trim();
+    if (name.isEmpty) return;
+    setState(() => _isLoading = true);
+    await widget.onCreated(name);
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h + bottomInset),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Handle ────────────────────────────────────────────
+          Center(
+            child: Container(
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: vc.divider,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+
+          // ── Title row ─────────────────────────────────────────
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(9.w),
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(Icons.list_alt_rounded,
+                    color: AppColor.primary, size: 20.sp),
+              ),
+              SizedBox(width: 12.w),
+              Text(
+                'New List',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w700,
+                  color: vc.onSurface,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.h),
+
+          // ── List name label ───────────────────────────────────
+          Text(
+            'List name',
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: vc.onSurfaceMuted,
+            ),
+          ),
+          SizedBox(height: 8.h),
+
+          // ── Text field ────────────────────────────────────────
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            textCapitalization: TextCapitalization.sentences,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontFamily: 'Inter',
+              color: vc.onSurface,
+            ),
+            onSubmitted: (_) => _submit(),
+            decoration: InputDecoration(
+              hintText: 'e.g. Weekly Groceries',
+              hintStyle: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                fontFamily: 'Inter',
+              ),
+              filled: true,
+              fillColor: vc.surfaceVariant,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: AppColor.primary, width: 1.5),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+              suffixIcon: _controller.text.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(Icons.close_rounded,
+                          size: 18.sp, color: vc.onSurfaceMuted),
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+          SizedBox(height: 24.h),
+
+          // ── Create button ─────────────────────────────────────
+          SizedBox(
+            width: double.infinity,
+            height: 50.h,
+            child: ElevatedButton(
+              onPressed: (_controller.text.trim().isEmpty || _isLoading)
+                  ? null
+                  : _submit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.primary,
+                disabledBackgroundColor: vc.divider,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
+              ),
+              child: _isLoading
+                  ? SizedBox(
+                      width: 22.w,
+                      height: 22.w,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      'Create List',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -329,7 +329,7 @@ class _SearchResultTile extends ConsumerWidget {
             ? () => ref
                 .read(myListProvider.notifier)
                 .removeProduct(listId, product.id!)
-            : () {
+            : () async {
                 final saved = SavedProduct(
                   id: product.id!,
                   name: product.name,
@@ -339,9 +339,17 @@ class _SearchResultTile extends ConsumerWidget {
                       ? product.images!.first.url
                       : null,
                 );
-                ref
+                final wasAdded = await ref
                     .read(myListProvider.notifier)
                     .addProduct(listId, saved);
+                if (!wasAdded && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${product.name ?? 'Item'} is already in this list'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
               },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),

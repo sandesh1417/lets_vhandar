@@ -347,6 +347,8 @@ class ProductItemCard extends ConsumerStatefulWidget {
 class _ProductItemCardState extends ConsumerState<ProductItemCard> {
   late ProductData _currentProduct;
   final GlobalKey _imageKey = GlobalKey();
+  final PageController _imagePageController = PageController();
+  int _imagePage = 0;
 
   @override
   void initState() {
@@ -354,10 +356,37 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
     _currentProduct = widget.product;
   }
 
+  @override
+  void dispose() {
+    _imagePageController.dispose();
+    super.dispose();
+  }
+
   Offset _imageCenter() {
     final box = _imageKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
     return box.localToGlobal(Offset(box.size.width / 2, box.size.height / 2));
+  }
+
+  Widget _buildImageArea(ProductData product) {
+    final images = product.images ?? [];
+    if (images.length <= 1) {
+      return CustomImageViewer(
+        path: images.isNotEmpty ? images.first.url : null,
+        borderRadius: 0.r,
+        fit: BoxFit.contain,
+      );
+    }
+    return PageView.builder(
+      controller: _imagePageController,
+      itemCount: images.length,
+      onPageChanged: (i) => setState(() => _imagePage = i),
+      itemBuilder: (_, i) => CustomImageViewer(
+        path: images[i].url,
+        borderRadius: 0.r,
+        fit: BoxFit.contain,
+      ),
+    );
   }
 
   void _showVariantBottomSheet() {
@@ -409,28 +438,62 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
           children: [
             Stack(
               children: [
-                Container(
-                  key: _imageKey,
-                  height: 105.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(6.r),
-                      topRight: Radius.circular(6.r),
-                      bottomLeft: Radius.zero,
-                      bottomRight: Radius.zero,
+                Hero(
+                  tag: 'product-img-${widget.product.id}',
+                  child: Container(
+                    key: _imageKey,
+                    height: 105.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(6.r),
+                        topRight: Radius.circular(6.r),
+                      ),
                     ),
-                  ),
-                  child: Opacity(
-                    opacity: isOutOfStock ? 0.45 : 1.0,
-                    child: CustomImageViewer(
-                      path: product.images?.first.url,
-                      borderRadius: 0.r,
-                      fit: BoxFit.contain,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(6.r),
+                        topRight: Radius.circular(6.r),
+                      ),
+                      child: Opacity(
+                        opacity: isOutOfStock ? 0.45 : 1.0,
+                        child: _buildImageArea(product),
+                      ),
                     ),
                   ),
                 ),
+                // Dots for multiple images
+                if ((product.images?.length ?? 0) > 1)
+                  Positioned(
+                    bottom: isOutOfStock ? 22.h : 5.h,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(product.images!.length, (i) {
+                        final isActive = _imagePage == i;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 6.w,
+                          height: 6.w,
+                          margin: EdgeInsets.symmetric(horizontal: 2.w),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isActive
+                                ? const Color(0xFF0A754E)
+                                : Colors.black.withValues(alpha: 0.25),
+                            border: Border.all(
+                              color: isActive
+                                  ? Colors.white.withValues(alpha: 0.4)
+                                  : Colors.white.withValues(alpha: 0.6),
+                              width: 1,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
                 // Out of stock banner
                 if (isOutOfStock)
                   Positioned(

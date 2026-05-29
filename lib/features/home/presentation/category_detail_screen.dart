@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
@@ -75,18 +74,22 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 Expanded(
                   child: _isSearchExpanded
                       ? Container(
-                          height: 44.h,
+                          height: 42.h,
                           padding: EdgeInsets.symmetric(horizontal: 12.w),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.r),
+                            color: context.isDark
+                                ? Colors.white.withValues(alpha: 0.12)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                           child: Row(
                             children: [
-                              SvgPicture.asset(
-                                'assets/icons/search-active.svg',
-                                width: 18.sp,
-                                height: 18.sp,
+                              Icon(
+                                Icons.search_rounded,
+                                size: 20.sp,
+                                color: context.isDark
+                                    ? Colors.white60
+                                    : Colors.grey.shade400,
                               ),
                               SizedBox(width: 8.w),
                               Expanded(
@@ -94,15 +97,25 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                                   controller: _searchController,
                                   autofocus: true,
                                   style: TextStyle(
-                                      fontSize: 13.sp, color: Colors.black87),
+                                    fontSize: 13.sp,
+                                    color: context.isDark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontFamily: 'Inter',
+                                  ),
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
                                     hintStyle: TextStyle(
-                                        fontSize: 13.sp,
-                                        color: Colors.black38),
+                                      fontSize: 13.sp,
+                                      color: context.isDark
+                                          ? Colors.white54
+                                          : Colors.grey.shade400,
+                                      fontFamily: 'Inter',
+                                    ),
                                     border: InputBorder.none,
                                     isDense: true,
                                     contentPadding: EdgeInsets.zero,
+                                    isCollapsed: true,
                                   ),
                                   onChanged: (value) {
                                     ref

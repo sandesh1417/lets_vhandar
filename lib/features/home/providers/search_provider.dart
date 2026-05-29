@@ -79,6 +79,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 
   void setSort(String sort) {
+    if (state.selectedSort == sort) return;
     state = state.copyWith(
       selectedSort: sort,
       sortedResults: _sortList(state.results, sort),

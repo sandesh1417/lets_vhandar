@@ -69,7 +69,7 @@ final categoryProductsProvider =
     subCategoryId: subCategoryId,
     categorySlug: slug,
     subCategorySlug: subCategorySlug,
-    limit: 1000, // Fetch a larger batch for local filtering
+    limit: 80,
   );
 
   switch (result) {

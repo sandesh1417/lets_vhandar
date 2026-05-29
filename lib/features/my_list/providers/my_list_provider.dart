@@ -1,9 +1,17 @@
 import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dart';
 
-const _kStorageKey = 'vhandar_saved_lists';
+String _generateId() {
+  final rand = Random.secure();
+  final ts = DateTime.now().millisecondsSinceEpoch;
+  final suffix = List.generate(6, (_) => rand.nextInt(36).toRadixString(36)).join();
+  return '${ts}_$suffix';
+}
 
 class MyListState {
   final List<SavedList> lists;
@@ -25,31 +33,37 @@ class MyListNotifier extends StateNotifier<MyListState> {
 
   Future<void> _load() async {
     state = state.copyWith(isLoading: true);
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_kStorageKey);
-    if (raw != null) {
-      final decoded = jsonDecode(raw) as List<dynamic>;
-      state = MyListState(
-        lists: decoded
-            .map((e) => SavedList.fromMap(Map<String, dynamic>.from(e)))
-            .toList(),
-      );
-    } else {
-      state = const MyListState();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(AppConstants.savedListsStorageKey);
+      if (raw != null) {
+        final decoded = jsonDecode(raw) as List<dynamic>;
+        state = MyListState(
+          lists: decoded
+              .map((e) => SavedList.fromMap(Map<String, dynamic>.from(e)))
+              .toList(),
+        );
+        return;
+      }
+    } catch (_) {
+      // Corrupted data — clear and start fresh
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AppConstants.savedListsStorageKey);
     }
+    state = const MyListState();
   }
 
   Future<void> _persist() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-      _kStorageKey,
+      AppConstants.savedListsStorageKey,
       jsonEncode(state.lists.map((l) => l.toMap()).toList()),
     );
   }
 
   Future<SavedList> createList(String name) async {
     final list = SavedList(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: _generateId(),
       name: name,
       createdAt: DateTime.now(),
     );
@@ -74,16 +88,20 @@ class MyListNotifier extends StateNotifier<MyListState> {
     await _persist();
   }
 
-  Future<void> addProduct(String listId, SavedProduct product) async {
+  /// Returns `true` if added, `false` if already present.
+  Future<bool> addProduct(String listId, SavedProduct product) async {
+    bool wasAdded = false;
     state = state.copyWith(
       lists: state.lists.map((l) {
         if (l.id != listId) return l;
         final already = l.products.any((p) => p.id == product.id);
         if (already) return l;
+        wasAdded = true;
         return l.copyWith(products: [...l.products, product]);
       }).toList(),
     );
-    await _persist();
+    if (wasAdded) await _persist();
+    return wasAdded;
   }
 
   Future<void> removeProduct(String listId, String productId) async {

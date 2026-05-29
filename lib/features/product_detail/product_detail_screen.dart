@@ -72,7 +72,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     // Strip HTML tags from description
     final rawDesc = product.description ?? '';
     final cleanDesc = rawDesc
-        .replaceAll(RegExp(r'<[^>]*>|&nbsp;'), '')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
 
@@ -132,18 +138,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
             final double curvedRatio = Curves.easeInOut.transform(ratio);
             final Color appBarBgColor =
-                vc.surface.withValues(alpha: curvedRatio);
+                AppColor.primary.withValues(alpha: curvedRatio);
             final double elevation = curvedRatio * 2.0;
 
             return AppBar(
-              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              systemOverlayStyle: SystemUiOverlayStyle.light,
               backgroundColor: appBarBgColor,
               elevation: elevation,
               shadowColor: Colors.black.withValues(alpha: 0.06),
               automaticallyImplyLeading: false,
               leading: Center(
                 child: _GlassButton(
-                  icon: Icons.arrow_back,
+                  icon: Icons.arrow_back_ios_new_rounded,
                   onTap: () {
                     HapticFeedback.lightImpact();
                     Navigator.pop(context);
@@ -177,7 +183,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             Text(
                               product.name ?? '',
                               style: TextStyle(
-                                color: vc.onSurface,
+                                color: Colors.white,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -188,7 +194,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             Text(
                               'Rs. ${displayPrice.toInt()}',
                               style: TextStyle(
-                                color: AppColor.primary,
+                                color: Colors.white.withValues(alpha: 0.85),
                                 fontSize: 11.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -205,7 +211,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   child: Padding(
                     padding: EdgeInsets.only(right: 8.w),
                     child: _GlassButton(
-                      icon: Icons.share_outlined,
+                      icon: Icons.ios_share_rounded,
                       onTap: _shareProduct,
                       isGlass: ratio < 0.5,
                     ),
@@ -228,7 +234,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             pinned: false,
             backgroundColor: vc.surface,
             flexibleSpace: FlexibleSpaceBar(
-              background: ProductImageSlider(product: product),
+              background: ProductImageSlider(
+                product: product,
+                heroTag: 'product-img-${product.id}',
+              ),
             ),
           ),
 
@@ -530,6 +539,7 @@ class _GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -538,13 +548,17 @@ class _GlassButton extends StatelessWidget {
         height: size ?? 38.w,
         decoration: BoxDecoration(
           color: isGlass
-              ? const Color(0xFFF0FAF5).withValues(alpha: 0.9)
+              ? (isDark
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : const Color(0xFFF0FAF5).withValues(alpha: 0.9))
               : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
-          color: isGlass ? AppColor.primary : context.vColors.onSurface,
+          color: isGlass
+              ? (isDark ? Colors.white : AppColor.primary)
+              : Colors.white,
           size: iconSize ?? 20.sp,
         ),
       ),

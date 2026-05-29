@@ -38,11 +38,11 @@ class ProductGrid extends StatelessWidget {
     final double cardHeight = ProductItemCard.preferredHeight;
 
     return GridView.builder(
-      padding: padding ?? EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 80.h),
+      padding: padding ?? EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 80.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: mainAxisSpacing ?? 10.h,
-        crossAxisSpacing: crossAxisSpacing ?? 10.w,
+        mainAxisSpacing: mainAxisSpacing ?? 6.h,
+        crossAxisSpacing: crossAxisSpacing ?? 6.w,
         mainAxisExtent: cardHeight,
       ),
       itemCount: products.length,
@@ -51,7 +51,7 @@ class ProductGrid extends StatelessWidget {
         return ProductItemCard(
           key: ValueKey(product.id),
           product: product,
-          margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+          margin: EdgeInsets.zero,
           width: double.infinity,
           onTap: () {
             context.pushNamed(

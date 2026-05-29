@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/order/data/order_repository.dart';
@@ -10,6 +11,7 @@ class OrderState {
   final List<OrderData> orders;
   final bool isLoading;
   final bool isLoadingMore;
+  final bool loadMoreFailed;
   final bool isPlacingOrder;
   final String? error;
   final int currentPage;
@@ -26,6 +28,7 @@ class OrderState {
     this.orders = const [],
     this.isLoading = false,
     this.isLoadingMore = false,
+    this.loadMoreFailed = false,
     this.isPlacingOrder = false,
     this.error,
     this.currentPage = 1,
@@ -54,6 +57,7 @@ class OrderState {
     List<OrderData>? orders,
     bool? isLoading,
     bool? isLoadingMore,
+    bool? loadMoreFailed,
     bool? isPlacingOrder,
     String? error,
     bool clearError = false,
@@ -70,6 +74,7 @@ class OrderState {
       orders: orders ?? this.orders,
       isLoading: isLoading ?? this.isLoading,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      loadMoreFailed: loadMoreFailed ?? this.loadMoreFailed,
       isPlacingOrder: isPlacingOrder ?? this.isPlacingOrder,
       error: clearError ? null : (error ?? this.error),
       currentPage: currentPage ?? this.currentPage,
@@ -104,6 +109,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
       state = state.copyWith(
         isLoading: true,
         clearError: true,
+        loadMoreFailed: false,
         orders: [],
         paymentStatus: paymentStatus,
         status: status,
@@ -113,7 +119,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
         clearFilters: clearFilters,
       );
     } else {
-      state = state.copyWith(isLoadingMore: true, clearError: true);
+      state = state.copyWith(isLoadingMore: true, clearError: true, loadMoreFailed: false);
     }
 
     final activePaymentStatus = page == 1 ? paymentStatus : state.paymentStatus;
@@ -134,8 +140,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
       case Success(value: final response):
         final newOrders = response.data?.data ?? [];
         final total = response.data?.pagination?.total?.toInt() ?? 0;
-        const limit = 5;
-        final totalPages = (total / limit).ceil().clamp(1, 9999);
+        final totalPages = (total / AppConstants.orderPageLimit).ceil().clamp(1, 9999);
         state = state.copyWith(
           isLoading: false,
           isLoadingMore: false,
@@ -145,7 +150,11 @@ class OrderNotifier extends StateNotifier<OrderState> {
         );
       case Error(failure: final failure):
         state = state.copyWith(
-            isLoading: false, isLoadingMore: false, error: failure.message);
+          isLoading: false,
+          isLoadingMore: false,
+          loadMoreFailed: page > 1,
+          error: page == 1 ? failure.message : null,
+        );
     }
   }
 

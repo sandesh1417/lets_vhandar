@@ -26,13 +26,22 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const CategoryScreen(),
-    const OrderScreen(),
-    const ReorderScreen(),
-    const AccountTab(),
+  static const List<Widget Function()> _builders = [
+    HomeScreen.new,
+    CategoryScreen.new,
+    OrderScreen.new,
+    ReorderScreen.new,
+    AccountTab.new,
   ];
+
+  // Track which tabs have been visited so we only build on first access.
+  final Set<int> _visited = {0};
+  late final List<Widget?> _cache = List.filled(_builders.length, null);
+
+  Widget _tab(int index) {
+    if (!_visited.contains(index)) return const SizedBox.shrink();
+    return _cache[index] ??= _builders[index]();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +57,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       body: RepaintBoundary(
         child: IndexedStack(
           index: currentIndex,
-          children: _screens,
+          children: List.generate(_builders.length, _tab),
         ),
       ),
       bottomNavigationBar: Material(
@@ -57,6 +66,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           currentIndex: currentIndex,
           onTap: (index) {
             HapticFeedback.lightImpact();
+            setState(() => _visited.add(index));
             ref.read(dashboardIndexProvider.notifier).state = index;
           },
         ),

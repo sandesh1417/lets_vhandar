@@ -21,6 +21,12 @@ class ProductAddToCartBar extends ConsumerWidget {
         ref.read(cartProvider.notifier).getCartItemCount(product.id!);
     final isBusiness = ref.watch(isBusinessUserProvider);
     final isOutOfStock = product.isOutOfStock;
+    final maxQty = () {
+      final raw = product.maximumQuantityOrder;
+      if (raw == null) return 99;
+      final v = (raw as num?)?.toInt() ?? 99;
+      return v > 0 ? v : 99;
+    }();
     final displayPrice = isBusiness
         ? (product.businessPricePerUnit ?? product.actualPrice)
         : product.actualPrice;
@@ -199,6 +205,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                               ),
                               _StepButton(
                                 icon: Icons.add,
+                                disabled: cartCount >= maxQty,
                                 onTap: () => ref
                                     .read(cartProvider.notifier)
                                     .updateQuantity(product.id!, cartCount + 1),
@@ -219,20 +226,29 @@ class ProductAddToCartBar extends ConsumerWidget {
 class _StepButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final bool disabled;
 
-  const _StepButton({required this.icon, required this.onTap});
+  const _StepButton({
+    required this.icon,
+    required this.onTap,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: disabled ? null : () {
         HapticFeedback.selectionClick();
         onTap();
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-        child: Icon(icon, color: AppColor.primary, size: 16.sp),
+        child: Icon(
+          icon,
+          color: disabled ? Colors.grey.shade400 : AppColor.primary,
+          size: 16.sp,
+        ),
       ),
     );
   }

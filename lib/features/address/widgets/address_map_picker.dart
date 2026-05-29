@@ -89,6 +89,10 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
     if (newStyle != _mapStyle) setState(() => _mapStyle = newStyle);
   }
 
+  void _handleMapCreated(GoogleMapController controller) {
+    widget.onMapCreated(controller);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
@@ -101,35 +105,38 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
       offset: const Offset(0, 4),
     );
 
-    return Stack(
-      children: [
+    // Wrap Stack in SizedBox so the map gets a bounded constraint.
+    // When height == double.infinity the SizedBox is unconstrained and
+    // the parent (Expanded) provides the actual bound.
+    return SizedBox(
+      height: widget.height ?? 260.h,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
         // ── Map ─────────────────────────────────────────────────────────────
-        SizedBox(
-          height: widget.height ?? 260.h,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: widget.selectedLatLng,
-              zoom: 14,
-            ),
-            onMapCreated: widget.onMapCreated,
-            style: _mapStyle,
-            onTap: widget.onMapTap,
-            markers: {
-              Marker(
-                markerId: const MarkerId('selected'),
-                position: widget.selectedLatLng,
-                draggable: true,
-                onDragEnd: widget.onMapTap,
-              ),
-            },
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: true,
-            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
-              Factory<OneSequenceGestureRecognizer>(
-                EagerGestureRecognizer.new,
-              ),
-            },
+        GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: widget.selectedLatLng,
+            zoom: 14,
           ),
+          onMapCreated: _handleMapCreated,
+          style: _mapStyle,
+          onTap: widget.onMapTap,
+          markers: {
+            Marker(
+              markerId: const MarkerId('selected'),
+              position: widget.selectedLatLng,
+              draggable: true,
+              onDragEnd: widget.onMapTap,
+            ),
+          },
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: true,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
+            Factory<OneSequenceGestureRecognizer>(
+              EagerGestureRecognizer.new,
+            ),
+          },
         ),
 
         // ── Search bar ──────────────────────────────────────────────────────
@@ -140,7 +147,7 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
           child: Container(
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(50.r),
               boxShadow: [cardShadow],
             ),
             child: CustomTextField(
@@ -241,6 +248,7 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
           ),
         ),
       ],
+      ),
     );
   }
 }

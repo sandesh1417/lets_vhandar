@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +12,8 @@ import 'package:lets_vhandar/features/auth/forget_password/providers/forget_pass
 import 'package:lets_vhandar/features/auth/otp/widgets/otp_section_widget.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
@@ -40,8 +45,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   late final FocusNode focusNode;
   late final GlobalKey<FormState> formKey;
   final TextEditingController _otpController = TextEditingController();
-  int _timerSeconds = 30;
+  int _timerSeconds = AppConstants.otpTimerSeconds;
   bool _canResendOTP = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -52,20 +58,28 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   }
 
   void _startOTPTimer() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        if (_timerSeconds > 0) {
-          setState(() => _timerSeconds--);
-          _startOTPTimer();
-        } else {
-          setState(() => _canResendOTP = true);
-        }
+    _timer?.cancel();
+    setState(() {
+      _timerSeconds = AppConstants.otpTimerSeconds;
+      _canResendOTP = false;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_timerSeconds > 0) {
+        setState(() => _timerSeconds--);
+      } else {
+        timer.cancel();
+        setState(() => _canResendOTP = true);
       }
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     focusNode.dispose();
     _otpController.dispose();
     super.dispose();
@@ -114,10 +128,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   void _resendOTP() {
     if (_canResendOTP) {
-      setState(() {
-        _timerSeconds = 30;
-        _canResendOTP = false;
-      });
       _startOTPTimer();
       if (widget.isResetPassword) {
         ref.read(forgetPasswordProvider.notifier).sendOtp(context,
@@ -144,14 +154,10 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       appBar: const CustomScreenHeader(title: ''),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.orange.withValues(alpha: 0.1),
-            ),
-            child:
-                const Icon(Icons.mail_outline, size: 50, color: Colors.orange),
+          SvgPicture.asset(
+            KImageConstant.otpScreen,
+            width: 160.w,
+            height: 160.w,
           ),
           SizedBox(height: 24.h),
           Text('OTP Verification', style: KTextStyle.roboto24blackD7W.copyWith(color: context.vColors.onSurface)),

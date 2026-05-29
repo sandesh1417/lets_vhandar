@@ -12,6 +12,10 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:lets_vhandar/widgets/social_media_row.dart';
 
 import 'widgets/account_menu_item.dart';
 import 'widgets/account_section.dart';
@@ -151,23 +155,18 @@ class AccountTab extends ConsumerWidget {
                   AccountMenuItem(
                     icon: Icons.help_outline,
                     title: 'FAQs',
-                    onTap: () => context.push(LVRoute.faqScreen.route),
+                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/faq'), mode: LaunchMode.externalApplication),
                   ),
                   AccountMenuItem(
                     icon: Icons.contact_support_outlined,
                     title: 'Contact Us',
-                    onTap: () => context.push(LVRoute.contactUsScreen.route),
-                  ),
-                  AccountMenuItem(
-                    icon: Icons.ios_share_outlined,
-                    title: 'Share App',
-                    onTap: () => Share.share(_shareText),
+                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/contact'), mode: LaunchMode.externalApplication),
                   ),
                   AccountMenuItem(
                     icon: Icons.article_outlined,
                     title: 'Blog',
                     showDivider: false,
-                    onTap: () => context.push(LVRoute.blogScreen.route),
+                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/blog'), mode: LaunchMode.externalApplication),
                   ),
                 ],
               ),
@@ -224,94 +223,96 @@ class AccountTab extends ConsumerWidget {
               ],
             ),
 
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
+
+            // Manage Orders standalone card
+            GestureDetector(
+              onTap: () {
+                ref.read(dashboardIndexProvider.notifier).state = 2;
+              },
+              child: _buildManageOrdersCard(context),
+            ),
+
+            SizedBox(height: 12.h),
+
+            // Vhandar For Business card — hidden for business users
+            if (!isBusiness) ...[
+              GestureDetector(
+                onTap: () => context.push(LVRoute.vhandarForBusinessScreen.route),
+                child: _buildV4BCard(context),
+              ),
+              SizedBox(height: 12.h),
+            ],
 
             // My Activity
             AccountSection(
               title: 'Manage',
               children: [
                 AccountMenuItem(
-                  icon: Icons.receipt_long_outlined,
-                  title: 'Manage Orders',
-                  onTap: () {
-                    ref.read(dashboardIndexProvider.notifier).state = 2;
-                  },
-                ),
-                AccountMenuItem(
                   icon: Icons.list_alt_rounded,
                   title: 'My Lists',
-                  onTap: () {
-                    context.push(LVRoute.myListsScreen.route);
-                  },
+                  subtitle: 'View and manage your saved product lists',
+                  onTap: () => context.push(LVRoute.myListsScreen.route),
                 ),
                 if (!isBusiness)
                   AccountMenuItem(
                     icon: Icons.location_on_outlined,
                     title: 'Manage Address',
-                    onTap: () {
-                      context.push(LVRoute.savedAddressesScreen.route);
-                    },
+                    subtitle: 'Add or update your delivery addresses',
+                    onTap: () => context.push(LVRoute.savedAddressesScreen.route),
                   ),
                 if (!isBusiness)
                   AccountMenuItem(
                     icon: Icons.group_outlined,
                     title: 'Family Members',
-                    onTap: () {
-                      context.push(LVRoute.familyMembersScreen.route);
-                    },
+                    subtitle: 'Manage family members on your account',
+                    onTap: () => context.push(LVRoute.familyMembersScreen.route),
                   ),
                 AccountMenuItem(
                   icon: Icons.account_balance_wallet_outlined,
                   title: 'Wallet',
+                  subtitle: 'Check your wallet balance and transactions',
+                  onTap: () => context.push(LVRoute.walletScreen.route),
+                ),
+                AccountMenuItem(
+                  icon: Icons.local_offer_outlined,
+                  title: 'Coupon Code & Discount',
+                  subtitle: 'View your available coupons and offers',
                   showDivider: false,
-                  onTap: () {
-                    context.push(LVRoute.walletScreen.route);
-                  },
+                  onTap: () => context.push(LVRoute.couponScreen.route),
                 ),
               ],
             ),
+
+            SizedBox(height: 12.h),
 
             // Settings
             AccountSection(
               title: 'Account Settings',
               children: [
                 AccountMenuItem(
-                  icon: isBusiness
-                      ? Icons.business_outlined
-                      : Icons.person_outline,
-                  title: isBusiness
-                      ? 'Business Information'
-                      : 'Personal Information',
-                  onTap: () {
-                    context.push(LVRoute.personalInformationScreen.route);
-                  },
+                  icon: isBusiness ? Icons.business_outlined : Icons.person_outline,
+                  title: isBusiness ? 'Business Information' : 'Personal Information',
+                  subtitle: isBusiness ? 'Update your business details' : 'Update your personal details',
+                  onTap: () => context.push(LVRoute.personalInformationScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.lock_outline,
                   title: 'Change Password',
-                  onTap: () {
-                    context.push(LVRoute.changePasswordScreen.route);
-                  },
+                  subtitle: 'Update your account password',
+                  onTap: () => context.push(LVRoute.changePasswordScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.brightness_6_outlined,
                   title: 'Appearance',
+                  subtitle: 'Switch between light and dark mode',
                   showDivider: false,
                   onTap: () => _showAppearanceSheet(context, ref),
                 ),
-                // AccountMenuItem(
-                //   icon: Icons.account_balance_wallet_outlined,
-                //   title: 'Wallet',
-                //   onTap: () {},
-                // ),
-                // AccountMenuItem(
-                //   icon: Icons.group_outlined,
-                //   title: 'Family Members',
-                //   showDivider: false,
-                //   onTap: () {},
-                // ),
               ],
             ),
+
+            SizedBox(height: 12.h),
 
             // Support & Feedback
             AccountSection(
@@ -320,41 +321,32 @@ class AccountTab extends ConsumerWidget {
                 AccountMenuItem(
                   icon: Icons.help_center_outlined,
                   title: 'Help & Support',
-                  onTap: () {
-                    context.push(LVRoute.helpSupportScreen.route);
-                  },
+                  subtitle: 'Get help with orders and queries',
+                  onTap: () => context.push(LVRoute.helpSupportScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.share_outlined,
                   title: 'Refer and Earn',
-                  onTap: () {
-                    context.push(LVRoute.referAndEarnScreen.route);
-                  },
-                ),
-                AccountMenuItem(
-                  icon: Icons.ios_share_outlined,
-                  title: 'Share',
-                  onTap: () {
-                    Share.share(_shareText);
-                  },
+                  subtitle: 'Invite friends and earn Vhandar Points',
+                  onTap: () => context.push(LVRoute.referAndEarnScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.lightbulb_outline,
                   title: 'Suggest Product',
-                  onTap: () {
-                    context.push(LVRoute.productSuggestionScreen.route);
-                  },
+                  subtitle: 'Tell us what products you\'d like to see',
+                  onTap: () => showProductSuggestionSheet(context),
                 ),
                 AccountMenuItem(
                   icon: Icons.chat_bubble_outline,
                   title: 'Feedback',
+                  subtitle: 'Share your experience with us',
                   showDivider: false,
-                  onTap: () {
-                    context.push(LVRoute.feedbackScreen.route);
-                  },
+                  onTap: () => context.push(LVRoute.feedbackScreen.route),
                 ),
               ],
             ),
+
+            SizedBox(height: 12.h),
 
             // More
             AccountSection(
@@ -363,48 +355,50 @@ class AccountTab extends ConsumerWidget {
                 AccountMenuItem(
                   icon: Icons.info_outline,
                   title: 'About',
-                  onTap: () {
-                    context.push(LVRoute.aboutUsScreen.route);
-                  },
+                  subtitle: 'Know more about us',
+                  onTap: () => context.push(LVRoute.aboutUsScreen.route),
                 ),
                 AccountMenuItem(
-                  icon: Icons.help_outline,
-                  title: 'FAQs',
-                  onTap: () {
-                    context.push(LVRoute.faqScreen.route);
-                  },
+                  icon: Icons.public_rounded,
+                  title: 'More about Vhandar',
+                  subtitle: 'Explore Vhandar policies and more',
+                  onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
                 ),
                 AccountMenuItem(
-                  icon: Icons.article_outlined,
-                  title: 'Blog',
-                  onTap: () {
-                    context.push(LVRoute.blogScreen.route);
-                  },
+                  icon: Icons.system_update_outlined,
+                  title: 'Check For Update',
+                  subtitle: 'App version $_appVersion',
+                  onTap: () => launchUrl(
+                    Uri.parse('https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                    mode: LaunchMode.externalApplication,
+                  ),
                 ),
                 AccountMenuItem(
-                  icon: Icons.contact_support_outlined,
-                  title: 'Contact Us',
-                  onTap: () {
-                    context.push(LVRoute.contactUsScreen.route);
-                  },
+                  icon: Icons.ios_share_rounded,
+                  title: 'Share this App',
+                  subtitle: 'Share Vhandar with friends and family',
+                  onTap: () => Share.share(_shareText),
                 ),
                 AccountMenuItem(
-                  icon: Icons.work_outline,
-                  title: 'Careers',
+                  icon: Icons.star_outline_rounded,
+                  title: 'Rate this App',
+                  subtitle: 'Love Vhandar? Give us a rating!',
                   showDivider: false,
-                  onTap: () {
-                    context.push(LVRoute.careersScreen.route);
-                  },
+                  onTap: () => launchUrl(
+                    Uri.parse('https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                    mode: LaunchMode.externalApplication,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
             // Danger Zone
             AccountSection(
               children: [
                 AccountMenuItem(
                   icon: Icons.logout,
                   title: 'Logout',
+                  subtitle: 'Logout from your Vhandar account',
                   titleColor: Colors.red.shade600,
                   iconColor: Colors.red.shade600,
                   showRightArrow: false,
@@ -479,6 +473,126 @@ class AccountTab extends ConsumerWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildManageOrdersCard(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            KImageConstant.deliveryInformation,
+            width: 34.w,
+            height: 34.w,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Manage Orders',
+                  style: TextStyle(
+                    color: vc.onSurface,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  'View all your purchases, manage your orders or start a return.',
+                  style: TextStyle(
+                    color: vc.onSurfaceMuted,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: vc.onSurfaceMuted,
+            size: 20.sp,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildV4BCard(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            KImageConstant.v4bIcon,
+            width: 34.w,
+            height: 34.w,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Vhandar For Business',
+                  style: TextStyle(
+                    color: vc.onSurface,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  'Register your business and grow with Vhandar.',
+                  style: TextStyle(
+                    color: vc.onSurfaceMuted,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: vc.onSurfaceMuted,
+            size: 20.sp,
           ),
         ],
       ),
@@ -691,6 +805,8 @@ class AccountTab extends ConsumerWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
+          const SocialMediaRow(),
+          SizedBox(height: 20.h),
           SvgPicture.asset(
             'assets/icons/vhandar-white-logo.svg',
             width: 110.w,

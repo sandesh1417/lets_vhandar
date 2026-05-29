@@ -10,6 +10,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'presentation/widgets/order_card.dart';
 
@@ -567,60 +568,21 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(52.h),
+          preferredSize: Size.fromHeight(56.h),
           child: Padding(
             padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 10.h),
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    height: 38.h,
-                    decoration: BoxDecoration(
-                      color: context.isDark
-                          ? Colors.white.withValues(alpha: 0.15)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10.w),
-                        Icon(Icons.search_rounded,
-                            color: context.isDark
-                                ? Colors.white60
-                                : Colors.grey.shade400,
-                            size: 18.sp),
-                        SizedBox(width: 6.w),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(
-                                color: context.isDark
-                                    ? Colors.white
-                                    : const Color(0xFF1A1A1A),
-                                fontSize: 13.sp,
-                                fontFamily: 'Inter'),
-                            decoration: InputDecoration(
-                              hintText: 'Search orders...',
-                              hintStyle: TextStyle(
-                                  color: context.isDark
-                                      ? Colors.white54
-                                      : Colors.grey.shade400,
-                                  fontSize: 13.sp,
-                                  fontFamily: 'Inter'),
-                              border: InputBorder.none,
-                              isCollapsed: true,
-                            ),
-                            onChanged: (value) {
-                              // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-                              ref.read(orderProvider.notifier).state =
-                                  state.copyWith(searchQuery: value);
-                            },
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                      ],
-                    ),
+                  child: PremiumSearchBar(
+                    controller: _searchController,
+                    hintText: 'Search orders...',
+                    showScanIcon: false,
+                    onChanged: (value) {
+                      // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+                      ref.read(orderProvider.notifier).state =
+                          state.copyWith(searchQuery: value);
+                    },
                   ),
                 ),
                 SizedBox(width: 8.w),
@@ -678,20 +640,43 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         color: AppColor.primary,
                         child: ListView.builder(
                           controller: _scrollController,
-                          padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w,
+                          padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w,
                               MediaQuery.of(context).padding.bottom + 150.h),
                           itemCount: filteredOrders.length +
-                              (state.isLoadingMore ? 1 : 0),
+                              (state.isLoadingMore || state.loadMoreFailed ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index < filteredOrders.length) {
                               return OrderCard(order: filteredOrders[index]);
-                            } else {
+                            }
+                            if (state.loadMoreFailed) {
                               return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 24.h),
+                                padding: EdgeInsets.symmetric(vertical: 16.h),
                                 child: Center(
-                                    child: CircularProgressIndicator(color: AppColor.primary)),
+                                  child: TextButton.icon(
+                                    onPressed: () {
+                                      final userId = ref.read(loginProvider).user?.id;
+                                      if (userId != null) {
+                                        ref.read(orderProvider.notifier).loadOrders(
+                                          userId,
+                                          page: state.currentPage + 1,
+                                          status: _selectedStatus,
+                                          paymentStatus: _selectedPaymentStatus,
+                                          startDate: _startDateStr,
+                                          endDate: _endDateStr,
+                                        );
+                                      }
+                                    },
+                                    icon: Icon(Icons.refresh_rounded, size: 18.sp),
+                                    label: Text('Retry', style: TextStyle(fontSize: 13.sp)),
+                                    style: TextButton.styleFrom(foregroundColor: AppColor.primary),
+                                  ),
+                                ),
                               );
                             }
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 24.h),
+                              child: Center(child: CircularProgressIndicator(color: AppColor.primary)),
+                            );
                           },
                         ),
                       ),

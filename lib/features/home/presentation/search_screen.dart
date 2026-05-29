@@ -15,6 +15,7 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -178,7 +179,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     SizedBox(height: 32.h),
                     ElevatedButton(
                       onPressed: () {
-                        context.pushNamed(LVRoute.productSuggestionScreen.route);
+                        showProductSuggestionSheet(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF9B141),

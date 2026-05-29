@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_function_declarations_over_variables
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/features/auth/forget_password/forget_password_screen.dart';
 import 'package:lets_vhandar/features/auth/forget_password/reset_password_screen.dart';
@@ -36,6 +38,10 @@ import 'package:lets_vhandar/features/my_list/presentation/my_lists_screen.dart'
 import 'package:lets_vhandar/features/my_list/presentation/list_detail_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/family_members_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/wallet_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/help_support_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/vhandar_for_business_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/about_vhandar_screen.dart';
+import 'package:lets_vhandar/features/profile/presentation/coupon_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -71,6 +77,9 @@ enum LVRoute {
   listDetailScreen,
   familyMembersScreen,
   walletScreen,
+  couponScreen,
+  vhandarForBusinessScreen,
+  aboutVhandarScreen,
   editProfileScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
@@ -79,7 +88,8 @@ enum LVRoute {
 class LVGoRouter {
   final GoRouter goRoute = GoRouter(
     initialLocation: LVRoute.splashScreen.route,
-    debugLogDiagnostics: true, // Enable debugging
+    debugLogDiagnostics: kDebugMode,
+    errorBuilder: (context, state) => _RouterErrorPage(error: state.error),
     routes: <GoRoute>[
       GoRoute(
         path: LVRoute.splashScreen.route,
@@ -152,9 +162,23 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.productDetailScreen.route,
         name: LVRoute.productDetailScreen.route,
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (BuildContext context, GoRouterState state) {
           final product = state.extra as ProductData;
-          return ProductDetailScreen(product: product);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ProductDetailScreen(product: product),
+            transitionDuration: const Duration(milliseconds: 350),
+            reverseTransitionDuration: const Duration(milliseconds: 280),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOut,
+                ),
+                child: child,
+              );
+            },
+          );
         },
       ),
       GoRoute(
@@ -266,10 +290,7 @@ class LVGoRouter {
         path: LVRoute.helpSupportScreen.route,
         name: LVRoute.helpSupportScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
-            const GenericWebViewScreen(
-          title: 'Help & Support',
-          url: 'https://www.vhandar.com/help',
-        ),
+            const HelpSupportScreen(),
       ),
       GoRoute(
         path: LVRoute.barcodeScannerScreen.route,
@@ -334,6 +355,24 @@ class LVGoRouter {
             const WalletScreen(),
       ),
       GoRoute(
+        path: LVRoute.couponScreen.route,
+        name: LVRoute.couponScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const CouponScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.vhandarForBusinessScreen.route,
+        name: LVRoute.vhandarForBusinessScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const VhandarForBusinessScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.aboutVhandarScreen.route,
+        name: LVRoute.aboutVhandarScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const AboutVhandarScreen(),
+      ),
+      GoRoute(
         path: LVRoute.editProfileScreen.route,
         name: LVRoute.editProfileScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
@@ -345,9 +384,45 @@ class LVGoRouter {
   GoRouter get getGoRouter => goRoute;
 }
 
-// final String? Function(BuildContext context, GoRouterState state) _authGuard = (BuildContext context, GoRouterState state) {
-//   if (!(getStoreHelper.getToken() != null)) {
-//     return LVRoute.login.route;
-//   }
-//   return null;
-// };
+class _RouterErrorPage extends StatelessWidget {
+  final Exception? error;
+  const _RouterErrorPage({this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline_rounded,
+                  size: 64.sp, color: Colors.red.shade300),
+              SizedBox(height: 16.h),
+              Text(
+                'Page not found',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                kDebugMode ? (error?.toString() ?? '') : 'Something went wrong.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13.sp, color: Colors.grey),
+              ),
+              SizedBox(height: 24.h),
+              ElevatedButton.icon(
+                onPressed: () => context.go(LVRoute.dashboardScreen.route),
+                icon: const Icon(Icons.home_rounded),
+                label: const Text('Go Home'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

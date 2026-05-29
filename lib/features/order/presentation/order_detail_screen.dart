@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
@@ -42,20 +44,26 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 12.w),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.help_outline, size: 20.sp, color: Colors.white),
-                SizedBox(width: 4.w),
-                Text('Help',
+          GestureDetector(
+            onTap: () => context.push(LVRoute.helpSupportScreen.route),
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.w),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.help_outline_rounded, size: 20.sp, color: Colors.white),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'Help',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Inter')),
-              ],
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

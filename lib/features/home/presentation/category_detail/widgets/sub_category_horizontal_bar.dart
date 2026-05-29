@@ -80,7 +80,7 @@ class SubCategoryHorizontalBar extends ConsumerWidget {
                 fit: BoxFit.contain,
               )
             else if (slug == null)
-              Icon(Icons.apps, color: isSelected ? AppColor.primary : vc.onSurfaceMuted, size: 24.sp),
+              Icon(Icons.grid_view_rounded, color: isSelected ? AppColor.primary : vc.onSurfaceMuted, size: 24.sp),
             SizedBox(height: 4.h),
             Text(
               title,

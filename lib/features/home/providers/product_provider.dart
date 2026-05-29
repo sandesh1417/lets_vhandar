@@ -17,10 +17,10 @@ final featuredProductsProvider = FutureProvider<List<ProductData>>((ref) async {
 final similarProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, categoryId) async {
   final repository = locator<ProductRepository>();
-  final result = await repository.getProductsByCategory(categoryId);
+  final result = await repository.getProductsByCategory(categoryId, limit: 10);
 
   return result.when(
-    success: (products) => expandProductsWithVariants(products),
+    success: (products) => products,
     failure: (failure) => throw failure.message,
   );
 });

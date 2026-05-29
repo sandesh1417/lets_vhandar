@@ -100,7 +100,7 @@ class SubCategorySidebar extends ConsumerWidget {
               )
             else if (slug == null)
               Icon(
-                Icons.apps,
+                Icons.grid_view_rounded,
                 color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
                 size: 24.sp,
               ),

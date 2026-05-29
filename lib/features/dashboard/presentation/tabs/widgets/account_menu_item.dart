@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 class AccountMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   final Color? titleColor;
   final Color? iconColor;
@@ -16,6 +17,7 @@ class AccountMenuItem extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.onTap,
     this.titleColor,
     this.iconColor,
@@ -45,13 +47,30 @@ class AccountMenuItem extends StatelessWidget {
                 ),
                 SizedBox(width: 16.w),
                 Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500,
-                      color: titleColor ?? vc.onSurface,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500,
+                          color: titleColor ?? vc.onSurface,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        SizedBox(height: 2.h),
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w400,
+                            color: (titleColor ?? vc.onSurfaceMuted)
+                                .withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 if (showRightArrow)

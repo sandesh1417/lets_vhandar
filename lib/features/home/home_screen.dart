@@ -16,8 +16,9 @@ import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/constants/image_constant.dart';
+import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 // import 'package:lets_vhandar/features/home/widgets/home_featured_products_list.dart';
 
 class _SuggestProductCard extends StatelessWidget {
@@ -37,8 +38,30 @@ class _SuggestProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        "Didn't find ",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w800,
+                          color: context.isDark ? const Color(0xFFB2DFCB) : const Color(0xFF1A3D2E),
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                    Image.asset(
+                      KImageConstant.sadFaceGif,
+                      width: 28.w,
+                      height: 28.w,
+                    ),
+                  ],
+                ),
                 Text(
-                  "didn't find what you\nwere looking for?",
+                  'what you were looking for?',
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontFamily: 'Inter',
@@ -60,7 +83,7 @@ class _SuggestProductCard extends StatelessWidget {
                 SizedBox(height: 20.h),
                 OutlinedButton(
                   onPressed: () =>
-                      context.push(LVRoute.productSuggestionScreen.route),
+                      showProductSuggestionSheet(context),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColor.secondary,
                     side: BorderSide(color: AppColor.secondary, width: 1.5),
@@ -117,10 +140,25 @@ class _BackToTopButton extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Icon(
-              Icons.keyboard_arrow_up_rounded,
-              size: 22.sp,
-              color: Colors.white,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.keyboard_arrow_up_rounded,
+                  size: 22.sp,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  'Back to Top',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -190,6 +228,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ref.invalidate(featuredProductsProvider);
                 ref.invalidate(homeCategoryProvider);
                 ref.invalidate(allCategoryProvider);
+                try {
+                  await Future.wait([
+                    ref.read(bannerProvider.future),
+                    ref.read(featuredProductsProvider.future),
+                    ref.read(homeCategoryProvider.future),
+                  ]);
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Refresh failed. Check your connection.'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                }
               },
               child: CustomScrollView(
                 controller: _scrollController,
@@ -250,7 +304,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             // Frosted glass back-to-top button
             Positioned(
-              top: topPadding + 62.h,
+              top: topPadding + 80.h,
               left: 0,
               right: 0,
               child: AnimatedOpacity(
