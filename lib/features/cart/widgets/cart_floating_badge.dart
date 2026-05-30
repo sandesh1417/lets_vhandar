@@ -18,7 +18,6 @@ class CartFloatingBadge extends ConsumerWidget {
 
     if (itemCount == 0) return const SizedBox.shrink();
 
-    // Last 3 items, most recently added has highest index → renders on top
     final last3 = cartItems.length <= 3
         ? cartItems
         : cartItems.sublist(cartItems.length - 3);

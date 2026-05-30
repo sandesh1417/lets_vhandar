@@ -26,7 +26,7 @@ class ProductVariantSelector extends ConsumerWidget {
           data: (variants) {
             if (variants.length <= 1) return const SizedBox.shrink();
             return Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 20.h),
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 20.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -34,7 +34,7 @@ class ProductVariantSelector extends ConsumerWidget {
                     children: [
                       Container(
                         width: 3.w,
-                        height: 16.h,
+                        height: 14.h,
                         decoration: BoxDecoration(
                           color: AppColor.primary,
                           borderRadius: BorderRadius.circular(2.r),
@@ -44,7 +44,7 @@ class ProductVariantSelector extends ConsumerWidget {
                       Text(
                         'Select Unit',
                         style: TextStyle(
-                          fontSize: 15.sp,
+                          fontSize: 12.sp,
                           fontWeight: FontWeight.w700,
                           color: context.vColors.onSurface,
                         ),
@@ -55,21 +55,18 @@ class ProductVariantSelector extends ConsumerWidget {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: variants.map((v) {
                         final isSelected = v.id == selected.id;
                         final isOutOfStock = v.isOutOfStock;
 
-                        final hasB2B = isBusiness &&
-                            (v.businessPricePerUnit ?? 0) > 0;
-                        final sellingPrice =
-                            hasB2B ? v.businessActualPrice : v.actualPrice;
+                        final hasB2B = isBusiness && (v.businessPricePerUnit ?? 0) > 0;
+                        final sellingPrice = hasB2B ? v.businessActualPrice : v.actualPrice;
                         final mrp = hasB2B
                             ? (v.businessPricePerUnit ?? 0)
                             : (v.pricePerUnit ?? 0);
                         final hasMrp = mrp > 0 && sellingPrice < mrp;
-                        final discountPct = hasMrp
-                            ? ((mrp - sellingPrice) / mrp * 100).round()
-                            : 0;
+                        final savings = hasMrp ? (mrp - sellingPrice).toInt() : 0;
 
                         return GestureDetector(
                           onTap: isOutOfStock ? null : () => onVariantChanged(v),
@@ -78,9 +75,9 @@ class ProductVariantSelector extends ConsumerWidget {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
                               width: 100.w,
+                              height: 92.h,
                               margin: EdgeInsets.only(right: 10.w),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.w, vertical: 10.h),
+                              padding: EdgeInsets.all(10.w),
                               decoration: BoxDecoration(
                                 color: isOutOfStock
                                     ? context.vColors.surfaceVariant
@@ -99,8 +96,7 @@ class ProductVariantSelector extends ConsumerWidget {
                                 boxShadow: isSelected && !isOutOfStock
                                     ? [
                                         BoxShadow(
-                                          color: AppColor.primary
-                                              .withValues(alpha: 0.1),
+                                          color: AppColor.primary.withValues(alpha: 0.1),
                                           blurRadius: 6,
                                           offset: const Offset(0, 2),
                                         ),
@@ -109,12 +105,13 @@ class ProductVariantSelector extends ConsumerWidget {
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
+                                  // Unit label at top
                                   Text(
                                     '${v.unitValue?.toInt() ?? ''} ${v.unit ?? ''}',
                                     style: TextStyle(
-                                      fontSize: 12.sp,
+                                      fontSize: 11.sp,
                                       fontWeight: FontWeight.w600,
                                       color: isSelected && !isOutOfStock
                                           ? AppColor.primary
@@ -123,50 +120,70 @@ class ProductVariantSelector extends ConsumerWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  SizedBox(height: 4.h),
+
+                                  // Price section at bottom
                                   if (isOutOfStock)
                                     Text(
-                                      'Out of\nStock',
+                                      'Out of Stock',
                                       style: TextStyle(
                                         fontSize: 10.sp,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.red.shade400,
-                                        height: 1.3,
                                       ),
                                     )
-                                  else ...[
-                                    Text(
-                                      'Rs.${sellingPrice.toInt()}',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.w800,
-                                        color: context.vColors.onSurface,
-                                        height: 1.1,
-                                      ),
+                                  else
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Rs.${sellingPrice.toInt()}',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w800,
+                                            color: context.vColors.onSurface,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                        if (hasMrp) ...[
+                                          SizedBox(height: 2.h),
+                                          Text(
+                                            'MRP ${mrp.toInt()}',
+                                            style: TextStyle(
+                                              fontSize: 9.sp,
+                                              color: context.vColors.onSurfaceMuted,
+                                              decoration: TextDecoration.lineThrough,
+                                              decorationColor: context.vColors.onSurfaceMuted,
+                                            ),
+                                          ),
+                                          SizedBox(height: 3.h),
+                                          // SAVE badge inside the box
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.w, vertical: 2.h),
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFFE53935),
+                                                  Color(0xFFFF7043),
+                                                ],
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                              ),
+                                              borderRadius: BorderRadius.circular(4.r),
+                                            ),
+                                            child: Text(
+                                              'SAVE Rs $savings',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8.sp,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
-                                    if (hasMrp) ...[
-                                      SizedBox(height: 2.h),
-                                      Text(
-                                        'MRP Rs.${mrp.toInt()}',
-                                        style: TextStyle(
-                                          fontSize: 9.sp,
-                                          color: context.vColors.onSurfaceMuted,
-                                          decoration: TextDecoration.lineThrough,
-                                          decorationColor:
-                                              context.vColors.onSurfaceMuted,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2.h),
-                                      Text(
-                                        '$discountPct% OFF on MRP',
-                                        style: TextStyle(
-                                          fontSize: 9.sp,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppColor.primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
                                 ],
                               ),
                             ),
@@ -179,8 +196,7 @@ class ProductVariantSelector extends ConsumerWidget {
               ),
             );
           },
-          loading: () =>
-              Center(child: CircularProgressIndicator(color: AppColor.primary)),
+          loading: () => Center(child: CircularProgressIndicator(color: AppColor.primary)),
           error: (e, s) => const SizedBox.shrink(),
         );
   }

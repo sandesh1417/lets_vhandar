@@ -172,7 +172,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 14.h),
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 13.h),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32.r),
