@@ -150,8 +150,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
       case 3:
         return SvgPicture.asset(
           isSelected
-              ? 'assets/icons/reorder-active.svg'
-              : 'assets/icons/reorder.svg',
+              ? 'assets/icons/reorder-icon-active.svg'
+              : 'assets/icons/reorder-icon.svg',
           width: 22.w,
           height: 22.w,
         );
