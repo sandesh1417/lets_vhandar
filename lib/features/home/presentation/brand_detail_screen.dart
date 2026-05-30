@@ -111,7 +111,10 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                                     fontFamily: 'Inter',
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: 'Search products...',
+                                    hintText: brandAsync.maybeWhen(
+                                      data: (b) => 'Search in ${b.name ?? 'brand'}...',
+                                      orElse: () => 'Search products...',
+                                    ),
                                     hintStyle: TextStyle(
                                       fontSize: 13.sp,
                                       color: context.isDark

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -111,10 +112,10 @@ class OrderCard extends StatelessWidget {
                                       ),
                                       child: ClipOval(
                                         child: imageUrl != null
-                                            ? Image.network(
-                                                imageUrl,
+                                            ? CachedNetworkImage(
+                                                imageUrl: imageUrl,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) =>
+                                                errorWidget: (_, __, ___) =>
                                                     Icon(
                                                         Icons
                                                             .shopping_bag_outlined,

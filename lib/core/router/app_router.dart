@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_function_declarations_over_variables
 
 import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:lets_vhandar/core/constants/r_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -80,16 +81,36 @@ enum LVRoute {
   couponScreen,
   vhandarForBusinessScreen,
   aboutVhandarScreen,
-  editProfileScreen;
+  editProfileScreen,
+  privacyPolicyScreen,
+  termsScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
+
+const _publicRoutes = {
+  '/splashScreen',
+  '/loginScreen',
+  '/registerScreen',
+  '/oTPScreen',
+  '/forgetPasswordScreen',
+  '/resetPasswordScreen',
+  '/v4BRegistrationScreen',
+};
 
 class LVGoRouter {
   final GoRouter goRoute = GoRouter(
     initialLocation: LVRoute.splashScreen.route,
     debugLogDiagnostics: kDebugMode,
     errorBuilder: (context, state) => _RouterErrorPage(error: state.error),
+    redirect: (context, state) {
+      final isAuthenticated = Rsession.token != null || Rsession.isGuest;
+      final isPublic = _publicRoutes.contains(state.matchedLocation);
+      if (!isAuthenticated && !isPublic) {
+        return LVRoute.loginScreen.route;
+      }
+      return null;
+    },
     routes: <GoRoute>[
       GoRoute(
         path: LVRoute.splashScreen.route,
@@ -377,6 +398,24 @@ class LVGoRouter {
         name: LVRoute.editProfileScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.privacyPolicyScreen.route,
+        name: LVRoute.privacyPolicyScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Privacy Policy',
+          url: 'https://www.vhandar.com/privacy-policy',
+        ),
+      ),
+      GoRoute(
+        path: LVRoute.termsScreen.route,
+        name: LVRoute.termsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const GenericWebViewScreen(
+          title: 'Terms & Conditions',
+          url: 'https://www.vhandar.com/terms-and-conditions',
+        ),
       ),
       // Add other routes as they are implemented
     ],

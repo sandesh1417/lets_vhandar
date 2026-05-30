@@ -26,7 +26,9 @@ class CategoryCard extends StatelessWidget {
             child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                color: const Color(0xFFE7F1ED),
+                color: context.isDark
+                    ? context.vColors.surfaceVariant
+                    : const Color(0xFFE7F1ED),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: CustomImageViewer(

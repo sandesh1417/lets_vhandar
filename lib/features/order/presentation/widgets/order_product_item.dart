@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
@@ -39,10 +40,10 @@ class OrderProductItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.r),
             ),
             child: product.firstImageUrl != null
-                ? Image.network(
-                    product.firstImageUrl!,
+                ? CachedNetworkImage(
+                    imageUrl: product.firstImageUrl!,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                    errorWidget: (_, __, ___) => const Icon(Icons.broken_image_outlined, color: Colors.grey),
                   )
                 : const Icon(Icons.shopping_bag_outlined, color: Colors.grey),
           ),

@@ -118,7 +118,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         prefixText: widget.prefixText,
         prefixStyle: TextStyle(
           color: context.vColors.onSurface,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w700,
           fontSize: 15.sp,
         ),
         suffixIcon: widget.obscureText != null

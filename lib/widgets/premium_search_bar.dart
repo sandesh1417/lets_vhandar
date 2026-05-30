@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,6 +7,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+
+const _kSearchHints = [
+  'Rice',
+  'Pasta',
+  'Chocolate',
+  'Ice Cream',
+  'Maida',
+  'Noodles',
+  'Coffee',
+  'Sauce',
+  'Syrup',
+  'Atta',
+  'Dal',
+  'Chips',
+  'Milk',
+  'Bread',
+  'Eggs',
+  'Sugar',
+  'Oil',
+  'Ghee',
+  'Biscuits',
+  'Tea',
+  'Juice',
+  'Butter',
+  'Spices',
+  'Namkeen',
+  'Poha',
+];
 
 class PremiumSearchBar extends StatefulWidget {
   final TextEditingController controller;
@@ -82,17 +112,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                       HapticFeedback.lightImpact();
                       widget.onTap?.call();
                     },
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.hintText,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: vc.onSurfaceMuted,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
+                    child: const _AnimatedSearchHint(),
                   )
                 : TextField(
                     controller: widget.controller,
@@ -120,9 +140,7 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
             GestureDetector(
               onTap: () {
                 widget.controller.clear();
-                if (widget.onChanged != null) {
-                  widget.onChanged!('');
-                }
+                widget.onChanged?.call('');
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.w),
@@ -143,27 +161,159 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
             SizedBox(
               width: 28.w,
               child: IconButton(
-              icon: SvgPicture.asset(
-                'assets/icons/barcode.svg',
-                width: 18.sp,
-                height: 18.sp,
-                colorFilter: ColorFilter.mode(vc.onSurface, BlendMode.srcIn),
+                icon: SvgPicture.asset(
+                  'assets/icons/barcode.svg',
+                  width: 18.sp,
+                  height: 18.sp,
+                  colorFilter: ColorFilter.mode(vc.onSurface, BlendMode.srcIn),
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  if (widget.onScanTap != null) {
+                    widget.onScanTap!();
+                  } else {
+                    context.pushNamed(LVRoute.barcodeScannerScreen.route);
+                  }
+                },
               ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                if (widget.onScanTap != null) {
-                  widget.onScanTap!();
-                } else {
-                  context.pushNamed(LVRoute.barcodeScannerScreen.route);
-                }
-              },
-            ),
             ),
           ],
         ],
       ),
+    );
+  }
+}
+
+class _AnimatedSearchHint extends StatefulWidget {
+  const _AnimatedSearchHint();
+
+  @override
+  State<_AnimatedSearchHint> createState() => _AnimatedSearchHintState();
+}
+
+class _AnimatedSearchHintState extends State<_AnimatedSearchHint>
+    with SingleTickerProviderStateMixin {
+  int _index = 0;
+  late AnimationController _controller;
+  late Animation<Offset> _slideIn;
+  late Animation<Offset> _slideOut;
+  late Animation<double> _fadeIn;
+  late Animation<double> _fadeOut;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    _slideOut = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -1),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInCubic));
+
+    _fadeIn = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0, 0.6, curve: Curves.easeOut)),
+    );
+
+    _fadeOut = Tween<double>(begin: 1, end: 0).animate(
+      CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0, 0.4, curve: Curves.easeIn)),
+    );
+
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (!mounted) return;
+      _controller.forward(from: 0).then((_) {
+        if (mounted) {
+          setState(() => _index = (_index + 1) % _kSearchHints.length);
+          _controller.reset();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final keyword = _kSearchHints[_index];
+    final nextKeyword = _kSearchHints[(_index + 1) % _kSearchHints.length];
+
+    final baseStyle = TextStyle(
+      fontSize: 13.sp,
+      color: vc.onSurfaceMuted,
+      fontWeight: FontWeight.w400,
+    );
+    final keywordStyle = baseStyle.copyWith(
+      color: vc.onSurface,
+      fontWeight: FontWeight.w600,
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Fixed prefix — never animates
+        Text('Search for ', style: baseStyle),
+
+        // Only the keyword animates
+        ClipRect(
+          child: SizedBox(
+            height: 20.h,
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final isAnimating = _controller.isAnimating;
+                return Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    if (isAnimating)
+                      FadeTransition(
+                        opacity: _fadeOut,
+                        child: SlideTransition(
+                          position: _slideOut,
+                          child: Text(keyword, style: keywordStyle),
+                        ),
+                      ),
+                    if (isAnimating)
+                      FadeTransition(
+                        opacity: _fadeIn,
+                        child: SlideTransition(
+                          position: _slideIn,
+                          child: Text(nextKeyword, style: keywordStyle),
+                        ),
+                      ),
+                    if (!isAnimating)
+                      Text(keyword, style: keywordStyle),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

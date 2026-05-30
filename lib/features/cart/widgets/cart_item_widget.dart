@@ -43,44 +43,14 @@ class CartItemWidget extends ConsumerWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
-                  child: Padding(
-                    padding: EdgeInsets.all(6.w),
-                    child: CustomImageViewer(
-                      path: product.images?.isNotEmpty == true
-                          ? product.images!.first.url
-                          : null,
-                      fit: BoxFit.contain,
-                    ),
+                  child: CustomImageViewer(
+                    path: product.images?.isNotEmpty == true
+                        ? product.images!.first.url
+                        : null,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
-              if (hasDiscount)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFE53935), Color(0xFFFF7043)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12.r),
-                        bottomRight: Radius.circular(8.r),
-                      ),
-                    ),
-                    child: Text(
-                      'SAVE',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 8.sp,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
             ],
           ),
 
@@ -94,7 +64,7 @@ class CartItemWidget extends ConsumerWidget {
                 Text(
                   product.name ?? '',
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                     color: vc.onSurface,
                     height: 1.3,

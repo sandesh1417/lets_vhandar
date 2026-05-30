@@ -9,6 +9,8 @@ import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:share_plus/share_plus.dart';
@@ -100,8 +102,10 @@ class AccountTab extends ConsumerWidget {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () =>
-                                context.go(LVRoute.loginScreen.route),
+                            onPressed: () {
+                              ref.read(dashboardIndexProvider.notifier).state = 0;
+                              context.go(LVRoute.loginScreen.route);
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColor.secondary,
                               foregroundColor: const Color(0xFF1A1A1A),
@@ -143,7 +147,7 @@ class AccountTab extends ConsumerWidget {
                 title: 'Support & Info',
                 children: [
                   AccountMenuItem(
-                    icon: Icons.help_center_outlined,
+                    icon: Icons.support_agent_outlined,
                     title: 'Help & Support',
                     onTap: () => context.push(LVRoute.helpSupportScreen.route),
                   ),
@@ -165,11 +169,30 @@ class AccountTab extends ConsumerWidget {
                   AccountMenuItem(
                     icon: Icons.article_outlined,
                     title: 'Blog',
-                    showDivider: false,
                     onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/blog'), mode: LaunchMode.externalApplication),
                   ),
                 ],
               ),
+              SizedBox(height: 16.h),
+              AccountSection(
+                title: 'More',
+                children: [
+                  AccountMenuItem(
+                    icon: Icons.public_rounded,
+                    title: 'More about Vhandar',
+                    subtitle: 'Explore Vhandar policies and more',
+                    showDivider: false,
+                    onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              GestureDetector(
+                onTap: () => context.push(LVRoute.vhandarForBusinessScreen.route),
+                child: _buildV4BCard(context),
+              ),
+              SizedBox(height: 12.h),
+              const AccountSupportCard(),
               SizedBox(height: 22.h),
               _buildAppVersionFooter(),
               SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
@@ -539,6 +562,7 @@ class AccountTab extends ConsumerWidget {
     );
   }
 
+
   Widget _buildV4BCard(BuildContext context) {
     final vc = context.vColors;
     return Container(
@@ -864,7 +888,12 @@ class AccountTab extends ConsumerWidget {
       message: 'Are you sure you want to log out of your account?',
       confirmLabel: 'Yes, Logout',
       onConfirm: () async {
+        ref.read(cartProvider.notifier).clearCart();
+        ref.invalidate(userProfileProvider);
         await ref.read(loginProvider.notifier).logout();
+        if (context.mounted) {
+          context.go(LVRoute.loginScreen.route);
+        }
       },
     );
   }

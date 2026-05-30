@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,8 +26,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
             .whereType<CartItem>()
             .toList();
       }
-    } catch (_) {
-      // Corrupted cart — start fresh
+    } catch (e, st) {
+      dev.log('Cart load failed — resetting', error: e, stackTrace: st, name: 'CartNotifier');
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(AppConstants.cartStorageKey);
     }
@@ -39,7 +40,9 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         AppConstants.cartStorageKey,
         jsonEncode(state.map(_cartItemToMap).toList()),
       );
-    } catch (_) {}
+    } catch (e, st) {
+      dev.log('Cart save failed', error: e, stackTrace: st, name: 'CartNotifier');
+    }
   }
 
   Map<String, dynamic> _cartItemToMap(CartItem item) => {
@@ -124,7 +127,7 @@ final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
 });
 
 final isBusinessUserProvider = Provider<bool>((ref) {
-  return ref.watch(loginProvider).user?.isBusiness == true;
+  return ref.watch(loginProvider.select((s) => s.user?.isBusiness == true));
 });
 
 final totalCartItemsProvider = Provider<int>((ref) {

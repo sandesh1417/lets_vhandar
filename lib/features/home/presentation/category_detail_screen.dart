@@ -141,6 +141,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                                     width: 34.w,
                                     height: 34.w,
                                     decoration: BoxDecoration(
+                                      color: const Color(0xFFE7F1ED),
                                       borderRadius:
                                           BorderRadius.circular(8.r),
                                       border: Border.all(

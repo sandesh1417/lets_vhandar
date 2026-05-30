@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:pinput/pinput.dart';
 
 class PinputExample extends StatelessWidget {
@@ -19,20 +21,45 @@ class PinputExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
-    const fillColor = Color.fromRGBO(243, 246, 249, 0);
-    const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
-
-    final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
-      textStyle: const TextStyle(
-        fontSize: 22,
-        color: Color.fromRGBO(30, 60, 87, 1),
+    final defaultTheme = PinTheme(
+      width: 56.w,
+      height: 58.h,
+      textStyle: TextStyle(
+        fontSize: 22.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColor.primary,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(19),
-        border: Border.all(color: borderColor),
+        color: AppColor.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: AppColor.primary.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
+      ),
+    );
+
+    final focusedTheme = defaultTheme.copyWith(
+      decoration: BoxDecoration(
+        color: AppColor.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColor.primary, width: 2),
+      ),
+    );
+
+    final submittedTheme = defaultTheme.copyWith(
+      decoration: BoxDecoration(
+        color: AppColor.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColor.primary, width: 1.5),
+      ),
+    );
+
+    final errorTheme = defaultTheme.copyWith(
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: Colors.redAccent, width: 1.5),
       ),
     );
 
@@ -44,8 +71,11 @@ class PinputExample extends StatelessWidget {
           length: 5,
           controller: controller,
           focusNode: focusNode,
-          defaultPinTheme: defaultPinTheme,
-          separatorBuilder: (index) => const SizedBox(width: 8),
+          defaultPinTheme: defaultTheme,
+          focusedPinTheme: focusedTheme,
+          submittedPinTheme: submittedTheme,
+          errorPinTheme: errorTheme,
+          separatorBuilder: (_) => SizedBox(width: 10.w),
           validator: validator,
           hapticFeedbackType: HapticFeedbackType.lightImpact,
           onCompleted: onCompleted,
@@ -53,28 +83,15 @@ class PinputExample extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                margin: const EdgeInsets.only(bottom: 9),
-                width: 22,
-                height: 1,
-                color: focusedBorderColor,
+                margin: EdgeInsets.only(bottom: 10.h),
+                width: 20.w,
+                height: 2,
+                decoration: BoxDecoration(
+                  color: AppColor.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ],
-          ),
-          focusedPinTheme: defaultPinTheme.copyWith(
-            decoration: defaultPinTheme.decoration!.copyWith(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: focusedBorderColor),
-            ),
-          ),
-          submittedPinTheme: defaultPinTheme.copyWith(
-            decoration: defaultPinTheme.decoration!.copyWith(
-              color: fillColor,
-              borderRadius: BorderRadius.circular(19),
-              border: Border.all(color: focusedBorderColor),
-            ),
-          ),
-          errorPinTheme: defaultPinTheme.copyBorderWith(
-            border: Border.all(color: Colors.redAccent),
           ),
         ),
       ),

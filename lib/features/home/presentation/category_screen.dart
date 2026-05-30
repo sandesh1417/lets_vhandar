@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -18,11 +19,24 @@ import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'widgets/brand_card.dart';
 import 'widgets/category_card.dart';
 
-class CategoryScreen extends ConsumerWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoryProvider);
     final brandsAsync = ref.watch(brandProvider);
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -37,16 +51,19 @@ class CategoryScreen extends ConsumerWidget {
           Container(
             color: AppColor.primary,
             padding: EdgeInsets.only(
-              top: statusBarHeight + 10.h,
+              top: statusBarHeight + 16.h,
               left: 16.w,
               right: 16.w,
               bottom: 12.h,
             ),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  KImageConstant.vandharIcon,
-                  height: 38.h,
+                GestureDetector(
+                  onTap: () => ref.read(dashboardIndexProvider.notifier).state = 0,
+                  child: SvgPicture.asset(
+                    KImageConstant.vandharIcon,
+                    height: 38.h,
+                  ),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
@@ -62,64 +79,61 @@ class CategoryScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── White rounded content panel ────────────────────────────
+          // ── Content panel ──────────────────────────────────────────
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.r),
-                topRight: Radius.circular(20.r),
-              ),
-              child: Container(
-                color: context.vColors.scaffoldBg,
-                child: categoriesAsync.when(
-                  data: (categories) {
-                    return brandsAsync.when(
-                      data: (brands) {
-                        return RefreshIndicator(
-                          color: AppColor.primary,
-                          onRefresh: () async {
-                            ref.invalidate(allCategoryProvider);
-                            ref.invalidate(brandProvider);
-                          },
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(
-                              parent: BouncingScrollPhysics(),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (brands.isNotEmpty) ...[
-                                  _buildBrandSection(context, brands),
-                                  SizedBox(height: 8.h),
-                                ],
-                                if (categories.isNotEmpty) ...[
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16.w, vertical: 8.h),
-                                    child: Text(
-                                      'Shop by Category',
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: context.vColors.onSurface,
-                                      ),
+            child: Container(
+              color: context.vColors.scaffoldBg,
+              child: categoriesAsync.when(
+                data: (categories) {
+                  return brandsAsync.when(
+                    data: (brands) {
+                      return RefreshIndicator(
+                        color: AppColor.primary,
+                        onRefresh: () async {
+                          ref.invalidate(allCategoryProvider);
+                          ref.invalidate(brandProvider);
+                        },
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (brands.isNotEmpty) ...[
+                                _buildBrandSection(context, brands),
+                                SizedBox(height: 8.h),
+                              ],
+                              if (categories.isNotEmpty) ...[
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w, vertical: 8.h),
+                                  child: Text(
+                                    'Shop by Category',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.vColors.onSurface,
                                     ),
                                   ),
-                                  _buildCategoryGrid(context, categories),
-                                ],
-                                SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
+                                ),
+                                _buildCategoryGrid(context, categories),
                               ],
-                            ),
+                              SizedBox(
+                                  height: MediaQuery.of(context).padding.bottom +
+                                      150.h),
+                            ],
                           ),
-                        );
-                      },
-                      loading: () => _buildLoadingShimmer(context),
-                      error: (err, _) => Center(child: Text('Error: $err')),
-                    );
-                  },
-                  loading: () => _buildLoadingShimmer(context),
-                  error: (err, _) => Center(child: Text("Error: $err")),
-                ),
+                        ),
+                      );
+                    },
+                    loading: () => _buildLoadingShimmer(context),
+                    error: (err, _) => Center(child: Text('Error: $err')),
+                  );
+                },
+                loading: () => _buildLoadingShimmer(context),
+                error: (err, _) => Center(child: Text("Error: $err")),
               ),
             ),
           ),

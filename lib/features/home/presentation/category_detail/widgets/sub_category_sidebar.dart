@@ -84,10 +84,13 @@ class SubCategorySidebar extends ConsumerWidget {
                 width: 40.w,
                 height: 40.w,
                 decoration: BoxDecoration(
+                  color: context.isDark
+                      ? context.vColors.surfaceVariant
+                      : const Color(0xFFE7F1ED),
                   borderRadius: BorderRadius.circular(8.r),
                   border: Border.all(
-                    color: AppColor.primary.withValues(alpha: 0.18),
-                    width: 1,
+                    color: const Color(0xFFFFF0B3),
+                    width: 1.2,
                   ),
                 ),
                 child: ClipRRect(

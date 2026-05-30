@@ -104,6 +104,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               controller: _phoneController,
               hintText: 'Mobile Number',
               labelText: 'Mobile Number',
+              prefixIcon: Icon(Icons.phone_rounded,
+                  size: 18.sp, color: context.vColors.onSurfaceMuted),
               prefixText: '+977 ',
               autofillHints: const [AutofillHints.username],
               keyBoardType: const TextInputType.numberWithOptions(),
@@ -166,14 +168,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               btnHeight: 52.h,
               buttonColor: _isFormFilled
                   ? AppColor.secondary
-                  : context.vColors.surfaceVariant,
+                  : const Color(0xFF9C9C9C),
               txtStyle: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Inter',
                 color: _isFormFilled
                     ? const Color(0xFF1A1A1A)
-                    : context.vColors.onSurfaceMuted,
+                    : Colors.white,
               ),
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {

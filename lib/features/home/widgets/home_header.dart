@@ -12,7 +12,9 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 class HomeHeader extends ConsumerWidget {
-  const HomeHeader({super.key});
+  final VoidCallback? onLogoTap;
+
+  const HomeHeader({super.key, this.onLogoTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,6 +28,7 @@ class HomeHeader extends ConsumerWidget {
         maxHeight: maxHeaderHeight,
         minHeight: minHeaderHeight,
         statusBarHeight: statusBarHeight,
+        onLogoTap: onLogoTap,
       ),
     );
   }
@@ -35,11 +38,13 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double maxHeight;
   final double minHeight;
   final double statusBarHeight;
+  final VoidCallback? onLogoTap;
 
   _HomeHeaderDelegate({
     required this.maxHeight,
     required this.minHeight,
     required this.statusBarHeight,
+    this.onLogoTap,
   });
 
   @override
@@ -91,11 +96,14 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Hero(
-                      tag: 'logo',
-                      child: SvgPicture.asset(
-                        KImageConstant.vandharIcon,
-                        height: logoHeight,
+                    GestureDetector(
+                      onTap: onLogoTap,
+                      child: Hero(
+                        tag: 'logo',
+                        child: SvgPicture.asset(
+                          KImageConstant.vandharIcon,
+                          height: logoHeight,
+                        ),
                       ),
                     ),
                     SizedBox(width: 12.w),
@@ -183,7 +191,8 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant _HomeHeaderDelegate oldDelegate) {
     return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight;
+        minHeight != oldDelegate.minHeight ||
+        onLogoTap != oldDelegate.onLogoTap;
   }
 }
 

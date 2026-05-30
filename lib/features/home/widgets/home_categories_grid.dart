@@ -44,7 +44,9 @@ class HomeCategoriesGrid extends ConsumerWidget {
                       width: 76.h,
                       clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        color: context.vColors.surfaceVariant,
+                        color: context.isDark
+                            ? context.vColors.surfaceVariant
+                            : const Color(0xFFE7F1ED),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: CustomImageViewer(

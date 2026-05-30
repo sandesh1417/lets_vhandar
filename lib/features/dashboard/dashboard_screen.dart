@@ -185,9 +185,10 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(32.r),
-            child: BackdropFilter(
+          child: RepaintBoundary(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32.r),
+              child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
               child: Container(
                 height: 68.h,
@@ -272,6 +273,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           ),
         ),
       ),
+    ),
     );
   }
 }

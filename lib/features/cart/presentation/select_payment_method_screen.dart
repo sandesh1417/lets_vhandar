@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,13 +61,11 @@ class _ProductImage extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.r),
-        child: Image.network(
-          fullUrl,
+        child: CachedNetworkImage(
+          imageUrl: fullUrl,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Icon(Icons.broken_image,
-                color: Colors.grey.shade400, size: 24.sp);
-          },
+          errorWidget: (context, _, __) =>
+              Icon(Icons.broken_image, color: Colors.grey.shade400, size: 24.sp),
         ),
       ),
     );

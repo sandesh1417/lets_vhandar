@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lets_vhandar/core/constants/app_style.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -26,9 +26,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _isOldPasswordVisible = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  bool _oldVisible = false;
+  bool _newVisible = false;
+  bool _confirmVisible = false;
 
   @override
   void dispose() {
@@ -40,114 +40,136 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final changePasswordState = ref.watch(changePasswordProvider);
+    final vc = context.vColors;
+    final isLoading = ref.watch(changePasswordProvider).isLoading;
     final userId = ref.watch(loginProvider).user?.id ?? '';
 
     return CustomScaffoldWrapper(
+      isScrollable: false,
       appBar: const CustomScreenHeader(title: 'Change Password'),
       horizontalPadding: 16.w,
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 24.h),
-              Text('Current Password',
-                  style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: context.vColors.onSurface)),
-              SizedBox(height: 8.h),
-              CustomTextField(
-                controller: _oldPasswordController,
-                hintText: 'Enter current Password',
-                obscureText: !_isOldPasswordVisible,
-                prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
-                onObscurePressed: () {
-                  setState(
-                      () => _isOldPasswordVisible = !_isOldPasswordVisible);
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Current password is required';
-                  }
-                  return null;
-                },
-                labelText: 'Current Password',
-              ),
-              SizedBox(height: 20.h),
-              Text('New Password',
-                  style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: context.vColors.onSurface)),
-              SizedBox(height: 8.h),
-              CustomTextField(
-                controller: _newPasswordController,
-                hintText: 'Enter new Password',
-                obscureText: !_isNewPasswordVisible,
-                prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
-                onObscurePressed: () {
-                  setState(
-                      () => _isNewPasswordVisible = !_isNewPasswordVisible);
-                },
-                validator: TFValidators.validatePassword,
-                labelText: 'New Password',
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'Password must be more than 6 characters and one you haven\'t used before.',
-                style: KTextStyle.roboto12lGray3W.copyWith(fontSize: 11.sp),
-              ),
-              SizedBox(height: 20.h),
-              Text('Retype Password',
-                  style: KTextStyle.roboto14BlackD5W
-                      .copyWith(color: context.vColors.onSurface)),
-              SizedBox(height: 8.h),
-              CustomTextField(
-                controller: _confirmPasswordController,
-                hintText: 'Confirm Password',
-                obscureText: !_isConfirmPasswordVisible,
-                prefixIcon:
-                    Icon(Icons.lock_outline, size: 20.sp, color: context.vColors.onSurfaceMuted),
-                onObscurePressed: () {
-                  setState(() =>
-                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
-                },
-                validator: (value) => TFValidators.validateConfirmPassword(
-                  value,
-                  _newPasswordController.text,
-                ),
-                labelText: 'Confirm Password',
-              ),
-              SizedBox(height: 40.h),
-              CustomButton(
-                isLoading: changePasswordState.isLoading,
-                onPress: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    if (_newPasswordController.text ==
-                        _oldPasswordController.text) {
-                      CustomSnackbar.error(context,
-                          message:
-                              'New password must not be the same as old password');
-                      return;
-                    }
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8.h),
 
-                    ref.read(changePasswordProvider.notifier).changePassword(
-                      context,
-                      userId: userId,
-                      oldPassword: _oldPasswordController.text,
-                      password: _newPasswordController.text,
-                      confirmPassword: _confirmPasswordController.text,
-                      onSuccess: () {
-                        Navigator.pop(context);
-                      },
-                    );
-                  }
-                },
-                buttonTitle: 'Change Password',
+                    // Subtitle
+                    Text(
+                      'Keep your account secure with a strong password.',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: vc.onSurfaceMuted,
+                        height: 1.4,
+                      ),
+                    ),
+
+                    SizedBox(height: 28.h),
+
+                    // Current password
+                    CustomTextField(
+                      controller: _oldPasswordController,
+                      labelText: 'Current Password',
+                      hintText: 'Enter current password',
+                      obscureText: !_oldVisible,
+                      prefixIcon: Icon(Icons.lock_outline_rounded,
+                          size: 18.sp, color: vc.onSurfaceMuted),
+                      onObscurePressed: () =>
+                          setState(() => _oldVisible = !_oldVisible),
+                      validator: (v) => (v == null || v.isEmpty)
+                          ? 'Current password is required'
+                          : null,
+                    ),
+
+                    SizedBox(height: 14.h),
+
+                    // New password
+                    CustomTextField(
+                      controller: _newPasswordController,
+                      labelText: 'New Password',
+                      hintText: 'Enter new password',
+                      obscureText: !_newVisible,
+                      prefixIcon: Icon(Icons.lock_open_rounded,
+                          size: 18.sp, color: vc.onSurfaceMuted),
+                      onObscurePressed: () =>
+                          setState(() => _newVisible = !_newVisible),
+                      validator: TFValidators.validatePassword,
+                    ),
+
+                    SizedBox(height: 14.h),
+
+                    // Confirm password
+                    CustomTextField(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirm New Password',
+                      hintText: 'Re-enter new password',
+                      obscureText: !_confirmVisible,
+                      prefixIcon: Icon(Icons.lock_outline_rounded,
+                          size: 18.sp, color: vc.onSurfaceMuted),
+                      onObscurePressed: () =>
+                          setState(() => _confirmVisible = !_confirmVisible),
+                      validator: (v) => TFValidators.validateConfirmPassword(
+                          v, _newPasswordController.text),
+                    ),
+
+                    SizedBox(height: 16.h),
+
+                    // Hint
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.info_outline_rounded,
+                            size: 13.sp,
+                            color: AppColor.primary.withValues(alpha: 0.7)),
+                        SizedBox(width: 6.w),
+                        Expanded(
+                          child: Text(
+                            'Minimum 6 characters. Use a mix of letters and numbers for a stronger password.',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: vc.onSurfaceMuted,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+
+            // Button
+            CustomButton(
+              isLoading: isLoading,
+              onPress: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  if (_newPasswordController.text ==
+                      _oldPasswordController.text) {
+                    CustomSnackbar.error(context,
+                        message:
+                            'New password must be different from current password');
+                    return;
+                  }
+                  ref.read(changePasswordProvider.notifier).changePassword(
+                    context,
+                    userId: userId,
+                    oldPassword: _oldPasswordController.text,
+                    password: _newPasswordController.text,
+                    confirmPassword: _confirmPasswordController.text,
+                    onSuccess: () => Navigator.pop(context),
+                  );
+                }
+              },
+              buttonTitle: 'Update Password',
+            ),
+            SizedBox(height: 16.h),
+          ],
         ),
       ),
     );

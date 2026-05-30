@@ -33,8 +33,9 @@ class LoginNotifier extends StateNotifier<LoginState> {
         final accessToken = data.token?.accessToken;
         if (accessToken != null && accessToken.isNotEmpty) {
           await SessionPrefences().setToken(token: accessToken);
-          if (data.user != null) {
-            await SessionPrefences().setUser(user: data.user!);
+          final user = data.user;
+          if (user != null) {
+            await SessionPrefences().setUser(user: user);
           }
           Rsession.token = accessToken;
         }
@@ -60,6 +61,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
 
   Future<void> enterGuestMode(BuildContext context) async {
     await SessionPrefences().setGuestMode(isGuest: true);
+    Rsession.isGuest = true;
     state = state.copyWith(isGuest: true, isLoggedIn: false);
     if (context.mounted) {
       context.go(LVRoute.dashboardScreen.route);
@@ -75,6 +77,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
     } else {
       final isGuest = await SessionPrefences().getGuestMode();
       if (isGuest) {
+        Rsession.isGuest = true;
         state = state.copyWith(isGuest: true);
       }
     }
@@ -83,6 +86,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
   Future<void> logout() async {
     await SessionPrefences().clearSession();
     Rsession.token = null;
+    Rsession.isGuest = false;
     state = const LoginState();
   }
 

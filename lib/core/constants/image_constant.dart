@@ -10,6 +10,7 @@ class KImageConstant {
   static String businessProfile = 'assets/icons/business_profile.svg';
   static String deliveryInformation = 'assets/icons/vhandar_delivery_information.svg';
   static String otpScreen = 'assets/images/otp_screen.svg';
+  static String forgetPassword = 'assets/icons/forget-password.svg';
   static String couponCode = 'assets/images/coupon_code.svg';
   static String supportAgent = 'assets/images/support.png';
   static String referralPerson = 'assets/images/referral.png';

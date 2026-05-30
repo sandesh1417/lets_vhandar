@@ -64,16 +64,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
-          TextButton(
-            onPressed: () =>
+          GestureDetector(
+            onTap: () =>
                 ref.read(loginProvider.notifier).enterGuestMode(context),
-            child: Text(
-              'Skip',
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: AppColor.primary,
+            child: Container(
+              margin: EdgeInsets.only(right: 8.w),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                color: AppColor.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                'Skip Login',
+                style: TextStyle(
+                  color: AppColor.primary,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -116,6 +123,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _phoneController,
                         hintText: 'Mobile Number',
                         labelText: 'Mobile Number',
+                        prefixIcon: Icon(Icons.phone_rounded,
+                            size: 18.sp, color: context.vColors.onSurfaceMuted),
                         prefixText: '+977 ',
                         autofillHints: const [AutofillHints.username],
                         keyBoardType: const TextInputType.numberWithOptions(),
@@ -156,7 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         () => _rememberMe = v ?? false),
                                     activeColor: AppColor.primary,
                                     side: BorderSide(
-                                        color: context.vColors.divider, width: 1.5),
+                                        color: context.vColors.onSurfaceMuted, width: 1.5),
                                     shape: RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(4.r),
@@ -200,14 +209,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         btnHeight: 52.h,
                         buttonColor: _isFormFilled
                             ? AppColor.secondary
-                            : context.vColors.surfaceVariant,
+                            : const Color(0xFF9C9C9C),
                         txtStyle: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Inter',
                           color: _isFormFilled
                               ? const Color(0xFF1A1A1A)
-                              : context.vColors.onSurfaceMuted,
+                              : Colors.white,
                         ),
                         onPress: () {
                           if (_formKey.currentState?.validate() ?? false) {

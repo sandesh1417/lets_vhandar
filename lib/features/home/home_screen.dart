@@ -251,7 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   parent: BouncingScrollPhysics(),
                 ),
                 slivers: [
-                  const HomeHeader(),
+                  HomeHeader(onLogoTap: _scrollToTop),
                   SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
