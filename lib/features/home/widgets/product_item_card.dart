@@ -403,11 +403,29 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
     final product = _currentProduct;
     final isBusiness = ref.watch(isBusinessUserProvider);
     final isOutOfStock = product.isOutOfStock;
-    final displayPrice = isBusiness
-        ? (product.businessPricePerUnit ?? product.actualPrice)
-        : product.actualPrice;
-    final hasDiscount =
-        product.discount != null && (product.discount?.value ?? 0) > 0;
+
+    // ── Price selection based on user type ──────────────────────────
+    final hasB2BPrice = isBusiness &&
+        (product.businessPricePerUnit ?? 0) > 0;
+
+    // Selling price shown to the user
+    final displayPrice = hasB2BPrice
+        ? product.businessActualPrice   // B2B: MRP - B2B discount
+        : product.actualPrice;          // Retail: pricePerUnit - discount
+
+    // MRP to show strikethrough (B2B uses businessPricePerUnit as their MRP)
+    final mrp = hasB2BPrice
+        ? (product.businessPricePerUnit ?? 0)
+        : (product.pricePerUnit ?? 0);
+
+    final showMrp = !isOutOfStock &&
+        mrp > 0 &&
+        displayPrice < mrp;
+
+    // Legacy variable kept for SAVE discount badge on retail cards
+    final hasDiscount = !hasB2BPrice &&
+        product.discount != null &&
+        (product.discount?.value ?? 0) > 0;
     final vc = context.vColors;
 
     return GestureDetector(
@@ -660,8 +678,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                 fontWeight: FontWeight.bold,
                                 color: vc.onSurface,
                               )),
-                          if (hasDiscount && !isOutOfStock)
-                            Text('MRP ${product.pricePerUnit?.toInt()}',
+                          if (showMrp)
+                            Text('MRP ${mrp.toInt()}',
                                 style: TextStyle(
                                     fontSize: 9.sp,
                                     color: vc.onSurfaceMuted,

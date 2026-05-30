@@ -137,10 +137,11 @@ final totalCartMrpProvider = Provider<double>((ref) {
   final isBusiness = ref.watch(isBusinessUserProvider);
   return cartItems.fold(0, (sum, item) {
     if (isBusiness) {
-      final price = item.product.businessPricePerUnit ??
-          item.product.pricePerUnit ??
-          item.product.actualPrice;
-      return sum + (price * item.quantity);
+      // B2B MRP = businessPricePerUnit (before B2B discount)
+      final mrp = (item.product.businessPricePerUnit ?? 0) > 0
+          ? item.product.businessPricePerUnit!
+          : (item.product.pricePerUnit ?? item.product.actualPrice);
+      return sum + (mrp * item.quantity);
     }
     final hasDiscount = item.product.discount != null &&
         (item.product.discount?.value ?? 0) > 0;

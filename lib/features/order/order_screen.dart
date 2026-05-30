@@ -692,47 +692,44 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(24.w),
-                    decoration: BoxDecoration(
-                      color: context.vColors.surfaceVariant,
-                      shape: BoxShape.circle,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/empty-cart.svg',
+                      width: 160.w,
+                      height: 160.w,
                     ),
-                    child: Icon(
-                      Icons.assignment_outlined,
-                      size: 60.sp,
-                      color: context.vColors.onSurfaceMuted,
+                    SizedBox(height: 28.h),
+                    Text(
+                      'No orders yet',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        color: context.vColors.onSurface,
+                        height: 1.3,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    'No orders yet',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: context.vColors.onSurface,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32.w),
-                    child: Text(
+                    SizedBox(height: 10.h),
+                    Text(
                       'Your orders will appear here once you place them.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 13.sp,
+                        fontSize: 14.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
                         color: context.vColors.onSurfaceMuted,
+                        height: 1.5,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

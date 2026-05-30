@@ -50,7 +50,23 @@ class _PointsCard extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 8.h),
       child: AspectRatio(
         aspectRatio: 1.586,
-        child: Container(
+        child: Stack(
+          children: [
+            // ── 3-D bottom slab ─────────────────────────────────────
+            Positioned(
+              left: 6.w,
+              right: 6.w,
+              bottom: 0,
+              top: 10.h,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFB87800),
+                  borderRadius: BorderRadius.circular(18.r),
+                ),
+              ),
+            ),
+            // ── Card face ───────────────────────────────────────────
+            Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFFFFD000), Color(0xFFFFA800)],
@@ -58,13 +74,6 @@ class _PointsCard extends StatelessWidget {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(18.r),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x73FFD000),
-                blurRadius: 24,
-                offset: Offset(0, 10),
-              ),
-            ],
           ),
           child: Stack(
             children: [
@@ -209,6 +218,8 @@ class _PointsCard extends StatelessWidget {
             ],
           ),
         ),
+          ],       // outer Stack children
+        ),         // outer Stack
       ),
     );
   }

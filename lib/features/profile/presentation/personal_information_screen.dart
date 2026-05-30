@@ -123,7 +123,17 @@ class PersonalInformationScreen extends ConsumerWidget {
               ),
             ),
 
-            SizedBox(height: 28.h),
+            SizedBox(height: 20.h),
+
+            // ── Profile completion card ─────────────────────────────
+            _ProfileCompletionCard(
+              user: user,
+              isBusiness: isBusiness,
+              businessDetail: businessDetail,
+              onEdit: () => context.push(LVRoute.editProfileScreen.route),
+            ),
+
+            SizedBox(height: 20.h),
 
             // Info card
             Container(
@@ -230,15 +240,24 @@ class PersonalInformationScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: context.isDark
+                        ? Colors.red.withValues(alpha: 0.12)
+                        : Colors.red.shade50,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: Colors.red.shade100),
+                    border: Border.all(
+                      color: context.isDark
+                          ? Colors.red.withValues(alpha: 0.35)
+                          : Colors.red.shade100,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.delete_forever_outlined,
-                          color: Colors.red.shade600, size: 20.sp),
+                          color: context.isDark
+                              ? Colors.red.shade300
+                              : Colors.red.shade600,
+                          size: 20.sp),
                       SizedBox(width: 8.w),
                       Text(
                         'Delete Account',
@@ -246,7 +265,9 @@ class PersonalInformationScreen extends ConsumerWidget {
                           fontSize: 14.sp,
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
-                          color: Colors.red.shade600,
+                          color: context.isDark
+                              ? Colors.red.shade300
+                              : Colors.red.shade600,
                         ),
                       ),
                     ],
@@ -262,6 +283,272 @@ class PersonalInformationScreen extends ConsumerWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile Completion Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ProfileCompletionCard extends StatelessWidget {
+  final dynamic user;
+  final bool isBusiness;
+  final Map<String, dynamic>? businessDetail;
+  final VoidCallback onEdit;
+
+  const _ProfileCompletionCard({
+    required this.user,
+    required this.isBusiness,
+    required this.businessDetail,
+    required this.onEdit,
+  });
+
+  List<({String label, IconData icon, bool filled})> _fields() {
+    if (isBusiness) {
+      final pan = businessDetail?['panNumber'] as String?;
+      final vat = businessDetail?['vatNumber'] as String?;
+      final hasPanVat = (pan != null && pan.isNotEmpty) ||
+          (vat != null && vat.isNotEmpty);
+      final location = businessDetail?['locationAddress'] as String? ??
+          businessDetail?['addressName'] as String?;
+      return [
+        (
+          label: 'Business Name',
+          icon: Icons.store_outlined,
+          filled: (businessDetail?['businessName'] as String?)?.isNotEmpty == true,
+        ),
+        (
+          label: 'Category',
+          icon: Icons.category_outlined,
+          filled: (businessDetail?['businessCategory'] as String?)?.isNotEmpty == true,
+        ),
+        (
+          label: 'PAN / VAT Number',
+          icon: Icons.badge_outlined,
+          filled: hasPanVat,
+        ),
+        (
+          label: 'Business Location',
+          icon: Icons.location_on_outlined,
+          filled: location != null && location.isNotEmpty,
+        ),
+      ];
+    }
+    return [
+      (
+        label: 'Full Name',
+        icon: Icons.person_outline,
+        filled: (user?.name as String?)?.isNotEmpty == true,
+      ),
+      (
+        label: 'Email Address',
+        icon: Icons.email_outlined,
+        filled: (user?.email as String?)?.isNotEmpty == true,
+      ),
+      (
+        label: 'Date of Birth',
+        icon: Icons.cake_outlined,
+        filled: (user?.birthDate as String?)?.isNotEmpty == true,
+      ),
+      (
+        label: 'Gender',
+        icon: Icons.wc_outlined,
+        filled: (user?.gender as String?)?.isNotEmpty == true,
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final fields = _fields();
+    final filled = fields.where((f) => f.filled).length;
+    final total = fields.length;
+    final percent = total == 0 ? 1.0 : filled / total;
+    final isComplete = filled == total;
+
+    final Color progressColor = isComplete
+        ? const Color(0xFF2E7D32)
+        : percent >= 0.6
+            ? AppColor.primary
+            : const Color(0xFFF5B237);
+
+    final missing = fields.where((f) => !f.filled).toList();
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.all(18.w),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ──────────────────────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isComplete ? 'Profile Complete 🎉' : 'Complete Your Profile',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        color: vc.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      isComplete
+                          ? 'Your profile is fully set up'
+                          : '${missing.length} field${missing.length == 1 ? '' : 's'} left to complete',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontFamily: 'Inter',
+                        color: vc.onSurfaceMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Percentage badge
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                decoration: BoxDecoration(
+                  color: progressColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Text(
+                  '${(percent * 100).toInt()}%',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w800,
+                    color: progressColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 14.h),
+
+          // ── Progress bar ─────────────────────────────────────────
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4.r),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: percent),
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeOutCubic,
+              builder: (_, value, __) => LinearProgressIndicator(
+                value: value,
+                minHeight: 7.h,
+                backgroundColor: vc.divider,
+                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 6.h),
+
+          // Field count label
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$filled / $total fields filled',
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontFamily: 'Inter',
+                  color: vc.onSurfaceMuted,
+                ),
+              ),
+              if (!isComplete)
+                GestureDetector(
+                  onTap: onEdit,
+                  child: Text(
+                    'Fill now →',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.primary,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+          // ── Missing fields ────────────────────────────────────────
+          if (missing.isNotEmpty) ...[
+            SizedBox(height: 14.h),
+            Divider(height: 1, color: vc.divider),
+            SizedBox(height: 12.h),
+            Text(
+              'What\'s missing',
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+                color: vc.onSurfaceMuted,
+                letterSpacing: 0.3,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Wrap(
+              spacing: 8.w,
+              runSpacing: 8.h,
+              children: missing.map((f) {
+                return GestureDetector(
+                  onTap: onEdit,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5B237).withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: const Color(0xFFF5B237).withValues(alpha: 0.40),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(f.icon,
+                            size: 12.sp,
+                            color: const Color(0xFFB07000)),
+                        SizedBox(width: 5.w),
+                        Text(
+                          f.label,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFB07000),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;

@@ -140,16 +140,18 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           colorFilter: isSelected ? null : inactiveFilter,
         );
       case 2:
-        return Icon(
-          isSelected ? Icons.receipt_long_rounded : Icons.receipt_long_outlined,
-          size: 22.w,
-          color: isSelected ? AppColor.primary : const Color(0xFFADB5B2),
+        return SvgPicture.asset(
+          isSelected
+              ? 'assets/icons/order-active.svg'
+              : 'assets/icons/order.svg',
+          width: 22.w,
+          height: 22.w,
         );
       case 3:
         return SvgPicture.asset(
           isSelected
-              ? 'assets/icons/reorder-icon-active.svg'
-              : 'assets/icons/reorder-icon.svg',
+              ? 'assets/icons/reorder-active.svg'
+              : 'assets/icons/reorder.svg',
           width: 22.w,
           height: 22.w,
         );
@@ -273,6 +275,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     );
   }
 }
+
 
 class _AboveNavBarFABLocation extends FloatingActionButtonLocation {
   const _AboveNavBarFABLocation();

@@ -27,17 +27,17 @@ class ProductAddToCartBar extends ConsumerWidget {
       final v = (raw as num?)?.toInt() ?? 99;
       return v > 0 ? v : 99;
     }();
-    final displayPrice = isBusiness
-        ? (product.businessPricePerUnit ?? product.actualPrice)
+    final hasB2BPrice = isBusiness && (product.businessPricePerUnit ?? 0) > 0;
+    final displayPrice = hasB2BPrice
+        ? product.businessActualPrice
         : product.actualPrice;
+    final mrp = hasB2BPrice
+        ? (product.businessPricePerUnit ?? 0)
+        : (product.pricePerUnit ?? 0);
+    final showMrp = !isOutOfStock && mrp > 0 && displayPrice < mrp;
+    final savedAmount = showMrp ? (mrp - displayPrice).toInt() : 0;
 
     final vc = context.vColors;
-    final hasDiscount = !isBusiness &&
-        product.discount != null &&
-        (product.discount?.value ?? 0) > 0;
-    final savedAmount = hasDiscount
-        ? ((product.pricePerUnit ?? 0) - product.actualPrice).toInt()
-        : 0;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
@@ -87,10 +87,10 @@ class ProductAddToCartBar extends ConsumerWidget {
                         color: Colors.red.shade500,
                       ),
                     ),
-                  ] else if (hasDiscount) ...[
+                  ] else if (showMrp) ...[
                     SizedBox(height: 2.h),
                     Text(
-                      'MRP Rs.${product.pricePerUnit?.toInt()}',
+                      'MRP Rs.${mrp.toInt()}',
                       style: TextStyle(
                         fontSize: 11.sp,
                         color: vc.onSurfaceMuted,

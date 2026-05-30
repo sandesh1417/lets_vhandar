@@ -1,3 +1,11 @@
+bool? _parseBool(dynamic v) {
+  if (v == null) return null;
+  if (v is bool) return v;
+  if (v is int) return v != 0;
+  if (v is String) return v.toLowerCase() == 'true';
+  return null;
+}
+
 class UserModel {
   final String? id;
   final String? name;
@@ -112,7 +120,7 @@ class UserModel {
         vandarPoints: json['vandarPoints'] as int?,
         totalMoneySave: (json['totalMoneySave'] as num?)?.toDouble(),
         isCreatedByAdmin: json['isCreatedByAdmin'] as bool?,
-        isBusiness: json['isBusiness'] as bool?,
+        isBusiness: _parseBool(json['isBusiness']),
         deleteRequest: json['deleteRequest'] as bool?,
         businessDetail: json['businessDetail'] is Map<String, dynamic>
             ? Map<String, dynamic>.from(json['businessDetail'])

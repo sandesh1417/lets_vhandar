@@ -241,14 +241,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
           ),
 
-          // ─── Product Info Card ────────────────────────────────────────
+          // ─── Product Info Card (ticket cutout) ───────────────────────
           SliverToBoxAdapter(
-            child: Container(
-              margin: EdgeInsets.only(top: 4.h),
-              decoration: BoxDecoration(
+            child: CustomPaint(
+              painter: _TicketTopPainter(
                 color: vc.surface,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                cornerRadius: 20,
+                notchRadius: 14,
               ),
+              child: Container(
+                margin: EdgeInsets.only(top: 4.h),
+                color: Colors.transparent,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -439,7 +442,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
-          ),
+          ),   // closes CustomPaint
+        ),     // closes SliverToBoxAdapter
 
           // Similar Products
           if (product.categoryIds?.isNotEmpty == true)
@@ -519,6 +523,55 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 }
+
+// ── Ticket cutout painter for the product info card top edge ─────────────────
+
+class _TicketTopPainter extends CustomPainter {
+  final Color color;
+  final double cornerRadius;
+  final double notchRadius;
+
+  const _TicketTopPainter({
+    required this.color,
+    required this.notchRadius,
+    double cornerRadius = 20,
+  }) : cornerRadius = cornerRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final nr = notchRadius;
+
+    final path = Path()
+      // Start at top-left notch end
+      ..moveTo(nr, 0)
+      // Top edge to top-right notch start
+      ..lineTo(w - nr, 0)
+      // Top-right notch (semicircle cut upward)
+      ..arcToPoint(Offset(w, nr),
+          radius: Radius.circular(nr), clockwise: false)
+      // Right edge down
+      ..lineTo(w, h)
+      // Bottom-right corner (no rounding needed, full width)
+      ..lineTo(0, h)
+      // Left edge up
+      ..lineTo(0, nr)
+      // Top-left notch (semicircle cut upward)
+      ..arcToPoint(Offset(nr, 0),
+          radius: Radius.circular(nr), clockwise: false)
+      ..close();
+
+    canvas.drawPath(path, Paint()
+      ..color = color
+      ..style = PaintingStyle.fill);
+  }
+
+  @override
+  bool shouldRepaint(_TicketTopPainter old) => old.color != color;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _GlassButton extends StatelessWidget {
   final IconData icon;

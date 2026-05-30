@@ -167,15 +167,20 @@ class LVGoRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: ProductDetailScreen(product: product),
-            transitionDuration: const Duration(milliseconds: 350),
-            reverseTransitionDuration: const Duration(milliseconds: 280),
+            transitionDuration: const Duration(milliseconds: 420),
+            reverseTransitionDuration: const Duration(milliseconds: 300),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              final curved = CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+                reverseCurve: Curves.easeInCubic,
+              );
               return FadeTransition(
-                opacity: CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeOut,
+                opacity: curved,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+                  child: child,
                 ),
-                child: child,
               );
             },
           );

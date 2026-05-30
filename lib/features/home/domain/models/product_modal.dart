@@ -336,6 +336,32 @@ class ProductData {
     return pricePerUnit!;
   }
 
+  // B2B selling price = businessPricePerUnit minus businessDiscount
+  double get businessActualPrice {
+    final bp = businessPricePerUnit;
+    if (bp == null || bp <= 0) return actualPrice; // no B2B price → retail
+    final bd = businessDiscount;
+    if (bd == null) return bp;
+    if (bd is Map) {
+      final type = bd['type'] as String?;
+      final val = (bd['value'] as num?)?.toDouble() ?? 0;
+      if (val > 0) {
+        if (type == 'flat') return (bp - val).clamp(0, double.infinity);
+        if (type == 'percentage') return bp * (1 - val / 100);
+      }
+    }
+    return bp;
+  }
+
+  // True when B2B has a discount that lowers the price below B2B MRP
+  bool get hasBusinessDiscount {
+    final bp = businessPricePerUnit;
+    if (bp == null || bp <= 0) return false;
+    final bd = businessDiscount;
+    if (bd == null || bd is! Map) return false;
+    return ((bd['value'] as num?)?.toDouble() ?? 0) > 0;
+  }
+
   bool get isOutOfStock => (quantity ?? 0) == 0;
 }
 

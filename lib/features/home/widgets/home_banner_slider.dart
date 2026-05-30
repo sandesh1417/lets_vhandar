@@ -15,32 +15,53 @@ class HomeBannerSlider extends ConsumerStatefulWidget {
   ConsumerState<HomeBannerSlider> createState() => _HomeBannerSliderState();
 }
 
-class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider>
+    with SingleTickerProviderStateMixin {
+  late final PageController _pageController;
+  late final AnimationController _animController;
+  late final Animation<double> _fadeAnim;
   Timer? _timer;
+
+  static const int _kMultiplier = 500;
+  static const Duration _kTransitionDuration = Duration(milliseconds: 700);
+  static const Duration _kAutoScrollInterval = Duration(seconds: 4);
 
   @override
   void initState() {
     super.initState();
-    _startAutoScroll();
+    _pageController = PageController(viewportFraction: 1.0);
+
+    _animController = AnimationController(
+      vsync: this,
+      duration: _kTransitionDuration,
+      value: 1.0,
+    );
+
+    _fadeAnim = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeInOut,
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startAutoScroll());
   }
 
   void _startAutoScroll() {
-    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      final banners = ref.read(bannerProvider).value;
-      if (banners != null && banners.isNotEmpty) {
-        if (_currentPage < banners.length - 1) {
-          _currentPage++;
-        } else {
-          _currentPage = 0;
-        }
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeIn,
-        );
-      }
+    _timer?.cancel();
+    _timer = Timer.periodic(_kAutoScrollInterval, (_) => _next());
+  }
+
+  void _stopAutoScroll() => _timer?.cancel();
+
+  void _next() {
+    if (!_pageController.hasClients) return;
+    final banners = ref.read(bannerProvider).value;
+    if (banners == null || banners.length <= 1) return;
+
+    _animController.forward(from: 0.0).then((_) {
+      _pageController.nextPage(
+        duration: _kTransitionDuration,
+        curve: Curves.easeInOutCubic,
+      );
     });
   }
 
@@ -48,6 +69,7 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
@@ -58,42 +80,58 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
     return bannerAsync.when(
       data: (banners) {
         if (banners.isEmpty) return const SizedBox.shrink();
+
+        final count = banners.length;
+
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.r),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (notif) {
+                  if (notif is ScrollStartNotification &&
+                      notif.dragDetails != null) {
+                    _stopAutoScroll();
+                  } else if (notif is ScrollEndNotification) {
+                    _startAutoScroll();
+                  }
+                  return false;
+                },
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: banners.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
+                  itemCount: count * _kMultiplier,
+                  onPageChanged: (_) {
+                    _animController.forward(from: 0.0);
                   },
-                  itemBuilder: (context, index) {
-                    final banner = banners[index];
-                    return GestureDetector(
-                      onTap: () =>
-                          navigateToSlug(context, banner.link, isBrand: false),
-                      child: CustomImageViewer(
-                        path: banner.images?.first.url,
-                        borderRadius: 16.r,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                  itemBuilder: (context, virtualIndex) {
+                    final banner = banners[virtualIndex % count];
+                    return FadeTransition(
+                      opacity: _fadeAnim,
+                      child: GestureDetector(
+                        onTap: () => navigateToSlug(
+                          context,
+                          banner.link,
+                          isBrand: false,
+                        ),
+                        child: CustomImageViewer(
+                          path: banner.images?.first.url,
+                          borderRadius: 0,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   },
                 ),
               ),
-             
-            ],
+            ),
           ),
         );
       },
       loading: () => Padding(
-        padding: EdgeInsets.symmetric(horizontal: 1.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: AspectRatio(
           aspectRatio: 16 / 9,
           child: ClipRRect(
@@ -102,7 +140,7 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider> {
           ),
         ),
       ),
-      error: (err, stack) => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }

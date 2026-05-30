@@ -150,7 +150,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
             children: [
               // ── White top section ──────────────────────────────────
               Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 24.h),
+                padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
                 child: Column(
                   children: [
                     SvgPicture.asset(

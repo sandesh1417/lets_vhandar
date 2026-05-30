@@ -399,8 +399,8 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.logout,
                   title: 'Logout',
                   subtitle: 'Logout from your Vhandar account',
-                  titleColor: Colors.red.shade600,
-                  iconColor: Colors.red.shade600,
+                  titleColor: context.isDark ? Colors.red.shade300 : Colors.red.shade600,
+                  iconColor: context.isDark ? Colors.red.shade300 : Colors.red.shade600,
                   showRightArrow: false,
                   showDivider: false,
                   onTap: () => _showLogoutDialog(context, ref),
@@ -431,8 +431,8 @@ class AccountTab extends ConsumerWidget {
         children: [
           SvgPicture.asset(
             KImageConstant.pointsBadge,
-            width: 44.w,
-            height: 44.w,
+            width: 34.w,
+            height: 34.w,
             fit: BoxFit.contain,
           ),
           SizedBox(width: 14.w),
@@ -451,8 +451,8 @@ class AccountTab extends ConsumerWidget {
                   'Earn rewards on every order',
                   style: TextStyle(
                     color: vc.onSurfaceMuted,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -521,7 +521,7 @@ class AccountTab extends ConsumerWidget {
                   'View all your purchases, manage your orders or start a return.',
                   style: TextStyle(
                     color: vc.onSurfaceMuted,
-                    fontSize: 12.sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -581,7 +581,7 @@ class AccountTab extends ConsumerWidget {
                   'Register your business and grow with Vhandar.',
                   style: TextStyle(
                     color: vc.onSurfaceMuted,
-                    fontSize: 12.sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -882,6 +882,33 @@ class _AppearanceSheet extends StatefulWidget {
 class _AppearanceSheetState extends State<_AppearanceSheet> {
   late ThemeMode _selected;
 
+  static const _options = [
+    (
+      mode: ThemeMode.light,
+      label: 'Light',
+      subtitle: 'Always use light theme',
+      icon: Icons.wb_sunny_rounded,
+      iconBg: Color(0xFFFFF8E1),
+      iconColor: Color(0xFFE8A000),
+    ),
+    (
+      mode: ThemeMode.dark,
+      label: 'Dark',
+      subtitle: 'Always use dark theme',
+      icon: Icons.nights_stay_rounded,
+      iconBg: Color(0xFF1A2340),
+      iconColor: Color(0xFF89D0FE),
+    ),
+    (
+      mode: ThemeMode.system,
+      label: 'System default',
+      subtitle: 'Follow device setting',
+      icon: Icons.brightness_auto_rounded,
+      iconBg: Color(0xFFE8F5EE),
+      iconColor: Color(0xFF0A754E),
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -891,137 +918,172 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
   void _pick(ThemeMode mode) {
     setState(() => _selected = mode);
     widget.ref.read(themeModeProvider.notifier).setMode(mode);
-    Navigator.pop(context);
+    Future.delayed(const Duration(milliseconds: 180), () {
+      if (mounted) Navigator.pop(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final bottom = MediaQuery.of(context).padding.bottom;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        color: vc.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
-      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, bottom + 16.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Handle
           Center(
             child: Container(
+              margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
               width: 36.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: vc.divider,
                 borderRadius: BorderRadius.circular(2.r),
               ),
             ),
           ),
-          SizedBox(height: 20.h),
-          Text(
-            'Appearance',
-            style: TextStyle(
-              fontSize: 17.sp,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface,
+
+          // Header
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 0),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(9.w),
+                  decoration: BoxDecoration(
+                    color: AppColor.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(Icons.palette_outlined,
+                      color: AppColor.primary, size: 20.sp),
+                ),
+                SizedBox(width: 12.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Appearance',
+                      style: TextStyle(
+                        fontSize: 17.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        color: vc.onSurface,
+                      ),
+                    ),
+                    Text(
+                      'Choose how Vhandar looks on this device',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontFamily: 'Inter',
+                        color: vc.onSurfaceMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 6.h),
-          Text(
-            'Choose how Vhandar looks on this device.',
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontFamily: 'Inter',
-              color: Colors.grey.shade500,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          _ThemeOption(
-            icon: Icons.light_mode_outlined,
-            label: 'Light',
-            selected: _selected == ThemeMode.light,
-            onTap: () => _pick(ThemeMode.light),
-          ),
-          SizedBox(height: 10.h),
-          _ThemeOption(
-            icon: Icons.dark_mode_outlined,
-            label: 'Dark',
-            selected: _selected == ThemeMode.dark,
-            onTap: () => _pick(ThemeMode.dark),
-          ),
-          SizedBox(height: 10.h),
-          _ThemeOption(
-            icon: Icons.brightness_auto_outlined,
-            label: 'System default',
-            selected: _selected == ThemeMode.system,
-            onTap: () => _pick(ThemeMode.system),
-          ),
+
+          SizedBox(height: 16.h),
+          Divider(height: 1, color: vc.divider),
+          SizedBox(height: 8.h),
+
+          // Options
+          ..._options.map((opt) {
+            final isSelected = _selected == opt.mode;
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _pick(opt.mode),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColor.primary.withValues(alpha: 0.06)
+                      : vc.surfaceVariant,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColor.primary.withValues(alpha: 0.5)
+                        : Colors.transparent,
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Icon pill
+                    Container(
+                      width: 44.w,
+                      height: 44.w,
+                      decoration: BoxDecoration(
+                        color: opt.iconBg,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Icon(opt.icon, color: opt.iconColor, size: 22.sp),
+                    ),
+                    SizedBox(width: 14.w),
+                    // Labels
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            opt.label,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w700,
+                              color: isSelected
+                                  ? AppColor.primary
+                                  : vc.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            opt.subtitle,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: 'Inter',
+                              color: vc.onSurfaceMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Selection indicator
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: isSelected
+                          ? Icon(Icons.check_circle_rounded,
+                              key: const ValueKey('check'),
+                              color: AppColor.primary,
+                              size: 22.sp)
+                          : Icon(Icons.radio_button_unchecked_rounded,
+                              key: const ValueKey('empty'),
+                              color: vc.divider,
+                              size: 22.sp),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+
+          SizedBox(height: 8.h),
         ],
       ),
     );
   }
 }
 
-class _ThemeOption extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ThemeOption({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColor.primary.withValues(alpha: 0.08)
-              : context.vColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: selected ? AppColor.primary : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 20.sp,
-              color: selected ? AppColor.primary : Colors.grey.shade600,
-            ),
-            SizedBox(width: 14.w),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
-                  color: selected
-                      ? AppColor.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            ),
-            if (selected)
-              Icon(Icons.check_circle_rounded,
-                  color: AppColor.primary, size: 20.sp),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);

@@ -407,61 +407,72 @@ class _AvatarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 80.h,
-          width: double.infinity,
-          color: AppColor.primary,
-        ),
-        Positioned(
-          bottom: -36.h,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Stack(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(3.w),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: vc.surface,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 12,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: SvgPicture.asset(
-                    isBusiness
-                        ? KImageConstant.businessProfile
-                        : KImageConstant.userProfile,
-                    width: 72.w,
-                    height: 72.w,
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(4.w),
+    // Avatar circle = 72.w image + 3.w padding on all sides = 78.w total.
+    // Place avatar so its centre sits on the dividing line between the green
+    // band and the white form area — no overflow, no clip needed.
+    const double greenHeight = 80.0;
+    final double avatarDiameter = 78.w;
+    final double avatarTop = greenHeight.h - avatarDiameter / 2;
+    final double totalHeight = greenHeight.h + avatarDiameter / 2 + 16.h;
+
+    return SizedBox(
+      height: totalHeight,
+      child: Stack(
+        children: [
+          // Green band
+          Container(
+            height: greenHeight.h,
+            width: double.infinity,
+            color: AppColor.primary,
+          ),
+          // Avatar centred on the band boundary
+          Positioned(
+            top: avatarTop,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(3.w),
                     decoration: BoxDecoration(
-                      color: AppColor.primary,
                       shape: BoxShape.circle,
-                      border: Border.all(color: vc.surface, width: 1.5),
+                      color: vc.surface,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 12,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    child: Icon(Icons.edit,
-                        color: Colors.white, size: 10.sp),
+                    child: SvgPicture.asset(
+                      isBusiness
+                          ? KImageConstant.businessProfile
+                          : KImageConstant.userProfile,
+                      width: 72.w,
+                      height: 72.w,
+                    ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
+                        color: AppColor.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: vc.surface, width: 1.5),
+                      ),
+                      child: Icon(Icons.edit, color: Colors.white, size: 10.sp),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
