@@ -51,6 +51,33 @@ class SessionPrefences {
     await prefs.remove('guest_mode');
   }
 
+  Future<void> saveRememberMe({
+    required String phone,
+    required String password,
+  }) async {
+    await _secureStorage.write(key: 'remember_phone', value: phone);
+    await _secureStorage.write(key: 'remember_password', value: password);
+    final prefs = await _prefs();
+    await prefs.setBool('remember_me', true);
+  }
+
+  Future<Map<String, String?>> getRememberMe() async {
+    final prefs = await _prefs();
+    final enabled = prefs.getBool('remember_me') ?? false;
+    if (!enabled) return {'phone': null, 'password': null};
+    return {
+      'phone': await _secureStorage.read(key: 'remember_phone'),
+      'password': await _secureStorage.read(key: 'remember_password'),
+    };
+  }
+
+  Future<void> clearRememberMe() async {
+    await _secureStorage.delete(key: 'remember_phone');
+    await _secureStorage.delete(key: 'remember_password');
+    final prefs = await _prefs();
+    await prefs.remove('remember_me');
+  }
+
   Future<void> setLayoutPreference(bool isVertical) async {
     final prefs = await _prefs();
     await prefs.setBool('is_vertical_layout', isVertical);

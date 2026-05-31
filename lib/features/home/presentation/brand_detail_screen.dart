@@ -6,10 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/brand_detail_provider.dart';
+import 'package:lets_vhandar/features/home/domain/models/brand_modal.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {
@@ -143,37 +146,57 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                           data: (brand) {
                             final imageUrl = brand.images?.firstOrNull?.url ??
                                 brand.images?.firstOrNull?.path;
-                            return Row(
-                              children: [
-                                if (imageUrl != null) ...[
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                    child: CustomImageViewer(
-                                      path: imageUrl,
-                                      width: 34.w,
-                                      height: 34.w,
-                                      fit: BoxFit.cover,
+                            return GestureDetector(
+                              onTap: () => _showBrandInfoSheet(brand),
+                              child: Row(
+                                children: [
+                                  if (imageUrl != null) ...[
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      child: CustomImageViewer(
+                                        path: imageUrl,
+                                        width: 34.w,
+                                        height: 34.w,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                  ],
+                                  Expanded(
+                                    child: Text(
+                                      brand.name ?? '',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17.sp,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  SizedBox(width: 10.w),
                                 ],
-                                Expanded(
-                                  child: Text(
-                                    brand.name ?? '',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17.sp,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
+                              ),
                             );
                           },
                           loading: () => const SizedBox.shrink(),
                           error: (_, __) => const SizedBox.shrink(),
                         ),
+                ),
+                SizedBox(width: 8.w),
+                // Info icon — opens brand info popup
+                brandAsync.maybeWhen(
+                  data: (brand) => GestureDetector(
+                    onTap: () => _showBrandInfoSheet(brand),
+                    child: Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: const Icon(Icons.info_outline_rounded,
+                          color: Colors.white, size: 20),
+                    ),
+                  ),
+                  orElse: () => const SizedBox.shrink(),
                 ),
                 SizedBox(width: 8.w),
                 GestureDetector(
@@ -258,20 +281,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                     child: productsAsync.when(
                       data: (products) {
                         if (products.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.inventory_2_outlined,
-                                    size: 48.sp, color: Colors.grey),
-                                SizedBox(height: 12.h),
-                                Text('No products found',
-                                    style: TextStyle(
-                                        color: AppColor.textMuted,
-                                        fontSize: 14.sp)),
-                              ],
-                            ),
-                          );
+                          return const _NoProductsSuggestion();
                         }
                         return ProductGrid(
                           products: products,
@@ -334,6 +344,111 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showBrandInfoSheet(BrandData brand) {
+    final productsAsync = ref.read(filteredBrandProductsProvider(_currentBrandSlug));
+    final productCount = productsAsync.valueOrNull?.length ?? 0;
+    final imageUrl = brand.images?.firstOrNull?.url ?? brand.images?.firstOrNull?.path;
+    final rawDesc = brand.description ?? '';
+    final description = rawDesc
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final vc = ctx.vColors;
+        return Container(
+          decoration: BoxDecoration(
+            color: vc.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          ),
+          padding: EdgeInsets.fromLTRB(20.w, 0, 20.w,
+              20.h + MediaQuery.of(ctx).padding.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 12.h),
+                  width: 36.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: vc.divider,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+              ),
+              // Brand image
+              if (imageUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: CustomImageViewer(
+                    path: imageUrl,
+                    width: 100.w,
+                    height: 100.w,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+              ],
+              // Brand name
+              Text(
+                brand.name ?? '',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w800,
+                  color: vc.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10.h),
+              // Product count badge
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Text(
+                  '$productCount Products',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.primary,
+                  ),
+                ),
+              ),
+              // Description
+              if (description.isNotEmpty) ...[
+                SizedBox(height: 16.h),
+                Divider(color: vc.divider),
+                SizedBox(height: 12.h),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: vc.onSurfaceMuted,
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              SizedBox(height: 8.h),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -460,27 +575,25 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
         ),
         child: Column(
           children: [
-            if (imageUrl != null) ...[
-              Container(
-                width: 40.w,
-                height: 40.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                    color: AppColor.primary.withValues(alpha: 0.18),
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(7.r),
-                  child: CustomImageViewer(
-                    path: imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+            Container(
+              width: 40.w,
+              height: 40.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(
+                  color: AppColor.primary.withValues(alpha: 0.18),
+                  width: 1,
                 ),
               ),
-              SizedBox(height: 5.h),
-            ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(7.r),
+                child: CustomImageViewer(
+                  path: imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 5.h),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -497,5 +610,78 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
       ),
     );
   }
-
 }
+
+class _NoProductsSuggestion extends StatelessWidget {
+  const _NoProductsSuggestion();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Center(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              'assets/images/no_search_results.svg',
+              width: 110.w,
+              height: 110.w,
+            ),
+            SizedBox(height: 20.h),
+            // Title
+            Text(
+              'No Products Yet',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            // Description
+            Text(
+              'We don\'t have any products listed for this brand yet. Help us improve by suggesting a product!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                height: 1.5,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            // Suggestion button
+            GestureDetector(
+              onTap: () => showProductSuggestionSheet(context),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFCC00),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_circle_outline_rounded,
+                        color: Colors.black87, size: 15.sp),
+                    SizedBox(width: 6.w),
+                    Text(
+                      'Suggest a Product',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

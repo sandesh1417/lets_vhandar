@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/local/shared_preferences_services.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -36,6 +37,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _passwordController = TextEditingController();
     _phoneController.addListener(_onFormChanged);
     _passwordController.addListener(_onFormChanged);
+    _loadRememberMe();
+  }
+
+  Future<void> _loadRememberMe() async {
+    final saved = await SessionPrefences().getRememberMe();
+    final phone = saved['phone'];
+    final password = saved['password'];
+    if (phone != null && password != null) {
+      _phoneController.text = phone;
+      _passwordController.text = password;
+      setState(() => _rememberMe = true);
+    }
   }
 
   void _onFormChanged() {
@@ -218,8 +231,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ? const Color(0xFF1A1A1A)
                               : Colors.white,
                         ),
-                        onPress: () {
+                        onPress: () async {
                           if (_formKey.currentState?.validate() ?? false) {
+                            if (_rememberMe) {
+                              await SessionPrefences().saveRememberMe(
+                                phone: _phoneController.text,
+                                password: _passwordController.text,
+                              );
+                            } else {
+                              await SessionPrefences().clearRememberMe();
+                            }
+                            if (!context.mounted) return;
                             ref.read(loginProvider.notifier).login(
                                   context,
                                   _phoneController.text,

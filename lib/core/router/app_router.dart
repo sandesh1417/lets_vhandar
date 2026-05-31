@@ -43,6 +43,7 @@ import 'package:lets_vhandar/features/profile/presentation/help_support_screen.d
 import 'package:lets_vhandar/features/profile/presentation/vhandar_for_business_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/about_vhandar_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/coupon_screen.dart';
+import 'package:lets_vhandar/features/home/presentation/featured_products_screen.dart';
 
 enum LVRoute {
   splashScreen,
@@ -83,7 +84,8 @@ enum LVRoute {
   aboutVhandarScreen,
   editProfileScreen,
   privacyPolicyScreen,
-  termsScreen;
+  termsScreen,
+  featuredProductsScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -207,7 +209,10 @@ class LVGoRouter {
         name: 'categoryDetailScreen',
         builder: (BuildContext context, GoRouterState state) {
           final slug = state.pathParameters['slug']!;
-          return CategoryDetailScreen(categorySlug: slug);
+          final extra = state.extra as Map<String, dynamic>?;
+          final initialSubSlug = extra?['initialSubSlug'] as String?;
+          return CategoryDetailScreen(
+              categorySlug: slug, initialSubCategorySlug: initialSubSlug);
         },
       ),
       GoRoute(
@@ -416,6 +421,12 @@ class LVGoRouter {
           title: 'Terms & Conditions',
           url: 'https://www.vhandar.com/terms-and-conditions',
         ),
+      ),
+      GoRoute(
+        path: LVRoute.featuredProductsScreen.route,
+        name: LVRoute.featuredProductsScreen.route,
+        builder: (BuildContext context, GoRouterState state) =>
+            const FeaturedProductsScreen(),
       ),
       // Add other routes as they are implemented
     ],

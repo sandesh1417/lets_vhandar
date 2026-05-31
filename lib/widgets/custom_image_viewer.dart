@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
+const _kPlaceholderSvg = 'assets/images/placeholder.svg';
+
 enum ImageType { network, asset, file, svg }
 
 class CustomImageViewer extends StatelessWidget {
@@ -91,11 +93,11 @@ class CustomImageViewer extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    return Image.asset(
-      placeholder,
+    return SvgPicture.asset(
+      _kPlaceholderSvg,
       height: height,
       width: width,
-      fit: fit,
+      fit: BoxFit.contain,
     );
   }
 
@@ -104,11 +106,11 @@ class CustomImageViewer extends StatelessWidget {
   }
 
   Widget _buildErrorWidget() {
-    return Container(
+    return SvgPicture.asset(
+      _kPlaceholderSvg,
       height: height,
       width: width,
-      color: Colors.grey[200],
-      child: const Icon(Icons.error_outline, color: Colors.grey),
+      fit: BoxFit.contain,
     );
   }
 }

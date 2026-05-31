@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -18,7 +19,12 @@ class ReferAndEarnScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(loginProvider).user;
-    final referralCode = user?.referalCode ?? 'NOTFOUND';
+    final profileAsync = user?.id != null
+        ? ref.watch(userProfileProvider(user!.id!))
+        : null;
+    final referralCode = profileAsync?.valueOrNull?.referalCode
+        ?? user?.referalCode
+        ?? '';
     final vc = context.vColors;
 
     return CustomScaffoldWrapper(
@@ -29,7 +35,10 @@ class ReferAndEarnScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Hero banner ──────────────────────────────────────────────
-          _HeroBanner(referralCode: referralCode),
+          _HeroBanner(
+            referralCode: referralCode,
+            isLoading: profileAsync != null && profileAsync.isLoading && referralCode.isEmpty,
+          ),
 
           // ── How it works ─────────────────────────────────────────────
           Padding(
@@ -158,7 +167,8 @@ class ReferAndEarnScreen extends ConsumerWidget {
 
 class _HeroBanner extends StatelessWidget {
   final String referralCode;
-  const _HeroBanner({required this.referralCode});
+  final bool isLoading;
+  const _HeroBanner({required this.referralCode, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -263,6 +273,25 @@ class _HeroBanner extends StatelessWidget {
                 SizedBox(height: 8.h),
 
                 // Dashed code box
+                if (isLoading)
+                  Container(
+                    height: 46.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Center(
+                      child: SizedBox(
+                        width: 20.w,
+                        height: 20.w,
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  )
+                else
                 CustomPaint(
                   painter: const _DashedBorderPainter(
                     color: Color(0xFFD4A574),
@@ -325,6 +354,7 @@ class _HeroBanner extends StatelessWidget {
                 SizedBox(height: 16.h),
 
                 // Share button
+                if (!isLoading && referralCode.isNotEmpty)
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();

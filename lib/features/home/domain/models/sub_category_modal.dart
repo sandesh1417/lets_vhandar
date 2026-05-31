@@ -58,6 +58,7 @@ class SubCategoryContainer {
 class SubCategoryData {
   final String? id;
   final String? name;
+  final String? description;
   final int? sortOrder;
   final List<SubCategoryImage>? images;
   final String? slug;
@@ -65,6 +66,7 @@ class SubCategoryData {
   SubCategoryData({
     this.id,
     this.name,
+    this.description,
     this.sortOrder,
     this.images,
     this.slug,
@@ -73,6 +75,7 @@ class SubCategoryData {
   factory SubCategoryData.fromMap(Map<String, dynamic> json) => SubCategoryData(
         id: json["_id"],
         name: json["name"],
+        description: json["description"] ?? json["desc"] ?? json["details"],
         sortOrder: json["sortOrder"],
         images: json["images"] == null
             ? []
@@ -84,6 +87,7 @@ class SubCategoryData {
   Map<String, dynamic> toMap() => {
         "_id": id,
         "name": name,
+        "description": description,
         "sortOrder": sortOrder,
         "images": images == null
             ? []

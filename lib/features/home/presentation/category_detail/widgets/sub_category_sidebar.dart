@@ -79,7 +79,13 @@ class SubCategorySidebar extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (imageUrl != null)
+            if (slug == null)
+              Icon(
+                Icons.grid_view_rounded,
+                color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
+                size: 24.sp,
+              )
+            else
               Container(
                 width: 40.w,
                 height: 40.w,
@@ -100,12 +106,6 @@ class SubCategorySidebar extends ConsumerWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-              )
-            else if (slug == null)
-              Icon(
-                Icons.grid_view_rounded,
-                color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
-                size: 24.sp,
               ),
             SizedBox(height: 5.h),
             Text(

@@ -16,6 +16,9 @@ final homeCategoryProvider = FutureProvider<List<CategoryData>>((ref) async {
   }
 });
 
+/// Controls which tab is active in CategoryScreen (0=Category, 1=SubCategory, 2=Brand)
+final categoryScreenTabProvider = StateProvider<int>((ref) => 0);
+
 final allCategoryProvider = FutureProvider<List<CategoryData>>((ref) async {
   final categoryRepository = locator<CategoryRepository>();
   final result = await categoryRepository.getCategories();

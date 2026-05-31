@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
@@ -139,6 +142,11 @@ class ProductAddToCartBar extends ConsumerWidget {
                       : cartCount == 0
                           ? GestureDetector(
                               onTap: () {
+                                final loginState = ref.read(loginProvider);
+                                if (loginState.isGuest || !loginState.isLoggedIn) {
+                                  context.go(LVRoute.loginScreen.route);
+                                  return;
+                                }
                                 HapticFeedback.mediumImpact();
                                 ref.read(cartProvider.notifier).addToCart(product);
                               },

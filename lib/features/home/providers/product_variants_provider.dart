@@ -112,13 +112,19 @@ Future<List<ProductData>> expandProductsWithVariants(
             // Add current product (which might be the child variant)
             if (!addedIds.contains(product.id)) {
               addedIds.add(product.id!);
-              expanded.add(product);
+              final stampedProduct = (product.parentId == null && product.id != parentId)
+                  ? product.copyWith(parentId: parentId)
+                  : product;
+              expanded.add(stampedProduct);
             }
-            // Add all other variants
+            // Add all other variants — stamp parentId so ADD button triggers popup
             for (final v in variants) {
               if (v.id != null && !addedIds.contains(v.id)) {
                 addedIds.add(v.id!);
-                expanded.add(v);
+                final stamped = (v.parentId == null && v.id != parentId)
+                    ? v.copyWith(parentId: parentId)
+                    : v;
+                expanded.add(stamped);
               }
             }
           },

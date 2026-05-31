@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -99,10 +100,8 @@ class OrderDetailScreen extends ConsumerWidget {
           _buildSectionHeader(context, 'Payment Method'),
           SizedBox(height: 12.h),
           _buildPaymentSection(context, order),
-          if (settings != null) ...[
-            SizedBox(height: 32.h),
-            _buildFreeDeliveryBanner(context, order, settings),
-          ],
+          SizedBox(height: 24.h),
+          _buildDownloadReceiptButton(context, order),
           SizedBox(height: 32.h),
         ],
       ),
@@ -267,40 +266,58 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFreeDeliveryBanner(BuildContext context, OrderData order, dynamic settings) {
-    final threshold = settings.deliveryThreshold ?? 0;
-    final itemsTotal = order.totalAmount ?? 0;
-
-    if (itemsTotal >= threshold) return const SizedBox.shrink();
-
-    final remaining = threshold - itemsTotal;
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF4A3700).withValues(alpha: 0.4) : const Color(0xFFFFF9E7),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: isDark ? const Color(0xFF7A5C00).withValues(alpha: 0.6) : const Color(0xFFFFECB3),
+  Widget _buildDownloadReceiptButton(BuildContext context, OrderData order) {
+    final vc = context.vColors;
+    return GestureDetector(
+      onTap: () {
+        final date = order.createdAt != null
+            ? '${order.createdAt!.day} ${_getMonth(order.createdAt!.month)} ${order.createdAt!.year}'
+            : '-';
+        final items = (order.products ?? [])
+            .map((p) => '  • ${p.name ?? 'Item'} x${p.count ?? 1}  Rs.${p.netPrice?.toInt() ?? 0}')
+            .join('\n');
+        final receipt = '''
+============================
+        VHANDAR RECEIPT
+============================
+Order ID : ${order.orderId ?? '-'}
+Date     : $date
+Status   : ${order.status ?? '-'}
+Payment  : ${order.paymentMethod ?? '-'}
+----------------------------
+ITEMS:
+$items
+----------------------------
+TOTAL    : Rs.${order.totalAmount?.toInt() ?? 0}
+============================
+Thank you for shopping with Vhandar!
+''';
+        Share.share(receipt, subject: 'Vhandar Order Receipt – ${order.orderId ?? ''}');
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: vc.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColor.primary.withValues(alpha: 0.3)),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.local_shipping_outlined,
-              size: 18.sp, color: isDark ? const Color(0xFFFFCC02) : Colors.amber.shade900),
-          SizedBox(width: 10.w),
-          Text(
-            'Add Rs.$remaining more for Free Delivery',
-            style: TextStyle(
-              fontSize: 13.sp,
-              color: isDark ? const Color(0xFFFFCC02) : Colors.amber.shade900,
-              fontWeight: FontWeight.bold,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.download_rounded,
+                size: 20.sp, color: AppColor.primary),
+            SizedBox(width: 10.w),
+            Text(
+              'Download Receipt',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColor.primary,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

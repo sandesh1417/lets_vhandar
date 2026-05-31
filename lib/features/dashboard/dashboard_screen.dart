@@ -34,18 +34,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     AccountTab.new,
   ];
 
-  // Track which tabs have been visited so we only build on first access.
-  final Set<int> _visited = {0};
   late final List<Widget?> _cache = List.filled(_builders.length, null);
 
   Widget _tab(int index) {
-    if (!_visited.contains(index)) return const SizedBox.shrink();
+    final visited = ref.read(visitedTabsProvider);
+    if (!visited.contains(index)) return const SizedBox.shrink();
     return _cache[index] ??= _builders[index]();
+  }
+
+  void _goToTab(int index) {
+    ref.read(visitedTabsProvider.notifier).update((s) => {...s, index});
+    ref.read(dashboardIndexProvider.notifier).state = index;
   }
 
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(dashboardIndexProvider);
+    // Rebuild when visited set changes so newly visited tabs get built
+    ref.watch(visitedTabsProvider);
 
     return CustomScaffoldWrapper(
       isScrollable: false,
@@ -66,8 +72,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           currentIndex: currentIndex,
           onTap: (index) {
             HapticFeedback.lightImpact();
-            setState(() => _visited.add(index));
-            ref.read(dashboardIndexProvider.notifier).state = index;
+            _goToTab(index);
           },
         ),
       ),

@@ -74,6 +74,10 @@ class CategoryRepository {
       case Success(value: final data):
         // The API returns { "data": { ...categoryData... }, "status": "SUCCESS" }
         if (data["data"] != null) {
+          // ignore: avoid_print
+          print('[CategoryRepo] getCategoryBySlug keys: ${data["data"].keys.toList()}');
+          // ignore: avoid_print
+          print('[CategoryRepo] description raw: ${data["data"]["description"]}');
           return Success(CategoryData.fromMap(data["data"]));
         }
         return const Error(NetworkFailure("Category data not found"));

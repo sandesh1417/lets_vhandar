@@ -22,6 +22,7 @@ class ProductVariantSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBusiness = ref.watch(isBusinessUserProvider);
+    ref.watch(cartProvider);
     return ref.watch(productVariantsProvider(baseProduct)).when(
           data: (variants) {
             if (variants.length <= 1) return const SizedBox.shrink();
@@ -54,6 +55,7 @@ class ProductVariantSelector extends ConsumerWidget {
                   SizedBox(height: 12.h),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: variants.map((v) {
@@ -67,8 +69,16 @@ class ProductVariantSelector extends ConsumerWidget {
                             : (v.pricePerUnit ?? 0);
                         final hasMrp = mrp > 0 && sellingPrice < mrp;
                         final savings = hasMrp ? (mrp - sellingPrice).toInt() : 0;
+                        final cartCount = v.id != null
+                            ? ref.read(cartProvider.notifier).getCartItemCount(v.id!)
+                            : 0;
 
-                        return GestureDetector(
+                        return Padding(
+                          padding: EdgeInsets.only(top: 12.h, right: 8.w),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                        GestureDetector(
                           onTap: isOutOfStock ? null : () => onVariantChanged(v),
                           child: Opacity(
                             opacity: isOutOfStock ? 0.45 : 1.0,
@@ -76,7 +86,7 @@ class ProductVariantSelector extends ConsumerWidget {
                               duration: const Duration(milliseconds: 200),
                               width: 100.w,
                               height: 92.h,
-                              margin: EdgeInsets.only(right: 10.w),
+                              margin: EdgeInsets.only(right: 2.w),
                               padding: EdgeInsets.all(10.w),
                               decoration: BoxDecoration(
                                 color: isOutOfStock
@@ -188,7 +198,33 @@ class ProductVariantSelector extends ConsumerWidget {
                               ),
                             ),
                           ),
-                        );
+                        ),
+                        // Yellow cart count badge
+                        if (cartCount > 0)
+                          Positioned(
+                            top: -10.h,
+                            right: -4.w,
+                            child: Container(
+                              width: 20.w,
+                              height: 20.w,
+                              decoration: BoxDecoration(
+                                color: AppColor.secondary,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                '$cartCount',
+                                style: TextStyle(
+                                  color: const Color(0xFF3D2000),
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
                       }).toList(),
                     ),
                   ),

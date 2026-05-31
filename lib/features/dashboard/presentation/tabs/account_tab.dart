@@ -347,12 +347,13 @@ class AccountTab extends ConsumerWidget {
                   subtitle: 'Get help with orders and queries',
                   onTap: () => context.push(LVRoute.helpSupportScreen.route),
                 ),
-                AccountMenuItem(
-                  icon: Icons.share_outlined,
-                  title: 'Refer and Earn',
-                  subtitle: 'Invite friends and earn Vhandar Points',
-                  onTap: () => context.push(LVRoute.referAndEarnScreen.route),
-                ),
+                if (!isBusiness)
+                  AccountMenuItem(
+                    icon: Icons.share_outlined,
+                    title: 'Refer and Earn',
+                    subtitle: 'Invite friends and earn Vhandar Points',
+                    onTap: () => context.push(LVRoute.referAndEarnScreen.route),
+                  ),
                 AccountMenuItem(
                   icon: Icons.lightbulb_outline,
                   title: 'Suggest Product',
@@ -915,26 +916,17 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
     (
       mode: ThemeMode.light,
       label: 'Light',
-      subtitle: 'Always use light theme',
       icon: Icons.wb_sunny_rounded,
-      iconBg: Color(0xFFFFF8E1),
-      iconColor: Color(0xFFE8A000),
     ),
     (
       mode: ThemeMode.dark,
       label: 'Dark',
-      subtitle: 'Always use dark theme',
       icon: Icons.nights_stay_rounded,
-      iconBg: Color(0xFF1A2340),
-      iconColor: Color(0xFF89D0FE),
     ),
     (
       mode: ThemeMode.system,
-      label: 'System default',
-      subtitle: 'Follow device setting',
-      icon: Icons.brightness_auto_rounded,
-      iconBg: Color(0xFFE8F5EE),
-      iconColor: Color(0xFF0A754E),
+      label: 'System',
+      icon: Icons.desktop_mac_rounded,
     ),
   ];
 
@@ -1020,93 +1012,53 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
             ),
           ),
 
-          SizedBox(height: 16.h),
-          Divider(height: 1, color: vc.divider),
-          SizedBox(height: 8.h),
+          SizedBox(height: 20.h),
 
-          // Options
-          ..._options.map((opt) {
-            final isSelected = _selected == opt.mode;
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => _pick(opt.mode),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColor.primary.withValues(alpha: 0.06)
-                      : vc.surfaceVariant,
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColor.primary.withValues(alpha: 0.5)
-                        : Colors.transparent,
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    // Icon pill
-                    Container(
-                      width: 44.w,
-                      height: 44.w,
+          // Options — horizontal cards
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Row(
+              children: _options.map((opt) {
+                final isSelected = _selected == opt.mode;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => _pick(opt.mode),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: EdgeInsets.symmetric(horizontal: 4.w),
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
                       decoration: BoxDecoration(
-                        color: opt.iconBg,
-                        borderRadius: BorderRadius.circular(12.r),
+                        color: isSelected ? AppColor.primary : vc.surfaceVariant,
+                        borderRadius: BorderRadius.circular(14.r),
                       ),
-                      child: Icon(opt.icon, color: opt.iconColor, size: 22.sp),
-                    ),
-                    SizedBox(width: 14.w),
-                    // Labels
-                    Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
+                          Icon(
+                            opt.icon,
+                            size: 24.sp,
+                            color: isSelected ? Colors.white : vc.onSurfaceMuted,
+                          ),
+                          SizedBox(height: 8.h),
                           Text(
                             opt.label,
                             style: TextStyle(
-                              fontSize: 14.sp,
+                              fontSize: 13.sp,
                               fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              color: isSelected
-                                  ? AppColor.primary
-                                  : vc.onSurface,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            opt.subtitle,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontFamily: 'Inter',
-                              color: vc.onSurfaceMuted,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : vc.onSurfaceMuted,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // Selection indicator
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: isSelected
-                          ? Icon(Icons.check_circle_rounded,
-                              key: const ValueKey('check'),
-                              color: AppColor.primary,
-                              size: 22.sp)
-                          : Icon(Icons.radio_button_unchecked_rounded,
-                              key: const ValueKey('empty'),
-                              color: vc.divider,
-                              size: 22.sp),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
 
-          SizedBox(height: 8.h),
+          SizedBox(height: 20.h),
         ],
       ),
     );

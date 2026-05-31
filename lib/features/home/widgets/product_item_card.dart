@@ -50,6 +50,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
           builder: (context, ref, _) {
             final vc = context.vColors;
             final isBusiness = ref.watch(isBusinessUserProvider);
+            ref.watch(cartProvider);
             return Container(
               padding: EdgeInsets.only(
                 left: 16.w,
@@ -138,8 +139,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             child: ListView.separated(
                               shrinkWrap: true,
                               itemCount: variants.length,
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(height: 12.h),
+                              separatorBuilder: (_, __) => SizedBox(height: 12.h),
                               itemBuilder: (context, index) {
                                 final v = variants[index];
                                 final isOutOfStock = v.isOutOfStock;
@@ -151,14 +151,14 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                 final savings = hasDiscount
                                     ? v.pricePerUnit!.toInt() - v.actualPrice.toInt()
                                     : 0;
-
                                 return GestureDetector(
-                                  onTap: isOutOfStock
-                                      ? null
-                                      : () {
-                                          onVariantSelected(v);
-                                          Navigator.pop(context);
-                                        },
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    context.pushNamed(
+                                      LVRoute.productDetailScreen.route,
+                                      extra: v,
+                                    );
+                                  },
                                   child: Opacity(
                                     opacity: isOutOfStock ? 0.5 : 1.0,
                                     child: Stack(
@@ -170,33 +170,25 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                             color: context.isDark
                                                 ? vc.surfaceVariant
                                                 : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(16.r),
+                                            borderRadius: BorderRadius.circular(16.r),
                                             boxShadow: context.isDark
                                                 ? []
                                                 : [
                                                     BoxShadow(
-                                                      color: Colors.black
-                                                          .withValues(
-                                                              alpha: 0.06),
+                                                      color: Colors.black.withValues(alpha: 0.06),
                                                       blurRadius: 10,
-                                                      offset:
-                                                          const Offset(0, 4),
+                                                      offset: const Offset(0, 4),
                                                     ),
                                                   ],
                                           ),
                                           child: Row(
                                             children: [
-                                              if (v.images?.isNotEmpty ==
-                                                  true) ...[
+                                              if (v.images?.isNotEmpty == true) ...[
                                                 Container(
                                                   padding: EdgeInsets.all(4.w),
                                                   decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: vc.divider),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12.r),
+                                                    border: Border.all(color: vc.divider),
+                                                    borderRadius: BorderRadius.circular(12.r),
                                                   ),
                                                   child: CustomImageViewer(
                                                     path: v.images!.first.url,
@@ -209,42 +201,34 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                               ],
                                               Expanded(
                                                 child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       '${v.unitValue?.toInt()} ${v.unit}',
                                                       style: TextStyle(
                                                         fontSize: 16.sp,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                         color: vc.onSurface,
                                                       ),
                                                     ),
                                                     SizedBox(height: 4.h),
                                                     if (isOutOfStock)
-                                                      Text(
-                                                        'Out of Stock',
-                                                        style: TextStyle(
-                                                          fontSize: 13.sp,
-                                                          fontWeight: FontWeight.w600,
-                                                          color: Colors.red.shade500,
-                                                        ),
-                                                      )
+                                                      Text('Out of Stock',
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.red.shade500,
+                                                          ))
                                                     else
                                                       Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .baseline,
-                                                        textBaseline:
-                                                            TextBaseline.alphabetic,
+                                                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                                                        textBaseline: TextBaseline.alphabetic,
                                                         children: [
                                                           Text(
                                                             'Rs ${displayPrice.toInt()}',
                                                             style: TextStyle(
                                                               fontSize: 16.sp,
-                                                              fontWeight:
-                                                                  FontWeight.w900,
+                                                              fontWeight: FontWeight.w900,
                                                               color: vc.onSurface,
                                                             ),
                                                           ),
@@ -255,9 +239,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                               style: TextStyle(
                                                                 fontSize: 12.sp,
                                                                 color: vc.onSurfaceMuted,
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .lineThrough,
+                                                                decoration: TextDecoration.lineThrough,
                                                               ),
                                                             ),
                                                           ],
@@ -276,40 +258,24 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                             top: 0,
                                             left: 0,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10.w,
-                                                  vertical: 4.h),
+                                              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFFE53935),
-                                                    Color(0xFFFF7043)
-                                                  ],
+                                                  colors: [Color(0xFFE53935), Color(0xFFFF7043)],
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.bottomRight,
                                                 ),
                                                 borderRadius: BorderRadius.only(
                                                   topLeft: Radius.circular(16.r),
-                                                  bottomRight:
-                                                      Radius.circular(12.r),
+                                                  bottomRight: Radius.circular(12.r),
                                                 ),
                                               ),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Text('SAVE',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 8.sp,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
+                                                  Text('SAVE', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w900)),
                                                   SizedBox(width: 4.w),
-                                                  Text('Rs $savings',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 10.sp,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
+                                                  Text('Rs $savings', style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w900)),
                                                 ],
                                               ),
                                             ),
@@ -322,16 +288,10 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             ),
                           );
                         },
-                          loading: () =>
-                              const Center(child: CustomCircularLoader()),
+                          loading: () => const Center(child: CustomCircularLoader()),
                           error: (e, s) => Center(
-                            child: Text(
-                              'Failed to load variants',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.red,
-                              ),
-                            ),
+                            child: Text('Failed to load variants',
+                                style: TextStyle(fontSize: 14.sp, color: Colors.red)),
                           ),
                         ),
                 ],
@@ -422,10 +382,6 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
         mrp > 0 &&
         displayPrice < mrp;
 
-    // Legacy variable kept for SAVE discount badge on retail cards
-    final hasDiscount = !hasB2BPrice &&
-        product.discount != null &&
-        (product.discount?.value ?? 0) > 0;
     final vc = context.vColors;
 
     return GestureDetector(
@@ -443,6 +399,10 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
         decoration: BoxDecoration(
           color: vc.surface,
           borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(
+            color: Colors.black.withValues(alpha: 0.06),
+            width: 0.8,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -536,8 +496,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                       ),
                     ),
                   ),
-                // Discount badge (only for in-stock retail items)
-                if (hasDiscount && !isOutOfStock)
+                // Discount badge — retail & business
+                if (showMrp)
                   Positioned(
                     top: 0,
                     left: 0,
@@ -562,7 +522,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   fontSize: 8.sp,
                                   fontWeight: FontWeight.bold)),
                           Text(
-                              'Rs ${product.pricePerUnit!.toInt() - product.actualPrice.toInt()}',
+                              'Rs ${(mrp - displayPrice).toInt()}',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.sp,
@@ -836,16 +796,14 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
 
 class _VariantCartButton extends ConsumerWidget {
   final ProductData product;
-
   const _VariantCartButton({required this.product});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(cartProvider);
-    final cartCount =
-        ref.read(cartProvider.notifier).getCartItemCount(product.id!);
-
+    final cartCount = ref.read(cartProvider.notifier).getCartItemCount(product.id!);
     final btnHeight = 34.h;
+
     if (cartCount == 0) {
       return SizedBox(
         height: btnHeight,
@@ -863,57 +821,49 @@ class _VariantCartButton extends ConsumerWidget {
             backgroundColor: context.vColors.surface,
             side: BorderSide(color: AppColor.primary),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.r),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
           ),
           child: Text('ADD', style: TextStyle(color: AppColor.primary, fontSize: 12.sp, fontWeight: FontWeight.w800)),
         ),
       );
-    } else {
-      return SizedBox(
-        height: btnHeight,
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColor.primary,
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  ref
-                      .read(cartProvider.notifier)
-                      .updateQuantity(product.id!, cartCount - 1);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  color: Colors.transparent,
-                  child: Icon(Icons.remove, color: Colors.white, size: 14.sp),
-                ),
-              ),
-              Text('$cartCount',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp)),
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  ref
-                      .read(cartProvider.notifier)
-                      .updateQuantity(product.id!, cartCount + 1);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  color: Colors.transparent,
-                  child: Icon(Icons.add, color: Colors.white, size: 14.sp),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
     }
+
+    return SizedBox(
+      height: btnHeight,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColor.primary,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                ref.read(cartProvider.notifier).updateQuantity(product.id!, cartCount - 1);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                color: Colors.transparent,
+                child: Icon(Icons.remove, color: Colors.white, size: 14.sp),
+              ),
+            ),
+            Text('$cartCount', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp)),
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                ref.read(cartProvider.notifier).updateQuantity(product.id!, cartCount + 1);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                color: Colors.transparent,
+                child: Icon(Icons.add, color: Colors.white, size: 14.sp),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

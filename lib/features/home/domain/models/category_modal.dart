@@ -40,6 +40,7 @@ class CategoryModal {
 class CategoryData {
   final String? id;
   final String? name;
+  final String? description;
   final bool? showAtHomepage;
   final List<String>? subCategories;
   final List<CategoryImage>? images;
@@ -51,6 +52,7 @@ class CategoryData {
   CategoryData({
     this.id,
     this.name,
+    this.description,
     this.showAtHomepage,
     this.subCategories,
     this.images,
@@ -63,6 +65,7 @@ class CategoryData {
   factory CategoryData.fromMap(Map<String, dynamic> json) => CategoryData(
         id: json["_id"],
         name: json["name"],
+        description: json["description"] ?? json["desc"] ?? json["details"] ?? json["shortDescription"],
         showAtHomepage: json["showAtHomepage"],
         subCategories: json["subCategories"] == null
             ? []
@@ -80,6 +83,7 @@ class CategoryData {
   Map<String, dynamic> toMap() => {
         "_id": id,
         "name": name,
+        "description": description,
         "showAtHomepage": showAtHomepage,
         "subCategories": subCategories == null
             ? []

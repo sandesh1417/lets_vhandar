@@ -16,6 +16,8 @@ import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
@@ -259,15 +261,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         SizedBox(height: 16.h),
                         const HomeBannerSlider(),
                         SizedBox(height: 16.h),
-                        const HomeSectionTitle(
+                        HomeSectionTitle(
                           title: 'Featured Products',
                           subtitle: 'Hand-picked for you today',
+                          onSeeAll: () => context.push(LVRoute.featuredProductsScreen.route),
                         ),
                         const HomeFeaturedProductsList(),
                         SizedBox(height: 16.h),
-                        const HomeSectionTitle(
+                        HomeSectionTitle(
                           title: 'Shop by Category',
                           subtitle: 'Find exactly what you need',
+                          onSeeAll: () {
+                            ref.read(categoryScreenTabProvider.notifier).state = 0;
+                            ref.read(visitedTabsProvider.notifier).update((s) => {...s, 1});
+                            ref.read(dashboardIndexProvider.notifier).state = 1;
+                          },
                         ),
                         // ignore: prefer_const_constructors
                         HomeCategoriesGrid(),

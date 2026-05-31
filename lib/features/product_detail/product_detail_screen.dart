@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,12 +113,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final product = _currentProduct;
     final isBusiness = ref.watch(isBusinessUserProvider);
     final isOOS = product.isOutOfStock;
-    final price = isBusiness
-        ? (product.businessPricePerUnit ?? product.actualPrice)
-        : product.actualPrice;
-    final hasDiscount = !isBusiness &&
-        product.discount != null &&
-        (product.discount?.value ?? 0) > 0;
+    final hasB2BPrice = isBusiness && (product.businessPricePerUnit ?? 0) > 0;
+    final price = hasB2BPrice ? product.businessActualPrice : product.actualPrice;
+    final mrp = hasB2BPrice
+        ? (product.businessPricePerUnit ?? 0)
+        : (product.pricePerUnit ?? 0);
+    final hasDiscount = !isOOS && mrp > 0 && price < mrp;
     final totalItems = ref.watch(totalCartItemsProvider);
 
     // consistent EdgeInsets reused across all cards
@@ -201,11 +203,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               actions: [
                 Center(
                   child: Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: _GlassButton(
-                      icon: Icons.ios_share_rounded,
-                      isGlass: ratio < 0.5,
-                      onTap: _shareProduct,
+                    padding: EdgeInsets.only(right: 12.w),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _GlassButton(
+                          svgAsset: 'assets/icons/search-active.svg',
+                          isGlass: ratio < 0.5,
+                          onTap: () => context.push(LVRoute.searchScreen.route),
+                        ),
+                        SizedBox(width: 8.w),
+                        _GlassButton(
+                          icon: Icons.ios_share_rounded,
+                          isGlass: ratio < 0.5,
+                          onTap: _shareProduct,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -232,7 +245,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: ProductImageSlider(
                 product: product,
-                heroTag: 'product-img-${product.id}',
+                heroTag: 'product-img-${widget.product.id}',
               ),
             ),
           ),
@@ -298,7 +311,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               Padding(
                                 padding: EdgeInsets.only(bottom: 2.h),
                                 child: Text(
-                                  'MRP Rs.${product.pricePerUnit?.toInt()}',
+                                  'MRP Rs.${mrp.toInt()}',
                                   style: TextStyle(
                                     fontSize: 13.sp,
                                     color: vc.onSurfaceMuted,
@@ -312,13 +325,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  color:
-                                      AppColor.primary.withValues(alpha: 0.12),
+                                  color: AppColor.primary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
-                                  '${product.discount?.value?.toInt()}'
-                                  '${product.discount?.type == 'flat' ? ' Rs' : '%'} OFF',
+                                  'Save Rs.${(mrp - price).toInt()}',
                                   style: TextStyle(
                                     color: AppColor.primary,
                                     fontSize: 11.sp,
@@ -578,24 +589,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 class _TicketCutoutDivider extends StatelessWidget {
   final Color bgColor;
   final Color surfaceColor;
-  final double notchRadius;
 
   const _TicketCutoutDivider({
     required this.bgColor,
     required this.surfaceColor,
-    this.notchRadius = 16,
   });
+
+  static const double _r = 16;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: notchRadius * 2,
+      height: _r * 2,
       width: double.infinity,
       child: CustomPaint(
         painter: _CutoutDividerPainter(
           bgColor: bgColor,
           surfaceColor: surfaceColor,
-          notchRadius: notchRadius,
         ),
       ),
     );
@@ -605,99 +615,86 @@ class _TicketCutoutDivider extends StatelessWidget {
 class _CutoutDividerPainter extends CustomPainter {
   final Color bgColor;
   final Color surfaceColor;
-  final double notchRadius;
-  final double dashWidth;
-  final double dashGap;
 
   const _CutoutDividerPainter({
     required this.bgColor,
     required this.surfaceColor,
-    this.notchRadius = 16,
-    this.dashWidth = 7,
-    this.dashGap = 5,
   });
+
+  static const double _r = 16;
+  static const double _dashWidth = 7;
+  static const double _dashGap = 5;
 
   @override
   void paint(Canvas canvas, Size size) {
     final cy = size.height / 2;
     final w = size.width;
 
-    // 1. Surface-colour bar
     canvas.drawRect(
       Rect.fromLTWH(0, 0, w, size.height),
       Paint()..color = surfaceColor,
     );
-
-    // 2. Left notch — D opens rightward
     canvas.drawArc(
-      Rect.fromCircle(center: Offset(0, cy), radius: notchRadius),
-      -math.pi / 2,
-      math.pi,
-      true,
+      Rect.fromCircle(center: Offset(0, cy), radius: _r),
+      -math.pi / 2, math.pi, true,
+      Paint()..color = bgColor,
+    );
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(w, cy), radius: _r),
+      math.pi / 2, math.pi, true,
       Paint()..color = bgColor,
     );
 
-    // 3. Right notch — D opens leftward
-    canvas.drawArc(
-      Rect.fromCircle(center: Offset(w, cy), radius: notchRadius),
-      math.pi / 2,
-      math.pi,
-      true,
-      Paint()..color = bgColor,
-    );
-
-    // 4. Dashed divider line
     final paint = Paint()
       ..color = bgColor.withValues(alpha: 0.6)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
-    double x = notchRadius + dashGap;
-    final endX = w - notchRadius - dashGap;
+    double x = _r + _dashGap;
+    final endX = w - _r - _dashGap;
     while (x < endX) {
       canvas.drawLine(
         Offset(x, cy),
-        Offset((x + dashWidth).clamp(x, endX), cy),
+        Offset((x + _dashWidth).clamp(x, endX), cy),
         paint,
       );
-      x += dashWidth + dashGap;
+      x += _dashWidth + _dashGap;
     }
   }
 
   @override
   bool shouldRepaint(_CutoutDividerPainter old) =>
-      old.bgColor != bgColor ||
-      old.surfaceColor != surfaceColor ||
-      old.notchRadius != notchRadius;
+      old.bgColor != bgColor || old.surfaceColor != surfaceColor;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
 // GLASS BUTTON  (AppBar back / share)
 // ═════════════════════════════════════════════════════════════════════════════
 class _GlassButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? svgAsset;
   final VoidCallback onTap;
-  final double? size;
-  final double? iconSize;
   final bool isGlass;
 
   const _GlassButton({
-    required this.icon,
+    this.icon,
+    this.svgAsset,
     required this.onTap,
-    this.size,
-    this.iconSize,
     this.isGlass = true,
-  });
+  }) : assert(icon != null || svgAsset != null);
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isGlass
+        ? (isDark ? Colors.white : AppColor.primary)
+        : Colors.white;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: size ?? 38.w,
-        height: size ?? 38.w,
+        width: 38.w,
+        height: 38.w,
         decoration: BoxDecoration(
           color: isGlass
               ? (isDark
@@ -706,12 +703,15 @@ class _GlassButton extends StatelessWidget {
               : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          color: isGlass
-              ? (isDark ? Colors.white : AppColor.primary)
-              : Colors.white,
-          size: iconSize ?? 20.sp,
+        child: Center(
+          child: svgAsset != null
+              ? SvgPicture.asset(
+                  svgAsset!,
+                  width: 20.sp,
+                  height: 20.sp,
+                  colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+                )
+              : Icon(icon, color: iconColor, size: 20.sp),
         ),
       ),
     );

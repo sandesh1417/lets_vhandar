@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -198,21 +199,29 @@ class BillDetailsCard extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.delivery_dining,
-                            size: 16.sp,
-                            color: AppColor.primary.withValues(alpha: 0.8)),
-                        SizedBox(width: 8.w),
-                        Text('Delivery charge',
-                            style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500,
-                                color: vc.onSurface)),
-                        SizedBox(width: 4.w),
-                        Icon(Icons.info_outline,
-                            size: 14.sp, color: vc.onSurfaceMuted),
-                      ],
+                    GestureDetector(
+                      onTap: () => _showChargeInfoDialog(
+                        context,
+                        title: 'Delivery Charge',
+                        description:
+                            'Rs.${deliveryCharge.toInt()} for orders below Rs.${deliveryThreshold.toInt()}\nRs.0 for orders above Rs.${deliveryThreshold.toInt()}',
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delivery_dining,
+                              size: 16.sp,
+                              color: AppColor.primary.withValues(alpha: 0.8)),
+                          SizedBox(width: 8.w),
+                          Text('Delivery charge',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: vc.onSurface)),
+                          SizedBox(width: 4.w),
+                          Icon(Icons.info_outline,
+                              size: 14.sp, color: vc.onSurfaceMuted),
+                        ],
+                      ),
                     ),
                     Row(
                       children: [
@@ -248,21 +257,29 @@ class BillDetailsCard extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.shopping_bag_outlined,
-                            size: 16.sp,
-                            color: AppColor.primary.withValues(alpha: 0.8)),
-                        SizedBox(width: 8.w),
-                        Text('Handling Charge',
-                            style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500,
-                                color: vc.onSurface)),
-                        SizedBox(width: 4.w),
-                        Icon(Icons.info_outline,
-                            size: 14.sp, color: vc.onSurfaceMuted),
-                      ],
+                    GestureDetector(
+                      onTap: () => _showChargeInfoDialog(
+                        context,
+                        title: 'Handling Charge',
+                        description:
+                            'For proper handling and ensuring high-quality quick deliveries',
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.shopping_bag_outlined,
+                              size: 16.sp,
+                              color: AppColor.primary.withValues(alpha: 0.8)),
+                          SizedBox(width: 8.w),
+                          Text('Handling Charge',
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: vc.onSurface)),
+                          SizedBox(width: 4.w),
+                          Icon(Icons.info_outline,
+                              size: 14.sp, color: vc.onSurfaceMuted),
+                        ],
+                      ),
                     ),
                     Text('Rs.${handlingCharge.toInt()}',
                         style: TextStyle(
@@ -411,6 +428,73 @@ class BillDetailsCard extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showChargeInfoDialog(BuildContext context,
+    {required String title, required String description}) {
+  showDialog(
+    context: context,
+    barrierColor: Colors.black.withValues(alpha: 0.35),
+    builder: (ctx) {
+      final vc = ctx.vColors;
+      return Stack(
+        children: [
+          // Blur layer
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+            child: const SizedBox.expand(),
+          ),
+          Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+            backgroundColor: vc.surface,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColor.primary,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: vc.onSurfaceMuted,
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Divider(height: 1, color: vc.divider),
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: TextButton.styleFrom(
+                      minimumSize: Size(double.infinity, 44.h),
+                    ),
+                    child: Text(
+                      'Sounds good',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 class ScallopedClipper extends CustomClipper<Path> {

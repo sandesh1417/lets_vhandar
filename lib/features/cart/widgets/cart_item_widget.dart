@@ -6,6 +6,8 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/cart/domain/models/cart_item_model.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class CartItemWidget extends ConsumerWidget {
@@ -25,7 +27,13 @@ class CartItemWidget extends ConsumerWidget {
         product.discount != null &&
         (product.discount?.value ?? 0) > 0;
 
-    return Padding(
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        LVRoute.productDetailScreen.route,
+        extra: product,
+      ),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -152,6 +160,7 @@ class CartItemWidget extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

@@ -158,124 +158,179 @@ class _SelectPaymentMethodScreenState
                   children: [
                     // ─── Delivery Info Section ─────────────────────────────────────
                     if (isBusiness && selectedSlotId != null) ...[
-                      Text(
-                        'Delivery Time Slot',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: vc.onSurface,
-                        ),
+                      const _DeliveryCardHeader(
+                        label: 'Delivery Time Slot',
+                        icon: Icons.schedule_rounded,
                       ),
                       SizedBox(height: 10.h),
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
-                          color: AppColor.primary.withValues(alpha: 0.07),
-                          borderRadius: BorderRadius.circular(12.r),
+                          color: vc.surface,
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(
+                              color: AppColor.primary.withValues(alpha: 0.2)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        child: Row(
+                        child: Column(
                           children: [
                             Container(
-                              padding: EdgeInsets.all(10.w),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 14.h),
                               decoration: BoxDecoration(
-                                color: AppColor.primary,
-                                borderRadius: BorderRadius.circular(10.r),
+                                color: AppColor.primary.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(14.r)),
                               ),
-                              child: Icon(Icons.schedule_rounded,
-                                  color: Colors.white, size: 20.sp),
-                            ),
-                            SizedBox(width: 12.w),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Scheduled Delivery',
-                                  style: TextStyle(
-                                    fontSize: 11.sp,
-                                    color: vc.onSurfaceMuted,
-                                    fontWeight: FontWeight.w500,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(8.w),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.primary,
+                                      borderRadius:
+                                          BorderRadius.circular(10.r),
+                                    ),
+                                    child: Icon(Icons.schedule_rounded,
+                                        color: Colors.white, size: 18.sp),
                                   ),
-                                ),
-                                SizedBox(height: 2.h),
-                                Text(
-                                  selectedSlotLabel ?? '',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: vc.onSurface,
+                                  SizedBox(width: 12.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Scheduled Delivery',
+                                          style: TextStyle(
+                                              fontSize: 11.sp,
+                                              color: vc.onSurfaceMuted,
+                                              fontWeight: FontWeight.w500)),
+                                      SizedBox(height: 2.h),
+                                      Text(selectedSlotLabel ?? '',
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.primary)),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
                       SizedBox(height: 20.h),
                     ] else if (!isBusiness && selectedAddress != null) ...[
-                      Text(
-                        'Delivery To Home',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: vc.onSurface,
-                        ),
+                      const _DeliveryCardHeader(
+                        label: 'Delivery Address',
+                        icon: Icons.local_shipping_outlined,
                       ),
                       SizedBox(height: 10.h),
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: vc.surface,
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(
+                              color: AppColor.primary.withValues(alpha: 0.2)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.location_on_outlined,
-                                    color: AppColor.primary, size: 20.sp),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  selectedAddress.name ?? '-',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: vc.onSurface,
+                            // Green header strip
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 10.h),
+                              decoration: BoxDecoration(
+                                color: AppColor.primary,
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(14.r)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.home_rounded,
+                                      color: Colors.white, size: 16.sp),
+                                  SizedBox(width: 8.w),
+                                  Expanded(
+                                    child: Text(
+                                      selectedAddress.name ?? 'Home',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              [
-                                if (selectedAddress.floor != null)
-                                  'Floor ${selectedAddress.floor}',
-                                if (selectedAddress.houseNumber != null)
-                                  'House ${selectedAddress.houseNumber}',
-                                if (selectedAddress.landMark != null)
-                                  selectedAddress.landMark,
-                                selectedAddress.description,
-                              ].where((e) => e != null && e.isNotEmpty).join(', '),
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: AppColor.textMuted,
-                                height: 1.4,
+                                  GestureDetector(
+                                    onTap: () => context
+                                        .push(LVRoute.savedAddressesScreen.route),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w, vertical: 4.h),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.2),
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                      ),
+                                      child: Text(
+                                        'Change',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            if (selectedAddress.phoneNumber != null &&
-                                selectedAddress.phoneNumber!.isNotEmpty) ...[
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Phone: ${selectedAddress.phoneNumber}',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColor.textBlack,
-                                ),
+                            // Address body
+                            Padding(
+                              padding: EdgeInsets.all(16.w),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _AddressRow(
+                                    icon: Icons.location_on_rounded,
+                                    text: [
+                                      if (selectedAddress.floor != null)
+                                        'Floor ${selectedAddress.floor}',
+                                      if (selectedAddress.houseNumber != null)
+                                        'House ${selectedAddress.houseNumber}',
+                                      if (selectedAddress.landMark != null)
+                                        selectedAddress.landMark,
+                                      selectedAddress.description,
+                                    ]
+                                        .where(
+                                            (e) => e != null && e.isNotEmpty)
+                                        .join(', '),
+                                  ),
+                                  if (selectedAddress.phoneNumber != null &&
+                                      selectedAddress
+                                          .phoneNumber!.isNotEmpty) ...[
+                                    SizedBox(height: 8.h),
+                                    _AddressRow(
+                                      icon: Icons.phone_rounded,
+                                      text: selectedAddress.phoneNumber!,
+                                    ),
+                                  ],
+                                ],
                               ),
-                            ],
+                            ),
                           ],
                         ),
                       ),
@@ -675,5 +730,67 @@ class _SelectPaymentMethodScreenState
       final error = ref.read(orderProvider).error;
       CustomSnackbar.error(context, message: error ?? 'Failed to place order');
     }
+  }
+}
+
+class _DeliveryCardHeader extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  const _DeliveryCardHeader({required this.label, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 3.w,
+          height: 16.h,
+          decoration: BoxDecoration(
+            color: AppColor.primary,
+            borderRadius: BorderRadius.circular(2.r),
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Icon(icon, size: 16.sp, color: AppColor.primary),
+        SizedBox(width: 6.w),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w700,
+            color: context.vColors.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddressRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _AddressRow({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    if (text.isEmpty) return const SizedBox.shrink();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 14.sp,
+            color: AppColor.primary.withValues(alpha: 0.7)),
+        SizedBox(width: 8.w),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: context.vColors.onSurfaceMuted,
+              height: 1.4,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
