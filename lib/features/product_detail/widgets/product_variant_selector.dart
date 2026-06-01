@@ -232,7 +232,7 @@ class ProductVariantSelector extends ConsumerWidget {
               ),
             );
           },
-          loading: () => Center(child: CircularProgressIndicator(color: AppColor.primary)),
+          loading: () => const SizedBox.shrink(),
           error: (e, s) => const SizedBox.shrink(),
         );
   }

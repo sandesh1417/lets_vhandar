@@ -76,6 +76,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
         ),
       ),
     );
+    if (!mounted) return;
     if (result != null) {
       setState(() {
         _locationLatLng = result.latLng;

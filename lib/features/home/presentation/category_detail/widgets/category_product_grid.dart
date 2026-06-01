@@ -10,7 +10,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
-import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class CategoryProductGrid extends ConsumerWidget {
   final String categorySlug;
@@ -38,7 +38,9 @@ class CategoryProductGrid extends ConsumerWidget {
                   padding: EdgeInsets.fromLTRB(8.w, 8.w, 8.w, 110.h),
                 );
               },
-              loading: () => const Center(child: CustomCircularLoader()),
+              loading: () => BrandProductGridShimmer(
+                padding: EdgeInsets.fromLTRB(8.w, 8.w, 8.w, 110.h),
+              ),
               error: (err, _) => Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.w),

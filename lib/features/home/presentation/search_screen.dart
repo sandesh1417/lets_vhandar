@@ -91,7 +91,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       showScanIcon: true,
                       hintText: 'Search for products...',
                       onChanged: (value) {
-                        setState(() {});
                         ref.read(searchProvider.notifier).search(value);
                       },
                     ),
@@ -123,82 +122,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  static const _suggestions = [
-    'Rice', 'Pasta', 'Chocolate', 'Ice Cream', 'Maida',
-    'Noodles', 'Coffee', 'Sauce', 'Syrup', 'Atta',
-    'Dal', 'Chips', 'Milk', 'Bread', 'Eggs',
-    'Sugar', 'Oil', 'Ghee', 'Biscuits', 'Tea',
-    'Juice', 'Butter', 'Spices', 'Namkeen', 'Poha',
-  ];
-
-  Widget _buildSuggestions() {
-    final vc = context.vColors;
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 80.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.local_fire_department_rounded,
-                  size: 18.sp, color: AppColor.primary),
-              SizedBox(width: 6.w),
-              Text(
-                'Popular Searches',
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w700,
-                  color: vc.onSurface,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 14.h),
-          Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
-            children: _suggestions.map((term) {
-              return GestureDetector(
-                onTap: () {
-                  _searchController.text = term;
-                  _searchController.selection = TextSelection.fromPosition(
-                    TextPosition(offset: term.length),
-                  );
-                  ref.read(searchProvider.notifier).search(term);
-                  setState(() {});
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    color: AppColor.primary.withValues(alpha: 0.07),
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: AppColor.primary.withValues(alpha: 0.15),
-                    ),
-                  ),
-                  child: Text(
-                    term,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: AppColor.primary,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBody(SearchState state) {
-    // Empty query — show popular suggestions
     if (state.query.isEmpty) {
-      return _buildSuggestions();
+      return const SizedBox.shrink();
     }
 
     if (state.isLoading && state.results.isEmpty) {
@@ -288,10 +214,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return CustomScrollView(
       slivers: [
-        if (state.isLoading)
-          SliverToBoxAdapter(
-            child: LinearProgressIndicator(color: AppColor.primary),
-          ),
         SliverToBoxAdapter(
           child: _BrandsRow(query: _searchController.text),
         ),

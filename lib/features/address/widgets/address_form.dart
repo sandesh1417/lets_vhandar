@@ -98,21 +98,21 @@ class AddressForm extends StatelessWidget {
               children: [
                 AddressTypeChip(
                   label: 'Home',
-                  icon: Icons.home_rounded,
+                  svgAsset: 'assets/icons/address_home.svg',
                   selected: addressType == 'home',
                   onTap: () => onAddressTypeChanged('home'),
                 ),
                 SizedBox(width: 8.w),
                 AddressTypeChip(
                   label: 'Office',
-                  icon: Icons.business_rounded,
+                  svgAsset: 'assets/icons/address_office.svg',
                   selected: addressType == 'office',
                   onTap: () => onAddressTypeChanged('office'),
                 ),
                 SizedBox(width: 8.w),
                 AddressTypeChip(
                   label: 'Others',
-                  icon: Icons.location_on_rounded,
+                  svgAsset: 'assets/icons/address_other.svg',
                   selected: addressType == 'others',
                   onTap: () => onAddressTypeChanged('others'),
                 ),

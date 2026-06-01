@@ -16,6 +16,7 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
@@ -76,6 +77,33 @@ class _SelectPaymentMethodScreenState
     extends ConsumerState<SelectPaymentMethodScreen> {
   String? _selectedMethod;
   bool _showPaymentHint = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-select COD since it is the only available payment method
+    _selectedMethod = 'cod';
+  }
+
+  String _svgForType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'home':   return 'assets/icons/address_home.svg';
+      case 'office': return 'assets/icons/address_office.svg';
+      default:       return 'assets/icons/address_other.svg';
+    }
+  }
+
+  String _labelForType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'home':   return 'Home';
+      case 'office': return 'Office';
+      default:
+        if (type != null && type.isNotEmpty) {
+          return type[0].toUpperCase() + type.substring(1);
+        }
+        return 'Others';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,102 +264,97 @@ class _SelectPaymentMethodScreenState
                         decoration: BoxDecoration(
                           color: vc.surface,
                           borderRadius: BorderRadius.circular(14.r),
-                          border: Border.all(
-                              color: AppColor.primary.withValues(alpha: 0.2)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          border: Border.all(color: vc.divider),
                         ),
-                        child: Column(
-                          children: [
-                            // Green header strip
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 10.h),
-                              decoration: BoxDecoration(
-                                color: AppColor.primary,
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(14.r)),
-                              ),
-                              child: Row(
+                        child: Padding(
+                          padding: EdgeInsets.all(14.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ── Top: icon + type + name + Change ──────
+                              Row(
                                 children: [
-                                  Icon(Icons.home_rounded,
-                                      color: Colors.white, size: 16.sp),
-                                  SizedBox(width: 8.w),
+                                  Container(
+                                    width: 46.w,
+                                    height: 46.w,
+                                    padding: EdgeInsets.all(9.w),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.secondary
+                                          .withValues(alpha: 0.12),
+                                      borderRadius:
+                                          BorderRadius.circular(12.r),
+                                    ),
+                                    child: SvgPicture.asset(
+                                      _svgForType(
+                                          selectedAddress.addressType),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
                                   Expanded(
-                                    child: Text(
-                                      selectedAddress.name ?? 'Home',
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => context
-                                        .push(LVRoute.savedAddressesScreen.route),
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10.w, vertical: 4.h),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white
-                                            .withValues(alpha: 0.2),
-                                        borderRadius:
-                                            BorderRadius.circular(20.r),
-                                      ),
-                                      child: Text(
-                                        'Change',
-                                        style: TextStyle(
-                                          fontSize: 11.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _labelForType(
+                                              selectedAddress.addressType),
+                                          style: TextStyle(
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w700,
+                                            color: vc.onSurface,
+                                          ),
                                         ),
-                                      ),
+                                        if (selectedAddress.name != null &&
+                                            selectedAddress.name!.isNotEmpty)
+                                          Text(
+                                            selectedAddress.name!,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: vc.onSurfaceMuted,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            // Address body
-                            Padding(
-                              padding: EdgeInsets.all(16.w),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _AddressRow(
-                                    icon: Icons.location_on_rounded,
-                                    text: [
-                                      if (selectedAddress.floor != null)
-                                        'Floor ${selectedAddress.floor}',
-                                      if (selectedAddress.houseNumber != null)
-                                        'House ${selectedAddress.houseNumber}',
-                                      if (selectedAddress.landMark != null)
-                                        selectedAddress.landMark,
-                                      selectedAddress.description,
-                                    ]
-                                        .where(
-                                            (e) => e != null && e.isNotEmpty)
-                                        .join(', '),
-                                  ),
-                                  if (selectedAddress.phoneNumber != null &&
+                              SizedBox(height: 12.h),
+                              Divider(height: 1, color: vc.divider),
+                              SizedBox(height: 12.h),
+                              // ── Address row ───────────────────────────
+                              _AddressRow(
+                                icon: Icons.location_on_outlined,
+                                text: [
+                                  if (selectedAddress.floor != null &&
+                                      selectedAddress.floor!.isNotEmpty)
+                                    'Floor ${selectedAddress.floor}',
+                                  if (selectedAddress.houseNumber != null &&
                                       selectedAddress
-                                          .phoneNumber!.isNotEmpty) ...[
-                                    SizedBox(height: 8.h),
-                                    _AddressRow(
-                                      icon: Icons.phone_rounded,
-                                      text: selectedAddress.phoneNumber!,
-                                    ),
-                                  ],
-                                ],
+                                          .houseNumber!.isNotEmpty)
+                                    'House ${selectedAddress.houseNumber}',
+                                  if (selectedAddress.landMark != null &&
+                                      selectedAddress.landMark!.isNotEmpty)
+                                    selectedAddress.landMark,
+                                  selectedAddress.description,
+                                ]
+                                    .where((e) => e != null && e.isNotEmpty)
+                                    .join(', '),
                               ),
-                            ),
-                          ],
+                              // ── Phone row ─────────────────────────────
+                              if (selectedAddress.phoneNumber != null &&
+                                  selectedAddress
+                                      .phoneNumber!.isNotEmpty) ...[
+                                SizedBox(height: 8.h),
+                                _AddressRow(
+                                  icon: Icons.phone_outlined,
+                                  text: selectedAddress.phoneNumber!,
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 20.h),

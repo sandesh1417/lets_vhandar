@@ -56,14 +56,11 @@ class ReorderScreen extends ConsumerStatefulWidget {
 
 class _ReorderScreenState extends ConsumerState<ReorderScreen> {
   final _searchController = TextEditingController();
-  String _query = '';
+  final _query = ValueNotifier<String>('');
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(
-      () => setState(() => _query = _searchController.text.trim().toLowerCase()),
-    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = ref.read(loginProvider).user?.id;
       if (userId != null && ref.read(orderProvider).orders.isEmpty) {
@@ -75,13 +72,14 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _query.dispose();
     super.dispose();
   }
 
-  List<ProductData> _filterProducts(List<ProductData> products) {
-    if (_query.isEmpty) return products;
+  List<ProductData> _filterProducts(List<ProductData> products, String q) {
+    if (q.isEmpty) return products;
     return products
-        .where((p) => p.name?.toLowerCase().contains(_query) ?? false)
+        .where((p) => p.name?.toLowerCase().contains(q) ?? false)
         .toList();
   }
 
@@ -165,7 +163,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Login / Sign Up',
+                      'Login',
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,
@@ -213,21 +211,26 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
               controller: _searchController,
               hintText: 'Search previous orders...',
               showScanIcon: false,
+              onChanged: (v) => _query.value = v.trim().toLowerCase(),
             ),
           ),
         ),
       ),
-      body: orderState.isLoading
-          ? _buildShimmer()
-          : ref.watch(reorderLiveProductsProvider).when(
-                data: (products) {
-                  final filtered = _filterProducts(products);
-                  if (filtered.isEmpty) return _buildEmptyState();
-                  return _buildGrid(filtered, bottomPad);
-                },
-                loading: () => _buildShimmer(),
-                error: (_, __) => _buildEmptyState(),
-              ),
+      body: ValueListenableBuilder<String>(
+        valueListenable: _query,
+        builder: (context, query, _) {
+          if (orderState.isLoading) return _buildShimmer();
+          return ref.watch(reorderLiveProductsProvider).when(
+            data: (products) {
+              final filtered = _filterProducts(products, query);
+              if (filtered.isEmpty) return _buildEmptyState();
+              return _buildGrid(filtered, bottomPad);
+            },
+            loading: () => _buildShimmer(),
+            error: (_, __) => _buildEmptyState(),
+          );
+        },
+      ),
     );
   }
 
@@ -243,14 +246,16 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
       itemCount: products.length,
       itemBuilder: (context, i) {
         final product = products[i];
-        return ProductItemCard(
-          key: ValueKey(product.id),
-          product: product,
-          width: double.infinity,
-          margin: EdgeInsets.zero,
-          onTap: () => context.push(
-            LVRoute.productDetailScreen.route,
-            extra: product,
+        return RepaintBoundary(
+          child: ProductItemCard(
+            key: ValueKey(product.id),
+            product: product,
+            width: double.infinity,
+            margin: EdgeInsets.zero,
+            onTap: () => context.push(
+              LVRoute.productDetailScreen.route,
+              extra: product,
+            ),
           ),
         );
       },

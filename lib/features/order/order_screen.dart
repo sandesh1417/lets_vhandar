@@ -139,12 +139,19 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColor.primary,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black87,
-            ),
+            colorScheme: Theme.of(context).brightness == Brightness.dark
+                ? ColorScheme.dark(
+                    primary: AppColor.primary,
+                    onPrimary: Colors.white,
+                    surface: const Color(0xFF2A2A2A),
+                    onSurface: Colors.white,
+                  )
+                : ColorScheme.light(
+                    primary: AppColor.primary,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black87,
+                  ),
           ),
           child: child!,
         );
@@ -527,7 +534,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Login / Sign Up',
+                      'Login',
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,
@@ -673,10 +680,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 ),
                               );
                             }
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 24.h),
-                              child: Center(child: CircularProgressIndicator(color: AppColor.primary)),
-                            );
+                            return const OrderListShimmer(itemCount: 2);
                           },
                         ),
                       ),

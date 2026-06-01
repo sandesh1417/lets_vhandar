@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
@@ -211,164 +212,131 @@ class _AddressCard extends StatelessWidget {
     required this.onDelete,
   });
 
-  static const _typeConfig = {
-    'home': (
-      icon: Icons.home_rounded,
-      color: Color(0xFF1E8B5A),
-      label: 'Home',
-    ),
-    'work': (
-      icon: Icons.work_rounded,
-      color: Color(0xFF1565C0),
-      label: 'Work',
-    ),
-  };
+  String get _svgAsset {
+    switch (address.addressType?.toLowerCase()) {
+      case 'home':
+        return 'assets/icons/address_home.svg';
+      case 'office':
+        return 'assets/icons/address_office.svg';
+      default:
+        return 'assets/icons/address_other.svg';
+    }
+  }
 
-  IconData get _icon =>
-      _typeConfig[address.addressType?.toLowerCase()]?.icon ??
-      Icons.location_on_rounded;
-
-  Color get _color =>
-      _typeConfig[address.addressType?.toLowerCase()]?.color ??
-      const Color(0xFF7B1FA2);
-
-  String get _typeLabel =>
-      _typeConfig[address.addressType?.toLowerCase()]?.label ??
-      (address.addressType != null
-          ? address.addressType![0].toUpperCase() +
-              address.addressType!.substring(1)
-          : 'Other');
+  String get _typeLabel {
+    final t = address.addressType?.toLowerCase();
+    if (t == 'home') return 'Home';
+    if (t == 'office') return 'Office';
+    if (address.addressType != null && address.addressType!.isNotEmpty) {
+      return address.addressType![0].toUpperCase() +
+          address.addressType!.substring(1);
+    }
+    return 'Others';
+  }
 
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 14.h),
+      margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         color: vc.surface,
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(color: vc.divider),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.r),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Colored left accent bar
-              Container(
-                width: 4.w,
-                color: _color,
-              ),
-              Expanded(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+      child: Padding(
+        padding: EdgeInsets.all(14.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Top row: icon + label + actions ─────────────────────
+            Row(
+              children: [
+                // SVG type icon in yellow box
+                Container(
+                  width: 44.w,
+                  height: 44.w,
+                  padding: EdgeInsets.all(9.w),
+                  decoration: BoxDecoration(
+                    color: AppColor.secondary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: SvgPicture.asset(
+                    _svgAsset,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Top row: type chip + actions
-                      Row(
-                        children: [
-                          // Type icon + label chip
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.w, vertical: 4.h),
-                            decoration: BoxDecoration(
-                              color: _color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(_icon, size: 13.sp, color: _color),
-                                SizedBox(width: 4.w),
-                                Text(
-                                  _typeLabel,
-                                  style: TextStyle(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: _color,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          // Edit button
-                          _IconBtn(
-                            icon: Icons.edit_outlined,
-                            color: AppColor.primary,
-                            onTap: onEdit,
-                          ),
-                          SizedBox(width: 6.w),
-                          // Delete button
-                          _IconBtn(
-                            icon: Icons.delete_outline_rounded,
-                            color: Colors.red.shade400,
-                            onTap: onDelete,
-                          ),
-                        ],
+                      Text(
+                        _typeLabel,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                          color: vc.onSurface,
+                        ),
                       ),
-                      SizedBox(height: 10.h),
-
-                      // Name
                       if (address.name != null && address.name!.isNotEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 4.h),
-                          child: Text(
-                            address.name!,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700,
-                              color: vc.onSurface,
-                            ),
+                        Text(
+                          address.name!,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: vc.onSurfaceMuted,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-
-                      // Description (geocoded address)
-                      if (address.description != null &&
-                          address.description!.isNotEmpty)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 1.h),
-                              child: Icon(Icons.location_on_outlined,
-                                  size: 14.sp,
-                                  color: vc.onSurfaceMuted),
-                            ),
-                            SizedBox(width: 4.w),
-                            Expanded(
-                              child: Text(
-                                address.description!,
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: vc.onSurfaceMuted,
-                                  height: 1.4,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                      // Detail chips row
-                      _buildDetailChips(vc),
                     ],
                   ),
                 ),
+                _IconBtn(
+                  icon: Icons.edit_outlined,
+                  color: AppColor.primary,
+                  onTap: onEdit,
+                ),
+                SizedBox(width: 6.w),
+                _IconBtn(
+                  icon: Icons.delete_outline_rounded,
+                  color: Colors.red.shade400,
+                  onTap: onDelete,
+                ),
+              ],
+            ),
+
+            // ── Address text ─────────────────────────────────────────
+            if (address.description != null &&
+                address.description!.isNotEmpty) ...[
+              SizedBox(height: 10.h),
+              Divider(height: 1, color: vc.divider),
+              SizedBox(height: 10.h),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on_outlined,
+                      size: 15.sp, color: AppColor.primary),
+                  SizedBox(width: 6.w),
+                  Expanded(
+                    child: Text(
+                      address.description!,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: vc.onSurfaceMuted,
+                        height: 1.4,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
+
+            // ── Detail chips ─────────────────────────────────────────
+            _buildDetailChips(vc),
+          ],
         ),
       ),
     );
@@ -388,7 +356,6 @@ class _AddressCard extends StatelessWidget {
     if (address.landMark != null && address.landMark!.isNotEmpty) {
       details.add('Near ${address.landMark}');
     }
-
     if (details.isEmpty) return const SizedBox.shrink();
 
     return Padding(

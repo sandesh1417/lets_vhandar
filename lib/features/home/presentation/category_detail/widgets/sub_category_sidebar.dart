@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class SubCategorySidebar extends ConsumerWidget {
   final String categorySlug;
@@ -50,7 +51,14 @@ class SubCategorySidebar extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox.shrink(),
+      loading: () => Container(
+        width: 76.w,
+        decoration: BoxDecoration(
+          color: context.vColors.surface,
+          border: Border(right: BorderSide(color: context.vColors.divider)),
+        ),
+        child: const BrandSidebarShimmer(),
+      ),
       error: (_, __) => const SizedBox.shrink(),
     );
   }

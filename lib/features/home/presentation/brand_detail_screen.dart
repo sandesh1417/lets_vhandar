@@ -14,6 +14,8 @@ import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {
   final String brandSlug;
@@ -268,8 +270,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                         },
                       );
                     },
-                    loading: () =>
-                        Center(child: CircularProgressIndicator(color: AppColor.primary)),
+                    loading: () => const BrandSidebarShimmer(),
                     error: (err, _) =>
                         Center(child: Icon(Icons.error_outline, size: 24.sp)),
                   ),
@@ -290,17 +291,12 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                           crossAxisSpacing: 6.w,
                         );
                       },
-                      loading: () =>
-                          Center(child: CircularProgressIndicator(color: AppColor.primary)),
-                      error: (err, _) => Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w),
-                          child: Text('Error: $err',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.red, fontSize: 12.sp)),
-                        ),
+                      loading: () => BrandProductGridShimmer(
+                        padding: EdgeInsets.fromLTRB(5.w, 6.h, 5.w, 40.h),
+                        mainAxisSpacing: 6.h,
+                        crossAxisSpacing: 6.w,
                       ),
+                      error: (_, __) => const ErrorStateWidget(),
                     ),
                   ),
                 ),
@@ -328,8 +324,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                   }
                   return ProductGrid(products: products);
                 },
-                loading: () =>
-                    Center(child: CircularProgressIndicator(color: AppColor.primary)),
+                loading: () => const BrandProductGridShimmer(),
                 error: (err, _) => Center(
                   child: Padding(
                     padding: EdgeInsets.all(16.w),

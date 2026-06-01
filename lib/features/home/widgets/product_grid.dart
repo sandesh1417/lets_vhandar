@@ -39,6 +39,7 @@ class ProductGrid extends StatelessWidget {
 
     return GridView.builder(
       padding: padding ?? EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 80.h),
+
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: mainAxisSpacing ?? 6.h,
@@ -48,17 +49,19 @@ class ProductGrid extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
-        return ProductItemCard(
-          key: ValueKey(product.id),
-          product: product,
-          margin: EdgeInsets.zero,
-          width: double.infinity,
-          onTap: () {
-            context.pushNamed(
-              LVRoute.productDetailScreen.route,
-              extra: product,
-            );
-          },
+        return RepaintBoundary(
+          child: ProductItemCard(
+            key: ValueKey(product.id),
+            product: product,
+            margin: EdgeInsets.zero,
+            width: double.infinity,
+            onTap: () {
+              context.pushNamed(
+                LVRoute.productDetailScreen.route,
+                extra: product,
+              );
+            },
+          ),
         );
       },
     );

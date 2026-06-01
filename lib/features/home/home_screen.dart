@@ -126,19 +126,24 @@ class _BackToTopButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(20.r),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 9.h),
+            padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 6.h),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.28),
-              borderRadius: BorderRadius.circular(24.r),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.82),
+              borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.25),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.18)
+                    : Colors.black.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -147,17 +152,17 @@ class _BackToTopButton extends StatelessWidget {
               children: [
                 Icon(
                   Icons.keyboard_arrow_up_rounded,
-                  size: 22.sp,
-                  color: Colors.white,
+                  size: 18.sp,
+                  color: isDark ? Colors.white : Colors.black87,
                 ),
-                SizedBox(width: 4.w),
+                SizedBox(width: 3.w),
                 Text(
                   'Back to Top',
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Inter',
-                    color: Colors.white,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
               ],
@@ -178,7 +183,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _scrollController = ScrollController();
-  bool _showBackToTop = false;
+  final _showBackToTop = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -190,15 +195,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final max = _scrollController.position.maxScrollExtent;
     if (max <= 0) return;
     final show = _scrollController.offset / max >= 0.4;
-    if (show != _showBackToTop) {
-      setState(() => _showBackToTop = show);
+    if (show != _showBackToTop.value) {
+      _showBackToTop.value = show;
     }
   }
 
   void _scrollToTop() {
     _scrollController.animateTo(
       0,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 450),
       curve: Curves.easeOutCubic,
     );
   }
@@ -206,6 +211,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _showBackToTop.dispose();
     super.dispose();
   }
 
@@ -250,7 +256,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: CustomScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
+                  parent: BouncingScrollPhysics(
+                    decelerationRate: ScrollDecelerationRate.fast,
+                  ),
                 ),
                 slivers: [
                   HomeHeader(onLogoTap: _scrollToTop),
@@ -315,16 +323,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               top: topPadding + 80.h,
               left: 0,
               right: 0,
-              child: AnimatedOpacity(
-                opacity: _showBackToTop ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                child: IgnorePointer(
-                  ignoring: !_showBackToTop,
-                  child: Center(
-                    child: _BackToTopButton(onTap: _scrollToTop),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _showBackToTop,
+                builder: (context, show, child) => AnimatedOpacity(
+                  opacity: show ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  child: IgnorePointer(
+                    ignoring: !show,
+                    child: child,
                   ),
                 ),
+                child: Center(child: _BackToTopButton(onTap: _scrollToTop)),
               ),
             ),
           ],

@@ -494,6 +494,17 @@ class _HasAddressBanner extends StatelessWidget {
   const _HasAddressBanner(
       {required this.selectedAddress, required this.onTap});
 
+  String _svgForAddressType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'home':
+        return 'assets/icons/address_home.svg';
+      case 'office':
+        return 'assets/icons/address_office.svg';
+      default:
+        return 'assets/icons/address_other.svg';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
@@ -507,15 +518,16 @@ class _HasAddressBanner extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(9.w),
+            width: 42.w,
+            height: 42.w,
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppColor.primary,
+              color: AppColor.secondary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(
-              Icons.location_on_rounded,
-              color: Colors.white,
-              size: 20.sp,
+            child: SvgPicture.asset(
+              _svgForAddressType(selectedAddress.addressType),
+              fit: BoxFit.contain,
             ),
           ),
           SizedBox(width: 12.w),

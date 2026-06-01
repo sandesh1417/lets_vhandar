@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionPrefences {
   static const _secureStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(),
   );
   static const _tokenKey = 'auth_token';
 

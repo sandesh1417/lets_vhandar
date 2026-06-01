@@ -30,14 +30,16 @@ class HomeFeaturedProductsList extends ConsumerWidget {
             itemCount: visible.length,
             itemBuilder: (context, index) {
               final product = visible[index];
-              return ProductItemCard(
-                product: product,
-                onTap: () {
-                  context.pushNamed(
-                    LVRoute.productDetailScreen.route,
-                    extra: product,
-                  );
-                },
+              return RepaintBoundary(
+                child: ProductItemCard(
+                  product: product,
+                  onTap: () {
+                    context.pushNamed(
+                      LVRoute.productDetailScreen.route,
+                      extra: product,
+                    );
+                  },
+                ),
               );
             },
           ),

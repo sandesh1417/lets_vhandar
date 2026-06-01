@@ -3,6 +3,9 @@ platform :osx, '10.14'
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+# Disable Swift Package Manager so plugins that don't support it use CocoaPods instead.
+ENV['SWIFT_PACKAGE_MANAGER_ENABLED'] = '0'
+
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,

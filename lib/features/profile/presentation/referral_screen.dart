@@ -358,9 +358,9 @@ class _HeroBanner extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    Share.share(
-                      'Use my referral code $referralCode on Vhandar and get discounts on your first order! Download: https://play.google.com/store/apps/details?id=com.vhandar.app',
-                    );
+                    SharePlus.instance.share(ShareParams(
+                      text: 'Use my referral code $referralCode on Vhandar and get discounts on your first order! Download: https://play.google.com/store/apps/details?id=com.vhandar.app',
+                    ));
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(

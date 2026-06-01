@@ -9,6 +9,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dart';
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class MyListsScreen extends ConsumerWidget {
   const MyListsScreen({super.key});
@@ -21,7 +22,7 @@ class MyListsScreen extends ConsumerWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomScreenHeader(title: 'My Lists'),
       body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const SingleChildScrollView(child: MyListsShimmer())
           : state.lists.isEmpty
               ? _buildEmpty(context)
               : ListView.builder(

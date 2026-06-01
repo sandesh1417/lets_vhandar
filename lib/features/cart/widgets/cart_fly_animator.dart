@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class CartFlyAnimator {
-  static final GlobalKey cartBadgeKey = GlobalKey();
+  static final List<GlobalKey> _badgeKeys = [];
+
+  static void registerBadgeKey(GlobalKey key) => _badgeKeys.add(key);
+
+  static void unregisterBadgeKey(GlobalKey key) => _badgeKeys.remove(key);
+
+  static GlobalKey? get _activeKey =>
+      _badgeKeys.isNotEmpty ? _badgeKeys.last : null;
 
   static void fly(BuildContext context, String? imageUrl, Offset startOffset) {
-    final badgeCtx = cartBadgeKey.currentContext;
+    final badgeCtx = _activeKey?.currentContext;
     if (badgeCtx == null) return;
     final badgeBox = badgeCtx.findRenderObject() as RenderBox?;
     if (badgeBox == null) return;
@@ -26,7 +33,7 @@ class CartFlyAnimator {
   }
 
   static void blast(BuildContext context, String? imageUrl) {
-    final badgeCtx = cartBadgeKey.currentContext;
+    final badgeCtx = _activeKey?.currentContext;
     if (badgeCtx == null) return;
     final badgeBox = badgeCtx.findRenderObject() as RenderBox?;
     if (badgeBox == null) return;

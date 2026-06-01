@@ -129,8 +129,8 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     });
 
     await _reverseGeocode(pos);
+    if (!mounted) return;
     _validateDeliveryRadius(pos);
-
     setState(() => _isGeocoding = false);
   }
 
@@ -138,6 +138,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     try {
       final placemarks =
           await placemarkFromCoordinates(pos.latitude, pos.longitude);
+      if (!mounted) return;
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
         final parts = [
@@ -211,6 +212,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
 
       setState(() => _isSearching = true);
       final suggestions = await _searchService.getSuggestions(query);
+      if (!mounted) return;
       setState(() {
         _suggestions = suggestions;
         _isSearching = false;

@@ -403,41 +403,31 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
             color: Colors.black.withValues(alpha: 0.06),
             width: 0.8,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
-                Hero(
-                  tag: 'product-img-${widget.product.id}',
-                  child: Container(
-                    key: _imageKey,
-                    height: 105.h,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(6.r),
-                        topRight: Radius.circular(6.r),
-                      ),
+                Container(
+                  key: _imageKey,
+                  height: 105.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(6.r),
+                      topRight: Radius.circular(6.r),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(6.r),
-                        topRight: Radius.circular(6.r),
-                      ),
-                      child: Opacity(
-                        opacity: isOutOfStock ? 0.45 : 1.0,
-                        child: _buildImageArea(product),
-                      ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(6.r),
+                      topRight: Radius.circular(6.r),
+                    ),
+                    child: Opacity(
+                      opacity: isOutOfStock ? 0.45 : 1.0,
+                      child: _buildImageArea(product),
                     ),
                   ),
                 ),

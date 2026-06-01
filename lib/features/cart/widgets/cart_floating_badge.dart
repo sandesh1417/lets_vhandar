@@ -6,13 +6,32 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
-class CartFloatingBadge extends ConsumerWidget {
+class CartFloatingBadge extends ConsumerStatefulWidget {
   final VoidCallback onTap;
 
   const CartFloatingBadge({super.key, required this.onTap});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CartFloatingBadge> createState() => _CartFloatingBadgeState();
+}
+
+class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
+  final _badgeKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    CartFlyAnimator.registerBadgeKey(_badgeKey);
+  }
+
+  @override
+  void dispose() {
+    CartFlyAnimator.unregisterBadgeKey(_badgeKey);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cartItems = ref.watch(cartProvider);
     final itemCount = ref.watch(totalCartItemsProvider);
 
@@ -29,8 +48,8 @@ class CartFloatingBadge extends ConsumerWidget {
         .toList();
 
     return GestureDetector(
-      key: CartFlyAnimator.cartBadgeKey,
-      onTap: onTap,
+      key: _badgeKey,
+      onTap: widget.onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: 6.h),
         child: ClipRRect(

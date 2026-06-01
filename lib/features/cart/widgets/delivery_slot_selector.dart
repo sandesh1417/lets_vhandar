@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/time_slot_model.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class DeliverySlotSelector extends ConsumerWidget {
   final bool isError;
@@ -95,12 +96,7 @@ class DeliverySlotSelector extends ConsumerWidget {
                     ),
                     SizedBox(height: 2.h),
                     slotsAsync.isLoading
-                        ? SizedBox(
-                            height: 14.h,
-                            width: 14.h,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 1.5, color: AppColor.primary),
-                          )
+                        ? const CustomShimmer.rectangular(height: 14, width: 80)
                         : Text(
                             displayLabel ??
                                 (hasError

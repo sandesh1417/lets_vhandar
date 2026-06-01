@@ -35,16 +35,32 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     useMaterial3: true,
+    fontFamily: 'Inter',
     colorSchemeSeed: AppColor.primary,
-    textTheme: const TextTheme(
-      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-      bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
+    textTheme: TextTheme(
+      displayLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+      displaySmall: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(
+          fontSize: 24.sp, color: Colors.white, fontWeight: FontWeight.w600),
+      titleMedium: TextStyle(
+          fontSize: 20.sp, color: Colors.white, fontWeight: FontWeight.w600),
+      titleSmall: TextStyle(
+          fontSize: 16.sp, color: Colors.white, fontWeight: FontWeight.w600),
+      labelLarge: TextStyle(fontSize: 16.sp, color: Colors.white),
+      labelMedium: TextStyle(fontSize: 14.sp, color: Colors.white),
+      labelSmall: TextStyle(fontSize: 12.sp, color: Colors.white),
+      bodyLarge: TextStyle(fontSize: 18.sp, color: Colors.white),
+      bodyMedium: TextStyle(fontSize: 14.sp, color: Colors.white70),
+      bodySmall: TextStyle(fontSize: 12.sp, color: Colors.white60),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColor.primary,
       iconTheme: IconThemeData(color: AppColor.white),
     ),
     colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColor.primary, secondary: AppColor.secondary),
+        seedColor: AppColor.primary,
+        secondary: AppColor.secondary,
+        brightness: Brightness.dark),
   );
 }

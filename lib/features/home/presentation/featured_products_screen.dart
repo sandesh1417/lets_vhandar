@@ -50,13 +50,15 @@ class FeaturedProductsScreen extends ConsumerWidget {
                 itemCount: visible.length,
                 itemBuilder: (context, index) {
                   final product = visible[index];
-                  return ProductItemCard(
-                    key: ValueKey(product.id),
-                    product: product,
-                    width: double.infinity,
-                    onTap: () => context.pushNamed(
-                      LVRoute.productDetailScreen.route,
-                      extra: product,
+                  return RepaintBoundary(
+                    child: ProductItemCard(
+                      key: ValueKey(product.id),
+                      product: product,
+                      width: double.infinity,
+                      onTap: () => context.pushNamed(
+                        LVRoute.productDetailScreen.route,
+                        extra: product,
+                      ),
                     ),
                   );
                 },

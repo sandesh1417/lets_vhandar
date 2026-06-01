@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
+import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class HomeFeaturedBrandsList extends ConsumerWidget {
@@ -70,7 +71,7 @@ class HomeFeaturedBrandsList extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10.sp,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: context.vColors.onSurface,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 1,

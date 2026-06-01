@@ -17,8 +17,8 @@ if (keyPropertiesFile.exists()) {
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android plugin.
+    // Flutter handles Kotlin automatically via flutter-gradle-plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -32,13 +32,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
 
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.vhandar.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -64,12 +65,6 @@ android {
             else
                 signingConfigs.getByName("debug")
         }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
     }
 }
 

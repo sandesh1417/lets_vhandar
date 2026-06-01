@@ -27,6 +27,65 @@ class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
 
   static const String _appVersion = '1.0.0';
+
+  static Widget _featureTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool showDivider,
+  }) {
+    final vc = context.vColors;
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          child: Row(
+            children: [
+              Container(
+                width: 40.w,
+                height: 40.w,
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(icon, color: AppColor.primary, size: 20.sp),
+              ),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Inter',
+                        color: vc.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontFamily: 'Inter',
+                        color: vc.onSurfaceMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (showDivider)
+          Divider(height: 1, thickness: 1, color: vc.divider,
+              indent: 16.w, endIndent: 16.w),
+      ],
+    );
+  }
   static const String _shareText =
       'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
 
@@ -40,95 +99,134 @@ class AccountTab extends ConsumerWidget {
 
     if (loginState.isGuest || !loginState.isLoggedIn) {
       return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: vc.scaffoldBg,
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Green cover with guest avatar card overlapping
-              Stack(
-                children: [
-                  Container(
-                    height: 140.h,
-                    width: double.infinity,
-                    color: AppColor.primary,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 80.h, left: 16.w, right: 16.w),
-                    decoration: BoxDecoration(
-                      color: vc.surface,
-                      borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+              // ── Hero area ───────────────────────────────────────────
+              Container(
+                width: double.infinity,
+                color: AppColor.primary,
+                padding: EdgeInsets.fromLTRB(
+                  24.w,
+                  MediaQuery.of(context).padding.top + 32.h,
+                  24.w,
+                  40.h,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 80.w,
+                      height: 80.w,
+                      padding: EdgeInsets.all(14.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.10),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/images/icon_logo.svg',
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    padding: EdgeInsets.all(20.w),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 32.r,
-                          backgroundColor:
-                              AppColor.primary.withValues(alpha: 0.1),
-                          child: Icon(Icons.person_outline,
-                              size: 36.sp, color: AppColor.primary),
+                    SizedBox(height: 20.h),
+                    Text(
+                      'Welcome to Vhandar',
+                      style: TextStyle(
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Inter',
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Login to unlock your full experience',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontFamily: 'Inter',
+                        color: Colors.white.withValues(alpha: 0.80),
+                        height: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 28.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ref.read(dashboardIndexProvider.notifier).state = 0;
+                          context.go(LVRoute.loginScreen.route);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColor.primary,
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          elevation: 0,
                         ),
-                        SizedBox(height: 14.h),
-                        Text(
-                          'Login to access your account',
+                        child: Text(
+                          'Login',
                           style: TextStyle(
-                            fontSize: 16.sp,
-                            fontFamily: 'Inter',
+                            fontSize: 15.sp,
                             fontWeight: FontWeight.w700,
-                            color: vc.onSurface,
-                          ),
-                        ),
-                        SizedBox(height: 6.h),
-                        Text(
-                          'View orders, manage addresses,\nearn rewards & more',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13.sp,
                             fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                            color: AppColor.hintText,
-                            height: 1.5,
+                            color: AppColor.primary,
                           ),
                         ),
-                        SizedBox(height: 18.h),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              ref.read(dashboardIndexProvider.notifier).state = 0;
-                              context.go(LVRoute.loginScreen.route);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor.secondary,
-                              foregroundColor: const Color(0xFF1A1A1A),
-                              padding: EdgeInsets.symmetric(vertical: 13.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              'Login / Sign Up',
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+              // ── Feature highlights ──────────────────────────────────
+              Container(
+                margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
+                decoration: BoxDecoration(
+                  color: vc.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: vc.divider),
+                ),
+                child: Column(
+                  children: [
+                    _featureTile(
+                      context,
+                      icon: Icons.receipt_long_outlined,
+                      title: 'Track your orders',
+                      subtitle: 'Real-time updates on every delivery',
+                      showDivider: true,
+                    ),
+                    _featureTile(
+                      context,
+                      icon: Icons.location_on_outlined,
+                      title: 'Manage addresses',
+                      subtitle: 'Save multiple delivery locations',
+                      showDivider: true,
+                    ),
+                    _featureTile(
+                      context,
+                      icon: Icons.card_giftcard_outlined,
+                      title: 'Earn rewards',
+                      subtitle: 'Get referral bonuses and exclusive deals',
+                      showDivider: true,
+                    ),
+                    _featureTile(
+                      context,
+                      icon: Icons.replay_outlined,
+                      title: 'Reorder with one tap',
+                      subtitle: 'Instantly reorder your favourites',
+                      showDivider: false,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 16.h),
               AccountSection(
@@ -401,7 +499,7 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.ios_share_rounded,
                   title: 'Share this App',
                   subtitle: 'Share Vhandar with friends and family',
-                  onTap: () => Share.share(_shareText),
+                  onTap: () => SharePlus.instance.share(ShareParams(text: _shareText)),
                 ),
                 AccountMenuItem(
                   icon: Icons.star_outline_rounded,

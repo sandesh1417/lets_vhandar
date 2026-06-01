@@ -64,12 +64,14 @@ class _CategorySection extends ConsumerWidget {
                 physics: const BouncingScrollPhysics(),
                 itemCount: visible.length,
                 itemBuilder: (context, index) {
-                  return ProductItemCard(
-                    product: visible[index],
-                    onTap: () {
-                      context.push(LVRoute.productDetailScreen.route,
-                          extra: visible[index]);
-                    },
+                  return RepaintBoundary(
+                    child: ProductItemCard(
+                      product: visible[index],
+                      onTap: () {
+                        context.push(LVRoute.productDetailScreen.route,
+                            extra: visible[index]);
+                      },
+                    ),
                   );
                 },
               ),

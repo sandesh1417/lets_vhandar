@@ -16,6 +16,7 @@ import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'widgets/brand_card.dart';
@@ -169,17 +170,16 @@ class _CategoryTabState extends ConsumerState<_CategoryTab> {
       data: (categories) => RefreshIndicator(
         color: AppColor.primary,
         onRefresh: () async => ref.invalidate(allCategoryProvider),
-        child: SingleChildScrollView(
+        child: CustomScrollView(
           controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (categories.isNotEmpty) ...[
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 16.w, vertical: 8.h),
+          slivers: [
+            if (categories.isNotEmpty) ...[
+              SliverPadding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.w, vertical: 8.h),
+                sliver: SliverToBoxAdapter(
                   child: Text(
                     'Shop by Category',
                     style: TextStyle(
@@ -188,16 +188,42 @@ class _CategoryTabState extends ConsumerState<_CategoryTab> {
                         color: vc.onSurface),
                   ),
                 ),
-                _CategoryGrid(categories: categories),
-              ],
-              SizedBox(
-                  height: MediaQuery.of(context).padding.bottom + 150.h),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.68,
+                    crossAxisSpacing: 10.w,
+                    mainAxisSpacing: 12.h,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (_, index) {
+                      final c = categories[index];
+                      return CategoryCard(
+                        name: c.name ?? '',
+                        imageUrl: c.images?.isNotEmpty == true
+                            ? c.images!.first.url
+                            : null,
+                        onTap: () =>
+                            navigateToSlug(context, c.slug, isBrand: false),
+                      );
+                    },
+                    childCount: categories.length,
+                  ),
+                ),
+              ),
             ],
-          ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                  height: MediaQuery.of(context).padding.bottom + 150.h),
+            ),
+          ],
         ),
       ),
       loading: () => const _LoadingShimmer(),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (_, __) => const ErrorStateWidget(),
     );
   }
 }
@@ -222,7 +248,7 @@ class _SubCategoryTab extends ConsumerWidget {
         );
       },
       loading: () => const _LoadingShimmer(),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (_, __) => const ErrorStateWidget(),
     );
   }
 }
@@ -275,7 +301,7 @@ class _BrandTab extends ConsumerWidget {
         );
       },
       loading: () => const _LoadingShimmer(),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (_, __) => const ErrorStateWidget(),
     );
   }
 }
@@ -456,36 +482,6 @@ class _SubSection extends ConsumerWidget {
 }
 
 
-// ── Category grid ─────────────────────────────────────────────────────────
-class _CategoryGrid extends StatelessWidget {
-  final List<CategoryData> categories;
-  const _CategoryGrid({required this.categories});
-
-  @override
-  Widget build(BuildContext context) {
-    if (categories.isEmpty) return const SizedBox.shrink();
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.68,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 12.h,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (_, index) {
-        final c = categories[index];
-        return CategoryCard(
-          name: c.name ?? '',
-          imageUrl: c.images?.isNotEmpty == true ? c.images!.first.url : null,
-          onTap: () => navigateToSlug(context, c.slug, isBrand: false),
-        );
-      },
-    );
-  }
-}
 
 // ── Shimmer loading ───────────────────────────────────────────────────────
 class _LoadingShimmer extends StatelessWidget {

@@ -105,6 +105,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         child: child!,
       ),
     );
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         _birthDateController.text =
@@ -123,6 +124,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
       ),
     );
+    if (!mounted) return;
     if (result != null) {
       setState(() {
         _businessLatLng = result.latLng;

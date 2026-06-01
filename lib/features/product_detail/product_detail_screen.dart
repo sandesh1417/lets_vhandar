@@ -17,6 +17,7 @@ import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/product_detail/widgets/product_brand_section.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -86,15 +87,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final url = "https://vhandar.com/product/${p.slug ?? p.id ?? ''}";
     const store =
         "https://play.google.com/store/apps/details?id=com.vhandar.app";
-    Share.share(
-      "Check out *${p.name}* on Let's Vhandar!\n\n"
-      "Price: Rs. ${p.actualPrice}\n"
-      "${clean.isNotEmpty ? '$clean\n\n' : ''}"
-      "👉 View Product: $url\n"
-      "📲 Download the App: $store",
+    SharePlus.instance.share(ShareParams(
+      text: "Check out *${p.name}* on Let's Vhandar!\n\n"
+          "Price: Rs. ${p.actualPrice}\n"
+          "${clean.isNotEmpty ? '$clean\n\n' : ''}"
+          "👉 View Product: $url\n"
+          "📲 Download the App: $store",
       subject: p.name,
       sharePositionOrigin: origin,
-    );
+    ));
   }
 
   // ── shared card decoration ──────────────────────────────────────────────
@@ -536,11 +537,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     );
                   },
                   loading: () => SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(24.h),
-                      child: Center(
-                          child: CircularProgressIndicator(
-                              color: AppColor.primary)),
+                    child: Container(
+                      margin: cardMargin,
+                      decoration: _cardDecoration(context),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(_kCardRadius.r),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 16.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              child: Row(
+                                children: [
+                                  const CustomShimmer.rectangular(width: 3, height: 16),
+                                  SizedBox(width: 8.w),
+                                  const CustomShimmer.rectangular(width: 120, height: 14),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 12.h),
+                            const ProductHorizontalListShimmer(itemCount: 4),
+                            SizedBox(height: 16.h),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   error: (e, s) =>

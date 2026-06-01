@@ -123,8 +123,11 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Widget _buildIcon(int i, bool isSelected) {
-    const inactiveFilter = ColorFilter.mode(Color(0xFFADB5B2), BlendMode.srcIn);
+  Widget _buildIcon(BuildContext context, int i, bool isSelected) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveColor =
+        isDark ? const Color(0xFFB8C4C0) : const Color(0xFF6B7B76);
+    final inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
 
     switch (i) {
       case 0:
@@ -151,6 +154,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
               : 'assets/icons/order.svg',
           width: 22.w,
           height: 22.w,
+          colorFilter: isSelected ? null : inactiveFilter,
         );
       case 3:
         return SvgPicture.asset(
@@ -159,6 +163,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
               : 'assets/icons/reorder-icon.svg',
           width: 22.w,
           height: 22.w,
+          colorFilter: isSelected ? null : inactiveFilter,
         );
       default:
         return SvgPicture.asset(
@@ -247,7 +252,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _buildIcon(i, isSelected),
+                                  _buildIcon(context, i, isSelected),
                                   SizedBox(height: 3.h),
                                   AnimatedDefaultTextStyle(
                                     duration:
@@ -260,7 +265,9 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                                           : FontWeight.w400,
                                       color: isSelected
                                           ? AppColor.primary
-                                          : const Color(0xFFADB5B2),
+                                          : Theme.of(context).brightness == Brightness.dark
+                                              ? const Color(0xFFB8C4C0)
+                                              : const Color(0xFF3A4A46),
                                     ),
                                     child: Text(_labels[i]),
                                   ),

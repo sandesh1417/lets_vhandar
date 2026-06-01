@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 /// Shows the list of saved addresses and an "Add Address" button.
 /// Call via: showAddressSelectorSheet(context, userId: '...')
@@ -43,14 +44,14 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
     });
   }
 
-  IconData _iconForType(String? type) {
+  String _svgForType(String? type) {
     switch (type?.toLowerCase()) {
       case 'home':
-        return Icons.home_rounded;
+        return 'assets/icons/address_home.svg';
       case 'office':
-        return Icons.business_rounded;
+        return 'assets/icons/address_office.svg';
       default:
-        return Icons.location_on_rounded;
+        return 'assets/icons/address_other.svg';
     }
   }
 
@@ -221,10 +222,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                     SizedBox(height: 20.h),
 
                     if (state.isLoading)
-                      Center(
-                        child: CircularProgressIndicator(
-                            color: AppColor.primary),
-                      )
+                      const OrderListShimmer(itemCount: 3)
                     else if (state.addresses.isEmpty)
                       _EmptyState(vc: vc)
                     else ...[
@@ -240,7 +238,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                       ...state.addresses.map((addr) => _AddressTile(
                             address: addr,
                             isSelected: state.selected?.id == addr.id,
-                            icon: _iconForType(addr.addressType),
+                            svgAsset: _svgForType(addr.addressType),
                             onTap: () {
                               ref
                                   .read(addressProvider.notifier)
@@ -309,14 +307,14 @@ class _EmptyState extends StatelessWidget {
 class _AddressTile extends StatelessWidget {
   final AddressModel address;
   final bool isSelected;
-  final IconData icon;
+  final String svgAsset;
   final VoidCallback onTap;
   final VoidCallback onEdit;
 
   const _AddressTile({
     required this.address,
     required this.isSelected,
-    required this.icon,
+    required this.svgAsset,
     required this.onTap,
     required this.onEdit,
   });
@@ -344,11 +342,12 @@ class _AddressTile extends StatelessWidget {
             Container(
               width: 44.w,
               height: 44.w,
+              padding: EdgeInsets.all(9.w),
               decoration: BoxDecoration(
-                color: AppColor.primary.withValues(alpha: 0.1),
+                color: AppColor.secondary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10.r),
               ),
-              child: Icon(icon, color: AppColor.primary, size: 22.sp),
+              child: SvgPicture.asset(svgAsset, fit: BoxFit.contain),
             ),
             SizedBox(width: 12.w),
             Expanded(

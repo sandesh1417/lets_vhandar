@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(~/flutter/bin/flutter analyze *)"
+      "Bash(~/flutter/bin/flutter analyze *)",
+      "Bash(curl -s \"https://pub.dev/api/packages/mobile_scanner\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d['latest']['version']\\)\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/webview_flutter\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/share_plus\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/google_maps\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/permission_handler\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/google_maps_flutter\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/permission_handler_apple\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/google_maps_flutter_ios\")",
+      "Bash(curl -s \"https://pub.dev/api/packages/shared_preferences\")"
     ]
   }
 }

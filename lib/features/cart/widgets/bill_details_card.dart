@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class BillDetailsCard extends ConsumerWidget {
   final int totalItems;
@@ -62,10 +63,7 @@ class BillDetailsCard extends ConsumerWidget {
           couponDiscount: couponDiscount,
         );
       },
-      loading: () => SizedBox(
-        height: 200,
-        child: Center(child: CircularProgressIndicator(color: AppColor.primary)),
-      ),
+      loading: () => const BillDetailsShimmer(),
       error: (_, __) => _buildCard(
         context,
         savings: savings,

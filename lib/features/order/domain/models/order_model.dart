@@ -199,6 +199,7 @@ class OrderProduct {
   final String? id;
   final String? name;
   final String? unit;
+  final num? unitValue;
   final num? pricePerUnit;
   final num? totalPrice;
   final num? netPrice;
@@ -211,6 +212,7 @@ class OrderProduct {
     this.id,
     this.name,
     this.unit,
+    this.unitValue,
     this.pricePerUnit,
     this.totalPrice,
     this.netPrice,
@@ -224,6 +226,7 @@ class OrderProduct {
         id: json["_id"],
         name: json["name"],
         unit: json["unit"],
+        unitValue: json["unitValue"],
         pricePerUnit: json["pricePerUnit"],
         totalPrice: json["totalPrice"],
         netPrice: json["netPrice"],

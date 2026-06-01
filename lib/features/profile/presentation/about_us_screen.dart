@@ -15,10 +15,10 @@ class AboutUsScreen extends StatelessWidget {
       'https://play.google.com/store/apps/details?id=com.vhandar.app';
 
   void _shareApp() {
-    Share.share(
-      "Shop groceries fast with Vhandar!\n\nDownload the app: $_playStoreUrl",
+    SharePlus.instance.share(ShareParams(
+      text: "Shop groceries fast with Vhandar!\n\nDownload the app: $_playStoreUrl",
       subject: "Let's Vhandar – Quick Grocery Delivery",
-    );
+    ));
   }
 
   @override
