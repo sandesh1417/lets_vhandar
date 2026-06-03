@@ -91,10 +91,26 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           );
         }
         if (addressState.addresses.isEmpty) {
-          return _EmptyState(
-            onAdd: user?.id != null
-                ? () => _openAddSheet(context, user!.id!)
-                : null,
+          return RefreshIndicator(
+            color: AppColor.primary,
+            onRefresh: () async {
+              if (user?.id != null) {
+                await ref
+                    .read(addressProvider.notifier)
+                    .loadAddresses(user!.id!);
+              }
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.75,
+                child: _EmptyState(
+                  onAdd: user?.id != null
+                      ? () => _openAddSheet(context, user!.id!)
+                      : null,
+                ),
+              ),
+            ),
           );
         }
 
@@ -433,20 +449,12 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 110.w,
-            height: 110.w,
-            decoration: BoxDecoration(
-              color: AppColor.primary.withValues(alpha: 0.06),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.location_on_outlined,
-              size: 52.sp,
-              color: AppColor.primary.withValues(alpha: 0.5),
-            ),
+          SvgPicture.asset(
+            'assets/icons/location_pin.svg',
+            width: 160.w,
+            height: 160.w,
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 16.h),
           Text(
             'No Saved Addresses',
             style: TextStyle(

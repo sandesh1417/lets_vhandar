@@ -67,7 +67,7 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Vhandar Merchandise Pvt. Ltd.  •  VAT: $_vatNo',
+              _website,
               style: const pw.TextStyle(fontSize: 7, color: _mutedText),
             ),
             pw.Text(

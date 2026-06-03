@@ -32,7 +32,7 @@ class _StepDef {
 const _orderSteps = [
   _StepDef('Order Placed', 'Your order has been received', Icons.receipt_long_rounded),
   _StepDef('Processing', 'Your order is being packed', Icons.inventory_2_rounded),
-  _StepDef('Shipped', 'Out for delivery', Icons.local_shipping_rounded),
+  _StepDef('On the Way', 'Out for delivery', Icons.local_shipping_rounded),
   _StepDef('Delivered', 'Order delivered successfully', Icons.check_circle_rounded),
 ];
 
@@ -89,9 +89,14 @@ class OrderDetailScreen extends ConsumerWidget {
         ],
       ),
       body: orderAsync.when(
-        data: (order) => _OrderDetailBody(order: order),
+        data: (order) => _OrderDetailBody(
+          order: order,
+          onRefresh: () async => ref.invalidate(orderDetailProvider(orderId)),
+        ),
         loading: () => const OrderDetailShimmer(),
-        error: (_, __) => const ErrorStateWidget(),
+        error: (_, __) => ErrorStateWidget(
+          onRetry: () => ref.invalidate(orderDetailProvider(orderId)),
+        ),
       ),
     );
   }
@@ -107,7 +112,8 @@ String _monthName(int month) {
 
 class _OrderDetailBody extends StatefulWidget {
   final OrderData order;
-  const _OrderDetailBody({required this.order});
+  final Future<void> Function() onRefresh;
+  const _OrderDetailBody({required this.order, required this.onRefresh});
 
   @override
   State<_OrderDetailBody> createState() => _OrderDetailBodyState();
@@ -182,7 +188,11 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return SingleChildScrollView(
+    return RefreshIndicator(
+      onRefresh: widget.onRefresh,
+      color: AppColor.primary,
+      child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,6 +521,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -616,7 +627,8 @@ class _OrderStatusStepperState extends State<_OrderStatusStepper>
   static int _stepIndex(String? s) {
     switch (s?.toLowerCase()) {
       case 'processing': return 1;
-      case 'shipped':    return 2;
+      case 'shipped':
+      case 'shipping':   return 2;
       case 'delivered':  return 3;
       default:           return 0; // pending
     }

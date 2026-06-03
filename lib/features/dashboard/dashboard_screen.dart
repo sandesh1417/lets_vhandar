@@ -63,6 +63,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final currentIndex = ref.watch(dashboardIndexProvider);
     ref.watch(visitedTabsProvider);
 
+    // Ensure the active tab is always in visitedTabsProvider, regardless of
+    // who set dashboardIndexProvider (bottom nav, Account tab button, etc.)
+    ref.listen<int>(dashboardIndexProvider, (_, idx) {
+      ref.read(visitedTabsProvider.notifier).update((s) => {...s, idx});
+    });
+
     // Auto-refresh providers when coming back online
     ref.listen<AsyncValue<bool>>(connectivityProvider, (prev, next) {
       final wasOnline = prev?.valueOrNull ?? true;

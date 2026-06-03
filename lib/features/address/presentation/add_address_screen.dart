@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -145,11 +146,91 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
       });
       if (!isWithin) {
         setState(() =>
-            _locationError = 'Selected location is outside our delivery area.');
+            _locationError = 'Vhandar is not available at your location.');
+        _showLocationNotServiceablePopup();
       }
     } catch (e) {
       log('Radius check error: $e');
     }
+  }
+
+  void _showLocationNotServiceablePopup() {
+    final vc = context.vColors;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: vc.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        ),
+        padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, bottomPad + 24.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36.w,
+              height: 4.h,
+              margin: EdgeInsets.only(bottom: 20.h),
+              decoration: BoxDecoration(
+                color: vc.divider,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
+            SvgPicture.asset(
+              'assets/images/delivery-locatio-icon.svg',
+              width: 100.w,
+              height: 100.w,
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              'Vhandar is not available at your location.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w700,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'We will notify you when Vhandar becomes available at your location.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                height: 1.5,
+              ),
+            ),
+            SizedBox(height: 24.h),
+            SizedBox(
+              width: double.infinity,
+              height: 50.h,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                ),
+                child: Text(
+                  'Change Location',
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _goToCurrentLocation() async {
@@ -313,10 +394,12 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   Widget _buildMapPicker() {
     final vc = context.vColors;
     final bottomPad = MediaQuery.of(context).padding.bottom;
-    final isDisabled = _locationDescription.isEmpty ||
-        _locationDescription == 'Tap on map to select location' ||
-        _locationError != null ||
-        _isGeocoding;
+    final bool noLocation = _locationDescription.isEmpty ||
+        _locationDescription == 'Tap on map to select location';
+    final bool isOutsideArea = _locationError != null;
+    // Truly disabled (no action possible): no location picked yet or still geocoding.
+    // Outside-area is handled separately — button stays tappable but shows popup.
+    final bool isHardDisabled = noLocation || _isGeocoding;
 
     return Column(
       children: [
@@ -384,10 +467,14 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
                 width: double.infinity,
                 height: 52.h,
                 child: ElevatedButton(
-                  onPressed:
-                      isDisabled ? null : () => setState(() => _isLocationConfirmed = true),
+                  onPressed: isHardDisabled
+                      ? null
+                      : isOutsideArea
+                          ? _showLocationNotServiceablePopup
+                          : () => setState(() => _isLocationConfirmed = true),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.secondary,
+                    backgroundColor:
+                        isOutsideArea ? const Color(0xFF9C9C9C) : AppColor.secondary,
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: const Color(0xFF9C9C9C),
                     disabledForegroundColor: Colors.white,
