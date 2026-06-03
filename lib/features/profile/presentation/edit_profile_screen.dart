@@ -63,13 +63,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final pan = bd?['panNumber'] as String?;
     final vat = bd?['vatNumber'] as String?;
     _isPan = pan != null && pan.isNotEmpty;
-    _panVatController = TextEditingController(
-        text: _isPan ? (pan ?? '') : (vat ?? ''));
+    _panVatController =
+        TextEditingController(text: _isPan ? (pan ?? '') : (vat ?? ''));
 
     final lat = bd?['lat'] ?? bd?['latitude'];
     final lng = bd?['long'] ?? bd?['longitude'];
     if (lat != null && lng != null) {
-      _businessLatLng = LatLng((lat as num).toDouble(), (lng as num).toDouble());
+      _businessLatLng =
+          LatLng((lat as num).toDouble(), (lng as num).toDouble());
     }
     _businessLocationAddress =
         (bd?['locationAddress'] ?? bd?['addressName']) as String?;
@@ -194,10 +195,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      resizeToAvoidBottomInset: false,
       appBar: CustomScreenHeader(
         title: isBusiness ? 'Edit Business Info' : 'Edit Profile',
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom +
+              MediaQuery.of(context).padding.bottom,
+        ),
         child: Column(
           children: [
             // Avatar header band
@@ -223,6 +229,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           (!isBusiness || _selectedCategory != null),
                       onPress: () => _save(isBusiness),
                     ),
+                    SizedBox(height: 32.h),
                   ],
                 ),
               ),
@@ -276,8 +283,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               SizedBox(height: 4.h),
               Text(
                 'Please select a category',
-                style:
-                    TextStyle(fontSize: 11.sp, color: Colors.red.shade400),
+                style: TextStyle(fontSize: 11.sp, color: Colors.red.shade400),
               ),
             ],
             SizedBox(height: 16.h),
@@ -337,7 +343,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   v == null || v.trim().isEmpty ? 'Required' : null,
             ),
             SizedBox(height: 16.h),
-
             _FieldLabel('Email Address', vc),
             SizedBox(height: 6.h),
             ValueListenableBuilder(
@@ -348,8 +353,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 keyBoardType: TextInputType.emailAddress,
                 suffixIcon: _emailController.text.isNotEmpty
                     ? GestureDetector(
-                        onTap: () =>
-                            setState(() => _emailController.clear()),
+                        onTap: () => setState(() => _emailController.clear()),
                         child: Icon(Icons.cancel_outlined,
                             size: 18.sp, color: Colors.grey.shade400),
                       )
@@ -385,7 +389,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
             ),
             SizedBox(height: 16.h),
-
             _FieldLabel('Gender', vc),
             SizedBox(height: 8.h),
             _GenderSelector(
@@ -608,7 +611,8 @@ class _ReadOnlyField extends StatelessWidget {
               ),
             ),
           ),
-          Icon(Icons.lock_outline_rounded, size: 14.sp, color: vc.onSurfaceMuted),
+          Icon(Icons.lock_outline_rounded,
+              size: 14.sp, color: vc.onSurfaceMuted),
         ],
       ),
     );
@@ -775,8 +779,7 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 8.h),
+      padding: EdgeInsets.only(bottom: 8.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -813,8 +816,7 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                 ? 320.h
                 : widget.categories.length * 52.h + 16.h,
             child: ListView.builder(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
               itemCount: _filtered.length,
               itemBuilder: (_, i) {
                 final cat = _filtered[i];
@@ -827,8 +829,8 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                   borderRadius: BorderRadius.circular(10.r),
                   child: Container(
                     margin: EdgeInsets.only(bottom: 4.h),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 14.w, vertical: 13.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColor.primary.withValues(alpha: 0.08)
@@ -851,9 +853,8 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
-                              color: isSelected
-                                  ? AppColor.primary
-                                  : vc.onSurface,
+                              color:
+                                  isSelected ? AppColor.primary : vc.onSurface,
                             ),
                           ),
                         ),
@@ -956,9 +957,7 @@ class _GenderSelector extends StatelessWidget {
   final VhandarColors vc;
 
   const _GenderSelector(
-      {required this.selected,
-      required this.onChanged,
-      required this.vc});
+      {required this.selected, required this.onChanged, required this.vc});
 
   @override
   Widget build(BuildContext context) {

@@ -29,11 +29,11 @@ class _W {
 }
 
 // ── Status colours ─────────────────────────────────────────────────────────────
-const _cDelivered  = Color(0xFF00897B);
-const _cPending    = Color(0xFFF59E0B);
+const _cDelivered = Color(0xFF00897B);
+const _cPending = Color(0xFFF59E0B);
 const _cProcessing = Color(0xFF3B82F6);
-const _cShipped    = Color(0xFF8B5CF6);
-const _cCancelled  = Color(0xFFEF4444);
+const _cShipped = Color(0xFF8B5CF6);
+const _cCancelled = Color(0xFFEF4444);
 
 class OrderSummaryScreen extends StatefulWidget {
   final OrderState state;
@@ -73,12 +73,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   List<OrderData> get _filtered {
     final w = _window;
-    return widget.state.orders
-        .where((o) {
-          final d = o.createdAt;
-          return d != null && !d.isBefore(w.from) && d.isBefore(w.to);
-        })
-        .toList()
+    return widget.state.orders.where((o) {
+      final d = o.createdAt;
+      return d != null && !d.isBefore(w.from) && d.isBefore(w.to);
+    }).toList()
       ..sort((a, b) =>
           (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
   }
@@ -104,8 +102,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   }
 
   double _saved(OrderData o) =>
-      (o.totalDiscount?.toDouble() ?? 0) +
-      (o.couponDiscount?.toDouble() ?? 0);
+      (o.totalDiscount?.toDouble() ?? 0) + (o.couponDiscount?.toDouble() ?? 0);
 
   Future<void> _pickCustom() async {
     final picked = await showDateRangePicker(
@@ -125,7 +122,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: child!,
       ),
     );
-    if (picked != null) setState(() { _custom = picked; _range = _DR.custom; });
+    if (picked != null)
+      setState(() {
+        _custom = picked;
+        _range = _DR.custom;
+      });
   }
 
   @override
@@ -134,30 +135,42 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     final filtered = _filtered;
     final points = _dailyPoints;
 
-    final totalSpent   = filtered.fold<double>(0, (s, o) => s + (o.totalPayableAmount?.toDouble() ?? 0));
-    final totalSaved   = filtered.fold<double>(0, (s, o) => s + _saved(o));
-    final totalDisc    = filtered.fold<double>(0, (s, o) => s + (o.totalDiscount?.toDouble() ?? 0));
-    final totalCoupon  = filtered.fold<double>(0, (s, o) => s + (o.couponDiscount?.toDouble() ?? 0));
-    final avgOrder     = filtered.isNotEmpty ? totalSpent / filtered.length : 0.0;
-    final totalItems   = filtered.fold<int>(0,
-        (s, o) => s + (o.products?.fold<int>(0, (ps, p) => ps + (p.count ?? 1)) ?? 0));
+    final totalSpent = filtered.fold<double>(
+        0, (s, o) => s + (o.totalPayableAmount?.toDouble() ?? 0));
+    final totalSaved = filtered.fold<double>(0, (s, o) => s + _saved(o));
+    final totalDisc = filtered.fold<double>(
+        0, (s, o) => s + (o.totalDiscount?.toDouble() ?? 0));
+    final totalCoupon = filtered.fold<double>(
+        0, (s, o) => s + (o.couponDiscount?.toDouble() ?? 0));
+    final avgOrder = filtered.isNotEmpty ? totalSpent / filtered.length : 0.0;
+    final totalItems = filtered.fold<int>(
+        0,
+        (s, o) =>
+            s +
+            (o.products?.fold<int>(0, (ps, p) => ps + (p.count ?? 1)) ?? 0));
 
-    final delivered  = filtered.where((o) => o.status?.toLowerCase() == 'delivered').length;
-    final pending    = filtered.where((o) => o.status?.toLowerCase() == 'pending').length;
-    final processing = filtered.where((o) => o.status?.toLowerCase() == 'processing').length;
-    final shipped    = filtered.where((o) => o.status?.toLowerCase() == 'shipped').length;
-    final cancelled  = filtered.where((o) {
+    final delivered =
+        filtered.where((o) => o.status?.toLowerCase() == 'delivered').length;
+    final pending =
+        filtered.where((o) => o.status?.toLowerCase() == 'pending').length;
+    final processing =
+        filtered.where((o) => o.status?.toLowerCase() == 'processing').length;
+    final shipped =
+        filtered.where((o) => o.status?.toLowerCase() == 'shipped').length;
+    final cancelled = filtered.where((o) {
       final s = o.status?.toLowerCase();
       return s == 'cancelled' || s == 'returned' || s == 'refunded';
     }).length;
     final statusTotal = filtered.length;
 
     final statusItems = [
-      _StatusItem('Delivered',  delivered,  _cDelivered,  Icons.check_circle_rounded),
-      _StatusItem('Pending',    pending,    _cPending,    Icons.hourglass_empty_rounded),
-      _StatusItem('Processing', processing, _cProcessing, Icons.inventory_2_rounded),
-      _StatusItem('Shipped',    shipped,    _cShipped,    Icons.local_shipping_rounded),
-      _StatusItem('Cancelled',  cancelled,  _cCancelled,  Icons.cancel_rounded),
+      _StatusItem(
+          'Delivered', delivered, _cDelivered, Icons.check_circle_rounded),
+      _StatusItem('Pending', pending, _cPending, Icons.hourglass_empty_rounded),
+      _StatusItem(
+          'Processing', processing, _cProcessing, Icons.inventory_2_rounded),
+      _StatusItem('Shipped', shipped, _cShipped, Icons.local_shipping_rounded),
+      _StatusItem('Cancelled', cancelled, _cCancelled, Icons.cancel_rounded),
     ].where((s) => s.count > 0 || statusTotal == 0).toList();
 
     return Scaffold(
@@ -203,7 +216,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.20)),
                     ),
                     child: Row(
                       children: [
@@ -302,11 +316,36 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     children: [
-                      _SummaryTile(label: 'Orders',      value: '${filtered.length}',      sub: 'in period',    color: AppColor.primary,         icon: Icons.receipt_long_rounded),
-                      _SummaryTile(label: 'Total Spent', value: 'Rs.${totalSpent.toInt()}', sub: 'payable',      color: _cCancelled,              icon: Icons.payments_rounded),
-                      _SummaryTile(label: 'Total Saved', value: 'Rs.${totalSaved.toInt()}', sub: 'disc + coupon', color: _cDelivered,             icon: Icons.savings_rounded),
-                      _SummaryTile(label: 'Avg Order',   value: 'Rs.${avgOrder.toInt()}',  sub: 'per order',    color: _cShipped,                 icon: Icons.bar_chart_rounded),
-                      _SummaryTile(label: 'Items',       value: '$totalItems',             sub: 'products',     color: const Color(0xFF0D9488),   icon: Icons.shopping_bag_rounded),
+                      _SummaryTile(
+                          label: 'Orders',
+                          value: '${filtered.length}',
+                          sub: 'in period',
+                          color: AppColor.primary,
+                          icon: Icons.receipt_long_rounded),
+                      _SummaryTile(
+                          label: 'Total Spent',
+                          value: 'Rs.${totalSpent.toInt()}',
+                          sub: 'payable',
+                          color: _cCancelled,
+                          icon: Icons.payments_rounded),
+                      _SummaryTile(
+                          label: 'Total Saved',
+                          value: 'Rs.${totalSaved.toInt()}',
+                          sub: 'disc + coupon',
+                          color: _cDelivered,
+                          icon: Icons.savings_rounded),
+                      _SummaryTile(
+                          label: 'Avg Order',
+                          value: 'Rs.${avgOrder.toInt()}',
+                          sub: 'per order',
+                          color: _cShipped,
+                          icon: Icons.bar_chart_rounded),
+                      _SummaryTile(
+                          label: 'Items',
+                          value: '$totalItems',
+                          sub: 'products',
+                          color: const Color(0xFF0D9488),
+                          icon: Icons.shopping_bag_rounded),
                     ],
                   ),
                 ),
@@ -316,26 +355,42 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 14.w, vertical: 10.h),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(colors: [
                           _cDelivered.withValues(alpha: 0.08),
                           _cDelivered.withValues(alpha: 0.03),
                         ]),
                         borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: _cDelivered.withValues(alpha: 0.2)),
+                        border: Border.all(
+                            color: _cDelivered.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.local_offer_rounded, color: _cDelivered, size: 15.sp),
+                          Icon(Icons.local_offer_rounded,
+                              color: _cDelivered, size: 15.sp),
                           SizedBox(width: 8.w),
-                          Text('Item discounts: ', style: TextStyle(fontSize: 11.sp, color: _cDelivered)),
-                          Text('Rs.${totalDisc.toInt()}', style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: _cDelivered)),
+                          Text('Item discounts: ',
+                              style: TextStyle(
+                                  fontSize: 11.sp, color: _cDelivered)),
+                          Text('Rs.${totalDisc.toInt()}',
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: _cDelivered)),
                           SizedBox(width: 16.w),
-                          Icon(Icons.confirmation_number_outlined, color: _cDelivered, size: 15.sp),
+                          Icon(Icons.confirmation_number_outlined,
+                              color: _cDelivered, size: 15.sp),
                           SizedBox(width: 6.w),
-                          Text('Coupons: ', style: TextStyle(fontSize: 11.sp, color: _cDelivered)),
-                          Text('Rs.${totalCoupon.toInt()}', style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: _cDelivered)),
+                          Text('Coupons: ',
+                              style: TextStyle(
+                                  fontSize: 11.sp, color: _cDelivered)),
+                          Text('Rs.${totalCoupon.toInt()}',
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: _cDelivered)),
                         ],
                       ),
                     ),
@@ -371,7 +426,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 SizedBox(height: 12.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: _StatusChart(items: statusItems, total: statusTotal, vc: vc),
+                  child: _StatusChart(
+                      items: statusItems, total: statusTotal, vc: vc),
                 ),
 
                 SizedBox(height: 24.h),
@@ -379,7 +435,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 // ── Transactions ───────────────────────────────────
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: _SectionHeader(title: 'Transactions (${filtered.length})', vc: vc),
+                  child: _SectionHeader(
+                      title: 'Transactions (${filtered.length})', vc: vc),
                 ),
                 SizedBox(height: 12.h),
                 if (filtered.isEmpty)
@@ -387,7 +444,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     padding: EdgeInsets.all(32.r),
                     child: Center(
                       child: Text('No orders in this period',
-                          style: TextStyle(fontSize: 13.sp, color: vc.onSurfaceMuted)),
+                          style: TextStyle(
+                              fontSize: 13.sp, color: vc.onSurfaceMuted)),
                     ),
                   )
                 else
@@ -395,7 +453,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Column(
                       children: filtered
-                          .map((o) => _TxRow(order: o, saved: _saved(o), vc: vc))
+                          .map(
+                              (o) => _TxRow(order: o, saved: _saved(o), vc: vc))
                           .toList(),
                     ),
                   ),
@@ -420,14 +479,16 @@ Widget _vDivider() => Container(
 class _HeaderStat extends StatelessWidget {
   final String label, value;
   final IconData icon;
-  const _HeaderStat({required this.label, required this.value, required this.icon});
+  const _HeaderStat(
+      {required this.label, required this.value, required this.icon});
 
   @override
   Widget build(BuildContext context) => Expanded(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white.withValues(alpha: 0.80), size: 14.sp),
+            Icon(icon,
+                color: Colors.white.withValues(alpha: 0.80), size: 14.sp),
             SizedBox(height: 4.h),
             Text(value,
                 style: TextStyle(
@@ -464,11 +525,17 @@ class _GradientLineChart extends StatelessWidget {
     final vc = context.vColors;
     if (points.isEmpty) return const SizedBox();
 
-    final maxY = points.map((p) => p.amount).fold<double>(0, (m, v) => v > m ? v : m);
-    final spots = List.generate(points.length, (i) => FlSpot(i.toDouble(), points[i].amount));
+    final maxY =
+        points.map((p) => p.amount).fold<double>(0, (m, v) => v > m ? v : m);
+    final spots = List.generate(
+        points.length, (i) => FlSpot(i.toDouble(), points[i].amount));
     final showLabels = points.length <= 31;
-    final maxSpend = points.map((p) => p.amount).fold<double>(0, (m, v) => v > m ? v : m);
-    final minNonZero = points.map((p) => p.amount).where((a) => a > 0).fold<double>(double.infinity, (m, v) => v < m ? v : m);
+    final maxSpend =
+        points.map((p) => p.amount).fold<double>(0, (m, v) => v > m ? v : m);
+    final minNonZero = points
+        .map((p) => p.amount)
+        .where((a) => a > 0)
+        .fold<double>(double.infinity, (m, v) => v < m ? v : m);
 
     return Container(
       decoration: BoxDecoration(
@@ -506,13 +573,15 @@ class _GradientLineChart extends StatelessWidget {
                       SizedBox(height: 2.h),
                       Text(
                         '$periodLabel  •  $orderCount order${orderCount == 1 ? '' : 's'}',
-                        style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted),
+                        style: TextStyle(
+                            fontSize: 11.sp, color: vc.onSurfaceMuted),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                   decoration: BoxDecoration(
                     color: AppColor.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(20.r),
@@ -597,7 +666,8 @@ class _GradientLineChart extends StatelessWidget {
                                   v >= 1000
                                       ? '${(v / 1000).toStringAsFixed(1)}k'
                                       : v.toInt().toString(),
-                                  style: TextStyle(fontSize: 8.sp, color: vc.onSurfaceMuted),
+                                  style: TextStyle(
+                                      fontSize: 8.sp, color: vc.onSurfaceMuted),
                                 ),
                               ),
                       ),
@@ -611,20 +681,24 @@ class _GradientLineChart extends StatelessWidget {
                             : 1,
                         getTitlesWidget: (v, _) {
                           final i = v.toInt();
-                          if (i < 0 || i >= points.length) return const SizedBox();
+                          if (i < 0 || i >= points.length)
+                            return const SizedBox();
                           return Padding(
                             padding: const EdgeInsets.only(top: 4),
                             child: Text(
                               DateFormat(points.length > 14 ? 'M/d' : 'd')
                                   .format(points[i].day),
-                              style: TextStyle(fontSize: 8.sp, color: vc.onSurfaceMuted),
+                              style: TextStyle(
+                                  fontSize: 8.sp, color: vc.onSurfaceMuted),
                             ),
                           );
                         },
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
                   lineBarsData: [
                     LineChartBarData(
@@ -669,11 +743,16 @@ class _GradientLineChart extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: Row(
                 children: [
-                  _ChartStat(label: 'Peak Day', value: 'Rs.${maxSpend.toInt()}', color: AppColor.primary),
+                  _ChartStat(
+                      label: 'Peak Day',
+                      value: 'Rs.${maxSpend.toInt()}',
+                      color: AppColor.primary),
                   _chartStatDivider(vc),
                   _ChartStat(
                     label: 'Lowest Day',
-                    value: minNonZero == double.infinity ? '—' : 'Rs.${minNonZero.toInt()}',
+                    value: minNonZero == double.infinity
+                        ? '—'
+                        : 'Rs.${minNonZero.toInt()}',
                     color: _cPending,
                   ),
                   _chartStatDivider(vc),
@@ -693,14 +772,17 @@ class _GradientLineChart extends StatelessWidget {
 }
 
 Widget _chartStatDivider(VhandarColors vc) => Container(
-      width: 1, height: 28, color: vc.divider,
+      width: 1,
+      height: 28,
+      color: vc.divider,
       margin: EdgeInsets.symmetric(horizontal: 12.w),
     );
 
 class _ChartStat extends StatelessWidget {
   final String label, value;
   final Color color;
-  const _ChartStat({required this.label, required this.value, required this.color});
+  const _ChartStat(
+      {required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) => Column(
@@ -708,9 +790,11 @@ class _ChartStat extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(value,
-              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w700, color: color)),
+              style: TextStyle(
+                  fontSize: 13.sp, fontWeight: FontWeight.w700, color: color)),
           Text(label,
-              style: TextStyle(fontSize: 9.sp, color: context.vColors.onSurfaceMuted)),
+              style: TextStyle(
+                  fontSize: 9.sp, color: context.vColors.onSurfaceMuted)),
         ],
       );
 }
@@ -728,7 +812,8 @@ class _StatusChart extends StatelessWidget {
   final List<_StatusItem> items;
   final int total;
   final VhandarColors vc;
-  const _StatusChart({required this.items, required this.total, required this.vc});
+  const _StatusChart(
+      {required this.items, required this.total, required this.vc});
 
   @override
   Widget build(BuildContext context) {
@@ -793,7 +878,8 @@ class _StatusChart extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                             color: vc.onSurface)),
                     Text('orders',
-                        style: TextStyle(fontSize: 8.sp, color: vc.onSurfaceMuted)),
+                        style: TextStyle(
+                            fontSize: 8.sp, color: vc.onSurfaceMuted)),
                   ],
                 ),
               ],
@@ -832,7 +918,8 @@ class _StatusChart extends StatelessWidget {
                                     color: vc.onSurface)),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 2.h),
                             decoration: BoxDecoration(
                               color: s.color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10.r),
@@ -877,11 +964,11 @@ class _TxRow extends StatelessWidget {
   const _TxRow({required this.order, required this.saved, required this.vc});
 
   Color _statusColor(String s) => switch (s.toLowerCase()) {
-        'delivered'  => _cDelivered,
-        'shipped'    => _cShipped,
+        'delivered' => _cDelivered,
+        'shipped' => _cShipped,
         'processing' => _cProcessing,
         'cancelled' || 'returned' || 'refunded' => _cCancelled,
-        _            => _cPending,
+        _ => _cPending,
       };
 
   @override
@@ -909,7 +996,8 @@ class _TxRow extends StatelessWidget {
               color: AppColor.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(Icons.receipt_rounded, color: AppColor.primary, size: 17.sp),
+            child: Icon(Icons.receipt_rounded,
+                color: AppColor.primary, size: 17.sp),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -918,14 +1006,20 @@ class _TxRow extends StatelessWidget {
               children: [
                 Text('#${order.orderId ?? '—'}',
                     style: TextStyle(
-                        fontSize: 13.sp, fontWeight: FontWeight.w700, color: vc.onSurface)),
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w700,
+                        color: vc.onSurface)),
                 SizedBox(height: 2.h),
-                Text(date, style: TextStyle(fontSize: 10.sp, color: vc.onSurfaceMuted)),
+                Text(date,
+                    style:
+                        TextStyle(fontSize: 10.sp, color: vc.onSurfaceMuted)),
                 if (saved > 0) ...[
                   SizedBox(height: 2.h),
                   Text('Saved Rs.${saved.toInt()}',
                       style: TextStyle(
-                          fontSize: 10.sp, fontWeight: FontWeight.w600, color: _cDelivered)),
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: _cDelivered)),
                 ],
               ],
             ),
@@ -935,7 +1029,9 @@ class _TxRow extends StatelessWidget {
             children: [
               Text('Rs.${(order.totalPayableAmount ?? 0).toInt()}',
                   style: TextStyle(
-                      fontSize: 14.sp, fontWeight: FontWeight.w800, color: vc.onSurface)),
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w800,
+                      color: vc.onSurface)),
               SizedBox(height: 4.h),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
@@ -945,7 +1041,8 @@ class _TxRow extends StatelessWidget {
                 ),
                 child: Text(
                   status,
-                  style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w700, color: sc),
+                  style: TextStyle(
+                      fontSize: 9.sp, fontWeight: FontWeight.w700, color: sc),
                 ),
               ),
             ],
@@ -1000,7 +1097,7 @@ class _SummaryTile extends StatelessWidget {
     return Container(
       width: 120.w,
       margin: EdgeInsets.only(right: 10.w),
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: vc.surface,
         borderRadius: BorderRadius.circular(14.r),
@@ -1028,13 +1125,17 @@ class _SummaryTile extends StatelessWidget {
           const Spacer(),
           Text(value,
               style: TextStyle(
-                  fontSize: 15.sp, fontWeight: FontWeight.w800, color: vc.onSurface),
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w800,
+                  color: vc.onSurface),
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
           SizedBox(height: 1.h),
           Text(label,
               style: TextStyle(
-                  fontSize: 11.sp, color: vc.onSurface, fontWeight: FontWeight.w600)),
+                  fontSize: 11.sp,
+                  color: vc.onSurface,
+                  fontWeight: FontWeight.w600)),
           Text(sub, style: TextStyle(fontSize: 9.sp, color: vc.onSurfaceMuted)),
         ],
       ),

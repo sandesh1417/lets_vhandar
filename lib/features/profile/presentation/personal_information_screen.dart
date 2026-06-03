@@ -52,6 +52,9 @@ class PersonalInformationScreen extends ConsumerWidget {
         ),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom,
+        ),
         child: Column(
           children: [
             // Green cover + floating avatar card
@@ -155,8 +158,8 @@ class PersonalInformationScreen extends ConsumerWidget {
                         _InfoRow(
                           icon: Icons.store_outlined,
                           label: 'Business Name',
-                          value: businessDetail?['businessName'] as String? ??
-                              '-',
+                          value:
+                              businessDetail?['businessName'] as String? ?? '-',
                           showDivider: true,
                         ),
                         _InfoRow(
@@ -276,7 +279,7 @@ class PersonalInformationScreen extends ConsumerWidget {
               ),
             ),
 
-            SizedBox(height: 40.h),
+            SizedBox(height: 60.h),
           ],
         ),
       ),
@@ -305,20 +308,23 @@ class _ProfileCompletionCard extends StatelessWidget {
     if (isBusiness) {
       final pan = businessDetail?['panNumber'] as String?;
       final vat = businessDetail?['vatNumber'] as String?;
-      final hasPanVat = (pan != null && pan.isNotEmpty) ||
-          (vat != null && vat.isNotEmpty);
+      final hasPanVat =
+          (pan != null && pan.isNotEmpty) || (vat != null && vat.isNotEmpty);
       final location = businessDetail?['locationAddress'] as String? ??
           businessDetail?['addressName'] as String?;
       return [
         (
           label: 'Business Name',
           icon: Icons.store_outlined,
-          filled: (businessDetail?['businessName'] as String?)?.isNotEmpty == true,
+          filled:
+              (businessDetail?['businessName'] as String?)?.isNotEmpty == true,
         ),
         (
           label: 'Category',
           icon: Icons.category_outlined,
-          filled: (businessDetail?['businessCategory'] as String?)?.isNotEmpty == true,
+          filled:
+              (businessDetail?['businessCategory'] as String?)?.isNotEmpty ==
+                  true,
         ),
         (
           label: 'PAN / VAT Number',
@@ -398,7 +404,9 @@ class _ProfileCompletionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isComplete ? 'Profile Complete 🎉' : 'Complete Your Profile',
+                      isComplete
+                          ? 'Profile Complete 🎉'
+                          : 'Complete Your Profile',
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontFamily: 'Inter',
@@ -511,7 +519,8 @@ class _ProfileCompletionCard extends StatelessWidget {
                 return GestureDetector(
                   onTap: onEdit,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF5B237).withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(20.r),
@@ -523,8 +532,7 @@ class _ProfileCompletionCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(f.icon,
-                            size: 12.sp,
-                            color: const Color(0xFFB07000)),
+                            size: 12.sp, color: const Color(0xFFB07000)),
                         SizedBox(width: 5.w),
                         Text(
                           f.label,
@@ -624,7 +632,8 @@ class _InfoRow extends StatelessWidget {
 }
 
 String _locationAddress(Map<String, dynamic>? detail) {
-  return (detail?['locationAddress'] ?? detail?['addressName'] ?? '-') as String;
+  return (detail?['locationAddress'] ?? detail?['addressName'] ?? '-')
+      as String;
 }
 
 String _panVatLabel(Map<String, dynamic>? detail) {
