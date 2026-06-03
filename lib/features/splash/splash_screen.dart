@@ -191,7 +191,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     return Scaffold(
       body: Container(
-        color: const Color(0xFF0B754E),
+        color: AppColor.primary,
         child: Stack(
           children: [
             Center(
@@ -361,7 +361,7 @@ class _VStrokePainter extends CustomPainter {
         ..strokeWidth = 1.8
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFFF5B237),
+        ..color = AppColor.secondary,
     );
   }
 

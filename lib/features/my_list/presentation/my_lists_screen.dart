@@ -38,7 +38,7 @@ class MyListsScreen extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded,
                       color: Colors.white, size: 20),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => context.pop(),
                 ),
                 Expanded(
                   child: Column(
@@ -314,13 +314,13 @@ class _ListCard extends StatelessWidget {
     required this.onRename,
   });
 
-  static const _accentColors = [
-    Color(0xFF0A754E),
-    Color(0xFF2563EB),
-    Color(0xFF7C3AED),
-    Color(0xFFD97706),
-    Color(0xFFDC2626),
-    Color(0xFF0891B2),
+  static final _accentColors = [
+    AppColor.primary,
+    const Color(0xFF2563EB),
+    const Color(0xFF7C3AED),
+    const Color(0xFFD97706),
+    const Color(0xFFDC2626),
+    const Color(0xFF0891B2),
   ];
 
   @override
@@ -560,7 +560,7 @@ class _NewListSheetState extends State<_NewListSheet> {
     if (name.isEmpty) return;
     setState(() => _isLoading = true);
     await widget.onCreated(name);
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) context.pop();
   }
 
   @override

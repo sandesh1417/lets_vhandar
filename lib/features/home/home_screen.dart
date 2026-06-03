@@ -25,6 +25,8 @@ import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 // import 'package:lets_vhandar/features/home/widgets/home_featured_products_list.dart';
 
 class _SuggestProductCard extends StatelessWidget {
+  const _SuggestProductCard();
+
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
@@ -333,7 +335,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const HomeFeaturedBrandsList(),
                         SizedBox(height: 24.h),
-                        _SuggestProductCard(),
+                        const _SuggestProductCard(),
                         SizedBox(height: 16.h),
                         Opacity(
                           opacity: 0.5,

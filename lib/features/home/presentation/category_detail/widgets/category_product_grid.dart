@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/home/providers/category_detail_provider.da
 import 'package:lets_vhandar/features/home/widgets/product_grid.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 
 class CategoryProductGrid extends ConsumerWidget {
   final String categorySlug;
@@ -41,15 +42,8 @@ class CategoryProductGrid extends ConsumerWidget {
               loading: () => BrandProductGridShimmer(
                 padding: EdgeInsets.fromLTRB(8.w, 8.w, 8.w, 110.h),
               ),
-              error: (err, _) => Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Text(
-                    'Error: $err',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.red, fontSize: 12.sp),
-                  ),
-                ),
+              error: (_, __) => ErrorStateWidget(
+                onRetry: () => ref.invalidate(filteredProductsProvider(categorySlug)),
               ),
             ),
           ),

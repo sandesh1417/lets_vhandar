@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
@@ -47,9 +49,16 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
         .whereType<String>()
         .toList();
 
-    return GestureDetector(
+    return AnimatedScale(
+      scale: 1.0,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.elasticOut,
+      child: GestureDetector(
       key: _badgeKey,
-      onTap: widget.onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        widget.onTap();
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 6.h),
         child: ClipRRect(
@@ -59,7 +68,7 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5C842).withValues(alpha: 0.72),
+                color: AppColor.secondary.withValues(alpha: 0.72),
                 borderRadius: BorderRadius.circular(50.r),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.4),
@@ -67,7 +76,7 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFF5C842).withValues(alpha: 0.22),
+                    color: AppColor.secondary.withValues(alpha: 0.22),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -119,6 +128,7 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

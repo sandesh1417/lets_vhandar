@@ -448,7 +448,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isActive
-                                ? const Color(0xFF0A754E)
+                                ? AppColor.primary
                                 : Colors.black.withValues(alpha: 0.25),
                             border: Border.all(
                               color: isActive
@@ -574,7 +574,10 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   widget.product.parentId != null) &&
                               !widget.hideVariantPicker
                           ? GestureDetector(
-                              onTap: _showVariantBottomSheet,
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                _showVariantBottomSheet();
+                              },
                               child: Container(
                                 width: double.infinity,
                                 padding: EdgeInsets.symmetric(

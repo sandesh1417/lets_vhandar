@@ -109,8 +109,10 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
       ref.read(orderProvider.notifier).loadOrders(userId);
       while (ref.read(orderProvider).isLoading) {
         await Future.delayed(const Duration(milliseconds: 50));
+        if (!mounted) return;
       }
     }
+    if (!mounted) return;
     ref.invalidate(reorderLiveProductsProvider);
     await ref.read(reorderLiveProductsProvider.future);
   }

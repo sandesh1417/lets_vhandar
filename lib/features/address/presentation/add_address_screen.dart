@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -209,7 +210,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
               width: double.infinity,
               height: 50.h,
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primary,
                   foregroundColor: Colors.white,
@@ -347,7 +348,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
     }
 
     setState(() => _isSaving = false);
-    if (success && mounted) Navigator.pop(context);
+    if (success && mounted) context.pop();
   }
 
   String? _trimOrNull(TextEditingController ctrl) {

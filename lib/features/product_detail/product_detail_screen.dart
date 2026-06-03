@@ -150,7 +150,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   isGlass: ratio < 0.5,
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 ),
               ),

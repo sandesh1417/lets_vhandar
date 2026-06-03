@@ -264,11 +264,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: child!,
       ),
     );
-    if (picked != null)
+    if (picked != null) {
       setState(() {
         _custom = picked;
         _range = _DR.custom;
       });
+    }
   }
 
   @override

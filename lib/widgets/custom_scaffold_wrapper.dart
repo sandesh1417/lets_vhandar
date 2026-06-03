@@ -43,15 +43,10 @@ class CustomScaffoldWrapper extends StatelessWidget {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1),
-          ),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 0),
-            child: isScrollable ? SingleChildScrollView(child: body) : body,
-          ),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 0),
+          child: isScrollable ? SingleChildScrollView(child: body) : body,
         ),
       ),
     );

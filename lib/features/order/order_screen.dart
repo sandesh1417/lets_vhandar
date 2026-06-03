@@ -35,6 +35,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
   DateTimeRange? _selectedDateRange;
   String? _startDateStr;
   String? _endDateStr;
+  DateTime? _lastLoadAt;
 
   @override
   void initState() {
@@ -44,23 +45,30 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     });
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
+      if (_scrollController.position.pixels <
           _scrollController.position.maxScrollExtent - 200) {
-        final state = ref.read(orderProvider);
-        if (!state.isLoading &&
-            !state.isLoadingMore &&
-            state.currentPage < state.totalPages) {
-          final userId = ref.read(loginProvider).user?.id;
-          if (userId != null) {
-            ref.read(orderProvider.notifier).loadOrders(
-                  userId,
-                  page: state.currentPage + 1,
-                  status: _selectedStatus,
-                  paymentStatus: _selectedPaymentStatus,
-                  startDate: _startDateStr,
-                  endDate: _endDateStr,
-                );
-          }
+        return;
+      }
+      final now = DateTime.now();
+      if (_lastLoadAt != null &&
+          now.difference(_lastLoadAt!) < const Duration(seconds: 1)) {
+        return;
+      }
+      final state = ref.read(orderProvider);
+      if (!state.isLoading &&
+          !state.isLoadingMore &&
+          state.currentPage < state.totalPages) {
+        final userId = ref.read(loginProvider).user?.id;
+        if (userId != null) {
+          _lastLoadAt = now;
+          ref.read(orderProvider.notifier).loadOrders(
+                userId,
+                page: state.currentPage + 1,
+                status: _selectedStatus,
+                paymentStatus: _selectedPaymentStatus,
+                startDate: _startDateStr,
+                endDate: _endDateStr,
+              );
         }
       }
     });
@@ -108,6 +116,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     _fetchOrders();
     while (ref.read(orderProvider).isLoading) {
       await Future.delayed(const Duration(milliseconds: 50));
+      if (!mounted) return;
     }
   }
 
@@ -705,8 +714,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                           child: Container(
                             width: 8.w,
                             height: 8.w,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFF5B237),
+                            decoration: BoxDecoration(
+                              color: AppColor.secondary,
                               shape: BoxShape.circle,
                             ),
                           ),

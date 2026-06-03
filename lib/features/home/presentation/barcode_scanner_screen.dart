@@ -875,7 +875,7 @@ class _ScanningTipsSheet extends StatelessWidget {
                   width: double.infinity,
                   height: 54.h,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => context.pop(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.secondary,
                       foregroundColor: Colors.white,

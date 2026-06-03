@@ -171,9 +171,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   }
 
   Widget _buildIcon(BuildContext context, int i, bool isSelected) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final inactiveColor =
-        isDark ? const Color(0xFFB8C4C0) : const Color(0xFF6B7B76);
+    final inactiveColor = context.vColors.onSurfaceMuted;
     final inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
 
     switch (i) {
@@ -313,8 +311,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                                       color: isSelected
                                           ? AppColor.primary
                                           : Theme.of(context).brightness == Brightness.dark
-                                              ? const Color(0xFFB8C4C0)
-                                              : const Color(0xFF3A4A46),
+                                              ? context.vColors.onSurfaceMuted
+                                              : context.vColors.onSurfaceMuted,
                                     ),
                                     child: Text(_labels[i]),
                                   ),

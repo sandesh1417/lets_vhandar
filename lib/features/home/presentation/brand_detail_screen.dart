@@ -13,6 +13,8 @@ import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/error_state.dart';
@@ -55,6 +57,10 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
     return CustomScaffoldWrapper(
       backgroundColor: context.vColors.scaffoldBg,
       isScrollable: false,
+      floatingActionButton: CartFloatingBadge(
+        onTap: () => context.push(LVRoute.cartScreen.route),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
           // ── Green header ──────────────────────────────────────────
@@ -325,13 +331,9 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                   return ProductGrid(products: products);
                 },
                 loading: () => const BrandProductGridShimmer(),
-                error: (err, _) => Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Text('Error: $err',
-                        textAlign: TextAlign.center,
-                        style:
-                            TextStyle(color: Colors.red, fontSize: 12.sp)),
+                error: (_, __) => ErrorStateWidget(
+                  onRetry: () => ref.invalidate(
+                    filteredBrandProductsProvider(_currentBrandSlug),
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -90,7 +91,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(3.r),
                     color: _currentPage == i
-                        ? const Color(0xFF0A754E)
+                        ? AppColor.primary
                         : context.vColors.divider,
                   ),
                 );

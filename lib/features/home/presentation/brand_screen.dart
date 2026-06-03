@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart'
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 class BrandScreen extends ConsumerStatefulWidget {
@@ -116,7 +117,9 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
                 );
               },
               loading: () => const GridShimmer(),
-              error: (err, stack) => Center(child: Text("Error: $err")),
+              error: (_, __) => ErrorStateWidget(
+                onRetry: () => ref.invalidate(brandProvider),
+              ),
             ),
           ),
         ],

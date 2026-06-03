@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 splitName({required String fullName}) {
-  List<String> parts = fullName.split(" ");
-  String firstName = parts[0];
-  String lastName = parts[1];
+  final parts = fullName.trim().split(" ");
+  final firstName = parts[0];
+  final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
   return [firstName, lastName];
 }
 

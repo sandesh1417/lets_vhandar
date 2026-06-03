@@ -47,6 +47,30 @@ import 'package:lets_vhandar/features/profile/presentation/about_vhandar_screen.
 import 'package:lets_vhandar/features/profile/presentation/coupon_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/featured_products_screen.dart';
 
+/// Subtle fade + slide-up transition used for all main navigable routes.
+CustomTransitionPage<void> _slideFadePage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 260),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.04),
+        end: Offset.zero,
+      ).animate(fade);
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(position: slide, child: child),
+      );
+    },
+  );
+}
+
 enum LVRoute {
   splashScreen,
   loginScreen,
@@ -124,8 +148,8 @@ class LVGoRouter {
       ),
       GoRoute(
         path: LVRoute.loginScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const LoginScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const LoginScreen()),
       ),
       // GoRoute(
       //   path: LVRoute.oTPScreen.route,
@@ -182,8 +206,8 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.dashboardScreen.route,
         name: LVRoute.dashboardScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const DashboardScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const DashboardScreen()),
       ),
       GoRoute(
         path: LVRoute.productDetailScreen.route,
@@ -210,34 +234,39 @@ class LVGoRouter {
       GoRoute(
         path: '/category-detail/:slug',
         name: 'categoryDetailScreen',
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (BuildContext context, GoRouterState state) {
           final slug = state.pathParameters['slug']!;
           final extra = state.extra as Map<String, dynamic>?;
           final initialSubSlug = extra?['initialSubSlug'] as String?;
-          return CategoryDetailScreen(
-              categorySlug: slug, initialSubCategorySlug: initialSubSlug);
+          return _slideFadePage(
+            state: state,
+            child: CategoryDetailScreen(
+                categorySlug: slug, initialSubCategorySlug: initialSubSlug),
+          );
         },
       ),
       GoRoute(
         path: '/brands',
         name: 'brandScreen',
-        builder: (BuildContext context, GoRouterState state) =>
-            const BrandScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const BrandScreen()),
       ),
       GoRoute(
         path: '/brand-detail/:slug',
         name: 'brandDetailScreen',
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (BuildContext context, GoRouterState state) {
           final slug = state.pathParameters['slug']!;
-          return BrandDetailScreen(brandSlug: slug);
+          return _slideFadePage(
+              state: state, child: BrandDetailScreen(brandSlug: slug));
         },
       ),
       GoRoute(
         path: '/order-detail/:id',
         name: 'orderDetailScreen',
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (BuildContext context, GoRouterState state) {
           final id = state.pathParameters['id']!;
-          return OrderDetailScreen(orderId: id);
+          return _slideFadePage(
+              state: state, child: OrderDetailScreen(orderId: id));
         },
       ),
       GoRoute(
@@ -264,7 +293,7 @@ class LVGoRouter {
         builder: (BuildContext context, GoRouterState state) {
           final extra = state.extra as Map<String, dynamic>? ?? {};
           return AddAddressScreen(
-            userId: extra['userId'] as String,
+            userId: extra['userId'] as String? ?? '',
             existingAddress: extra['existingAddress'] as AddressModel?,
           );
         },
@@ -341,8 +370,8 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.searchScreen.route,
         name: LVRoute.searchScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const SearchScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const SearchScreen()),
       ),
       GoRoute(
         path: LVRoute.selectPaymentMethodScreen.route,
@@ -353,14 +382,14 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.kidsZoneScreen.route,
         name: LVRoute.kidsZoneScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const KidsZoneScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const KidsZoneScreen()),
       ),
       GoRoute(
         path: LVRoute.cartScreen.route,
         name: LVRoute.cartScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const CartScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const CartScreen()),
       ),
       GoRoute(
         path: LVRoute.vhandarPointsScreen.route,
@@ -371,8 +400,8 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.myListsScreen.route,
         name: LVRoute.myListsScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const MyListsScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(state: state, child: const MyListsScreen()),
       ),
       GoRoute(
         path: LVRoute.listDetailScreen.route,

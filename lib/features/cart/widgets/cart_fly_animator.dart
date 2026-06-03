@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class CartFlyAnimator {
@@ -218,14 +219,14 @@ class _BlastCartImageState extends State<_BlastCartImage>
     super.initState();
 
     final rng = Random();
-    const colors = [
-      Color(0xFFF5C842),
-      Color(0xFFFF6B35),
-      Color(0xFFE53935),
-      Color(0xFF4CAF50),
-      Color(0xFF2196F3),
-      Color(0xFFAB47BC),
-      Color(0xFFFF9800),
+    final colors = [
+      AppColor.secondary,
+      const Color(0xFFFF6B35),
+      const Color(0xFFE53935),
+      const Color(0xFF4CAF50),
+      const Color(0xFF2196F3),
+      const Color(0xFFAB47BC),
+      const Color(0xFFFF9800),
     ];
     for (int i = 0; i < 12; i++) {
       _particles.add(_Particle(

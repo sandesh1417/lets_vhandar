@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,9 +33,6 @@ class CartScreen extends ConsumerWidget {
     final totalItems = ref.watch(totalCartItemsProvider);
     final totalPrice = ref.watch(totalCartPriceProvider);
     final totalMrp = ref.watch(totalCartMrpProvider);
-    final selectedAddress = ref.watch(addressProvider).selected;
-    final addressError = ref.watch(cartAddressErrorProvider);
-    final isBusiness = ref.watch(isBusinessUserProvider);
 
     return Scaffold(
       backgroundColor: context.vColors.scaffoldBg,
@@ -51,7 +49,7 @@ class CartScreen extends ConsumerWidget {
               behavior: HitTestBehavior.opaque,
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: Container(
                 width: 44.w,
@@ -77,7 +75,10 @@ class CartScreen extends ConsumerWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 16.w),
                   child: GestureDetector(
-                    onTap: () => ref.read(cartProvider.notifier).clearCart(),
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      ref.read(cartProvider.notifier).clearCart();
+                    },
                     child: Container(
                       padding: EdgeInsets.symmetric(
                           horizontal: 12.w, vertical: 6.h),
@@ -105,7 +106,10 @@ class CartScreen extends ConsumerWidget {
           : Column(
               children: [
                 Expanded(
-                  child: ListView(
+                  child: RefreshIndicator(
+                    onRefresh: () async => ref.invalidate(addressProvider),
+                    color: AppColor.primary,
+                    child: ListView(
                     physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
                     children: [
@@ -184,77 +188,11 @@ class CartScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  ),
                 ),
 
                 // ── Sticky bottom: Address + Checkout ────────────────
-                Container(
-                   padding: EdgeInsets.only(top: 12.r), // ✅ moved here
-                  decoration: BoxDecoration(
-                    color: context.vColors.surface,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.r),
-                      topRight: Radius.circular(20.r),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 4.h),
-                      if (isBusiness) ...[
-                        DeliverySlotSelector(
-                          isError: addressError,
-                        ),
-                        SizedBox(height: 8.h),
-                      ] else ...[
-                        if (addressError && selectedAddress == null)
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-                            child: Row(
-                              children: [
-                                Icon(Icons.error_outline,
-                                    color: Colors.red.shade600, size: 15.sp),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  'Please select a delivery address to continue',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.red.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        _DeliveryAddressBanner(
-                          selectedAddress: selectedAddress,
-                          isError: addressError && selectedAddress == null,
-                          onTap: () {
-                            ref.read(cartAddressErrorProvider.notifier).state = false;
-                            final userId = ref.read(loginProvider).user?.id;
-                            if (userId != null) {
-                              showAddressSelectorSheet(context, userId: userId);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Please login to select address')),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                      CartCheckoutBar(totalPrice: totalPrice),
-                      SizedBox(height: 8.h),
-                    ],
-                  ),
-                )
+                const _CartStickyBottom()
               ],
             ),
     );
@@ -289,7 +227,7 @@ class CartScreen extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12.sp,
-                color: const Color(0xFF8C9A95),
+                color: AppColor.hintText,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
               ),
@@ -297,7 +235,7 @@ class CartScreen extends ConsumerWidget {
             SizedBox(height: 20.h),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
                 ref.read(dashboardIndexProvider.notifier).state = 0;
               },
               style: ElevatedButton.styleFrom(
@@ -320,6 +258,86 @@ class CartScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Cart Sticky Bottom ────────────────────────────────────────────────────
+
+class _CartStickyBottom extends ConsumerWidget {
+  const _CartStickyBottom();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isBusiness = ref.watch(isBusinessUserProvider);
+    final selectedAddress = ref.watch(addressProvider.select((s) => s.selected));
+    final addressError = ref.watch(cartAddressErrorProvider);
+    final totalPrice = ref.watch(totalCartPriceProvider);
+
+    return Container(
+      padding: EdgeInsets.only(top: 12.r),
+      decoration: BoxDecoration(
+        color: context.vColors.surface,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 4.h),
+          if (isBusiness) ...[
+            DeliverySlotSelector(isError: addressError),
+            SizedBox(height: 8.h),
+          ] else ...[
+            if (addressError && selectedAddress == null)
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline,
+                        color: Colors.red.shade600, size: 15.sp),
+                    SizedBox(width: 6.w),
+                    Text(
+                      'Please select a delivery address to continue',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            _DeliveryAddressBanner(
+              selectedAddress: selectedAddress,
+              isError: addressError && selectedAddress == null,
+              onTap: () {
+                ref.read(cartAddressErrorProvider.notifier).state = false;
+                final userId = ref.read(loginProvider).user?.id;
+                if (userId != null) {
+                  showAddressSelectorSheet(context, userId: userId);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Please login to select address')),
+                  );
+                }
+              },
+            ),
+          ],
+          CartCheckoutBar(totalPrice: totalPrice),
+          SizedBox(height: 8.h),
+        ],
       ),
     );
   }

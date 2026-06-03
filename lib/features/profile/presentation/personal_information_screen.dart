@@ -418,7 +418,7 @@ class _ProfileCompletionCard extends StatelessWidget {
         ? const Color(0xFF2E7D32)
         : percent >= 0.6
             ? AppColor.primary
-            : const Color(0xFFF5B237);
+            : AppColor.secondary;
 
     final missing = fields.where((f) => !f.filled).toList();
 
@@ -565,10 +565,10 @@ class _ProfileCompletionCard extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5B237).withValues(alpha: 0.10),
+                      color: AppColor.secondary.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(
-                        color: const Color(0xFFF5B237).withValues(alpha: 0.40),
+                        color: AppColor.secondary.withValues(alpha: 0.40),
                       ),
                     ),
                     child: Row(

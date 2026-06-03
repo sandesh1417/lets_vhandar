@@ -9,6 +9,7 @@ import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 
 class FeaturedProductsScreen extends ConsumerWidget {
   const FeaturedProductsScreen({super.key});
@@ -77,7 +78,9 @@ class FeaturedProductsScreen extends ConsumerWidget {
           );
         },
         loading: () => const ProductGridShimmer(),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (_, __) => ErrorStateWidget(
+          onRetry: () => ref.invalidate(featuredProductsProvider),
+        ),
       ),
     );
   }

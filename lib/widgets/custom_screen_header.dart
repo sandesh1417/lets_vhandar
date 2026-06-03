@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 
 class CustomScreenHeader extends StatelessWidget
@@ -45,7 +46,7 @@ class CustomScreenHeader extends StatelessWidget
                 if (onBack != null) {
                   onBack!();
                 } else {
-                  Navigator.of(context).pop();
+                  context.pop();
                 }
               },
               child: Container(

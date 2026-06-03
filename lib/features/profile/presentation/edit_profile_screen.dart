@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -184,7 +185,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     final ok =
         await ref.read(loginProvider.notifier).updateProfile(context, payload);
-    if (ok && mounted) Navigator.pop(context);
+    if (ok && mounted) context.pop();
   }
 
   @override

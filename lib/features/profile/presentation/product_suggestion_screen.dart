@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
@@ -26,7 +27,7 @@ class ProductSuggestionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showProductSuggestionSheet(context);
-      Navigator.of(context).pop();
+      context.pop();
     });
     return const SizedBox.shrink();
   }

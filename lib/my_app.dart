@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/app_theme.dart';
+import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 
 class MyApp extends ConsumerWidget {
@@ -17,7 +18,7 @@ class MyApp extends ConsumerWidget {
       designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
-      child: const ColoredBox(color: Color(0xFF0A754E)),
+      child: ColoredBox(color: AppColor.primary),
       builder: (_, child) {
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

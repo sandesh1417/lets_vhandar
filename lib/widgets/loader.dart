@@ -9,49 +9,34 @@ class LoadingOverlay {
   LoadingOverlay();
   bool _dialogIsOpen = false;
 
-  show(BuildContext context) {
-    if (!_dialogIsOpen) {
-      log("showing Loader");
-      showDialog(
-        barrierColor: Colors.black54.withValues(alpha: 0.2),
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          _dialogIsOpen = true;
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) _dialogIsOpen = false;
-            },
-            child: Center(
-              child: Container(
-                height: 150,
-                width: 150,
-                decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15))),
-                child: const SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: Center(
-                      child: CupertinoActivityIndicator(
-                    radius: 15,
-                  )),
-                ),
-              ),
-            ),
-          );
+  void show(BuildContext context) {
+    if (_dialogIsOpen) return;
+    _dialogIsOpen = true;
+    log("showing Loader");
+    showDialog(
+      barrierColor: Colors.black54.withValues(alpha: 0.2),
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) _dialogIsOpen = false;
         },
-      );
-    } else {
-      hide(context);
-    }
+        child: const Center(
+          child: SizedBox(
+            height: 150,
+            width: 150,
+            child: Center(child: CupertinoActivityIndicator(radius: 15)),
+          ),
+        ),
+      ),
+    ).whenComplete(() => _dialogIsOpen = false);
   }
 
   void hide(BuildContext context) {
-    if (_dialogIsOpen) {
-      _dialogIsOpen = false;
-      // popDialog(context: context);
-      context.pop();
-    }
+    if (!_dialogIsOpen) return;
+    _dialogIsOpen = false;
+    context.pop();
   }
 }
 

@@ -138,7 +138,7 @@ class _SelectPaymentMethodScreenState
               behavior: HitTestBehavior.opaque,
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: Container(
                 width: 44.w,
@@ -166,13 +166,13 @@ class _SelectPaymentMethodScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.shopping_bag_outlined,
-                      size: 64.sp, color: Colors.grey.shade400),
+                      size: 64.sp, color: vc.onSurfaceMuted),
                   SizedBox(height: 16.h),
                   Text(
                     'Your cart is empty',
                     style: TextStyle(
                         fontSize: 16.sp,
-                        color: Colors.grey.shade600,
+                        color: vc.onSurfaceMuted,
                         fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -381,7 +381,7 @@ class _SelectPaymentMethodScreenState
                         padding: EdgeInsets.all(16.w),
                         itemCount: cartItems.length,
                         separatorBuilder: (context, index) => Divider(
-                          color: Colors.grey.shade100,
+                          color: vc.divider,
                           height: 24.h,
                           thickness: 1,
                         ),

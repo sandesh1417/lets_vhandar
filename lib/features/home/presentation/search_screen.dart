@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/providers/search_history_provider.dart';
@@ -16,6 +17,7 @@ import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
 import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/error_state.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 
@@ -70,6 +72,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: CustomScaffoldWrapper(
         isScrollable: false,
         horizontalPadding: 0,
+        floatingActionButton: CartFloatingBadge(
+          onTap: () => context.push(LVRoute.cartScreen.route),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: Column(
           children: [
             // ── Green header ──────────────────────────────────────────
@@ -150,11 +156,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
 
     if (state.error != null) {
-      return Center(
-        child: Text(
-          state.error!,
-          style: TextStyle(color: Colors.red, fontSize: 14.sp),
-        ),
+      return ErrorStateWidget(
+        onRetry: () => ref.read(searchProvider.notifier).search(_searchController.text),
       );
     }
 

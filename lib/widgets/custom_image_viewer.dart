@@ -2,8 +2,17 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+
+final _cacheManager = CacheManager(
+  Config(
+    'vhandar_img_cache',
+    stalePeriod: const Duration(days: 7),
+    maxNrOfCacheObjects: 150,
+  ),
+);
 
 const _kPlaceholderSvg = 'assets/images/placeholder.svg';
 
@@ -56,6 +65,7 @@ class CustomImageViewer extends StatelessWidget {
     if (path!.startsWith('http') || path!.startsWith('https')) {
       return CachedNetworkImage(
         imageUrl: path!,
+        cacheManager: _cacheManager,
         height: height,
         width: width,
         fit: fit,
