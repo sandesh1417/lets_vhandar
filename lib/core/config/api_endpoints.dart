@@ -45,6 +45,9 @@ class ApiUrl {
   static String shoppingListById(String id) => 'shopping-lists/$id';
   static String shoppingListRemoveProduct(String listId, String productId) =>
       'shopping-lists/remove/$listId/$productId';
+
+  // Referral
+  static String referalUsers = 'referal-users';
 }
 
 // https://api.vhandar.com/orders

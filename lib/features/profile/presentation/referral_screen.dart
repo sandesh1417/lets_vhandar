@@ -8,6 +8,8 @@ import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
+import 'package:lets_vhandar/features/profile/data/referral_repository.dart';
+import 'package:lets_vhandar/features/profile/providers/referral_provider.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
@@ -84,25 +86,49 @@ class ReferAndEarnScreen extends ConsumerWidget {
           SizedBox(height: 24.h),
 
           // ── Your Referrals ───────────────────────────────────────────
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.symmetric(horizontal: 20.w),
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: vc.surface,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          const _ReferralsSection(),
+
+          SizedBox(height: 40.h),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Your Referrals Section
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ReferralsSection extends ConsumerWidget {
+  const _ReferralsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vc = context.vColors;
+    final async = ref.watch(referralProvider);
+
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   'Your Referrals',
                   style: TextStyle(
                     fontSize: 15.sp,
@@ -111,53 +137,212 @@ class ReferAndEarnScreen extends ConsumerWidget {
                     fontFamily: 'Inter',
                   ),
                 ),
-                SizedBox(height: 32.h),
-                Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(16.w),
+              ),
+              async.whenOrNull(
+                data: (list) => list.isNotEmpty
+                    ? Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10.w, vertical: 4.h),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.08),
-                          shape: BoxShape.circle,
+                          color: Colors.orange.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20.r),
                         ),
-                        child: Icon(
-                          Icons.people_outline_rounded,
-                          size: 36.sp,
-                          color: Colors.orange.shade600,
+                        child: Text(
+                          '${list.length}',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.orange.shade700,
+                            fontFamily: 'Inter',
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        'No referrals yet',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: vc.onSurface,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        'Share your code to start earning points!',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: vc.onSurfaceMuted,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ],
+                      )
+                    : null,
+              ) ?? const SizedBox.shrink(),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          async.when(
+            loading: () => Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: SizedBox(
+                  width: 24.w,
+                  height: 24.w,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.orange.shade600,
                   ),
                 ),
-                SizedBox(height: 20.h),
-              ],
+              ),
             ),
+            error: (_, __) => Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                child: Text(
+                  'Could not load referrals.',
+                  style: TextStyle(
+                      fontSize: 13.sp,
+                      color: vc.onSurfaceMuted,
+                      fontFamily: 'Inter'),
+                ),
+              ),
+            ),
+            data: (list) => list.isEmpty
+                ? _buildEmpty(context)
+                : Column(
+                    children: list
+                        .map((u) => _ReferralTile(user: u, vc: vc))
+                        .toList(),
+                  ),
           ),
-
-          SizedBox(height: 40.h),
         ],
       ),
     );
+  }
+
+  Widget _buildEmpty(BuildContext context) {
+    final colors = context.vColors;
+    return Column(
+      children: [
+        SizedBox(height: 16.h),
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.people_outline_rounded,
+            size: 36.sp,
+            color: Colors.orange.shade600,
+          ),
+        ),
+        SizedBox(height: 12.h),
+        Text(
+          'No referrals yet',
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: colors.onSurface,
+            fontFamily: 'Inter',
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          'Share your code to start earning points!',
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: colors.onSurfaceMuted,
+            fontFamily: 'Inter',
+          ),
+        ),
+        SizedBox(height: 20.h),
+      ],
+    );
+  }
+}
+
+class _ReferralTile extends StatelessWidget {
+  final ReferredUser user;
+  final dynamic vc;
+  const _ReferralTile({required this.user, required this.vc});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.vColors;
+    final month = _monthName(user.createdAt.month);
+    final dateStr =
+        '${user.createdAt.day} $month ${user.createdAt.year}';
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22.r,
+            backgroundColor: Colors.orange.withValues(alpha: 0.12),
+            backgroundImage:
+                user.photoURL != null ? NetworkImage(user.photoURL!) : null,
+            child: user.photoURL == null
+                ? Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.orange.shade700,
+                      fontFamily: 'Inter',
+                    ),
+                  )
+                : null,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.name,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurface,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+                Text(
+                  '${user.phoneCode} ${user.phoneNumber}',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: colors.onSurfaceMuted,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Text(
+                  '+100 pts',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.green.shade700,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+              ),
+              SizedBox(height: 3.h),
+              Text(
+                dateStr,
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: colors.onSurfaceMuted,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _monthName(int month) {
+    const names = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return names[month - 1];
   }
 }
 

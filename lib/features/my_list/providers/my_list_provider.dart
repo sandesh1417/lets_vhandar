@@ -40,8 +40,7 @@ class MyListNotifier extends StateNotifier<MyListState> {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _repo.fetchLists();
     result.when(
-      success: (lists) =>
-          state = MyListState(lists: lists),
+      success: (lists) => state = MyListState(lists: lists),
       failure: (f) =>
           state = state.copyWith(isLoading: false, error: f.message),
     );
@@ -72,7 +71,16 @@ class MyListNotifier extends StateNotifier<MyListState> {
   }
 
   Future<void> renameList(String listId, String name) async {
-    final result = await _repo.renameList(listId, name);
+    final list = state.lists.firstWhere(
+      (l) => l.id == listId,
+      orElse: () => SavedList(id: listId, name: '', createdAt: DateTime.now()),
+    );
+    final result = await _repo.renameList(
+      listId,
+      name,
+      description: list.description,
+      productIds: list.productIds,
+    );
     switch (result) {
       case Success():
         state = state.copyWith(
@@ -85,7 +93,7 @@ class MyListNotifier extends StateNotifier<MyListState> {
     }
   }
 
-  /// Returns `true` if added, `false` if already present.
+  /// Returns `true` if added, `false` if already present or error.
   Future<bool> addProduct(String listId, SavedProduct product) async {
     final list = state.lists.firstWhere(
       (l) => l.id == listId,
@@ -93,13 +101,22 @@ class MyListNotifier extends StateNotifier<MyListState> {
     );
     if (list.products.any((p) => p.id == product.id)) return false;
 
-    final result = await _repo.addProduct(listId, product.id);
+    final result = await _repo.addProduct(
+      listId,
+      list.name,
+      list.description,
+      list.productIds,
+      product.id,
+    );
     switch (result) {
       case Success():
         state = state.copyWith(
           lists: state.lists.map((l) {
             if (l.id != listId) return l;
-            return l.copyWith(products: [...l.products, product]);
+            return l.copyWith(
+              products: [...l.products, product],
+              productIds: [...l.productIds, product.id],
+            );
           }).toList(),
         );
         return true;
@@ -118,6 +135,7 @@ class MyListNotifier extends StateNotifier<MyListState> {
             if (l.id != listId) return l;
             return l.copyWith(
               products: l.products.where((p) => p.id != productId).toList(),
+              productIds: l.productIds.where((id) => id != productId).toList(),
             );
           }).toList(),
         );

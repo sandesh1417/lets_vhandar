@@ -17,7 +17,6 @@ class MyListRepository {
       switch (result) {
         case Success(value: final data):
           final raw = data['data'];
-          // Handle both flat array and paginated { data: [...], pagination: {} }
           final List<dynamic> items;
           if (raw is List) {
             items = raw;
@@ -46,11 +45,14 @@ class MyListRepository {
     try {
       final result = await _apiClient.post(
         ApiUrl.shoppingLists,
-        data: {'name': name},
+        data: {'name': name, 'description': '', 'productIds': []},
       );
       switch (result) {
         case Success(value: final data):
           final raw = data['data'];
+          if (raw == null) {
+            return const Error(ServerFailure('Failed to create list: empty response'));
+          }
           return Success(SavedList.fromApi(Map<String, dynamic>.from(raw)));
         case Error(failure: final f):
           throw f;
@@ -78,11 +80,21 @@ class MyListRepository {
     }
   }
 
-  Future<Result<bool, Failure>> renameList(String listId, String name) async {
+  // Always send full body — backend replaces the whole document.
+  Future<Result<bool, Failure>> renameList(
+    String listId,
+    String name, {
+    String? description,
+    required List<String> productIds,
+  }) async {
     try {
       final result = await _apiClient.patch(
         ApiUrl.shoppingListById(listId),
-        data: {'name': name},
+        data: {
+          'name': name,
+          'description': description ?? '',
+          'productIds': productIds,
+        },
       );
       switch (result) {
         case Success():
@@ -97,12 +109,23 @@ class MyListRepository {
     }
   }
 
+  // Append newProductId to existingProductIds and PATCH the full list.
   Future<Result<bool, Failure>> addProduct(
-      String listId, String productId) async {
+    String listId,
+    String listName,
+    String? description,
+    List<String> existingProductIds,
+    String newProductId,
+  ) async {
     try {
+      final newIds = [...existingProductIds, newProductId];
       final result = await _apiClient.patch(
         ApiUrl.shoppingListById(listId),
-        data: {'productId': productId},
+        data: {
+          'name': listName,
+          'description': description ?? '',
+          'productIds': newIds,
+        },
       );
       switch (result) {
         case Success():

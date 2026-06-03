@@ -173,7 +173,7 @@ class _SlotPickerSheet extends StatelessWidget {
             width: 36.w,
             height: 4.h,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: vc.divider,
               borderRadius: BorderRadius.circular(2.r),
             ),
           ),

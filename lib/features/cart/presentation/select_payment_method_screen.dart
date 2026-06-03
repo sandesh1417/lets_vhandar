@@ -417,7 +417,7 @@ class _SelectPaymentMethodScreenState
                                       '${product.unitValue?.toInt() ?? 1} ${product.unit ?? ''} • Qty: ${item.quantity}',
                                       style: TextStyle(
                                         fontSize: 12.sp,
-                                        color: AppColor.textMuted,
+                                        color: vc.onSurfaceMuted,
                                       ),
                                     ),
                                     SizedBox(height: 4.h),
@@ -482,7 +482,7 @@ class _SelectPaymentMethodScreenState
                                   border: Border.all(
                                     color: _selectedMethod == 'cod'
                                         ? AppColor.primary
-                                        : Colors.grey.shade400,
+                                        : vc.onSurfaceMuted,
                                     width: 2.w,
                                   ),
                                 ),
@@ -517,7 +517,7 @@ class _SelectPaymentMethodScreenState
                                       'Pay with cash/card/QR code upon delivery',
                                       style: TextStyle(
                                         fontSize: 12.sp,
-                                        color: AppColor.textMuted,
+                                        color: vc.onSurfaceMuted,
                                       ),
                                     ),
                                   ],
@@ -593,9 +593,9 @@ class _SelectPaymentMethodScreenState
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _selectedMethod == null
-                              ? Colors.grey.shade300
+                              ? vc.surfaceVariant
                               : AppColor.primary,
-                          disabledBackgroundColor: Colors.grey.shade300,
+                          disabledBackgroundColor: vc.surfaceVariant,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.r),
                           ),
@@ -616,7 +616,7 @@ class _SelectPaymentMethodScreenState
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   color: _selectedMethod == null
-                                      ? Colors.grey.shade500
+                                      ? vc.onSurfaceMuted
                                       : Colors.white,
                                 ),
                               ),

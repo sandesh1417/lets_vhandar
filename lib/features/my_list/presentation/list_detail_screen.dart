@@ -611,14 +611,20 @@ class _SearchResultTile extends ConsumerWidget {
                     final wasAdded = await ref
                         .read(myListProvider.notifier)
                         .addProduct(listId, saved);
-                    if (!wasAdded && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              '${product.name ?? 'Item'} is already in this list'),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                    if (context.mounted) {
+                      if (!wasAdded) {
+                        final err = ref.read(myListProvider).error;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              err ?? '${product.name ?? 'Item'} is already in this list',
+                            ),
+                            backgroundColor:
+                                err != null ? Colors.red.shade600 : null,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     }
                   },
             child: AnimatedContainer(

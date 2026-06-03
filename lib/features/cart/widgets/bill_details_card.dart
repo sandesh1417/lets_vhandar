@@ -162,14 +162,14 @@ class BillDetailsCard extends ConsumerWidget {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 6.w, vertical: 2.h),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFFBE4B9),
+                                  color: stripBg,
                                   borderRadius: BorderRadius.circular(4.r),
                                 ),
                                 child: Text('Saved Rs.${savings.toInt()}',
                                     style: TextStyle(
                                         fontSize: 10.sp,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF8D5B18))),
+                                        color: stripFg)),
                               ),
                             ]
                           ],
@@ -410,9 +410,9 @@ class BillDetailsCard extends ConsumerWidget {
                         child: LinearProgressIndicator(
                           value:
                               (totalPrice / deliveryThreshold).clamp(0.0, 1.0),
-                          backgroundColor: const Color(0xFFF5E3C4),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFD48D21),
+                          backgroundColor: stripBg,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            stripFg,
                           ),
                           minHeight: 4.h,
                         ),

@@ -3,41 +3,62 @@ import 'dart:convert';
 class SavedList {
   final String id;
   final String name;
+  final String? description;
+  final List<String> productIds;
   final List<SavedProduct> products;
   final DateTime createdAt;
 
   SavedList({
     required this.id,
     required this.name,
+    this.description,
+    this.productIds = const [],
     this.products = const [],
     required this.createdAt,
   });
 
   SavedList copyWith({
     String? name,
+    String? description,
+    List<String>? productIds,
     List<SavedProduct>? products,
   }) =>
       SavedList(
         id: id,
         name: name ?? this.name,
+        description: description ?? this.description,
+        productIds: productIds ?? this.productIds,
         products: products ?? this.products,
         createdAt: createdAt,
       );
 
-  factory SavedList.fromApi(Map<String, dynamic> map) => SavedList(
-        id: (map['_id'] ?? map['id']) as String,
-        name: map['name'] as String,
-        products: (map['products'] as List<dynamic>? ?? [])
-            .map((p) => SavedProduct.fromApi(Map<String, dynamic>.from(p)))
-            .toList(),
-        createdAt: map['createdAt'] != null
-            ? DateTime.parse(map['createdAt'] as String)
-            : DateTime.now(),
-      );
+  factory SavedList.fromApi(Map<String, dynamic> map) {
+    final rawIds = map['productIds'] as List<dynamic>?;
+    final ids = rawIds?.map((e) => e.toString()).toList() ?? [];
+
+    // API returns populated products in 'productDetails'
+    final rawDetails = map['productDetails'] as List<dynamic>?;
+    final products = (rawDetails ?? [])
+        .map((p) => SavedProduct.fromApi(Map<String, dynamic>.from(p)))
+        .toList();
+
+    return SavedList(
+      id: (map['_id'] ?? map['id']) as String,
+      name: map['name'] as String,
+      description: map['description'] as String?,
+      productIds: ids,
+      products: products,
+      createdAt: map['createdAt'] != null
+          ? DateTime.parse(map['createdAt'] as String)
+          : DateTime.now(),
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         'id': id,
         'name': name,
+        'description': description,
+        'productIds': productIds,
         'products': products.map((p) => p.toMap()).toList(),
         'createdAt': createdAt.toIso8601String(),
       };
@@ -45,6 +66,10 @@ class SavedList {
   factory SavedList.fromMap(Map<String, dynamic> map) => SavedList(
         id: (map['_id'] ?? map['id']) as String,
         name: map['name'] as String,
+        description: map['description'] as String?,
+        productIds: (map['productIds'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .toList(),
         products: (map['products'] as List<dynamic>? ?? [])
             .map((p) => SavedProduct.fromMap(Map<String, dynamic>.from(p)))
             .toList(),

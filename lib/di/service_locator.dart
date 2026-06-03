@@ -12,6 +12,7 @@ import 'package:lets_vhandar/features/home/data/repositories/product_repository.
 import 'package:lets_vhandar/features/home/data/repositories/time_slot_repository.dart';
 import 'package:lets_vhandar/features/home/data/repositories/warehouse_repository.dart';
 import 'package:lets_vhandar/features/my_list/data/my_list_repository.dart';
+import 'package:lets_vhandar/features/profile/data/referral_repository.dart';
 import 'package:lets_vhandar/features/order/data/order_repository.dart';
 
 GetIt locator = GetIt.I;
@@ -92,6 +93,12 @@ void setUpDependenciesInjection() {
   if (!locator.isRegistered<MyListRepository>()) {
     locator.registerLazySingleton<MyListRepository>(
       () => MyListRepository(locator<ApiClient>()),
+    );
+  }
+
+  if (!locator.isRegistered<ReferralRepository>()) {
+    locator.registerLazySingleton<ReferralRepository>(
+      () => ReferralRepository(locator<ApiClient>()),
     );
   }
 }

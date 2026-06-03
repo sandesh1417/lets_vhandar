@@ -224,7 +224,17 @@ class MyListsScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => _NewListSheet(
         onCreated: (name) async {
-          await ref.read(myListProvider.notifier).createList(name);
+          final created =
+              await ref.read(myListProvider.notifier).createList(name);
+          if (created == null && context.mounted) {
+            final err = ref.read(myListProvider).error;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(err ?? 'Failed to create list. Please try again.'),
+                backgroundColor: Colors.red.shade600,
+              ),
+            );
+          }
         },
       ),
     );

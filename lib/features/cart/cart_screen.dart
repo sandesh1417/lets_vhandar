@@ -132,7 +132,7 @@ class CartScreen extends ConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColor.textMuted,
+                                      color: context.vColors.onSurfaceMuted,
                                     ),
                                   ),
                                 ],
