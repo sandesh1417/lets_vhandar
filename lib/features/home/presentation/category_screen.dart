@@ -35,6 +35,20 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   final _searchController = TextEditingController();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ref.listenManual(tabReactivateProvider(1), (prev, next) {
+      if (_scrollController.hasClients && _scrollController.offset > 0) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();

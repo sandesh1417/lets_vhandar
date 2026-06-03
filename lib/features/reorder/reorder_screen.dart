@@ -15,6 +15,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
@@ -58,6 +59,7 @@ class ReorderScreen extends ConsumerStatefulWidget {
 class _ReorderScreenState extends ConsumerState<ReorderScreen> {
   final _searchController = TextEditingController();
   final _query = ValueNotifier<String>('');
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -71,9 +73,26 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ref.listenManual(tabReactivateProvider(3), (prev, next) {
+      if (_scrollController.hasClients && _scrollController.offset > 0) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
+      } else {
+        _onRefresh();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     _query.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -290,6 +309,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
 
   Widget _buildGrid(List<ProductData> products, double bottomPad) {
     return GridView.builder(
+      controller: _scrollController,
       padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, bottomPad + 150.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

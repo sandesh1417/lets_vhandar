@@ -192,6 +192,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _scrollController.addListener(_onScroll);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ref.listenManual(tabReactivateProvider(0), (prev, next) {
+      if (!_scrollController.hasClients) return;
+      if (_scrollController.offset > 0) {
+        _scrollToTop();
+      } else {
+        ref.invalidate(bannerProvider);
+        ref.invalidate(featuredProductsProvider);
+        ref.invalidate(homeCategoryProvider);
+        ref.invalidate(allCategoryProvider);
+      }
+    });
+  }
+
   void _onScroll() {
     final max = _scrollController.position.maxScrollExtent;
     if (max <= 0) return;
@@ -202,11 +218,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeOutCubic,
-    );
+    HapticFeedback.mediumImpact();
+    if (_scrollController.hasClients && _scrollController.offset > 0) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      ref.invalidate(bannerProvider);
+      ref.invalidate(featuredProductsProvider);
+      ref.invalidate(homeCategoryProvider);
+      ref.invalidate(allCategoryProvider);
+    }
   }
 
   @override

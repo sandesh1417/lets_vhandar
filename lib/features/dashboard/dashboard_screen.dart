@@ -47,6 +47,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   void _goToTab(int index) {
+    final current = ref.read(dashboardIndexProvider);
+    if (index == current) {
+      // Same tab tapped again — signal it to scroll-to-top / refresh
+      ref.read(tabReactivateProvider(index).notifier).state++;
+      return;
+    }
     ref.read(visitedTabsProvider.notifier).update((s) => {...s, index});
     ref.read(dashboardIndexProvider.notifier).state = index;
   }

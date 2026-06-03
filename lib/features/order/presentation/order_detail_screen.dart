@@ -47,6 +47,7 @@ class OrderDetailScreen extends ConsumerWidget {
     ref.watch(generalSettingsProvider);
 
     return CustomScaffoldWrapper(
+      isScrollable: false,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
         elevation: 0,

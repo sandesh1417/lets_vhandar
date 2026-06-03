@@ -132,11 +132,11 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider>
       },
       loading: () => Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16.r),
-            child: const CustomShimmer.rectangular(height: double.infinity),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16.r),
+          child: const AspectRatio(
+            aspectRatio: 16 / 9,
+            child: CustomShimmer.rectangular(height: double.infinity),
           ),
         ),
       ),

@@ -25,65 +25,79 @@ class ListDetailScreen extends ConsumerWidget {
           SavedList(id: listId, name: 'List', createdAt: DateTime.now()),
     );
 
+    final statusBarH = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: vc.scaffoldBg,
-      body: NestedScrollView(
-        headerSliverBuilder: (_, __) => [
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: vc.surface,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new_rounded,
-                  size: 18.sp, color: vc.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
+      body: Column(
+        children: [
+          // ── Green header ─────────────────────────────────────────
+          Container(
+            color: AppColor.primary,
+            padding: EdgeInsets.only(
+              top: statusBarH + 10.h,
+              left: 4.w,
+              right: 16.w,
+              bottom: 12.h,
             ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  list.name,
-                  style: TextStyle(
-                    fontSize: 17.sp,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    color: vc.onSurface,
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white, size: 20),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        list.name,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        list.products.isEmpty
+                            ? 'Empty list'
+                            : '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          fontFamily: 'Inter',
+                          color: Colors.white.withValues(alpha: 0.75),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                if (list.products.isNotEmpty)
-                  Text(
-                    '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      fontFamily: 'Inter',
-                      color: vc.onSurfaceMuted,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
               ],
             ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Divider(height: 1, color: vc.divider),
-            ),
+          ),
+
+          // ── Body ─────────────────────────────────────────────────
+          Expanded(
+            child: list.products.isEmpty
+                ? _buildEmpty(context, ref, list)
+                : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 20.h),
+                    itemCount: list.products.length,
+                    itemBuilder: (context, i) {
+                      final product = list.products[i];
+                      return _ProductTile(
+                        product: product,
+                        onRemove: () => ref
+                            .read(myListProvider.notifier)
+                            .removeProduct(listId, product.id),
+                      );
+                    },
+                  ),
           ),
         ],
-        body: list.products.isEmpty
-            ? _buildEmpty(context, ref, list)
-            : ListView.builder(
-                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
-                itemCount: list.products.length,
-                itemBuilder: (context, i) {
-                  final product = list.products[i];
-                  return _ProductTile(
-                    product: product,
-                    onRemove: () => ref
-                        .read(myListProvider.notifier)
-                        .removeProduct(listId, product.id),
-                  );
-                },
-              ),
       ),
       bottomNavigationBar: _buildBottomBar(context, ref, list),
     );

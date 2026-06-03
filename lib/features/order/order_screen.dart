@@ -10,6 +10,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/domain/login_state.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
@@ -61,6 +62,23 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                 );
           }
         }
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ref.listenManual(tabReactivateProvider(2), (prev, next) {
+      if (!_scrollController.hasClients) return;
+      if (_scrollController.offset > 0) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
+      } else {
+        _fetchOrders();
       }
     });
   }

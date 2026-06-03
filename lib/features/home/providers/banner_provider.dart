@@ -11,7 +11,9 @@ final bannerProvider = FutureProvider<List<BannerData>>((ref) async {
   switch (result) {
     case Success(value: final bannerModal):
       return bannerModal.data
-              ?.where((banner) => banner.type == 'slider')
+              ?.where((b) =>
+                  b.type == 'slider' &&
+                  b.status?.toLowerCase() == 'active')
               .toList() ??
           [];
     case Error(failure: final failure):

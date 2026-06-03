@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -17,85 +18,116 @@ class MyListsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(myListProvider);
     final vc = context.vColors;
+    final statusBarH = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: vc.scaffoldBg,
-      body: NestedScrollView(
-        headerSliverBuilder: (_, __) => [
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: vc.surface,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new_rounded,
-                  size: 18.sp, color: vc.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
+      body: Column(
+        children: [
+          // ── Green header ─────────────────────────────────────────
+          Container(
+            color: AppColor.primary,
+            padding: EdgeInsets.only(
+              top: statusBarH + 10.h,
+              left: 4.w,
+              right: 8.w,
+              bottom: 12.h,
             ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  'My Lists',
-                  style: TextStyle(
-                    fontSize: 17.sp,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    color: vc.onSurface,
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white, size: 20),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                if (!state.isLoading && state.lists.isNotEmpty)
-                  Text(
-                    '${state.lists.length} list${state.lists.length == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      fontFamily: 'Inter',
-                      color: vc.onSurfaceMuted,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-              ],
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Divider(height: 1, color: vc.divider),
-            ),
-          ),
-        ],
-        body: state.isLoading
-            ? _buildShimmer()
-            : RefreshIndicator(
-                color: AppColor.primary,
-                onRefresh: () => ref.read(myListProvider.notifier).load(),
-                child: state.lists.isEmpty
-                    ? LayoutBuilder(
-                        builder: (_, constraints) => SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: constraints.maxHeight,
-                            child: _buildEmpty(context, ref),
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding:
-                            EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
-                        itemCount: state.lists.length,
-                        itemBuilder: (context, i) => _ListCard(
-                          list: state.lists[i],
-                          index: i,
-                          onTap: () => context.push(
-                            LVRoute.listDetailScreen.route,
-                            extra: state.lists[i].id,
-                          ),
-                          onDelete: () =>
-                              _confirmDelete(context, ref, state.lists[i]),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'My Lists',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
                       ),
-              ),
+                      // Dynamic subtitle — updates live
+                      if (!state.isLoading)
+                        Text(
+                          state.lists.isEmpty
+                              ? 'No lists yet'
+                              : '${state.lists.length} list${state.lists.length == 1 ? '' : 's'}',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontFamily: 'Inter',
+                            color: Colors.white.withValues(alpha: 0.75),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                // Always-visible "+" button in header
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    _showCreateSheet(context, ref);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.r),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.25)),
+                    ),
+                    child: Icon(Icons.add_rounded,
+                        color: Colors.white, size: 20.sp),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Body ─────────────────────────────────────────────────
+          Expanded(
+            child: state.isLoading
+                ? _buildShimmer()
+                : RefreshIndicator(
+                    color: AppColor.primary,
+                    onRefresh: () => ref.read(myListProvider.notifier).load(),
+                    child: state.lists.isEmpty
+                        ? LayoutBuilder(
+                            builder: (_, c) => SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: SizedBox(
+                                height: c.maxHeight,
+                                child: _buildEmpty(context, ref),
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
+                            itemCount: state.lists.length,
+                            itemBuilder: (context, i) => _ListCard(
+                              list: state.lists[i],
+                              index: i,
+                              onTap: () => context.push(
+                                LVRoute.listDetailScreen.route,
+                                extra: state.lists[i].id,
+                              ),
+                              onDelete: () =>
+                                  _confirmDelete(context, ref, state.lists[i]),
+                              onRename: () =>
+                                  _showRenameSheet(context, ref, state.lists[i]),
+                            ),
+                          ),
+                  ),
+          ),
+        ],
       ),
-      floatingActionButton: _buildFab(context, ref),
     );
   }
 
@@ -124,7 +156,7 @@ class MyListsScreen extends ConsumerWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.playlist_add_rounded,
+              Icons.list_alt_rounded,
               size: 48.sp,
               color: AppColor.primary.withValues(alpha: 0.6),
             ),
@@ -152,10 +184,12 @@ class MyListsScreen extends ConsumerWidget {
           ),
           SizedBox(height: 32.h),
           GestureDetector(
-            onTap: () => _showCreateDialog(context, ref),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              _showCreateSheet(context, ref);
+            },
             child: Container(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 24.w, vertical: 13.h),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 13.h),
               decoration: BoxDecoration(
                 color: AppColor.primary,
                 borderRadius: BorderRadius.circular(14.r),
@@ -163,8 +197,7 @@ class MyListsScreen extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.add_rounded,
-                      color: Colors.white, size: 18),
+                  const Icon(Icons.add_rounded, color: Colors.white, size: 18),
                   SizedBox(width: 6.w),
                   Text(
                     'Create Your First List',
@@ -184,17 +217,7 @@ class MyListsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFab(BuildContext context, WidgetRef ref) {
-    return FloatingActionButton(
-      onPressed: () => _showCreateDialog(context, ref),
-      backgroundColor: AppColor.primary,
-      shape: const CircleBorder(),
-      elevation: 3,
-      child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-    );
-  }
-
-  void _showCreateDialog(BuildContext context, WidgetRef ref) {
+  void _showCreateSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -207,13 +230,28 @@ class MyListsScreen extends ConsumerWidget {
     );
   }
 
+  void _showRenameSheet(BuildContext context, WidgetRef ref, SavedList list) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _NewListSheet(
+        initial: list.name,
+        title: 'Rename List',
+        buttonLabel: 'Save',
+        onCreated: (name) async {
+          await ref.read(myListProvider.notifier).renameList(list.id, name);
+        },
+      ),
+    );
+  }
+
   void _confirmDelete(BuildContext context, WidgetRef ref, SavedList list) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.vColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
         title: Text(
           'Delete List',
           style: TextStyle(
@@ -226,7 +264,8 @@ class MyListsScreen extends ConsumerWidget {
         content: Text(
           'Delete "${list.name}"?\nThis cannot be undone.',
           style: TextStyle(
-              fontSize: 13.sp, color: context.vColors.onSurfaceMuted,
+              fontSize: 13.sp,
+              color: context.vColors.onSurfaceMuted,
               height: 1.5),
         ),
         actions: [
@@ -234,8 +273,7 @@ class MyListsScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
                 style: TextStyle(
-                    color: context.vColors.onSurfaceMuted,
-                    fontSize: 13.sp)),
+                    color: context.vColors.onSurfaceMuted, fontSize: 13.sp)),
           ),
           TextButton(
             onPressed: () {
@@ -266,12 +304,14 @@ class _ListCard extends StatelessWidget {
   final int index;
   final VoidCallback onTap;
   final VoidCallback onDelete;
+  final VoidCallback onRename;
 
   const _ListCard({
     required this.list,
     required this.index,
     required this.onTap,
     required this.onDelete,
+    required this.onRename,
   });
 
   static const _accentColors = [
@@ -290,12 +330,16 @@ class _ListCard extends StatelessWidget {
     final previews = list.products.take(4).toList();
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 14.h),
         decoration: BoxDecoration(
           color: vc.surface,
           borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: vc.divider),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -310,21 +354,21 @@ class _ListCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ── Colored left accent bar ──────────────────────
+                // Coloured left accent bar
                 Container(width: 4.w, color: accent),
 
-                // ── Main content ─────────────────────────────────
+                // Main content
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(14.w, 14.h, 6.w, 14.h),
                     child: Row(
                       children: [
-                        // Icon or product thumbnails
+                        // Thumbnail or icon
                         _buildThumbnails(context, previews, accent),
 
                         SizedBox(width: 14.w),
 
-                        // List info
+                        // Info
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,13 +386,11 @@ class _ListCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(height: 4.h),
+                              // Dynamic item count
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.inventory_2_outlined,
-                                    size: 12.sp,
-                                    color: vc.onSurfaceMuted,
-                                  ),
+                                  Icon(Icons.list_alt_rounded,
+                                      size: 12.sp, color: vc.onSurfaceMuted),
                                   SizedBox(width: 4.w),
                                   Text(
                                     list.products.isEmpty
@@ -366,31 +408,38 @@ class _ListCard extends StatelessWidget {
                           ),
                         ),
 
-                        // Actions
+                        // Actions column
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             GestureDetector(
-                              onTap: onDelete,
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                onRename();
+                              },
                               child: Padding(
                                 padding: EdgeInsets.all(6.w),
-                                child: Icon(
-                                  Icons.delete_outline_rounded,
-                                  color: Colors.red.shade300,
-                                  size: 18.sp,
-                                ),
+                                child: Icon(Icons.edit_outlined,
+                                    color: vc.onSurfaceMuted, size: 17.sp),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(right: 6.w),
-                              child: Icon(
-                                Icons.chevron_right_rounded,
-                                color: vc.onSurfaceMuted,
-                                size: 20.sp,
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                onDelete();
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(6.w),
+                                child: Icon(Icons.delete_outline_rounded,
+                                    color: Colors.red.shade300, size: 17.sp),
                               ),
                             ),
                           ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 4.w),
+                          child: Icon(Icons.chevron_right_rounded,
+                              color: vc.onSurfaceMuted, size: 20.sp),
                         ),
                       ],
                     ),
@@ -422,10 +471,11 @@ class _ListCard extends StatelessWidget {
       return _thumb(previews[0].imageUrl, 56.w, 12.r);
     }
 
-    // 2×2 grid for 2–4 items
     final rows = [
       previews.take(2).toList(),
-      previews.length > 2 ? previews.skip(2).take(2).toList() : <SavedProduct>[],
+      previews.length > 2
+          ? previews.skip(2).take(2).toList()
+          : <SavedProduct>[],
     ];
 
     return SizedBox(
@@ -434,22 +484,18 @@ class _ListCard extends StatelessWidget {
       child: Column(
         children: rows
             .where((r) => r.isNotEmpty)
-            .map(
-              (row) => Expanded(
-                child: Row(
-                  children: row
-                      .map(
-                        (p) => Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(1.w),
-                            child: _thumb(p.imageUrl, double.infinity, 6.r),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            )
+            .map((row) => Expanded(
+                  child: Row(
+                    children: row
+                        .map((p) => Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.all(1.w),
+                                child: _thumb(p.imageUrl, double.infinity, 6.r),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ))
             .toList(),
       ),
     );
@@ -464,10 +510,7 @@ class _ListCard extends StatelessWidget {
         color: const Color(0xFFF5F5F5),
         child: url != null
             ? CustomImageViewer(
-                path: url,
-                fit: BoxFit.contain,
-                borderRadius: radius,
-              )
+                path: url, fit: BoxFit.contain, borderRadius: radius)
             : Icon(Icons.shopping_bag_outlined,
                 color: Colors.grey.shade400, size: 16.sp),
       ),
@@ -476,21 +519,35 @@ class _ListCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// New List bottom sheet
+// Create / Rename sheet
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _NewListSheet extends StatefulWidget {
   final Future<void> Function(String name) onCreated;
+  final String? initial;
+  final String title;
+  final String buttonLabel;
 
-  const _NewListSheet({required this.onCreated});
+  const _NewListSheet({
+    required this.onCreated,
+    this.initial,
+    this.title = 'New List',
+    this.buttonLabel = 'Create List',
+  });
 
   @override
   State<_NewListSheet> createState() => _NewListSheetState();
 }
 
 class _NewListSheetState extends State<_NewListSheet> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initial ?? '');
+  }
 
   @override
   void dispose() {
@@ -533,23 +590,40 @@ class _NewListSheetState extends State<_NewListSheet> {
           ),
           SizedBox(height: 24.h),
 
-          Text(
-            'New List',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w800,
-              color: vc.onSurface,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            'Give your list a name to get started.',
-            style: TextStyle(
-              fontSize: 13.sp,
-              fontFamily: 'Inter',
-              color: vc.onSurfaceMuted,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(9.r),
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(Icons.list_alt_rounded,
+                    color: AppColor.primary, size: 20.sp),
+              ),
+              SizedBox(width: 12.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w800,
+                      color: vc.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Give your list a name.',
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        fontFamily: 'Inter',
+                        color: vc.onSurfaceMuted),
+                  ),
+                ],
+              ),
+            ],
           ),
           SizedBox(height: 20.h),
 
@@ -558,18 +632,14 @@ class _NewListSheetState extends State<_NewListSheet> {
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
             style: TextStyle(
-              fontSize: 15.sp,
-              fontFamily: 'Inter',
-              color: vc.onSurface,
-            ),
+                fontSize: 15.sp, fontFamily: 'Inter', color: vc.onSurface),
             onSubmitted: (_) => _submit(),
             decoration: InputDecoration(
               hintText: 'e.g. Weekly Groceries',
               hintStyle: TextStyle(
-                fontSize: 14.sp,
-                color: vc.onSurfaceMuted,
-                fontFamily: 'Inter',
-              ),
+                  fontSize: 14.sp,
+                  color: vc.onSurfaceMuted,
+                  fontFamily: 'Inter'),
               filled: true,
               fillColor: vc.surfaceVariant,
               border: OutlineInputBorder(
@@ -603,29 +673,25 @@ class _NewListSheetState extends State<_NewListSheet> {
             width: double.infinity,
             height: 52.h,
             child: ElevatedButton(
-              onPressed: (_controller.text.trim().isEmpty || _isLoading)
-                  ? null
-                  : _submit,
+              onPressed:
+                  (_controller.text.trim().isEmpty || _isLoading) ? null : _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.primary,
                 disabledBackgroundColor: vc.divider,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                ),
+                    borderRadius: BorderRadius.circular(14.r)),
               ),
               child: _isLoading
                   ? SizedBox(
                       width: 22.w,
                       height: 22.w,
                       child: const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
+                          color: Colors.white, strokeWidth: 2),
                     )
                   : Text(
-                      'Create List',
+                      widget.buttonLabel,
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontFamily: 'Inter',
