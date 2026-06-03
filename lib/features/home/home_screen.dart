@@ -21,6 +21,7 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 // import 'package:lets_vhandar/features/home/widgets/home_featured_products_list.dart';
 
 class _SuggestProductCard extends StatelessWidget {
@@ -218,6 +219,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
+    final isOffline = ref.watch(connectivityProvider).maybeWhen(
+          data: (online) => !online,
+          orElse: () => false,
+        );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
@@ -262,6 +267,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 slivers: [
                   HomeHeader(onLogoTap: _scrollToTop),
+                  if (isOffline)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _HomeOfflineBody(),
+                    )
+                  else
                   SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,6 +350,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HomeOfflineBody extends StatelessWidget {
+  const _HomeOfflineBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 36.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/icons/offline.svg',
+            width: 100.w,
+            height: 100.w,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'Oops!',
+            style: TextStyle(
+              fontSize: 32.sp,
+              fontWeight: FontWeight.w900,
+              color: AppColor.primary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            'No Internet Connection',
+            style: TextStyle(
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w600,
+              color: vc.onSurface,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Please check your Wi-Fi or mobile data\nand pull down to refresh.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: vc.onSurfaceMuted,
+              height: 1.6,
+            ),
+          ),
+          SizedBox(height: 28.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(50.r),
+              border: Border.all(
+                  color: AppColor.primary.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.refresh_rounded,
+                    size: 16.sp, color: AppColor.primary),
+                SizedBox(width: 6.w),
+                Text(
+                  'Pull down to refresh',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

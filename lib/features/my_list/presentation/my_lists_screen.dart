@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dart';
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class MyListsScreen extends ConsumerWidget {
@@ -17,80 +16,181 @@ class MyListsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(myListProvider);
+    final vc = context.vColors;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomScreenHeader(title: 'My Lists'),
-      body: state.isLoading
-          ? const SingleChildScrollView(child: MyListsShimmer())
-          : state.lists.isEmpty
-              ? _buildEmpty(context)
-              : ListView.builder(
-                  padding:
-                      EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 100.h),
-                  itemCount: state.lists.length,
-                  itemBuilder: (context, i) => _ListCard(
-                    list: state.lists[i],
-                    onTap: () => context.push(
-                      LVRoute.listDetailScreen.route,
-                      extra: state.lists[i].id,
-                    ),
-                    onDelete: () =>
-                        _confirmDelete(context, ref, state.lists[i]),
+      backgroundColor: vc.scaffoldBg,
+      body: NestedScrollView(
+        headerSliverBuilder: (_, __) => [
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: vc.surface,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new_rounded,
+                  size: 18.sp, color: vc.onSurface),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'My Lists',
+                  style: TextStyle(
+                    fontSize: 17.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    color: vc.onSurface,
                   ),
                 ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateDialog(context, ref),
-        backgroundColor: AppColor.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'New List',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14.sp,
+                if (!state.isLoading && state.lists.isNotEmpty)
+                  Text(
+                    '${state.lists.length} list${state.lists.length == 1 ? '' : 's'}',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontFamily: 'Inter',
+                      color: vc.onSurfaceMuted,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child: Divider(height: 1, color: vc.divider),
+            ),
           ),
-        ),
+        ],
+        body: state.isLoading
+            ? _buildShimmer()
+            : RefreshIndicator(
+                color: AppColor.primary,
+                onRefresh: () => ref.read(myListProvider.notifier).load(),
+                child: state.lists.isEmpty
+                    ? LayoutBuilder(
+                        builder: (_, constraints) => SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: constraints.maxHeight,
+                            child: _buildEmpty(context, ref),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding:
+                            EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
+                        itemCount: state.lists.length,
+                        itemBuilder: (context, i) => _ListCard(
+                          list: state.lists[i],
+                          index: i,
+                          onTap: () => context.push(
+                            LVRoute.listDetailScreen.route,
+                            extra: state.lists[i].id,
+                          ),
+                          onDelete: () =>
+                              _confirmDelete(context, ref, state.lists[i]),
+                        ),
+                      ),
+              ),
+      ),
+      floatingActionButton: _buildFab(context, ref),
+    );
+  }
+
+  Widget _buildShimmer() {
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
+      itemCount: 5,
+      itemBuilder: (_, i) => Padding(
+        padding: EdgeInsets.only(bottom: 14.h),
+        child: CustomShimmer.rectangular(height: 96.h),
       ),
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, WidgetRef ref) {
     final vc = context.vColors;
     return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/vhandar_list.svg',
-              width: 160.w,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 100.w,
+            height: 100.w,
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
             ),
-            SizedBox(height: 20.h),
-            Text(
-              'No Lists Yet',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w700,
-                color: vc.onSurface,
+            child: Icon(
+              Icons.playlist_add_rounded,
+              size: 48.sp,
+              color: AppColor.primary.withValues(alpha: 0.6),
+            ),
+          ),
+          SizedBox(height: 24.h),
+          Text(
+            'No Lists Yet',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: vc.onSurface,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Create a list to organise\nyour favourite products.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontFamily: 'Inter',
+              color: vc.onSurfaceMuted,
+              height: 1.6,
+            ),
+          ),
+          SizedBox(height: 32.h),
+          GestureDetector(
+            onTap: () => _showCreateDialog(context, ref),
+            child: Container(
+              padding:
+                  EdgeInsets.symmetric(horizontal: 24.w, vertical: 13.h),
+              decoration: BoxDecoration(
+                color: AppColor.primary,
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.add_rounded,
+                      color: Colors.white, size: 18),
+                  SizedBox(width: 6.w),
+                  Text(
+                    'Create Your First List',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 8.h),
-            Text(
-              'Create a list to organise\nyour favourite products.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontFamily: 'Inter',
-                color: vc.onSurfaceMuted,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildFab(BuildContext context, WidgetRef ref) {
+    return FloatingActionButton(
+      onPressed: () => _showCreateDialog(context, ref),
+      backgroundColor: AppColor.primary,
+      shape: const CircleBorder(),
+      elevation: 3,
+      child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
     );
   }
 
@@ -107,39 +207,49 @@ class MyListsScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(
-      BuildContext context, WidgetRef ref, SavedList list) {
+  void _confirmDelete(BuildContext context, WidgetRef ref, SavedList list) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text('Delete List',
-            style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w700,
-                fontSize: 16.sp)),
+        backgroundColor: context.vColors.surface,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r)),
+        title: Text(
+          'Delete List',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            fontSize: 16.sp,
+            color: context.vColors.onSurface,
+          ),
+        ),
         content: Text(
-          'Delete "${list.name}"? This cannot be undone.',
-          style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade600),
+          'Delete "${list.name}"?\nThis cannot be undone.',
+          style: TextStyle(
+              fontSize: 13.sp, color: context.vColors.onSurfaceMuted,
+              height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
-                style:
-                    TextStyle(color: Colors.grey.shade600, fontSize: 13.sp)),
+                style: TextStyle(
+                    color: context.vColors.onSurfaceMuted,
+                    fontSize: 13.sp)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               ref.read(myListProvider.notifier).deleteList(list.id);
             },
-            child: Text('Delete',
-                style: TextStyle(
-                    color: Colors.red.shade600,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w700)),
+            child: Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.red.shade500,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -147,88 +257,219 @@ class MyListsScreen extends ConsumerWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// List Card
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _ListCard extends StatelessWidget {
   final SavedList list;
+  final int index;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
   const _ListCard({
     required this.list,
+    required this.index,
     required this.onTap,
     required this.onDelete,
   });
 
+  static const _accentColors = [
+    Color(0xFF0A754E),
+    Color(0xFF2563EB),
+    Color(0xFF7C3AED),
+    Color(0xFFD97706),
+    Color(0xFFDC2626),
+    Color(0xFF0891B2),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
+    final accent = _accentColors[index % _accentColors.length];
+    final previews = list.products.take(4).toList();
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(bottom: 12.h),
-        padding: EdgeInsets.all(16.w),
+        margin: EdgeInsets.only(bottom: 14.h),
         decoration: BoxDecoration(
           color: vc.surface,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 44.w,
-              height: 44.w,
-              decoration: BoxDecoration(
-                color: AppColor.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(Icons.list_alt_rounded,
-                  color: AppColor.primary, size: 22.sp),
-            ),
-            SizedBox(width: 14.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    list.name,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: vc.onSurface,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16.r),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Colored left accent bar ──────────────────────
+                Container(width: 4.w, color: accent),
+
+                // ── Main content ─────────────────────────────────
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(14.w, 14.h, 6.w, 14.h),
+                    child: Row(
+                      children: [
+                        // Icon or product thumbnails
+                        _buildThumbnails(context, previews, accent),
+
+                        SizedBox(width: 14.w),
+
+                        // List info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                list.name,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w700,
+                                  color: vc.onSurface,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4.h),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.inventory_2_outlined,
+                                    size: 12.sp,
+                                    color: vc.onSurfaceMuted,
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  Text(
+                                    list.products.isEmpty
+                                        ? 'Empty list'
+                                        : '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Inter',
+                                      color: vc.onSurfaceMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Actions
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: onDelete,
+                              child: Padding(
+                                padding: EdgeInsets.all(6.w),
+                                child: Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: Colors.red.shade300,
+                                  size: 18.sp,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 6.w),
+                              child: Icon(
+                                Icons.chevron_right_rounded,
+                                color: vc.onSurfaceMuted,
+                                size: 20.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    list.products.isEmpty
-                        ? 'Empty list'
-                        : '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: 'Inter',
-                      color: vc.onSurfaceMuted,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            IconButton(
-              onPressed: onDelete,
-              icon: Icon(Icons.delete_outline,
-                  color: Colors.red.shade400, size: 20.sp),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            SizedBox(width: 4.w),
-            Icon(Icons.chevron_right,
-                color: vc.onSurfaceMuted, size: 20.sp),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildThumbnails(
+      BuildContext context, List<SavedProduct> previews, Color accent) {
+    if (previews.isEmpty) {
+      return Container(
+        width: 56.w,
+        height: 56.w,
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Icon(Icons.list_alt_rounded, color: accent, size: 26.sp),
+      );
+    }
+
+    if (previews.length == 1) {
+      return _thumb(previews[0].imageUrl, 56.w, 12.r);
+    }
+
+    // 2×2 grid for 2–4 items
+    final rows = [
+      previews.take(2).toList(),
+      previews.length > 2 ? previews.skip(2).take(2).toList() : <SavedProduct>[],
+    ];
+
+    return SizedBox(
+      width: 56.w,
+      height: 56.w,
+      child: Column(
+        children: rows
+            .where((r) => r.isNotEmpty)
+            .map(
+              (row) => Expanded(
+                child: Row(
+                  children: row
+                      .map(
+                        (p) => Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(1.w),
+                            child: _thumb(p.imageUrl, double.infinity, 6.r),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _thumb(String? url, double size, double radius) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Container(
+        width: size,
+        height: size,
+        color: const Color(0xFFF5F5F5),
+        child: url != null
+            ? CustomImageViewer(
+                path: url,
+                fit: BoxFit.contain,
+                borderRadius: radius,
+              )
+            : Icon(Icons.shopping_bag_outlined,
+                color: Colors.grey.shade400, size: 16.sp),
       ),
     );
   }
@@ -273,17 +514,16 @@ class _NewListSheetState extends State<_NewListSheet> {
     return Container(
       decoration: BoxDecoration(
         color: vc.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
       ),
-      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h + bottomInset),
+      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h + bottomInset),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Handle ────────────────────────────────────────────
           Center(
             child: Container(
-              width: 40.w,
+              width: 36.w,
               height: 4.h,
               decoration: BoxDecoration(
                 color: vc.divider,
@@ -291,53 +531,34 @@ class _NewListSheetState extends State<_NewListSheet> {
               ),
             ),
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 24.h),
 
-          // ── Title row ─────────────────────────────────────────
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(9.w),
-                decoration: BoxDecoration(
-                  color: AppColor.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Icon(Icons.list_alt_rounded,
-                    color: AppColor.primary, size: 20.sp),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                'New List',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
-                  color: vc.onSurface,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-
-          // ── List name label ───────────────────────────────────
           Text(
-            'List name',
+            'New List',
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 20.sp,
               fontFamily: 'Inter',
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
+              color: vc.onSurface,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            'Give your list a name to get started.',
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontFamily: 'Inter',
               color: vc.onSurfaceMuted,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 20.h),
 
-          // ── Text field ────────────────────────────────────────
           TextField(
             controller: _controller,
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: 15.sp,
               fontFamily: 'Inter',
               color: vc.onSurface,
             ),
@@ -345,22 +566,24 @@ class _NewListSheetState extends State<_NewListSheet> {
             decoration: InputDecoration(
               hintText: 'e.g. Weekly Groceries',
               hintStyle: TextStyle(
-                fontSize: 13.sp,
+                fontSize: 14.sp,
                 color: vc.onSurfaceMuted,
                 fontFamily: 'Inter',
               ),
               filled: true,
               fillColor: vc.surfaceVariant,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(14.r),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(14.r),
                 borderSide: BorderSide(color: AppColor.primary, width: 1.5),
               ),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+              prefixIcon: Icon(Icons.drive_file_rename_outline_rounded,
+                  color: vc.onSurfaceMuted, size: 20.sp),
               suffixIcon: _controller.text.isNotEmpty
                   ? IconButton(
                       icon: Icon(Icons.close_rounded,
@@ -374,12 +597,11 @@ class _NewListSheetState extends State<_NewListSheet> {
             ),
             onChanged: (_) => setState(() {}),
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 20.h),
 
-          // ── Create button ─────────────────────────────────────
           SizedBox(
             width: double.infinity,
-            height: 50.h,
+            height: 52.h,
             child: ElevatedButton(
               onPressed: (_controller.text.trim().isEmpty || _isLoading)
                   ? null

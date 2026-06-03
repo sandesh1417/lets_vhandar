@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
+import 'package:lets_vhandar/features/home/providers/product_provider.dart';
+import 'package:lets_vhandar/features/home/providers/search_history_provider.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
@@ -14,7 +17,6 @@ import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart'
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -37,6 +39,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _submitSearch(String value) {
+    final q = value.trim();
+    if (q.isEmpty) return;
+    ref.read(searchHistoryProvider.notifier).add(q);
+    ref.read(searchProvider.notifier).search(q);
+  }
+
+  void _selectHistoryItem(String query) {
+    _searchController.text = query;
+    _searchController.selection = TextSelection.fromPosition(
+      TextPosition(offset: query.length),
+    );
+    _submitSearch(query);
   }
 
   @override
@@ -93,6 +110,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       onChanged: (value) {
                         ref.read(searchProvider.notifier).search(value);
                       },
+                      onSubmitted: _submitSearch,
                     ),
                   ),
                   SizedBox(width: 8.w),
@@ -124,7 +142,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildBody(SearchState state) {
     if (state.query.isEmpty) {
-      return const SizedBox.shrink();
+      return _EmptyState(onHistoryTap: _selectHistoryItem);
     }
 
     if (state.isLoading && state.results.isEmpty) {
@@ -181,9 +199,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     SizedBox(height: 32.h),
                     ElevatedButton(
-                      onPressed: () {
-                        showProductSuggestionSheet(context);
-                      },
+                      onPressed: () => showProductSuggestionSheet(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF9B141),
                         foregroundColor: Colors.white,
@@ -234,10 +250,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   product: product,
                   margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                   width: double.infinity,
-                  onTap: () => context.pushNamed(
-                    LVRoute.productDetailScreen.route,
-                    extra: product,
-                  ),
+                  onTap: () {
+                    ref.read(searchHistoryProvider.notifier).add(state.query);
+                    context.pushNamed(
+                      LVRoute.productDetailScreen.route,
+                      extra: product,
+                    );
+                  },
                 );
               },
               childCount: state.sortedResults.length,
@@ -248,6 +267,219 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 }
+
+// ── Empty state: history + featured suggestions ───────────────────────────────
+
+class _EmptyState extends ConsumerWidget {
+  final ValueChanged<String> onHistoryTap;
+  const _EmptyState({required this.onHistoryTap});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final history = ref.watch(searchHistoryProvider);
+    final featuredAsync = ref.watch(featuredProductsProvider);
+    final vc = context.vColors;
+
+    return CustomScrollView(
+      slivers: [
+        // ── Recent searches ─────────────────────────────────────────
+        if (history.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 12.h),
+              child: Row(
+                children: [
+                  Text(
+                    'Recent Searches',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: vc.onSurface,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () =>
+                        ref.read(searchHistoryProvider.notifier).clearAll(),
+                    child: Text(
+                      'Clear all',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
+                children: history
+                    .map((q) => _HistoryChip(
+                          query: q,
+                          onTap: () => onHistoryTap(q),
+                          onRemove: () => ref
+                              .read(searchHistoryProvider.notifier)
+                              .remove(q),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+          SliverToBoxAdapter(
+            child: Divider(
+              color: vc.divider,
+              thickness: 1,
+              height: 1,
+            ),
+          ),
+        ],
+
+        // ── Suggested: Featured products ─────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 12.h),
+            child: Row(
+              children: [
+                Text(
+                  'You might like',
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w700,
+                    color: vc.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => context.push(LVRoute.featuredProductsScreen.route),
+                  child: Text(
+                    'See all',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColor.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        featuredAsync.when(
+          loading: () => const SliverToBoxAdapter(child: ProductGridShimmer()),
+          error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+          data: (products) {
+            final visible = products
+                .where((p) =>
+                    (p.quantity ?? 0) > 0 &&
+                    (p.parentId == null || p.parentId!.isEmpty))
+                .take(8)
+                .toList();
+
+            if (visible.isEmpty) {
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
+
+            return SliverPadding(
+              padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 80.h),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10.h,
+                  crossAxisSpacing: 10.w,
+                  mainAxisExtent: ProductItemCard.preferredHeight,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final product = visible[index];
+                    return ProductItemCard(
+                      key: ValueKey(product.id),
+                      product: product,
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 4.w, vertical: 4.h),
+                      width: double.infinity,
+                      onTap: () => context.pushNamed(
+                        LVRoute.productDetailScreen.route,
+                        extra: product,
+                      ),
+                    );
+                  },
+                  childCount: visible.length,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _HistoryChip extends StatelessWidget {
+  final String query;
+  final VoidCallback onTap;
+  final VoidCallback onRemove;
+
+  const _HistoryChip({
+    required this.query,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+        decoration: BoxDecoration(
+          color: vc.surfaceVariant,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: vc.divider),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.history_rounded,
+              size: 14.sp,
+              color: vc.onSurfaceMuted,
+            ),
+            SizedBox(width: 5.w),
+            Text(
+              query,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(width: 6.w),
+            GestureDetector(
+              onTap: onRemove,
+              child: Icon(
+                Icons.close_rounded,
+                size: 14.sp,
+                color: vc.onSurfaceMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Brand row (unchanged) ─────────────────────────────────────────────────────
 
 class _BrandsRow extends ConsumerWidget {
   final String query;

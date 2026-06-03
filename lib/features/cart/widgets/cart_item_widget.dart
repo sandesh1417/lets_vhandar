@@ -45,7 +45,7 @@ class CartItemWidget extends ConsumerWidget {
                 width: 72.w,
                 height: 72.h,
                 decoration: BoxDecoration(
-                  color: vc.surfaceVariant,
+                  color: context.isDark ? vc.surfaceVariant : Colors.white,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(color: vc.divider),
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
@@ -10,7 +9,6 @@ import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dar
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
-import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 class ListDetailScreen extends ConsumerWidget {
   final String listId;
@@ -20,80 +18,154 @@ class ListDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(myListProvider);
+    final vc = context.vColors;
     final list = state.lists.firstWhere(
       (l) => l.id == listId,
-      orElse: () => SavedList(
-          id: listId, name: 'List', createdAt: DateTime.now()),
+      orElse: () =>
+          SavedList(id: listId, name: 'List', createdAt: DateTime.now()),
     );
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: CustomScreenHeader(title: list.name),
-      body: list.products.isEmpty
-          ? _buildEmpty(context)
-          : ListView.builder(
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 100.h),
-              itemCount: list.products.length,
-              itemBuilder: (context, i) {
-                final product = list.products[i];
-                return _ProductListTile(
-                  product: product,
-                  onRemove: () => ref
-                      .read(myListProvider.notifier)
-                      .removeProduct(listId, product.id),
-                );
-              },
+      backgroundColor: vc.scaffoldBg,
+      body: NestedScrollView(
+        headerSliverBuilder: (_, __) => [
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: vc.surface,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new_rounded,
+                  size: 18.sp, color: vc.onSurface),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddProductSheet(context, ref, list),
-        backgroundColor: AppColor.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Add Products',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14.sp,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  list.name,
+                  style: TextStyle(
+                    fontSize: 17.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    color: vc.onSurface,
+                  ),
+                ),
+                if (list.products.isNotEmpty)
+                  Text(
+                    '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontFamily: 'Inter',
+                      color: vc.onSurfaceMuted,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child: Divider(height: 1, color: vc.divider),
+            ),
           ),
-        ),
+        ],
+        body: list.products.isEmpty
+            ? _buildEmpty(context, ref, list)
+            : ListView.builder(
+                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
+                itemCount: list.products.length,
+                itemBuilder: (context, i) {
+                  final product = list.products[i];
+                  return _ProductTile(
+                    product: product,
+                    onRemove: () => ref
+                        .read(myListProvider.notifier)
+                        .removeProduct(listId, product.id),
+                  );
+                },
+              ),
+      ),
+      bottomNavigationBar: _buildBottomBar(context, ref, list),
+    );
+  }
+
+  Widget _buildEmpty(BuildContext context, WidgetRef ref, SavedList list) {
+    final vc = context.vColors;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 90.w,
+            height: 90.w,
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.shopping_bag_outlined,
+              size: 40.sp,
+              color: AppColor.primary.withValues(alpha: 0.6),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'List is Empty',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: vc.onSurface,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            'Tap "Add Products" below\nto build your list.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontFamily: 'Inter',
+              color: vc.onSurfaceMuted,
+              height: 1.6,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildBottomBar(
+      BuildContext context, WidgetRef ref, SavedList list) {
     final vc = context.vColors;
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/vhandar_favorite_lists.svg',
-              width: 140.w,
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+          16.w, 12.h, 16.w, 16.h + MediaQuery.of(context).padding.bottom),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        border: Border(top: BorderSide(color: vc.divider)),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50.h,
+        child: ElevatedButton.icon(
+          onPressed: () => _showAddProductSheet(context, ref, list),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.r),
             ),
-            SizedBox(height: 20.h),
-            Text(
-              'List is Empty',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w700,
-                color: vc.onSurface,
-              ),
+          ),
+          icon: const Icon(Icons.add_rounded, size: 20),
+          label: Text(
+            'Add Products',
+            style: TextStyle(
+              fontSize: 15.sp,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
             ),
-            SizedBox(height: 8.h),
-            Text(
-              'Tap "Add Products" to start\nbuilding your list.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontFamily: 'Inter',
-                color: vc.onSurfaceMuted,
-                height: 1.5,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -109,6 +181,124 @@ class ListDetailScreen extends ConsumerWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Product Tile
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ProductTile extends StatelessWidget {
+  final SavedProduct product;
+  final VoidCallback onRemove;
+
+  const _ProductTile({required this.product, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      margin: EdgeInsets.only(bottom: 10.h),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Product image
+          Container(
+            width: 60.w,
+            height: 60.w,
+            decoration: BoxDecoration(
+              color: vc.surfaceVariant,
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(color: vc.divider),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.r),
+              child: product.imageUrl != null
+                  ? CustomImageViewer(
+                      path: product.imageUrl,
+                      fit: BoxFit.contain,
+                      borderRadius: 10.r,
+                    )
+                  : Icon(Icons.shopping_bag_outlined,
+                      color: Colors.grey.shade400, size: 26.sp),
+            ),
+          ),
+          SizedBox(width: 12.w),
+
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.name ?? 'Product',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                    color: vc.onSurface,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (product.unit != null) ...[
+                  SizedBox(height: 3.h),
+                  Text(
+                    product.unit!,
+                    style: TextStyle(
+                        fontSize: 11.sp, color: vc.onSurfaceMuted),
+                  ),
+                ],
+                if (product.price != null) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Rs. ${product.price!.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.primary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // Remove button
+          GestureDetector(
+            onTap: onRemove,
+            child: Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(
+                Icons.remove_rounded,
+                color: Colors.red.shade400,
+                size: 18.sp,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Add Product Sheet
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _AddProductSheet extends ConsumerStatefulWidget {
   final String listId;
@@ -131,51 +321,73 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
     final searchState = ref.watch(searchProvider);
 
     return DraggableScrollableSheet(
-      initialChildSize: 0.85,
+      initialChildSize: 0.88,
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, scrollController) => Container(
         decoration: BoxDecoration(
-          color: context.vColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+          color: vc.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
         child: Column(
           children: [
             // Handle
             Center(
               child: Container(
-                margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
+                margin: EdgeInsets.only(top: 12.h, bottom: 6.h),
                 width: 36.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: context.vColors.divider,
+                  color: vc.divider,
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
             ),
 
-            // Title
+            // Header
             Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 12.h),
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
               child: Row(
                 children: [
-                  Text(
-                    'Add to "${widget.list.name}"',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: context.vColors.onSurface,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Add Products',
+                          style: TextStyle(
+                            fontSize: 17.sp,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            color: vc.onSurface,
+                          ),
+                        ),
+                        Text(
+                          'to "${widget.list.name}"',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontFamily: 'Inter',
+                            color: vc.onSurfaceMuted,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close,
-                        color: context.vColors.onSurfaceMuted, size: 22.sp),
+                    child: Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        color: vc.surfaceVariant,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.close_rounded,
+                          color: vc.onSurfaceMuted, size: 18.sp),
+                    ),
                   ),
                 ],
               ),
@@ -185,16 +397,17 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
               child: Container(
-                height: 44.h,
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                height: 46.h,
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
                 decoration: BoxDecoration(
-                  color: context.vColors.divider,
-                  borderRadius: BorderRadius.circular(12.r),
+                  color: vc.surfaceVariant,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(color: vc.divider),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.search,
-                        color: context.vColors.onSurfaceMuted, size: 20.sp),
+                    Icon(Icons.search_rounded,
+                        color: vc.onSurfaceMuted, size: 20.sp),
                     SizedBox(width: 8.w),
                     Expanded(
                       child: TextField(
@@ -202,11 +415,12 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                         autofocus: true,
                         onChanged: (v) =>
                             ref.read(searchProvider.notifier).search(v),
-                        style: TextStyle(fontSize: 13.sp, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 14.sp, color: vc.onSurface),
                         decoration: InputDecoration(
                           hintText: 'Search products...',
                           hintStyle: TextStyle(
-                              fontSize: 13.sp, color: Colors.grey.shade400),
+                              fontSize: 13.sp, color: vc.onSurfaceMuted),
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -220,15 +434,15 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                           _controller.clear();
                           ref.read(searchProvider.notifier).search('');
                         },
-                        child: Icon(Icons.close,
-                            color: Colors.grey.shade400, size: 18.sp),
+                        child: Icon(Icons.close_rounded,
+                            color: vc.onSurfaceMuted, size: 18.sp),
                       ),
                   ],
                 ),
               ),
             ),
 
-            Divider(height: 1, color: context.vColors.divider),
+            Divider(height: 1, color: vc.divider),
 
             // Results
             Expanded(
@@ -236,14 +450,29 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                   ? const Center(child: CustomCircularLoader())
                   : searchState.results.isEmpty
                       ? Center(
-                          child: Text(
-                            searchState.query.isEmpty
-                                ? 'Type to search products'
-                                : 'No results found',
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: Colors.grey.shade400,
-                            ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                searchState.query.isEmpty
+                                    ? Icons.search_rounded
+                                    : Icons.search_off_rounded,
+                                size: 40.sp,
+                                color: vc.onSurfaceMuted
+                                    .withValues(alpha: 0.4),
+                              ),
+                              SizedBox(height: 12.h),
+                              Text(
+                                searchState.query.isEmpty
+                                    ? 'Type to search products'
+                                    : 'No results for "${searchState.query}"',
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: vc.onSurfaceMuted,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       : ListView.separated(
@@ -252,7 +481,7 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                           itemCount: searchState.results.length,
                           separatorBuilder: (_, __) => Divider(
                             height: 1,
-                            indent: 72.w,
+                            indent: 80.w,
                             color: context.vColors.divider,
                           ),
                           itemBuilder: (ctx, i) {
@@ -274,6 +503,10 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Search Result Tile
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _SearchResultTile extends ConsumerWidget {
   final ProductData product;
   final String listId;
@@ -287,152 +520,46 @@ class _SearchResultTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAdded =
-        ref.watch(myListProvider.select((s) => s.lists.any((l) =>
-            l.id == listId && l.products.any((p) => p.id == product.id))));
-
-    return ListTile(
-      contentPadding:
-          EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-      leading: Container(
-        width: 48.w,
-        height: 48.w,
-        decoration: BoxDecoration(
-          color: context.vColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: context.vColors.divider),
-        ),
-        child: CustomImageViewer(
-          path: product.images?.first.url,
-          fit: BoxFit.contain,
-          borderRadius: 8.r,
-        ),
-      ),
-      title: Text(
-        product.name ?? '',
-        style: TextStyle(
-          fontSize: 13.sp,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w600,
-          color: context.vColors.onSurface,
-        ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        product.unit ?? '',
-        style: TextStyle(
-            fontSize: 11.sp, color: context.vColors.onSurfaceMuted),
-      ),
-      trailing: GestureDetector(
-        onTap: isAdded
-            ? () => ref
-                .read(myListProvider.notifier)
-                .removeProduct(listId, product.id!)
-            : () async {
-                final saved = SavedProduct(
-                  id: product.id!,
-                  name: product.name,
-                  unit: product.unit,
-                  price: product.actualPrice,
-                  imageUrl: product.images?.isNotEmpty == true
-                      ? product.images!.first.url
-                      : null,
-                );
-                final wasAdded = await ref
-                    .read(myListProvider.notifier)
-                    .addProduct(listId, saved);
-                if (!wasAdded && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${product.name ?? 'Item'} is already in this list'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                }
-              },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding:
-              EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
-          decoration: BoxDecoration(
-            color: isAdded
-                ? AppColor.primary
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(
-              color: isAdded ? AppColor.primary : context.vColors.divider,
-            ),
-          ),
-          child: Text(
-            isAdded ? 'Added' : 'Add',
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w600,
-              color: isAdded ? Colors.white : context.vColors.onSurface,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProductListTile extends StatelessWidget {
-  final SavedProduct product;
-  final VoidCallback onRemove;
-
-  const _ProductListTile({required this.product, required this.onRemove});
-
-  @override
-  Widget build(BuildContext context) {
     final vc = context.vColors;
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: vc.surface,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    final isAdded = ref.watch(myListProvider.select((s) => s.lists.any(
+        (l) => l.id == listId && l.products.any((p) => p.id == product.id))));
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Row(
         children: [
+          // Image
           Container(
             width: 52.w,
             height: 52.w,
             decoration: BoxDecoration(
-              color: context.vColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: context.vColors.divider),
+              color: vc.surfaceVariant,
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(color: vc.divider),
             ),
-            child: product.imageUrl != null
-                ? CustomImageViewer(
-                    path: product.imageUrl,
-                    fit: BoxFit.contain,
-                    borderRadius: 8.r,
-                  )
-                : Icon(Icons.shopping_bag_outlined,
-                    color: Colors.grey.shade400, size: 24.sp),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.r),
+              child: CustomImageViewer(
+                path: product.images?.first.url,
+                fit: BoxFit.contain,
+                borderRadius: 10.r,
+              ),
+            ),
           ),
           SizedBox(width: 12.w),
+
+          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.name ?? 'Product',
+                  product.name ?? '',
                   style: TextStyle(
                     fontSize: 13.sp,
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
-                    color: context.vColors.onSurface,
+                    color: vc.onSurface,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -442,30 +569,65 @@ class _ProductListTile extends StatelessWidget {
                   Text(
                     product.unit!,
                     style: TextStyle(
-                        fontSize: 11.sp, color: context.vColors.onSurfaceMuted),
-                  ),
-                ],
-                if (product.price != null) ...[
-                  SizedBox(height: 2.h),
-                  Text(
-                    'Rs. ${product.price!.toInt()}',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: AppColor.primary,
-                    ),
+                        fontSize: 11.sp, color: vc.onSurfaceMuted),
                   ),
                 ],
               ],
             ),
           ),
-          IconButton(
-            onPressed: onRemove,
-            icon: Icon(Icons.remove_circle_outline,
-                color: Colors.red.shade400, size: 22.sp),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+          SizedBox(width: 10.w),
+
+          // Add / Added button
+          GestureDetector(
+            onTap: isAdded
+                ? () => ref
+                    .read(myListProvider.notifier)
+                    .removeProduct(listId, product.id!)
+                : () async {
+                    final saved = SavedProduct(
+                      id: product.id!,
+                      name: product.name,
+                      unit: product.unit,
+                      price: product.actualPrice,
+                      imageUrl: product.images?.isNotEmpty == true
+                          ? product.images!.first.url
+                          : null,
+                    );
+                    final wasAdded = await ref
+                        .read(myListProvider.notifier)
+                        .addProduct(listId, saved);
+                    if (!wasAdded && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              '${product.name ?? 'Item'} is already in this list'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding:
+                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: isAdded ? AppColor.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(
+                  color: isAdded ? AppColor.primary : vc.divider,
+                  width: 1.5,
+                ),
+              ),
+              child: Text(
+                isAdded ? 'Added' : 'Add',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w700,
+                  color: isAdded ? Colors.white : vc.onSurface,
+                ),
+              ),
+            ),
           ),
         ],
       ),

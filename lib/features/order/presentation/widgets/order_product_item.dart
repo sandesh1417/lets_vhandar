@@ -24,37 +24,45 @@ class OrderProductItem extends StatelessWidget {
     final vc = context.vColors;
     final hasDiscount = _discountAmount > 0;
     final qty = product.count ?? 1;
-    final total = product.totalPrice?.toInt() ?? 0;
+    final total = (product.totalPrice ?? product.netPrice ?? 0).toInt();
     final perUnit = product.pricePerUnit?.toInt();
+    final unitLabel =
+        '${product.unitValue?.toInt() ?? ''} ${product.unit ?? ''}'.trim();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 10.h),
+      padding: EdgeInsets.all(14.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Image ───────────────────────────────────────────────────
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.r),
-            child: Container(
-              width: 72.w,
-              height: 72.w,
+          // ── Image ─────────────────────────────────────────────────
+          Container(
+            width: 76.w,
+            height: 76.w,
+            decoration: BoxDecoration(
               color: vc.surfaceVariant,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: vc.divider),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
               child: product.firstImageUrl != null
                   ? CachedNetworkImage(
                       imageUrl: product.firstImageUrl!,
                       fit: BoxFit.cover,
                       errorWidget: (_, __, ___) => Icon(
-                          Icons.broken_image_outlined,
-                          color: vc.onSurfaceMuted),
+                        Icons.shopping_bag_outlined,
+                        color: vc.onSurfaceMuted,
+                        size: 26.sp,
+                      ),
                     )
                   : Icon(Icons.shopping_bag_outlined,
-                      color: vc.onSurfaceMuted, size: 28.sp),
+                      color: vc.onSurfaceMuted, size: 26.sp),
             ),
           ),
 
           SizedBox(width: 12.w),
 
-          // ── Details ─────────────────────────────────────────────────
+          // ── Details ───────────────────────────────────────────────
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,50 +74,29 @@ class OrderProductItem extends StatelessWidget {
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w700,
                     color: vc.onSurface,
-                    height: 1.35,
+                    height: 1.3,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 5.h),
+                SizedBox(height: 6.h),
 
-                // Unit + qty pill
-                Row(
+                // Unit + qty chips
+                Wrap(
+                  spacing: 6.w,
+                  runSpacing: 4.h,
                   children: [
-                    if (product.unit?.isNotEmpty == true ||
-                        product.unitValue != null)
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 7.w, vertical: 2.h),
-                        decoration: BoxDecoration(
-                          color: vc.surfaceVariant,
-                          borderRadius: BorderRadius.circular(5.r),
-                        ),
-                        child: Text(
-                          '${product.unitValue?.toInt() ?? ''} ${product.unit ?? ''}'.trim(),
-                          style: TextStyle(
-                            fontSize: 10.sp,
-                            color: vc.onSurfaceMuted,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    if (unitLabel.isNotEmpty)
+                      _Chip(
+                        label: unitLabel,
+                        bgColor: vc.surfaceVariant,
+                        textColor: vc.onSurfaceMuted,
                       ),
-                    SizedBox(width: 6.w),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 7.w, vertical: 2.h),
-                      decoration: BoxDecoration(
-                        color: AppColor.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(5.r),
-                      ),
-                      child: Text(
-                        'Qty: $qty',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: AppColor.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    _Chip(
+                      label: 'Qty: $qty',
+                      bgColor: AppColor.primary.withValues(alpha: 0.08),
+                      textColor: AppColor.primary,
+                      bold: true,
                     ),
                   ],
                 ),
@@ -118,52 +105,94 @@ class OrderProductItem extends StatelessWidget {
 
                 // Price row
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Rs. $total',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w800,
-                        color: vc.onSurface,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Rs. $total',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w800,
+                            color: vc.onSurface,
+                          ),
+                        ),
+                        if (perUnit != null && qty > 1)
+                          Text(
+                            'Rs.$perUnit × $qty',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: vc.onSurfaceMuted,
+                            ),
+                          ),
+                      ],
                     ),
-                    if (perUnit != null && qty > 1) ...[
-                      SizedBox(width: 6.w),
-                      Text(
-                        '(Rs.$perUnit × $qty)',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: vc.onSurfaceMuted,
+                    if (hasDiscount)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2E7D32).withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.local_offer_rounded,
+                                size: 10.sp,
+                                color: const Color(0xFF2E7D32)),
+                            SizedBox(width: 3.w),
+                            Text(
+                              'Saved Rs.${_discountAmount.toInt()}',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF2E7D32),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
                   ],
                 ),
-
-                // Saved badge
-                if (hasDiscount) ...[
-                  SizedBox(height: 4.h),
-                  Row(
-                    children: [
-                      Icon(Icons.local_offer_outlined,
-                          size: 11.sp, color: const Color(0xFF2E7D32)),
-                      SizedBox(width: 3.w),
-                      Text(
-                        'Saved Rs.${_discountAmount.toInt()}',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: const Color(0xFF2E7D32),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  final String label;
+  final Color bgColor;
+  final Color textColor;
+  final bool bold;
+
+  const _Chip({
+    required this.label,
+    required this.bgColor,
+    required this.textColor,
+    this.bold = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6.r),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10.sp,
+          color: textColor,
+          fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+        ),
       ),
     );
   }

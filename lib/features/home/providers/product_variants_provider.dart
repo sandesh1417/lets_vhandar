@@ -66,94 +66,94 @@ final productVariantsProvider =
   return combined;
 });
 
-/// Dynamically expands a list of products by fetching and adding their variants
-/// as separate items in the list. Properly deduplicates to prevent duplicate cards.
+/// Expands products with variants as separate grid cards.
+/// Variant fetches are fully parallelised — all families are in-flight at once.
 Future<List<ProductData>> expandProductsWithVariants(
     List<ProductData> products) async {
   final repository = locator<ProductRepository>();
-  final Set<String> addedIds = {};
-  final List<ProductData> expanded = [];
-  final Set<String> fetchedParentIds = {};
+
+  // Split: simple products (no variants) vs variant families keyed by parentId.
+  final List<ProductData> simple = [];
+  final Map<String, List<ProductData>> families = {};
 
   for (final product in products) {
     if (product.id == null) continue;
-
-    if (addedIds.contains(product.id)) {
-      continue;
-    }
-
     if (product.hasVariant == true || product.parentId != null) {
-      final parentId = product.parentId ?? product.id;
-      if (parentId != null && !fetchedParentIds.contains(parentId)) {
-        fetchedParentIds.add(parentId);
-
-        final result = await repository.getProductVariants(parentId);
-        
-        // Fetch the parent product if current product is a child variant,
-        // so that the parent product itself can also be shown as a card!
-        ProductData? parentProd;
-        if (product.parentId != null) {
-          final parentRes = await repository.getProductById(parentId);
-          parentRes.when(
-            success: (parent) => parentProd = parent,
-            failure: (_) {},
-          );
-        } else {
-          parentProd = product;
-        }
-
-        await result.when(
-          success: (variants) async {
-            // Add the parent product first (if found/available)
-            if (parentProd != null && !addedIds.contains(parentProd!.id)) {
-              addedIds.add(parentProd!.id!);
-              expanded.add(parentProd!);
-            }
-            // Add current product (which might be the child variant)
-            if (!addedIds.contains(product.id)) {
-              addedIds.add(product.id!);
-              final stampedProduct = (product.parentId == null && product.id != parentId)
-                  ? product.copyWith(parentId: parentId)
-                  : product;
-              expanded.add(stampedProduct);
-            }
-            // Add all other variants — stamp parentId so ADD button triggers popup
-            for (final v in variants) {
-              if (v.id != null && !addedIds.contains(v.id)) {
-                addedIds.add(v.id!);
-                final stamped = (v.parentId == null && v.id != parentId)
-                    ? v.copyWith(parentId: parentId)
-                    : v;
-                expanded.add(stamped);
-              }
-            }
-          },
-          failure: (_) {
-            if (parentProd != null && !addedIds.contains(parentProd!.id)) {
-              addedIds.add(parentProd!.id!);
-              expanded.add(parentProd!);
-            }
-            if (!addedIds.contains(product.id)) {
-              addedIds.add(product.id!);
-              expanded.add(product);
-            }
-          },
-        );
-      } else {
-        if (!addedIds.contains(product.id)) {
-          addedIds.add(product.id!);
-          expanded.add(product);
-        }
-      }
+      final parentId = product.parentId ?? product.id!;
+      families.putIfAbsent(parentId, () => []).add(product);
     } else {
-      if (!addedIds.contains(product.id)) {
-        addedIds.add(product.id!);
-        expanded.add(product);
-      }
+      simple.add(product);
     }
   }
 
-  return expanded;
+  // Resolve all variant families in parallel.
+  final resolved = await Future.wait(
+    families.entries.map((e) => _resolveFamily(repository, e.key, e.value)),
+  );
+
+  // Merge: simple products first (preserve API order), then families.
+  final Set<String> addedIds = {};
+  final List<ProductData> result = [];
+
+  for (final p in simple) {
+    if (addedIds.add(p.id!)) result.add(p);
+  }
+  for (final family in resolved) {
+    for (final p in family) {
+      if (p.id != null && addedIds.add(p.id!)) result.add(p);
+    }
+  }
+
+  return result;
+}
+
+/// Fetches variant + parent data for a single family.
+/// Both network calls are fired concurrently before either is awaited.
+Future<List<ProductData>> _resolveFamily(
+    ProductRepository repo, String parentId, List<ProductData> group) async {
+  final isChildGroup = group.any((p) => p.parentId != null);
+
+  // Kick off both requests before awaiting either.
+  final variantsFut = repo.getProductVariants(parentId);
+  final parentFut = isChildGroup ? repo.getProductById(parentId) : null;
+
+  final variantsResult = await variantsFut;
+
+  ProductData? parentProduct;
+  if (parentFut != null) {
+    (await parentFut).when(success: (p) => parentProduct = p, failure: (_) {});
+  } else {
+    try {
+      parentProduct = group.firstWhere((p) => p.parentId == null);
+    } catch (_) {
+      parentProduct = group.first;
+    }
+  }
+
+  final List<ProductData> family = [];
+
+  variantsResult.when(
+    success: (variants) {
+      if (parentProduct != null) family.add(parentProduct!);
+      for (final v in variants) {
+        if (v.id != parentProduct?.id) {
+          family.add(v.parentId == null ? v.copyWith(parentId: parentId) : v);
+        }
+      }
+      // Ensure every product from the original group is represented.
+      for (final p in group) {
+        if (!family.any((f) => f.id == p.id)) {
+          family.add(
+              (p.parentId == null && p.id != parentId)
+                  ? p.copyWith(parentId: parentId)
+                  : p);
+        }
+      }
+    },
+    failure: (_) => family.addAll(group),
+  );
+
+  return family;
 }
 
 

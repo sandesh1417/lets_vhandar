@@ -625,6 +625,80 @@ class _SelectPaymentMethodScreenState
     );
   }
 
+  Future<void> _showOrderSuccessDialog(BuildContext context) async {
+    final vc = context.vColors;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: vc.surface,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r)),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Success icon
+              Container(
+                width: 72.w,
+                height: 72.w,
+                decoration: BoxDecoration(
+                  color: AppColor.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.check_circle_rounded,
+                    color: AppColor.primary, size: 40.sp),
+              ),
+              SizedBox(height: 18.h),
+              Text(
+                'Order Placed!',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w800,
+                  color: vc.onSurface,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Your order has been placed successfully.\nWe\'ll deliver it to you soon!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  color: vc.onSurfaceMuted,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 24.h),
+              SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: Text(
+                    'View My Orders',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _placeOrder(BuildContext context) async {
     final loginState = ref.read(loginProvider);
     final isBusiness = loginState.user?.isBusiness ?? false;
@@ -740,15 +814,18 @@ class _SelectPaymentMethodScreenState
     if (!context.mounted) return;
 
     if (success) {
-      // Clear cart and navigate to Order tab (index 2)
       ref.read(cartProvider.notifier).clearCart();
       ref.read(appliedCouponProvider.notifier).removeCoupon();
+
+      // Show success dialog
+      await _showOrderSuccessDialog(context);
+
+      if (!context.mounted) return;
+
+      // Fix blank page: mark orders tab as visited before switching to it
+      ref.read(visitedTabsProvider.notifier).update((s) => {...s, 2});
       ref.read(dashboardIndexProvider.notifier).state = 2;
-
-      // Go back to the dashboard tab list
       context.go(LVRoute.dashboardScreen.route);
-
-      CustomSnackbar.success(context, message: 'Order placed successfully! 🎉');
     } else {
       final error = ref.read(orderProvider).error;
       CustomSnackbar.error(context, message: error ?? 'Failed to place order');

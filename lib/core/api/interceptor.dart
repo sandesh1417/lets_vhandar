@@ -50,7 +50,10 @@ class ApiInterceptor extends Interceptor {
       log('✗ ${err.response?.statusCode} ${err.requestOptions.path} — ${err.message}');
     }
 
-    if (err.response?.statusCode == 401 && !_loggingOut) {
+    // Some endpoints (e.g. user search) return 401 for "not found" rather than
+    // session expiry — opt them out of auto-logout via extra['skipAutoLogout'].
+    final skip = err.requestOptions.extra['skipAutoLogout'] == true;
+    if (err.response?.statusCode == 401 && !_loggingOut && !skip) {
       _loggingOut = true;
       scheduleMicrotask(() async {
         try {

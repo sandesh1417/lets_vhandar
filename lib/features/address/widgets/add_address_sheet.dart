@@ -344,62 +344,87 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
       maxChildSize: 1.0,
       expand: false,
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: context.vColors.scaffoldBg,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 15,
-                offset: const Offset(0, -5),
-              ),
-            ],
+        return CustomPaint(
+          painter: _DashedTopBorderPainter(
+            color: context.vColors.divider,
+            radius: 24.r,
           ),
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.vColors.scaffoldBg,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
             ),
-            child: Column(
-              children: [
-                // --- Drag handle ---
-                Center(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
-                    width: 40.w,
-                    height: 5.h,
-                    decoration: BoxDecoration(
-                      color: context.vColors.divider,
-                      borderRadius: BorderRadius.circular(10.r),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  // --- Drag handle ---
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: context.vColors.divider,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
                     ),
                   ),
-                ),
 
                 if (!_isLocationConfirmed) ...[
                   // Header
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    padding: EdgeInsets.fromLTRB(16.w, 4.h, 8.w, 0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Select Delivery Location',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                            color: context.vColors.onSurface,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Select Delivery Location',
+                                style: TextStyle(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.vColors.onSurface,
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                'Search or tap on the map to pin your location',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: context.vColors.onSurfaceMuted,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: Icon(Icons.close, color: context.vColors.onSurfaceMuted),
+                          icon: Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: BoxDecoration(
+                              color: context.vColors.surfaceVariant,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.close_rounded,
+                                color: context.vColors.onSurfaceMuted,
+                                size: 16.sp),
+                          ),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
+                        SizedBox(width: 8.w),
                       ],
                     ),
                   ),
+                  Divider(
+                      height: 14.h,
+                      thickness: 1,
+                      color: context.vColors.divider),
                   // Big Map Picker
                   Expanded(
                     child: AddressMapPicker(
@@ -428,45 +453,46 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                   ),
                   // Confirm Button
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    padding: EdgeInsets.fromLTRB(
+                        16.w,
+                        4.h,
+                        16.w,
+                        MediaQuery.of(context).padding.bottom + 12.h),
                     child: SizedBox(
                       width: double.infinity,
                       height: 52.h,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColor.secondary.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                      child: ElevatedButton(
+                        onPressed: (_locationDescription.isEmpty ||
+                                _locationDescription ==
+                                    'Tap on map to select location' ||
+                                _locationError != null ||
+                                _isGeocoding)
+                            ? null
+                            : () =>
+                                setState(() => _isLocationConfirmed = true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColor.secondary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: const Color(0xFF9C9C9C),
+                          disabledForegroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.check_circle_rounded, size: 18.sp),
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Confirm Location',
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: (_locationDescription.isEmpty ||
-                                  _locationDescription ==
-                                      'Tap on map to select location' ||
-                                  _locationError != null ||
-                                  _isGeocoding)
-                              ? null
-                              : () =>
-                                  setState(() => _isLocationConfirmed = true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.secondary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                          ),
-                          child: Text(
-                            'Confirm Location',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
                       ),
                     ),
@@ -559,8 +585,58 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
               ],
             ),
           ),
-        );
+        ),   // Container
+        );   // CustomPaint
       },
     );
   }
+}
+
+class _DashedTopBorderPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+
+  const _DashedTopBorderPainter({
+    required this.color,
+    required this.radius,
+  });
+
+  static const double strokeWidth = 1.5;
+  static const double dashWidth = 7;
+  static const double dashSpace = 5;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Path: bottom-left → up left side → top-left arc → top → top-right arc → down right side → bottom-right
+    final path = Path()
+      ..moveTo(0, size.height)
+      ..lineTo(0, radius)
+      ..quadraticBezierTo(0, 0, radius, 0)
+      ..lineTo(size.width - radius, 0)
+      ..quadraticBezierTo(size.width, 0, size.width, radius)
+      ..lineTo(size.width, size.height);
+
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final len = draw ? dashWidth : dashSpace;
+        if (draw) {
+          canvas.drawPath(metric.extractPath(distance, distance + len), paint);
+        }
+        distance += len;
+        draw = !draw;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedTopBorderPainter old) =>
+      old.color != color || old.radius != radius;
 }

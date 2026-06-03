@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -12,6 +13,7 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
+import 'presentation/order_summary_screen.dart';
 import 'presentation/widgets/order_card.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
@@ -80,6 +82,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             startDate: _startDateStr,
             endDate: _endDateStr,
           );
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    _fetchOrders();
+    while (ref.read(orderProvider).isLoading) {
+      await Future.delayed(const Duration(milliseconds: 50));
     }
   }
 
@@ -458,6 +467,33 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isOffline = ref.watch(connectivityProvider).maybeWhen(
+          data: (online) => !online,
+          orElse: () => false,
+        );
+
+    if (isOffline) {
+      return Scaffold(
+        backgroundColor: context.vColors.scaffoldBg,
+        appBar: AppBar(
+          backgroundColor: AppColor.primary,
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
+          automaticallyImplyLeading: false,
+          title: Text(
+            'My Orders',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.sp,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+        body: const _OfflineBody(),
+      );
+    }
+
     final loginState = ref.watch(loginProvider);
     final state = ref.watch(orderProvider);
     final filteredOrders = state.filteredOrders;
@@ -593,6 +629,29 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   ),
                 ),
                 SizedBox(width: 8.w),
+                // Summary icon
+                GestureDetector(
+                  onTap: () {
+                    if (!state.isLoading && state.orders.isNotEmpty) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) =>
+                            OrderSummaryScreen(state: state),
+                      ));
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(9.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.30)),
+                    ),
+                    child: Icon(Icons.insert_chart_outlined_rounded,
+                        color: Colors.white, size: 20.sp),
+                  ),
+                ),
+                SizedBox(width: 8.w),
                 GestureDetector(
                   onTap: () => _showFilterSheet(context),
                   child: Stack(
@@ -635,17 +694,14 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         children: [
           // Main Orders List Area
           Expanded(
-            child: state.isLoading
-                ? const OrderListShimmer()
-                : filteredOrders.isEmpty
-                    ? _buildEmptyState()
-                    : RefreshIndicator(
-                        onRefresh: () {
-                          _fetchOrders();
-                          return Future.value();
-                        },
-                        color: AppColor.primary,
-                        child: ListView.builder(
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              color: AppColor.primary,
+              child: state.isLoading
+                  ? const OrderListShimmer()
+                  : filteredOrders.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
                           controller: _scrollController,
                           padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w,
                               MediaQuery.of(context).padding.bottom + 150.h),
@@ -739,6 +795,59 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _OfflineBody extends StatelessWidget {
+  const _OfflineBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 36.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/offline.svg',
+              width: 100.w,
+              height: 100.w,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'Oops!',
+              style: TextStyle(
+                fontSize: 32.sp,
+                fontWeight: FontWeight.w900,
+                color: AppColor.primary,
+                letterSpacing: -0.5,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'No Internet Connection',
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w600,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Please check your Wi-Fi or mobile data\nand try again.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -24,6 +24,17 @@ class SavedList {
         createdAt: createdAt,
       );
 
+  factory SavedList.fromApi(Map<String, dynamic> map) => SavedList(
+        id: (map['_id'] ?? map['id']) as String,
+        name: map['name'] as String,
+        products: (map['products'] as List<dynamic>? ?? [])
+            .map((p) => SavedProduct.fromApi(Map<String, dynamic>.from(p)))
+            .toList(),
+        createdAt: map['createdAt'] != null
+            ? DateTime.parse(map['createdAt'] as String)
+            : DateTime.now(),
+      );
+
   Map<String, dynamic> toMap() => {
         'id': id,
         'name': name,
@@ -32,12 +43,14 @@ class SavedList {
       };
 
   factory SavedList.fromMap(Map<String, dynamic> map) => SavedList(
-        id: map['id'] as String,
+        id: (map['_id'] ?? map['id']) as String,
         name: map['name'] as String,
-        products: (map['products'] as List<dynamic>)
+        products: (map['products'] as List<dynamic>? ?? [])
             .map((p) => SavedProduct.fromMap(Map<String, dynamic>.from(p)))
             .toList(),
-        createdAt: DateTime.parse(map['createdAt'] as String),
+        createdAt: map['createdAt'] != null
+            ? DateTime.parse(map['createdAt'] as String)
+            : DateTime.now(),
       );
 
   String toJson() => jsonEncode(toMap());
@@ -60,6 +73,26 @@ class SavedProduct {
     this.imageUrl,
   });
 
+  factory SavedProduct.fromApi(Map<String, dynamic> map) {
+    final images = map['images'] as List<dynamic>?;
+    String? imageUrl;
+    if (images != null && images.isNotEmpty) {
+      final first = images.first;
+      if (first is Map) {
+        imageUrl = first['url'] as String?;
+      } else if (first is String) {
+        imageUrl = first;
+      }
+    }
+    return SavedProduct(
+      id: (map['_id'] ?? map['id']) as String,
+      name: map['name'] as String?,
+      unit: map['unit'] as String?,
+      price: (map['pricePerUnit'] ?? map['price'] as num?)?.toDouble(),
+      imageUrl: imageUrl,
+    );
+  }
+
   Map<String, dynamic> toMap() => {
         'id': id,
         'name': name,
@@ -69,7 +102,7 @@ class SavedProduct {
       };
 
   factory SavedProduct.fromMap(Map<String, dynamic> map) => SavedProduct(
-        id: map['id'] as String,
+        id: (map['_id'] ?? map['id']) as String,
         name: map['name'] as String?,
         unit: map['unit'] as String?,
         price: (map['price'] as num?)?.toDouble(),

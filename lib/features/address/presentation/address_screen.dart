@@ -5,9 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
@@ -37,12 +38,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 
   void _openAddSheet(BuildContext context, String userId,
       {AddressModel? existing}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) =>
-          AddAddressSheet(userId: userId, existingAddress: existing),
+    context.pushNamed(
+      LVRoute.addAddressScreen.route,
+      extra: {'userId': userId, 'existingAddress': existing},
     );
   }
 

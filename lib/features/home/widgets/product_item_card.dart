@@ -11,8 +11,8 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
-import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class ProductItemCard extends ConsumerStatefulWidget {
   final ProductData product;
@@ -62,7 +62,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                 maxHeight: MediaQuery.of(context).size.height * 0.75,
               ),
               decoration: BoxDecoration(
-                color: vc.surface,
+                color: vc.scaffoldBg,
                 borderRadius:
                     BorderRadius.vertical(top: Radius.circular(24.r)),
               ),
@@ -171,30 +171,29 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                 ? vc.surfaceVariant
                                                 : Colors.white,
                                             borderRadius: BorderRadius.circular(16.r),
-                                            boxShadow: context.isDark
-                                                ? []
-                                                : [
-                                                    BoxShadow(
-                                                      color: Colors.black.withValues(alpha: 0.06),
-                                                      blurRadius: 10,
-                                                      offset: const Offset(0, 4),
-                                                    ),
-                                                  ],
+                                            border: Border.all(
+                                              color: context.isDark
+                                                  ? vc.divider
+                                                  : Colors.grey.shade200,
+                                              width: 1,
+                                            ),
                                           ),
                                           child: Row(
                                             children: [
                                               if (v.images?.isNotEmpty == true) ...[
-                                                Container(
-                                                  padding: EdgeInsets.all(4.w),
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(color: vc.divider),
-                                                    borderRadius: BorderRadius.circular(12.r),
-                                                  ),
-                                                  child: CustomImageViewer(
-                                                    path: v.images!.first.url,
-                                                    width: 50.w,
-                                                    height: 50.h,
-                                                    fit: BoxFit.contain,
+                                                ClipRRect(
+                                                  borderRadius: BorderRadius.circular(12.r),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(color: vc.divider),
+                                                      borderRadius: BorderRadius.circular(12.r),
+                                                    ),
+                                                    child: CustomImageViewer(
+                                                      path: v.images!.first.url,
+                                                      width: 58.w,
+                                                      height: 58.h,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
                                                 SizedBox(width: 16.w),
@@ -288,7 +287,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             ),
                           );
                         },
-                          loading: () => const Center(child: CustomCircularLoader()),
+                          loading: () => const _VariantListShimmer(),
                           error: (e, s) => Center(
                             child: Text('Failed to load variants',
                                 style: TextStyle(fontSize: 14.sp, color: Colors.red)),
@@ -809,6 +808,8 @@ class _VariantCartButton extends ConsumerWidget {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: context.vColors.surface,
+            elevation: 0,
+            shadowColor: Colors.transparent,
             side: BorderSide(color: AppColor.primary),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
@@ -854,6 +855,69 @@ class _VariantCartButton extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _VariantListShimmer extends StatelessWidget {
+  const _VariantListShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      separatorBuilder: (_, __) => SizedBox(height: 12.h),
+      itemBuilder: (context, index) {
+        return Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: context.isDark ? vc.surfaceVariant : Colors.white,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: context.isDark ? vc.divider : Colors.grey.shade200,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 58.w,
+                height: 58.h,
+                decoration: BoxDecoration(
+                  border: Border.all(color: vc.divider),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(11.r),
+                  child: const CustomShimmer.rectangular(),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomShimmer.rectangular(height: 14.h, width: 80.w),
+                    SizedBox(height: 8.h),
+                    CustomShimmer.rectangular(height: 12.h, width: 120.w),
+                  ],
+                ),
+              ),
+              SizedBox(width: 12.w),
+              CustomShimmer.rectangular(
+                height: 32.h,
+                width: 72.w,
+                shapeBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

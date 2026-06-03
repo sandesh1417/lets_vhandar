@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -13,10 +16,25 @@ import 'package:lets_vhandar/features/order/providers/order_detail_provider.dart
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/error_state.dart';
-
 import 'widgets/bill_details_card.dart';
 import 'widgets/order_product_item.dart';
 import 'widgets/order_status_badge.dart';
+import 'order_receipt_pdf.dart';
+
+// ── Order status step definition ──────────────────────────────────────────────
+class _StepDef {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  const _StepDef(this.title, this.subtitle, this.icon);
+}
+
+const _orderSteps = [
+  _StepDef('Order Placed', 'Your order has been received', Icons.receipt_long_rounded),
+  _StepDef('Processing', 'Your order is being packed', Icons.inventory_2_rounded),
+  _StepDef('Shipped', 'Out for delivery', Icons.local_shipping_rounded),
+  _StepDef('Delivered', 'Order delivered successfully', Icons.check_circle_rounded),
+];
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -87,9 +105,18 @@ String _monthName(int month) {
   return m[month - 1];
 }
 
-class _OrderDetailBody extends StatelessWidget {
+class _OrderDetailBody extends StatefulWidget {
   final OrderData order;
   const _OrderDetailBody({required this.order});
+
+  @override
+  State<_OrderDetailBody> createState() => _OrderDetailBodyState();
+}
+
+class _OrderDetailBodyState extends State<_OrderDetailBody> {
+  bool _pdfLoading = false;
+
+  OrderData get order => widget.order;
 
   String get _dateStr {
     if (order.createdAt == null) return '';
@@ -98,6 +125,49 @@ class _OrderDetailBody extends StatelessWidget {
     final min = d.minute.toString().padLeft(2, '0');
     final ampm = d.hour >= 12 ? 'PM' : 'AM';
     return '${d.day} ${_monthName(d.month)} ${d.year}  •  $h:$min $ampm';
+  }
+
+  Future<void> _shareReceiptPdf() async {
+    setState(() => _pdfLoading = true);
+    try {
+      final bytes = await buildReceiptPdf(order);
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: 'Vhandar_Receipt_${order.orderId ?? 'order'}.pdf',
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not generate receipt PDF')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _pdfLoading = false);
+    }
+  }
+
+  Future<void> _downloadReceiptPdf() async {
+    setState(() => _pdfLoading = true);
+    try {
+      final bytes = await buildReceiptPdf(order);
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File(
+          '${dir.path}/Vhandar_Receipt_${order.orderId ?? 'order'}.pdf');
+      await file.writeAsBytes(bytes);
+      if (!mounted) return;
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile(file.path, mimeType: 'application/pdf')],
+        subject: 'Vhandar Receipt – ${order.orderId ?? ''}',
+      ));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not download receipt PDF')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _pdfLoading = false);
+    }
   }
 
   String _svgForType(String? type) {
@@ -162,15 +232,24 @@ class _OrderDetailBody extends StatelessWidget {
                       ),
                       // Share button
                       GestureDetector(
-                        onTap: () => _shareReceipt(),
+                        onTap: _pdfLoading ? null : _shareReceiptPdf,
                         child: Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.18),
                             borderRadius: BorderRadius.circular(10.r),
                           ),
-                          child: Icon(Icons.download_rounded,
-                              color: Colors.white, size: 18.sp),
+                          child: _pdfLoading
+                              ? SizedBox(
+                                  width: 18.sp,
+                                  height: 18.sp,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Icon(Icons.ios_share_rounded,
+                                  color: Colors.white, size: 18.sp),
                         ),
                       ),
                     ],
@@ -224,10 +303,15 @@ class _OrderDetailBody extends StatelessWidget {
 
           SizedBox(height: 20.h),
 
+          // ── Order Status Stepper ────────────────────────────────────
+          _OrderStatusStepper(status: order.status),
+
+          SizedBox(height: 20.h),
+
           // ── Products ────────────────────────────────────────────────
           const _SectionLabel(label: 'Items Ordered'),
+          SizedBox(height: 10.h),
           Container(
-            padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: vc.surface,
               borderRadius: BorderRadius.circular(14.r),
@@ -238,7 +322,7 @@ class _OrderDetailBody extends StatelessWidget {
                 for (int i = 0; i < (order.products?.length ?? 0); i++) ...[
                   OrderProductItem(product: order.products![i]),
                   if (i < (order.products!.length - 1))
-                    Divider(height: 20.h, color: vc.divider),
+                    Divider(height: 1, thickness: 0.5, color: vc.divider),
                 ],
               ],
             ),
@@ -402,35 +486,28 @@ class _OrderDetailBody extends StatelessWidget {
 
           SizedBox(height: 24.h),
 
-          // ── Share Receipt ───────────────────────────────────────────
-          GestureDetector(
-            onTap: _shareReceipt,
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 14.h),
-              decoration: BoxDecoration(
-                color: AppColor.primary.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(
-                    color: AppColor.primary.withValues(alpha: 0.25)),
+          // ── PDF actions ─────────────────────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: _PdfButton(
+                  label: 'Share Receipt',
+                  icon: Icons.ios_share_rounded,
+                  loading: _pdfLoading,
+                  onTap: _shareReceiptPdf,
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.download_rounded,
-                      size: 18.sp, color: AppColor.primary),
-                  SizedBox(width: 8.w),
-                  Text(
-                    'Share Receipt',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColor.primary,
-                    ),
-                  ),
-                ],
+              SizedBox(width: 12.w),
+              Expanded(
+                child: _PdfButton(
+                  label: 'Download PDF',
+                  icon: Icons.download_rounded,
+                  loading: _pdfLoading,
+                  onTap: _downloadReceiptPdf,
+                  filled: true,
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -456,33 +533,352 @@ class _OrderDetailBody extends StatelessWidget {
     }
   }
 
-  void _shareReceipt() {
-    final date = order.createdAt != null
-        ? '${order.createdAt!.day} ${_monthName(order.createdAt!.month)} ${order.createdAt!.year}'
-        : '-';
-    final items = (order.products ?? [])
-        .map((p) =>
-            '  • ${p.name ?? 'Item'} x${p.count ?? 1}  Rs.${p.netPrice?.toInt() ?? 0}')
-        .join('\n');
-    final receipt = '''
-============================
-        VHANDAR RECEIPT
-============================
-Order ID : ${order.orderId ?? '-'}
-Date     : $date
-Status   : ${order.status ?? '-'}
-Payment  : ${order.paymentMethod ?? '-'}
-----------------------------
-ITEMS:
-$items
-----------------------------
-TOTAL    : Rs.${order.totalPayableAmount ?? 0}
-============================
-Thank you for shopping with Vhandar!
-''';
-    SharePlus.instance.share(ShareParams(
-        text: receipt,
-        subject: 'Vhandar Order Receipt – ${order.orderId ?? ''}'));
+}
+
+// ── PDF action button ─────────────────────────────────────────────────────────
+
+class _PdfButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool loading;
+  final bool filled;
+  final VoidCallback onTap;
+
+  const _PdfButton({
+    required this.label,
+    required this.icon,
+    required this.loading,
+    required this.onTap,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: loading ? null : onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: filled
+              ? AppColor.primary
+              : AppColor.primary.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+              color: AppColor.primary.withValues(alpha: filled ? 1 : 0.25)),
+        ),
+        child: loading
+            ? Center(
+                child: SizedBox(
+                  width: 18.sp,
+                  height: 18.sp,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: filled ? Colors.white : AppColor.primary,
+                  ),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon,
+                      size: 17.sp,
+                      color: filled ? Colors.white : AppColor.primary),
+                  SizedBox(width: 7.w),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: filled ? Colors.white : AppColor.primary,
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+// ── Order Status Stepper ──────────────────────────────────────────────────────
+
+class _OrderStatusStepper extends StatefulWidget {
+  final String? status;
+  const _OrderStatusStepper({this.status});
+
+  @override
+  State<_OrderStatusStepper> createState() => _OrderStatusStepperState();
+}
+
+class _OrderStatusStepperState extends State<_OrderStatusStepper>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse;
+
+  static int _stepIndex(String? s) {
+    switch (s?.toLowerCase()) {
+      case 'processing': return 1;
+      case 'shipped':    return 2;
+      case 'delivered':  return 3;
+      default:           return 0; // pending
+    }
+  }
+
+  bool get _isCancelled {
+    final s = widget.status?.toLowerCase();
+    return s == 'cancelled' || s == 'returned' || s == 'refunded';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final activeIndex = _stepIndex(widget.status);
+    final cancelled = _isCancelled;
+    final activeColor = cancelled ? Colors.red.shade600 : AppColor.primary;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: vc.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.timeline_rounded, color: activeColor, size: 18.sp),
+              SizedBox(width: 8.w),
+              Text(
+                cancelled ? 'Order ${widget.status ?? 'Cancelled'}' : 'Order Progress',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  color: vc.onSurface,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.h),
+          if (cancelled)
+            _CancelledBanner(status: widget.status)
+          else
+            ...List.generate(_orderSteps.length, (i) {
+              final step = _orderSteps[i];
+              final isDone = i < activeIndex;
+              final isActive = i == activeIndex;
+              final isLast = i == _orderSteps.length - 1;
+              return _StepRow(
+                step: step,
+                isDone: isDone,
+                isActive: isActive,
+                isLast: isLast,
+                activeColor: activeColor,
+                pulseAnimation: isActive ? _pulse : null,
+              );
+            }),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  final _StepDef step;
+  final bool isDone;
+  final bool isActive;
+  final bool isLast;
+  final Color activeColor;
+  final Animation<double>? pulseAnimation;
+
+  const _StepRow({
+    required this.step,
+    required this.isDone,
+    required this.isActive,
+    required this.isLast,
+    required this.activeColor,
+    this.pulseAnimation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final dimColor = vc.onSurface.withValues(alpha: 0.2);
+
+    final circleColor = (isDone || isActive) ? activeColor : Colors.transparent;
+    final iconColor = (isDone || isActive) ? Colors.white : dimColor;
+    final borderColor = (isDone || isActive) ? activeColor : dimColor;
+
+    Widget circle = Container(
+      width: 40.w,
+      height: 40.w,
+      decoration: BoxDecoration(
+        color: circleColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: borderColor, width: 2),
+      ),
+      child: Icon(
+        isDone ? Icons.check_rounded : step.icon,
+        color: iconColor,
+        size: 18.sp,
+      ),
+    );
+
+    // Pulse ring on active step
+    if (isActive && pulseAnimation != null) {
+      circle = AnimatedBuilder(
+        animation: pulseAnimation!,
+        builder: (_, child) => Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 40.w + 10 * pulseAnimation!.value,
+              height: 40.w + 10 * pulseAnimation!.value,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: activeColor.withValues(alpha: 0.15 * (1 - pulseAnimation!.value)),
+              ),
+            ),
+            child!,
+          ],
+        ),
+        child: circle,
+      );
+    }
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Icon + connector column
+          SizedBox(
+            width: 40.w,
+            child: Column(
+              children: [
+                circle,
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      color: isDone ? activeColor : dimColor,
+                      margin: EdgeInsets.symmetric(vertical: 4.h),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          SizedBox(width: 14.w),
+
+          // Text
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 8.h,
+                bottom: isLast ? 0 : 20.h,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    step.title,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: (isDone || isActive)
+                          ? vc.onSurface
+                          : vc.onSurface.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    step.subtitle,
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: (isDone || isActive)
+                          ? vc.onSurfaceMuted
+                          : vc.onSurface.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  if (isActive) ...[
+                    SizedBox(height: 6.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 8.w, vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: activeColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Text(
+                        'Current Status',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: activeColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CancelledBanner extends StatelessWidget {
+  final String? status;
+  const _CancelledBanner({this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = status?.toLowerCase();
+    final (label, color, icon) = switch (s) {
+      'returned' => ('This order has been Returned', Colors.purple.shade600, Icons.assignment_return_rounded),
+      'refunded' => ('This order has been Refunded', const Color(0xFF00695C), Icons.currency_exchange_rounded),
+      _ => ('This order has been Cancelled', Colors.red.shade600, Icons.cancel_rounded),
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 22.sp),
+          SizedBox(width: 12.w),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

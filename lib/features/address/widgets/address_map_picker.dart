@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
-import 'package:lets_vhandar/widgets/tff.dart';
 
 import '../data/location_search_service.dart';
 
@@ -99,156 +98,209 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
     final vc = context.vColors;
 
     final cardColor = isDark ? vc.surfaceVariant : Colors.white;
-    final cardShadow = BoxShadow(
-      color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
-      blurRadius: 10,
-      offset: const Offset(0, 4),
-    );
 
-    // Wrap Stack in SizedBox so the map gets a bounded constraint.
-    // When height == double.infinity the SizedBox is unconstrained and
-    // the parent (Expanded) provides the actual bound.
-    return SizedBox(
-      height: widget.height ?? 260.h,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-        // ── Map ─────────────────────────────────────────────────────────────
-        GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: widget.selectedLatLng,
-            zoom: 14,
-          ),
-          onMapCreated: _handleMapCreated,
-          style: _mapStyle,
-          onTap: widget.onMapTap,
-          markers: {
-            Marker(
-              markerId: const MarkerId('selected'),
-              position: widget.selectedLatLng,
-              draggable: true,
-              onDragEnd: widget.onMapTap,
-            ),
-          },
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: true,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
-            Factory<OneSequenceGestureRecognizer>(
-              EagerGestureRecognizer.new,
-            ),
-          },
-        ),
-
-        // ── Search bar ──────────────────────────────────────────────────────
-        Positioned(
-          top: 12.h,
-          left: 12.w,
-          right: 12.w,
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // ── Search bar (PremiumSearchBar style) ─────────────────────────────
+        Padding(
+          padding: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 6.h),
           child: Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(50.r),
-              boxShadow: [cardShadow],
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: vc.divider),
             ),
-            child: CustomTextField(
-              controller: widget.searchController,
-              hintText: 'Search for area, street name...',
-              prefixIcon: widget.isSearching
-                  ? const UnconstrainedBox(
-                      child: CustomCircularLoader(size: 14, strokeWidth: 2),
-                    )
-                  : Icon(Icons.search, color: AppColor.textMuted, size: 20.sp),
-              suffixIcon: widget.searchController.text.isNotEmpty
-                  ? IconButton(
-                      onPressed: widget.onClearSearch,
-                      icon: Icon(Icons.close, size: 18.sp),
-                    )
-                  : null,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-              onSubmitted: widget.onSearchSubmitted,
-              onChanged: widget.onSearchChanged,
-              textInputAction: TextInputAction.search,
+            child: Row(
+              children: [
+                widget.isSearching
+                    ? SizedBox(
+                        width: 20.sp,
+                        height: 20.sp,
+                        child: CustomCircularLoader(
+                            size: 16,
+                            strokeWidth: 2,
+                            color: AppColor.primary),
+                      )
+                    : Icon(Icons.search_rounded,
+                        color: AppColor.primary, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    controller: widget.searchController,
+                    onChanged: widget.onSearchChanged,
+                    onSubmitted: widget.onSearchSubmitted,
+                    textInputAction: TextInputAction.search,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: vc.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search area, street or landmark...',
+                      hintStyle: TextStyle(
+                        fontSize: 13.sp,
+                        color: vc.onSurfaceMuted,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+                if (widget.searchController.text.isNotEmpty)
+                  GestureDetector(
+                    onTap: widget.onClearSearch,
+                    child: Icon(Icons.close_rounded,
+                        color: vc.onSurfaceMuted, size: 20.sp),
+                  ),
+              ],
             ),
           ),
         ),
 
-        // ── Suggestions list ────────────────────────────────────────────────
-        if (widget.suggestions.isNotEmpty)
-          Positioned(
-            top: 65.h,
-            left: 12.w,
-            right: 12.w,
-            child: Container(
-              constraints: BoxConstraints(maxHeight: 200.h),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [cardShadow],
-              ),
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: widget.suggestions.length,
-                separatorBuilder: (_, __) => Divider(height: 1, color: vc.divider),
-                itemBuilder: (context, index) {
-                  final s = widget.suggestions[index];
-                  return ListTile(
-                    dense: true,
-                    leading: Icon(Icons.location_on,
-                        color: AppColor.primary, size: 18.sp),
-                    title: Text(
-                      s.displayName,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13.sp, color: vc.onSurface),
+        // ── Map + floating suggestions overlay ──────────────────────────────
+        Expanded(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GoogleMap(
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(27.7172, 85.3240), // Kathmandu
+                    zoom: 14,
+                  ),
+                  onMapCreated: _handleMapCreated,
+                  style: _mapStyle,
+                  onTap: widget.onMapTap,
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId('selected'),
+                      position: widget.selectedLatLng,
+                      draggable: true,
+                      onDragEnd: widget.onMapTap,
                     ),
-                    onTap: () => widget.onSuggestionTap(s),
-                  );
-                },
+                  },
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: true,
+                  gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
+                    Factory<OneSequenceGestureRecognizer>(
+                      EagerGestureRecognizer.new,
+                    ),
+                  },
+                ),
               ),
-            ),
-          ),
 
-        // ── Current location button ─────────────────────────────────────────
-        Positioned(
-          bottom: 12.h,
-          left: 12.w,
-          child: GestureDetector(
-            onTap: widget.onCurrentLocationTap,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(8.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
-                    blurRadius: 6,
-                  )
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.my_location, size: 16.sp, color: AppColor.primary),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Go to current location',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColor.primary,
+              // ── Suggestions dropdown overlay ─────────────────────────────
+              if (widget.suggestions.isNotEmpty)
+                Positioned(
+                  top: 0,
+                  left: 12.w,
+                  right: 12.w,
+                  child: Material(
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(12.r),
+                    color: cardColor,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 220.h),
+                        child: ListView.separated(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: widget.suggestions.length,
+                          separatorBuilder: (_, __) =>
+                              Divider(height: 1, color: vc.divider),
+                          itemBuilder: (context, index) {
+                            final s = widget.suggestions[index];
+                            return InkWell(
+                              onTap: () => widget.onSuggestionTap(s),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 14.w, vertical: 10.h),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 32.w,
+                                      height: 32.w,
+                                      decoration: BoxDecoration(
+                                        color: AppColor.primary
+                                            .withValues(alpha: 0.08),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.location_on_rounded,
+                                          color: AppColor.primary,
+                                          size: 16.sp),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        s.displayName,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: vc.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ],
+                ),
+
+              // ── Current location button ───────────────────────────────────
+              Positioned(
+                bottom: 12.h,
+                left: 12.w,
+                child: GestureDetector(
+                  onTap: widget.onCurrentLocationTap,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(8.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withValues(alpha: isDark ? 0.4 : 0.1),
+                          blurRadius: 6,
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.my_location,
+                            size: 16.sp, color: AppColor.primary),
+                        SizedBox(width: 6.w),
+                        Text(
+                          'Go to current location',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ],
-      ),
     );
   }
 }

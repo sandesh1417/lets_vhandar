@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 
-import 'address_form_field.dart';
-import 'address_type_chip.dart';
-
-/// The scrollable form section: type chips, input fields, and save button.
-class AddressForm extends StatelessWidget {
+class AddressForm extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
   final ScrollController scrollController;
   final String addressType;
@@ -40,181 +40,488 @@ class AddressForm extends StatelessWidget {
   });
 
   @override
+  ConsumerState<AddressForm> createState() => _AddressFormState();
+}
+
+class _AddressFormState extends ConsumerState<AddressForm> {
+  bool _iAmReceiver = false;
+
+  void _toggleReceiver(bool value) {
+    final user = ref.read(loginProvider).user;
+    setState(() {
+      _iAmReceiver = value;
+      if (value) {
+        widget.nameCtrl.text = user?.name ?? '';
+        widget.phoneCtrl.text = user?.phoneNumber ?? '';
+      } else {
+        widget.nameCtrl.clear();
+        widget.phoneCtrl.clear();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final fieldFill = vc.surface;
+
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: SingleChildScrollView(
-        controller: scrollController,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        controller: widget.scrollController,
+        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Header ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Enter complete address',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: context.vColors.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      'Help us find your location precisely',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: context.vColors.onSurfaceMuted,
-                      ),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: context.vColors.onSurfaceMuted),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
-            ),
-            SizedBox(height: 14.h),
-
-            // --- Address type selector ---
+            // ── SAVE AS ───────────────────────────────────────────────────────
             Text(
-              'Save address as *',
+              'SAVE AS',
               style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp,
-                color: context.vColors.onSurface,
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w700,
+                color: vc.onSurfaceMuted,
+                letterSpacing: 0.8,
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 10.h),
             Row(
               children: [
-                AddressTypeChip(
+                _TypeChip(
                   label: 'Home',
                   svgAsset: 'assets/icons/address_home.svg',
-                  selected: addressType == 'home',
-                  onTap: () => onAddressTypeChanged('home'),
+                  selected: widget.addressType == 'home',
+                  onTap: () => widget.onAddressTypeChanged('home'),
                 ),
-                SizedBox(width: 8.w),
-                AddressTypeChip(
+                SizedBox(width: 10.w),
+                _TypeChip(
                   label: 'Office',
                   svgAsset: 'assets/icons/address_office.svg',
-                  selected: addressType == 'office',
-                  onTap: () => onAddressTypeChanged('office'),
+                  selected: widget.addressType == 'office',
+                  onTap: () => widget.onAddressTypeChanged('office'),
                 ),
-                SizedBox(width: 8.w),
-                AddressTypeChip(
+                SizedBox(width: 10.w),
+                _TypeChip(
                   label: 'Others',
                   svgAsset: 'assets/icons/address_other.svg',
-                  selected: addressType == 'others',
-                  onTap: () => onAddressTypeChanged('others'),
+                  selected: widget.addressType == 'others',
+                  onTap: () => widget.onAddressTypeChanged('others'),
                 ),
               ],
             ),
+            SizedBox(height: 22.h),
+
+            // ── Address fields ────────────────────────────────────────────────
+            const _FieldLabel('House / Flat / Building no.'),
+            SizedBox(height: 6.h),
+            _InputField(
+              controller: widget.houseCtrl,
+              hint: 'e.g. 4B, Green Towers',
+              fill: fieldFill,
+            ),
             SizedBox(height: 14.h),
 
-            // --- Input fields ---
-            AddressFormField(controller: houseCtrl, hint: 'House / Flat no.'),
-            SizedBox(height: 10.h),
-            AddressFormField(controller: floorCtrl, hint: 'Floor (optional)'),
-            SizedBox(height: 10.h),
-            AddressFormField(controller: localityCtrl, hint: 'Area / Locality'),
-            SizedBox(height: 10.h),
-            AddressFormField(controller: landMarkCtrl, hint: 'Landmark'),
+            const _FieldLabel('Floor (optional)'),
+            SizedBox(height: 6.h),
+            _InputField(
+              controller: widget.floorCtrl,
+              hint: 'e.g. 3rd Floor',
+              fill: fieldFill,
+            ),
             SizedBox(height: 14.h),
 
-            Text(
-              'Receiver name for seamless delivery experience.',
-              style: TextStyle(fontSize: 12.sp, color: context.vColors.onSurfaceMuted),
+            const _FieldLabel('Area / Sector / Locality *'),
+            SizedBox(height: 6.h),
+            _InputField(
+              controller: widget.localityCtrl,
+              hint: 'e.g. Thamel, Kathmandu',
+              fill: fieldFill,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Locality is required'
+                  : null,
             ),
-            SizedBox(height: 8.h),
-            AddressFormField(
-              controller: nameCtrl,
-              hint: 'Receiver name',
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Receiver name is required';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 14.h),
 
-            Text(
-              'Receiver phone number',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp,
-                color: context.vColors.onSurface,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            AddressFormField(
-              controller: phoneCtrl,
-              hint: 'Phone number',
-              keyboardType: TextInputType.phone,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Phone number is required';
-                }
-                final cleanVal = value.trim();
-                if (!RegExp(r'^\d+$').hasMatch(cleanVal)) {
-                  return 'Enter a valid phone number (digits only)';
-                }
-                if (cleanVal.length < 10) {
-                  return 'Phone number must be at least 10 digits';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 20.h),
-
-            // --- Save / Update button ---
-            SizedBox(
-              width: double.infinity,
-              height: 52.h,
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.secondary.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: isSaving ? null : onSave,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.secondary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                  ),
-                  child: isSaving
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          isEditing ? 'Update Address' : 'Save Address',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
+            const _FieldLabel('Nearby landmark (optional)'),
+            SizedBox(height: 6.h),
+            _InputField(
+              controller: widget.landMarkCtrl,
+              hint: 'e.g. Near City Centre Mall',
+              fill: fieldFill,
             ),
             SizedBox(height: 24.h),
+
+            // ── Receiver section ──────────────────────────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Receiver details',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: vc.onSurface,
+                        ),
+                      ),
+                      Text(
+                        'Who will receive this order?',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: vc.onSurfaceMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // "I am the receiver" toggle
+                GestureDetector(
+                  onTap: () => _toggleReceiver(!_iAmReceiver),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 10.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: _iAmReceiver
+                          ? AppColor.primary.withValues(alpha: 0.1)
+                          : vc.surfaceVariant,
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: _iAmReceiver
+                            ? AppColor.primary
+                            : vc.divider,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _iAmReceiver
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
+                          size: 14.sp,
+                          color: _iAmReceiver
+                              ? AppColor.primary
+                              : vc.onSurfaceMuted,
+                        ),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'It\'s me',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: _iAmReceiver
+                                ? AppColor.primary
+                                : vc.onSurfaceMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+
+            // Auto-filled info card or editable fields
+            if (_iAmReceiver)
+              _ReceiverInfoCard(
+                name: widget.nameCtrl.text,
+                phone: widget.phoneCtrl.text,
+                onClear: () => _toggleReceiver(false),
+              )
+            else ...[
+              const _FieldLabel('Receiver name *'),
+              SizedBox(height: 6.h),
+              _InputField(
+                controller: widget.nameCtrl,
+                hint: 'Full name',
+                fill: fieldFill,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Name is required'
+                    : null,
+              ),
+              SizedBox(height: 14.h),
+              const _FieldLabel('Receiver phone *'),
+              SizedBox(height: 6.h),
+              _InputField(
+                controller: widget.phoneCtrl,
+                hint: '+977 9XXXXXXXXX',
+                fill: fieldFill,
+                keyboardType: TextInputType.phone,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Required';
+                  if (!RegExp(r'^\d+$').hasMatch(v.trim())) {
+                    return 'Digits only';
+                  }
+                  if (v.trim().length < 10) return 'Min 10 digits';
+                  return null;
+                },
+              ),
+            ],
+            SizedBox(height: 32.h),
+
+            // ── Save button ───────────────────────────────────────────────────
+            SizedBox(
+              width: double.infinity,
+              height: 56.h,
+              child: ElevatedButton(
+                onPressed: widget.isSaving ? null : widget.onSave,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primary,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: const Color(0xFF9C9C9C),
+                  disabledForegroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                ),
+                child: widget.isSaving
+                    ? const CustomCircularLoader(
+                        size: 22, strokeWidth: 2.5, color: Colors.white)
+                    : Text(
+                        widget.isEditing ? 'Update Address' : 'Save Address',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Type chip ─────────────────────────────────────────────────────────────────
+
+class _TypeChip extends StatelessWidget {
+  final String label;
+  final String svgAsset;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TypeChip({
+    required this.label,
+    required this.svgAsset,
+    required this.selected,
+    required this.onTap,
+  });
+
+  static const _selectedBorder = Color(0xFFFFB300);
+  static const _selectedBg = Color(0xFFFFF8E1);
+  static const _selectedText = Color(0xFFE65100);
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            color: selected
+                ? _selectedBg
+                : (context.isDark ? vc.surfaceVariant : Colors.white),
+            borderRadius: BorderRadius.circular(50.r),
+            border: Border.all(
+              color: selected ? _selectedBorder : vc.divider,
+              width: selected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                svgAsset,
+                width: 20.w,
+                height: 20.w,
+              ),
+              SizedBox(width: 6.w),
+              Flexible(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight:
+                        selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected ? _selectedText : vc.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Field label ───────────────────────────────────────────────────────────────
+
+class _FieldLabel extends StatelessWidget {
+  final String text;
+  const _FieldLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w600,
+        color: context.vColors.onSurface,
+      ),
+    );
+  }
+}
+
+// ── Input field ───────────────────────────────────────────────────────────────
+
+class _InputField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final Color fill;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+
+  const _InputField({
+    required this.controller,
+    required this.hint,
+    required this.fill,
+    this.keyboardType,
+    this.validator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    final radius = BorderRadius.circular(12.r);
+    final defaultBorder = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: vc.inputBorder, width: 1),
+    );
+    final focusedBorder = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: AppColor.primary, width: 1.5),
+    );
+    final errorBorder = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+    );
+    final focusedErrorBorder = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+    );
+
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      style: TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: vc.onSurface,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          fontSize: 14.sp,
+          color: vc.onSurfaceMuted,
+          fontWeight: FontWeight.w400,
+        ),
+        filled: true,
+        fillColor: fill,
+        isDense: true,
+        contentPadding:
+            EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+        border: defaultBorder,
+        enabledBorder: defaultBorder,
+        focusedBorder: focusedBorder,
+        errorBorder: errorBorder,
+        focusedErrorBorder: focusedErrorBorder,
+        errorStyle: TextStyle(
+          fontSize: 11.sp,
+          color: Colors.red.shade600,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Receiver info card (shown when "It's me" is toggled) ─────────────────────
+
+class _ReceiverInfoCard extends StatelessWidget {
+  final String name;
+  final String phone;
+  final VoidCallback onClear;
+
+  const _ReceiverInfoCard({
+    required this.name,
+    required this.phone,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: AppColor.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColor.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38.w,
+            height: 38.w,
+            decoration: BoxDecoration(
+              color: AppColor.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.person_rounded,
+                color: AppColor.primary, size: 20.sp),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name.isNotEmpty ? name : 'No name on profile',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: vc.onSurface,
+                  ),
+                ),
+                if (phone.isNotEmpty)
+                  Text(
+                    phone,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: vc.onSurfaceMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: onClear,
+            child: Icon(Icons.close_rounded,
+                size: 18.sp, color: vc.onSurfaceMuted),
+          ),
+        ],
       ),
     );
   }

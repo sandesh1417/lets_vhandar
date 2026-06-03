@@ -20,6 +20,8 @@ import 'package:lets_vhandar/features/home/presentation/brand_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_detail_screen.dart';
 import 'package:lets_vhandar/features/order/presentation/order_detail_screen.dart';
 import 'package:lets_vhandar/features/address/presentation/address_screen.dart';
+import 'package:lets_vhandar/features/address/presentation/add_address_screen.dart';
+import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/product_detail/product_detail_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/about_us_screen.dart';
 import 'package:lets_vhandar/features/profile/presentation/change_password_screen.dart';
@@ -85,7 +87,8 @@ enum LVRoute {
   editProfileScreen,
   privacyPolicyScreen,
   termsScreen,
-  featuredProductsScreen;
+  featuredProductsScreen,
+  addAddressScreen;
 
   String get route => '/${toString().replaceAll('LVRoute.', '')}';
 }
@@ -254,6 +257,17 @@ class LVGoRouter {
         name: LVRoute.savedAddressesScreen.route,
         builder: (BuildContext context, GoRouterState state) =>
             const AddressScreen(),
+      ),
+      GoRoute(
+        path: LVRoute.addAddressScreen.route,
+        name: LVRoute.addAddressScreen.route,
+        builder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return AddAddressScreen(
+            userId: extra['userId'] as String,
+            existingAddress: extra['existingAddress'] as AddressModel?,
+          );
+        },
       ),
       GoRoute(
         path: LVRoute.personalInformationScreen.route,

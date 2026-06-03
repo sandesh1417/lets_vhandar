@@ -5,9 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
+import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
-import 'package:lets_vhandar/features/address/widgets/add_address_sheet.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:go_router/go_router.dart';
 
 /// Shows the list of saved addresses and an "Add Address" button.
 /// Call via: showAddressSelectorSheet(context, userId: '...')
@@ -159,24 +160,29 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                   children: [
                     // Add new address button (dashed border)
                     GestureDetector(
-                      onTap: () async {
+                      onTap: () {
                         Navigator.pop(context);
-                        await showAddAddressSheet(context,
-                            userId: widget.userId);
+                        context.pushNamed(
+                          LVRoute.addAddressScreen.route,
+                          extra: {'userId': widget.userId},
+                        );
                       },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 14.h),
-                        decoration: BoxDecoration(
-                          color: AppColor.primary.withValues(alpha: 0.04),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: AppColor.primary.withValues(alpha: 0.5),
-                            width: 1.5,
-                            strokeAlign: BorderSide.strokeAlignInside,
-                          ),
+                      child: CustomPaint(
+                        painter: _DashedBorderPainter(
+                          color: AppColor.primary.withValues(alpha: 0.6),
+                          radius: 12.r,
+                          dashWidth: 6,
+                          gapWidth: 4,
+                          strokeWidth: 1.5,
                         ),
-                        child: Row(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 14.h),
+                          decoration: BoxDecoration(
+                            color: AppColor.primary.withValues(alpha: 0.04),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Row(
                           children: [
                             Container(
                               width: 40.w,
@@ -219,6 +225,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                         ),
                       ),
                     ),
+                    ),
                     SizedBox(height: 20.h),
 
                     if (state.isLoading)
@@ -245,11 +252,15 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                                   .selectAddress(addr);
                               Navigator.pop(context);
                             },
-                            onEdit: () async {
+                            onEdit: () {
                               Navigator.pop(context);
-                              await showAddAddressSheet(context,
-                                  userId: widget.userId,
-                                  existingAddress: addr);
+                              context.pushNamed(
+                                LVRoute.addAddressScreen.route,
+                                extra: {
+                                  'userId': widget.userId,
+                                  'existingAddress': addr,
+                                },
+                              );
                             },
                           )),
                     ],
@@ -402,4 +413,54 @@ class _AddressTile extends StatelessWidget {
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase();
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+  final double dashWidth;
+  final double gapWidth;
+  final double strokeWidth;
+
+  const _DashedBorderPainter({
+    required this.color,
+    required this.radius,
+    this.dashWidth = 6,
+    this.gapWidth = 4,
+    this.strokeWidth = 1.5,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(radius),
+    );
+
+    final path = Path()..addRRect(rrect);
+    final pathMetrics = path.computeMetrics();
+
+    for (final metric in pathMetrics) {
+      double distance = 0;
+      while (distance < metric.length) {
+        final start = distance;
+        final end = (distance + dashWidth).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(start, end), paint);
+        distance += dashWidth + gapWidth;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBorderPainter old) =>
+      old.color != color ||
+      old.radius != radius ||
+      old.dashWidth != dashWidth ||
+      old.gapWidth != gapWidth ||
+      old.strokeWidth != strokeWidth;
 }

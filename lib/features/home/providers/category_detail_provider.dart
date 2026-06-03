@@ -34,6 +34,13 @@ final subCategoriesProvider =
   }
 });
 
+final subCategoryBySlugProvider =
+    FutureProvider.family<SubCategoryData?, String>((ref, subSlug) async {
+  final repository = locator<CategoryRepository>();
+  final result = await repository.getSubCategoryBySlug(subSlug);
+  return result.when(success: (v) => v, failure: (_) => null);
+});
+
 final selectedSubCategorySlugProvider =
     StateProvider.autoDispose.family<String?, String>((ref, slug) => null);
 
@@ -47,26 +54,11 @@ final searchQueryProvider =
 final categoryProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, slug) async {
   final subCategorySlug = ref.watch(selectedSubCategorySlugProvider(slug));
-  final categoryAsync = ref.watch(categoryBySlugProvider(slug));
-  final subCategoriesAsync = ref.watch(subCategoriesProvider(slug));
-
   final repository = locator<ProductRepository>();
 
-  String? subCategoryId;
-  if (subCategorySlug != null) {
-    // Try to find the subCategoryId from the fetched sub-categories list
-    final subs = subCategoriesAsync.value ?? [];
-    try {
-      subCategoryId = subs.firstWhere((s) => s.slug == subCategorySlug).id;
-    } catch (_) {
-      // Fallback or leave as null
-    }
-  }
-
-  // Fetch products with only category/sub-category filters
+  // Use slugs directly — no need to wait for categoryBySlugProvider or
+  // subCategoriesProvider to resolve IDs; the API accepts names/slugs too.
   final result = await repository.getProducts(
-    categoryId: categoryAsync.value?.id,
-    subCategoryId: subCategoryId,
     categorySlug: slug,
     subCategorySlug: subCategorySlug,
     limit: 80,

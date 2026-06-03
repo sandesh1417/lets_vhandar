@@ -39,6 +39,7 @@ const _kSearchHints = [
 class PremiumSearchBar extends StatefulWidget {
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final String hintText;
   final VoidCallback? onScanTap;
   final bool readOnly;
@@ -50,6 +51,7 @@ class PremiumSearchBar extends StatefulWidget {
     super.key,
     required this.controller,
     this.onChanged,
+    this.onSubmitted,
     this.hintText = 'Search for products...',
     this.onScanTap,
     this.readOnly = false,
@@ -118,6 +120,8 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                     controller: widget.controller,
                     autofocus: widget.autofocus,
                     onChanged: widget.onChanged,
+                    onSubmitted: widget.onSubmitted,
+                    textInputAction: TextInputAction.search,
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: vc.onSurface,

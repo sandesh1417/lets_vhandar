@@ -299,18 +299,21 @@ class _AddressPill extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 10.sp,
                     color: Colors.white70,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(width: 4.w),
-                Icon(Icons.keyboard_arrow_down,
-                    color: Colors.white, size: 14.sp),
+                SizedBox(width: 5.w),
+                SvgPicture.asset(
+                  'assets/images/box.svg',
+                  width: 16.sp,
+                  height: 16.sp,
+                ),
               ],
             ),
             Text(
               selected != null
-                  ? _truncate(selected.description ?? 'Select Address')
-                  : 'Select Address',
+                  ? _truncate(selected.description ?? 'Select delivery location')
+                  : 'Select delivery location',
               style: TextStyle(
                 fontSize: 13.sp,
                 color: Colors.white,

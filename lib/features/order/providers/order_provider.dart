@@ -16,6 +16,7 @@ class OrderState {
   final String? error;
   final int currentPage;
   final int totalPages;
+  final int totalOrders;
 
   // Filter States
   final String? paymentStatus;
@@ -33,6 +34,7 @@ class OrderState {
     this.error,
     this.currentPage = 1,
     this.totalPages = 1,
+    this.totalOrders = 0,
     this.paymentStatus,
     this.status,
     this.startDate,
@@ -63,6 +65,7 @@ class OrderState {
     bool clearError = false,
     int? currentPage,
     int? totalPages,
+    int? totalOrders,
     String? paymentStatus,
     String? status,
     String? startDate,
@@ -79,6 +82,7 @@ class OrderState {
       error: clearError ? null : (error ?? this.error),
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
+      totalOrders: totalOrders ?? this.totalOrders,
       paymentStatus: clearFilters ? null : (paymentStatus ?? this.paymentStatus),
       status: clearFilters ? null : (status ?? this.status),
       startDate: clearFilters ? null : (startDate ?? this.startDate),
@@ -147,6 +151,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
           orders: page == 1 ? newOrders : [...state.orders, ...newOrders],
           currentPage: page,
           totalPages: totalPages,
+          totalOrders: page == 1 ? total : state.totalOrders,
         );
       case Error(failure: final failure):
         state = state.copyWith(

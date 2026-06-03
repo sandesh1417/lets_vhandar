@@ -125,25 +125,28 @@ void showSearchSortModal(BuildContext context, WidgetRef ref) {
                         itemBuilder: (context, index) {
                           final opt = options[index];
                           final isSelected = currentSort == opt['val'];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              opt['label']!,
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                color: isSelected ? AppColor.primary : vc.onSurface,
+                          return Material(
+                            color: Colors.transparent,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                opt['label']!,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: isSelected ? AppColor.primary : vc.onSurface,
+                                ),
                               ),
+                              trailing: isSelected
+                                  ? Icon(Icons.check_circle, color: AppColor.primary)
+                                  : Icon(Icons.radio_button_unchecked, color: vc.onSurfaceMuted),
+                              onTap: () {
+                                ref.read(searchProvider.notifier).setSort(opt['val']!);
+                                Future.delayed(const Duration(milliseconds: 300), () {
+                                  if (context.mounted) Navigator.pop(context);
+                                });
+                              },
                             ),
-                            trailing: isSelected
-                                ? Icon(Icons.check_circle, color: AppColor.primary)
-                                : Icon(Icons.radio_button_unchecked, color: vc.onSurfaceMuted),
-                            onTap: () {
-                              ref.read(searchProvider.notifier).setSort(opt['val']!);
-                              Future.delayed(const Duration(milliseconds: 300), () {
-                                if (context.mounted) Navigator.pop(context);
-                              });
-                            },
                           );
                         },
                       );

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/layout_provider.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/home/domain/models/sub_category_modal.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -50,20 +51,35 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
     super.dispose();
   }
 
-  void _showCategoryInfoSheet(dynamic category) {
-    final imageUrl = category.images?.firstOrNull?.url ??
-        category.images?.firstOrNull?.path;
-    final productsAsync =
-        ref.read(categoryProductsProvider(widget.categorySlug));
-    final productCount = productsAsync.valueOrNull?.length ?? 0;
-
-    final rawDesc = ((category.description as String?) ?? '').trim();
-    final desc = rawDesc
+  String _stripHtml(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return '';
+    return raw
         .replaceAll(RegExp(r'<[^>]*>'), '')
         .replaceAll('&nbsp;', ' ')
         .replaceAll('&amp;', '&')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+  }
+
+  Widget _sheetHandle(BuildContext ctx) {
+    final vc = ctx.vColors;
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 12.h),
+        width: 36.w,
+        height: 4.h,
+        decoration: BoxDecoration(
+            color: vc.divider, borderRadius: BorderRadius.circular(2.r)),
+      ),
+    );
+  }
+
+  void _showCategorySheet(dynamic category) {
+    final imageUrl =
+        category.images?.firstOrNull?.url ?? category.images?.firstOrNull?.path;
+    final productCount =
+        ref.read(categoryProductsProvider(widget.categorySlug)).valueOrNull?.length ?? 0;
+    final catDesc = _stripHtml(category.description as String?);
 
     showModalBottomSheet(
       context: context,
@@ -72,87 +88,228 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
       builder: (ctx) {
         final vc = ctx.vColors;
         return SafeArea(
-          child: Container(
-            decoration: BoxDecoration(
-              color: vc.surface,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-            ),
-            padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Drag handle
-                Center(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 12.h),
-                    width: 36.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                        color: vc.divider,
-                        borderRadius: BorderRadius.circular(2.r)),
-                  ),
-                ),
-                // Image
-                if (imageUrl != null) ...[
-                  Container(
-                    width: 100.w,
-                    height: 100.w,
-                    decoration: BoxDecoration(
-                      color: context.isDark
-                          ? vc.surfaceVariant
-                          : const Color(0xFFE7F1ED),
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: CustomImageViewer(
-                        path: imageUrl,
-                        fit: BoxFit.contain,
+          child: SingleChildScrollView(
+            child: Container(
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+              ),
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _sheetHandle(ctx),
+                  if (imageUrl != null) ...[
+                    Container(
+                      width: 88.w,
+                      height: 88.w,
+                      decoration: BoxDecoration(
+                        color: context.isDark
+                            ? vc.surfaceVariant
+                            : const Color(0xFFE7F1ED),
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: CustomImageViewer(
+                            path: imageUrl, fit: BoxFit.contain),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                ],
-                // Name
-                Text(
-                  category.name ?? '',
-                  style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w800,
-                      color: vc.onSurface),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 10.h),
-                // Product count badge
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: AppColor.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Text(
-                    '$productCount Products',
-                    style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColor.primary),
-                  ),
-                ),
-                // Description
-                if (desc.isNotEmpty) ...[
-                  SizedBox(height: 16.h),
-                  Divider(color: vc.divider),
-                  SizedBox(height: 12.h),
+                    SizedBox(height: 12.h),
+                  ],
                   Text(
-                    desc,
+                    'Category',
                     style: TextStyle(
-                        fontSize: 13.sp, color: vc.onSurfaceMuted, height: 1.6),
+                      fontSize: 11.sp,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      color: AppColor.primary,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    category.name ?? '',
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w800,
+                        color: vc.onSurface),
                     textAlign: TextAlign.center,
                   ),
+                  SizedBox(height: 8.h),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: AppColor.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Text(
+                      '$productCount Products',
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.primary),
+                    ),
+                  ),
+                  if (catDesc.isNotEmpty) ...[
+                    SizedBox(height: 14.h),
+                    Text(
+                      catDesc,
+                      style: TextStyle(
+                          fontSize: 13.sp,
+                          color: vc.onSurfaceMuted,
+                          height: 1.6),
+                      textAlign: TextAlign.center,
+                    ),
+                  ] else ...[
+                    SizedBox(height: 8.h),
+                    Text(
+                      'No description available.',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: vc.onSurfaceMuted.withValues(alpha: 0.5),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: 8.h),
                 ],
-                SizedBox(height: 8.h),
-              ],
+              ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showInfoSheet(dynamic category) {
+    final selectedSlug =
+        ref.read(selectedSubCategorySlugProvider(widget.categorySlug));
+    if (selectedSlug == null) {
+      _showCategorySheet(category);
+      return;
+    }
+
+    // Use list data as fallback while the detail fetch completes
+    final subCategories =
+        ref.read(subCategoriesProvider(widget.categorySlug)).valueOrNull ?? [];
+    SubCategoryData? listSub;
+    try {
+      listSub = subCategories.firstWhere((s) => s.slug == selectedSlug);
+    } catch (_) {}
+
+    if (listSub == null) {
+      _showCategorySheet(category);
+      return;
+    }
+
+    // Kick off a fresh detail fetch so we get the full description field
+    final detailFuture =
+        ref.read(subCategoryBySlugProvider(selectedSlug).future);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final vc = ctx.vColors;
+        return SafeArea(
+          child: FutureBuilder<SubCategoryData?>(
+            future: detailFuture,
+            builder: (ctx2, snapshot) {
+              // Merge: prefer detail data, fall back to list data
+              final sub = snapshot.data ?? listSub!;
+              final subDesc = _stripHtml(sub.description);
+              final subImageUrl =
+                  sub.images?.firstOrNull?.url ?? sub.images?.firstOrNull?.path;
+
+              return SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: vc.surface,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(24.r)),
+                  ),
+                  padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _sheetHandle(ctx2),
+                      if (subImageUrl != null) ...[
+                        Container(
+                          width: 72.w,
+                          height: 72.w,
+                          decoration: BoxDecoration(
+                            color: context.isDark
+                                ? vc.surfaceVariant
+                                : const Color(0xFFFFF6E6),
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14.r),
+                            child: CustomImageViewer(
+                                path: subImageUrl, fit: BoxFit.contain),
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                      ],
+                      Text(
+                        'Subcategory',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.primary,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        sub.name ?? '',
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w800,
+                            color: vc.onSurface),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 14.h),
+                      Divider(color: vc.divider),
+                      SizedBox(height: 12.h),
+                      if (snapshot.connectionState == ConnectionState.waiting &&
+                          subDesc.isEmpty)
+                        SizedBox(
+                          height: 20.h,
+                          width: 20.h,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColor.primary,
+                          ),
+                        )
+                      else if (subDesc.isNotEmpty)
+                        Text(
+                          subDesc,
+                          style: TextStyle(
+                              fontSize: 13.sp,
+                              color: vc.onSurfaceMuted,
+                              height: 1.6),
+                          textAlign: TextAlign.center,
+                        )
+                      else
+                        Text(
+                          'No description available.',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: vc.onSurfaceMuted.withValues(alpha: 0.5),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      SizedBox(height: 8.h),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
@@ -261,7 +418,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                                 category.images?.firstOrNull?.url ??
                                     category.images?.firstOrNull?.path;
                             return GestureDetector(
-                              onTap: () => _showCategoryInfoSheet(category),
+                              onTap: () => _showCategorySheet(category),
                               child: Row(
                                 children: [
                                   if (imageUrl != null) ...[
@@ -312,7 +469,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 // Info icon — shows category details popup
                 categoryAsync.maybeWhen(
                   data: (category) => GestureDetector(
-                    onTap: () => _showCategoryInfoSheet(category),
+                    onTap: () => _showInfoSheet(category),
                     child: Container(
                       padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(

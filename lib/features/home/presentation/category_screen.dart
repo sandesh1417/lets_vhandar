@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
@@ -45,6 +46,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final vc = context.vColors;
     final tab = ref.watch(categoryScreenTabProvider);
+    final isOffline = ref.watch(connectivityProvider).maybeWhen(
+          data: (online) => !online,
+          orElse: () => false,
+        );
 
     return CustomScaffoldWrapper(
       backgroundColor: AppColor.primary,
@@ -106,11 +111,13 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           Expanded(
             child: ColoredBox(
               color: vc.scaffoldBg,
-              child: tab == 0
-                  ? const _CategoryTab()
-                  : tab == 1
-                      ? const _SubCategoryTab()
-                      : const _BrandTab(),
+              child: isOffline
+                  ? const _OfflineBody()
+                  : tab == 0
+                      ? const _CategoryTab()
+                      : tab == 1
+                          ? const _SubCategoryTab()
+                          : const _BrandTab(),
             ),
           ),
         ],
@@ -442,37 +449,68 @@ class _SubSection extends ConsumerWidget {
           ),
         );
       },
-      loading: () => Padding(
-        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+      loading: () => Container(
+        margin: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 0),
+        decoration: BoxDecoration(
+          color: context.vColors.surface,
+          borderRadius: BorderRadius.circular(14.r),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6.r),
-              child: CustomShimmer.rectangular(width: 120.w, height: 16.h),
+            // Header row: icon + label + "See All" placeholder
+            Padding(
+              padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6.r),
+                    child: CustomShimmer.rectangular(
+                        width: 28.w, height: 28.w),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4.r),
+                      child: CustomShimmer.rectangular(
+                          width: 100.w, height: 14.h),
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4.r),
+                    child: CustomShimmer.rectangular(
+                        width: 40.w, height: 12.h),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 10.h),
-            Row(
-              children: List.generate(
-                4,
-                (_) => Padding(
-                  padding: EdgeInsets.only(right: 10.w),
-                  child: Column(children: [
+            // Horizontal items row
+            SizedBox(
+              height: 98.h,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
+                itemCount: 5,
+                separatorBuilder: (_, __) => SizedBox(width: 10.w),
+                itemBuilder: (_, __) => Column(
+                  children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10.r),
                       child: CustomShimmer.rectangular(
-                          width: 64.w, height: 64.w),
+                          width: 68.w, height: 68.w),
                     ),
                     SizedBox(height: 4.h),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
-                      child:
-                          CustomShimmer.rectangular(width: 52.w, height: 10.h),
+                      child: CustomShimmer.rectangular(
+                          width: 52.w, height: 9.h),
                     ),
-                  ]),
+                  ],
                 ),
               ),
             ),
+            SizedBox(height: 10.h),
           ],
         ),
       ),
@@ -491,46 +529,105 @@ class _LoadingShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // "Shop by Category" label placeholder
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4.r),
+            child: CustomShimmer.rectangular(width: 140.w, height: 16.h),
+          ),
+          SizedBox(height: 14.h),
+          // 4-col grid matching CategoryCard (aspectRatio 0.68)
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 0.68,
+              crossAxisSpacing: 10.w,
+              mainAxisSpacing: 12.h,
+            ),
+            itemCount: 16,
+            itemBuilder: (_, __) => Column(
               children: [
-                Text('Featured Brands',
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: context.vColors.onSurface)),
-                Text('View All',
-                    style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColor.primary)),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: const CustomShimmer.rectangular(
+                        width: double.infinity),
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: CustomShimmer.rectangular(
+                      width: double.infinity, height: 9.h),
+                ),
+                SizedBox(height: 3.h),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.r),
+                  child:
+                      CustomShimmer.rectangular(width: 30.w, height: 9.h),
+                ),
               ],
             ),
           ),
-          const HorizontalListShimmer(),
-          Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child:
-                Divider(color: context.vColors.divider, thickness: 1),
-          ),
-          Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Text('Shop by Category',
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: context.vColors.onSurface)),
-          ),
-          const GridShimmer(crossAxisCount: 4, isCircle: false),
         ],
+      ),
+    );
+  }
+}
+
+class _OfflineBody extends StatelessWidget {
+  const _OfflineBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 36.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/offline.svg',
+              width: 100.w,
+              height: 100.w,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'Oops!',
+              style: TextStyle(
+                fontSize: 32.sp,
+                fontWeight: FontWeight.w900,
+                color: AppColor.primary,
+                letterSpacing: -0.5,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'No Internet Connection',
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w600,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Please check your Wi-Fi or mobile data\nand try again.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

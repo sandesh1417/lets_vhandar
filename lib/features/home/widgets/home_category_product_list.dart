@@ -15,7 +15,7 @@ class HomeCategoryProductList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoriesAsync = ref.watch(allCategoryProvider);
+    final categoriesAsync = ref.watch(homeCategoryProvider);
 
     return categoriesAsync.when(
       data: (categories) {

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/config/api_endpoints.dart';
 import 'package:lets_vhandar/core/error/failure.dart';
@@ -250,6 +251,172 @@ class AuthRepositoryImpl {
       Map<String, dynamic> data) async {
     try {
       final result = await _apiClient.patch(ApiUrl.updateProfile, data: data);
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  // ── Family Members ────────────────────────────────────────────────────────
+
+  Future<Result<Map<String, dynamic>?, Failure>> searchUserByPhone(
+      String phoneNumber) async {
+    try {
+      final result = await _apiClient.get(
+        ApiUrl.searchUsers,
+        queryParameters: {'phoneNumber': phoneNumber},
+        // 401 here means "not found", not session expiry — skip auto-logout.
+        options: Options(extra: {'skipAutoLogout': true}),
+      );
+      switch (result) {
+        case Success(value: final data):
+          final payload = data['data'];
+          // Paginated: { data: { data: [user, ...], pagination: {} } }
+          if (payload is Map<String, dynamic> && payload['data'] is List) {
+            final list = payload['data'] as List;
+            if (list.isNotEmpty && list.first is Map<String, dynamic>) {
+              return Success(Map<String, dynamic>.from(list.first));
+            }
+            return const Success(null);
+          }
+          // Direct user object: { data: { _id: ..., name: ... } }
+          if (payload is Map<String, dynamic> &&
+              payload.containsKey('_id')) {
+            return Success(payload);
+          }
+          // Array: { data: [user] }
+          if (payload is List && payload.isNotEmpty &&
+              payload.first is Map<String, dynamic>) {
+            return Success(Map<String, dynamic>.from(payload.first));
+          }
+          // Unknown shape — log in debug so we can see what the backend returns
+          assert(() {
+            // ignore: avoid_print
+            print('[searchUserByPhone] unexpected payload type: '
+                '${payload.runtimeType} — $payload');
+            return true;
+          }());
+          return const Success(null);
+        case Error(failure: final f):
+          final code = f is ServerFailure ? f.statusCode : null;
+          // 404 → user not found
+          if (code == 404) return const Success(null);
+          // 403 → endpoint is restricted for regular users; surface a clear message
+          if (code == 403) {
+            return const Error(ServerFailure(
+              'This phone number is not registered on Vhandar.',
+            ));
+          }
+          throw f;
+      }
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<List<Map<String, dynamic>>, Failure>> getFamilyMembers(
+      String userId) async {
+    try {
+      final result =
+          await _apiClient.get(ApiUrl.familyMembersForUser(userId));
+      switch (result) {
+        case Success(value: final data):
+          return Success(_extractList(data['data']));
+        case Error(failure: final failure):
+          throw failure;
+      }
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<List<Map<String, dynamic>>, Failure>> getPendingFamilyRequests(
+      String userId) async {
+    try {
+      final result =
+          await _apiClient.get(ApiUrl.familyMemberRequests(userId));
+      switch (result) {
+        case Success(value: final data):
+          return Success(_extractList(data['data']));
+        case Error(failure: final failure):
+          throw failure;
+      }
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  /// Handles both flat `[...]` and paginated `{data:[...], pagination:{}}` shapes.
+  List<Map<String, dynamic>> _extractList(dynamic payload) {
+    if (payload is List) {
+      return payload.whereType<Map<String, dynamic>>().toList();
+    }
+    if (payload is Map<String, dynamic>) {
+      final inner = payload['data'];
+      if (inner is List) {
+        return inner.whereType<Map<String, dynamic>>().toList();
+      }
+    }
+    return [];
+  }
+
+  Future<Result<GenericResponseModal, Failure>> sendFamilyRequest({
+    required String memberId,
+    required List<String> familyIds,
+    required String requestedBy,
+    required String relation,
+  }) async {
+    try {
+      final result = await _apiClient.post(
+        ApiUrl.familyMembers,
+        data: {
+          'memberId': memberId,
+          'familyIds': familyIds,
+          'requestedBy': requestedBy,
+          'relation': relation,
+          'requestAccepted': false,
+        },
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<GenericResponseModal, Failure>> acceptFamilyRequest(
+      String requestId, String relation) async {
+    try {
+      final result = await _apiClient.patch(
+        ApiUrl.familyMemberAccept(requestId),
+        data: {'relation': relation},
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Result<GenericResponseModal, Failure>> removeFamilyMember(
+      String requestId) async {
+    try {
+      final result = await _apiClient.delete(
+        ApiUrl.familyMembersForUser(requestId),
+      );
       final parsed = _handleResult(result);
       return Success(parsed);
     } on Failure catch (e) {

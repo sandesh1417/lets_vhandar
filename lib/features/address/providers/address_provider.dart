@@ -49,13 +49,19 @@ class AddressNotifier extends StateNotifier<AddressState> {
     final result = await _repo.getAddresses(userId);
     result.when(
       success: (response) {
+        // Keep selected only if it still exists in the refreshed list
+        final stillExists = state.selected != null &&
+            response.addresses.any((a) => a.id == state.selected!.id);
         state = state.copyWith(
           isLoading: false,
           isFetched: true,
           addresses: response.addresses,
-          // Auto-select first address if none selected
-          selected: state.selected ??
-              (response.addresses.isNotEmpty ? response.addresses.first : null),
+          selected: stillExists
+              ? state.selected
+              : (response.addresses.isNotEmpty
+                  ? response.addresses.first
+                  : null),
+          clearSelected: !stillExists && response.addresses.isEmpty,
         );
       },
       failure: (failure) {
@@ -97,6 +103,14 @@ class AddressNotifier extends StateNotifier<AddressState> {
     switch (result) {
       case Success():
         await loadAddresses(userId);
+        // Auto-select the newly saved address
+        final matches = state.addresses.where(
+          (a) =>
+              a.lat == lat &&
+              a.long == long &&
+              a.description == description,
+        );
+        if (matches.isNotEmpty) selectAddress(matches.first);
         return true;
       case Error(failure: final f):
         state = state.copyWith(error: f.message);

@@ -107,7 +107,7 @@ class ProductRepository {
       if (subCategoryId != null) {
         queryParameters['subCategoryId'] = subCategoryId;
       } else if (subCategorySlug != null) {
-        queryParameters['subCategorySlug'] = subCategorySlug;
+        queryParameters['subCategoryName'] = subCategorySlug;
       }
 
       if (brandId != null) {

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/error/failure.dart';
@@ -83,8 +84,52 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
         .toList();
   }
 
+  Future<void> _onRefresh() async {
+    final userId = ref.read(loginProvider).user?.id;
+    if (userId != null) {
+      ref.read(orderProvider.notifier).loadOrders(userId);
+      while (ref.read(orderProvider).isLoading) {
+        await Future.delayed(const Duration(milliseconds: 50));
+      }
+    }
+    ref.invalidate(reorderLiveProductsProvider);
+    await ref.read(reorderLiveProductsProvider.future);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isOffline = ref.watch(connectivityProvider).maybeWhen(
+          data: (online) => !online,
+          orElse: () => false,
+        );
+
+    if (isOffline) {
+      return Scaffold(
+        backgroundColor: context.vColors.scaffoldBg,
+        appBar: AppBar(
+          backgroundColor: AppColor.primary,
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
+          automaticallyImplyLeading: false,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
+          title: Text(
+            'Reorder',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.sp,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+        body: const _OfflineBody(),
+      );
+    }
+
     final loginState = ref.watch(loginProvider);
     final orderState = ref.watch(orderProvider);
     final bottomPad = MediaQuery.of(context).padding.bottom;
@@ -223,11 +268,20 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
           return ref.watch(reorderLiveProductsProvider).when(
             data: (products) {
               final filtered = _filterProducts(products, query);
-              if (filtered.isEmpty) return _buildEmptyState();
-              return _buildGrid(filtered, bottomPad);
+              return RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: AppColor.primary,
+                child: filtered.isEmpty
+                    ? _buildEmptyState()
+                    : _buildGrid(filtered, bottomPad),
+              );
             },
             loading: () => _buildShimmer(),
-            error: (_, __) => _buildEmptyState(),
+            error: (_, __) => RefreshIndicator(
+              onRefresh: _onRefresh,
+              color: AppColor.primary,
+              child: _buildEmptyState(),
+            ),
           );
         },
       ),
@@ -327,6 +381,59 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
       itemBuilder: (_, __) => CustomShimmer.rectangular(
         shapeBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
+        ),
+      ),
+    );
+  }
+}
+
+class _OfflineBody extends StatelessWidget {
+  const _OfflineBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 36.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/offline.svg',
+              width: 100.w,
+              height: 100.w,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'Oops!',
+              style: TextStyle(
+                fontSize: 32.sp,
+                fontWeight: FontWeight.w900,
+                color: AppColor.primary,
+                letterSpacing: -0.5,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'No Internet Connection',
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w600,
+                color: vc.onSurface,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Please check your Wi-Fi or mobile data\nand try again.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: vc.onSurfaceMuted,
+                height: 1.6,
+              ),
+            ),
+          ],
         ),
       ),
     );

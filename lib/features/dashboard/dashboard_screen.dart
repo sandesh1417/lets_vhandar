@@ -9,11 +9,15 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/dashboard/presentation/tabs/account_tab.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/home_screen.dart';
 import 'package:lets_vhandar/features/home/presentation/category_screen.dart';
+import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
+import 'package:lets_vhandar/features/home/providers/category_provider.dart';
+import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/order/order_screen.dart';
 import 'package:lets_vhandar/features/reorder/reorder_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -47,11 +51,42 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.read(dashboardIndexProvider.notifier).state = index;
   }
 
+  void _refreshAllProviders() {
+    ref.invalidate(bannerProvider);
+    ref.invalidate(featuredProductsProvider);
+    ref.invalidate(homeCategoryProvider);
+    ref.invalidate(allCategoryProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(dashboardIndexProvider);
-    // Rebuild when visited set changes so newly visited tabs get built
     ref.watch(visitedTabsProvider);
+
+    // Auto-refresh providers when coming back online
+    ref.listen<AsyncValue<bool>>(connectivityProvider, (prev, next) {
+      final wasOnline = prev?.valueOrNull ?? true;
+      final isOnline = next.valueOrNull ?? true;
+      if (isOnline && !wasOnline) {
+        _refreshAllProviders();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.wifi_rounded, color: Colors.white, size: 18),
+                SizedBox(width: 10.w),
+                const Text('Back online'),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r)),
+          ),
+        );
+      }
+    });
 
     return CustomScaffoldWrapper(
       isScrollable: false,
@@ -305,3 +340,4 @@ class _AboveNavBarFABLocation extends FloatingActionButtonLocation {
     return Offset(x, y);
   }
 }
+
