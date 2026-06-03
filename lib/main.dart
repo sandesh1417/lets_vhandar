@@ -13,14 +13,14 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light,
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarDividerColor: Colors.transparent,
-    systemNavigationBarIconBrightness: Brightness.dark,
-  ));
+  // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+  //   statusBarColor: Colors.transparent,
+  //   statusBarIconBrightness: Brightness.dark,
+  //   statusBarBrightness: Brightness.light,
+  //   // systemNavigationBarColor: Colors.white,
+  //   systemNavigationBarDividerColor: Colors.transparent,
+  //   systemNavigationBarIconBrightness: Brightness.dark,
+  // ));
   setUpDependenciesInjection();
   runApp(const ProviderScope(child: MyApp()));
 }

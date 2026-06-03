@@ -49,11 +49,16 @@ Path _buildVPath(Size size) {
 class _PathReceiver extends PathProxy {
   final Path _path;
   _PathReceiver(this._path);
-  @override void close() => _path.close();
-  @override void cubicTo(double x1, double y1, double x2, double y2, double x, double y) =>
+  @override
+  void close() => _path.close();
+  @override
+  void cubicTo(
+          double x1, double y1, double x2, double y2, double x, double y) =>
       _path.cubicTo(x1, y1, x2, y2, x, y);
-  @override void lineTo(double x, double y) => _path.lineTo(x, y);
-  @override void moveTo(double x, double y) => _path.moveTo(x, y);
+  @override
+  void lineTo(double x, double y) => _path.lineTo(x, y);
+  @override
+  void moveTo(double x, double y) => _path.moveTo(x, y);
 }
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -86,13 +91,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    //   statusBarColor: Colors.transparent,
+    //   statusBarIconBrightness: Brightness.light,
+    //   statusBarBrightness: Brightness.dark,
+    //   systemNavigationBarColor: Color(0xFF0B754E),
+    //   systemNavigationBarIconBrightness: Brightness.light,
+    // ));
 
     _ctrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: _dur));
@@ -139,8 +144,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
       CurvedAnimation(
           parent: _ctrl,
-          curve:
-              Interval(_t(1800), _t(2150), curve: Curves.easeOutCubic)),
+          curve: Interval(_t(1800), _t(2150), curve: Curves.easeOutCubic)),
     );
 
     _footerFade = Tween<double>(begin: 0, end: 1).animate(
@@ -156,11 +160,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void dispose() {
     _ctrl.dispose();
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ));
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: Colors.transparent,
+    //   statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    //   statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+    //   systemNavigationBarColor: isDark ? Colors.black : Colors.white,
+    //   systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    // ));
     super.dispose();
   }
 
@@ -222,18 +229,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             ),
 
                             // Letters cascade
-                            ...List.generate(7, (i) => FadeTransition(
-                              opacity: _letterFade[i],
-                              child: SlideTransition(
-                                position: _letterSlide[i],
-                                child: SvgPicture.string(
-                                  _letterSvgs[i],
-                                  width: logoW,
-                                  height: logoH,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            )),
+                            ...List.generate(
+                                7,
+                                (i) => FadeTransition(
+                                      opacity: _letterFade[i],
+                                      child: SlideTransition(
+                                        position: _letterSlide[i],
+                                        child: SvgPicture.string(
+                                          _letterSvgs[i],
+                                          width: logoW,
+                                          height: logoH,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    )),
                           ],
                         );
                       },
