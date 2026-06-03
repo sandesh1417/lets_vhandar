@@ -32,10 +32,10 @@ class LoginNotifier extends StateNotifier<LoginState> {
       case Success(value: final data):
         final accessToken = data.token?.accessToken;
         if (accessToken != null && accessToken.isNotEmpty) {
-          await SessionPrefences().setToken(token: accessToken);
+          await SessionPreferences().setToken(token: accessToken);
           final user = data.user;
           if (user != null) {
-            await SessionPrefences().setUser(user: user);
+            await SessionPreferences().setUser(user: user);
           }
           Rsession.token = accessToken;
         }
@@ -60,7 +60,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }
 
   Future<void> enterGuestMode(BuildContext context) async {
-    await SessionPrefences().setGuestMode(isGuest: true);
+    await SessionPreferences().setGuestMode(isGuest: true);
     Rsession.isGuest = true;
     state = state.copyWith(isGuest: true, isLoggedIn: false);
     if (context.mounted) {
@@ -69,13 +69,13 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }
 
   Future<void> restoreSession() async {
-    final token = await SessionPrefences().getToken();
-    final user = await SessionPrefences().getUser();
+    final token = await SessionPreferences().getToken();
+    final user = await SessionPreferences().getUser();
     if (token != null && token.isNotEmpty) {
       Rsession.token = token;
       state = state.copyWith(isLoggedIn: true, isGuest: false, user: user);
     } else {
-      final isGuest = await SessionPrefences().getGuestMode();
+      final isGuest = await SessionPreferences().getGuestMode();
       if (isGuest) {
         Rsession.isGuest = true;
         state = state.copyWith(isGuest: true);
@@ -84,7 +84,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }
 
   Future<void> logout() async {
-    await SessionPrefences().clearSession();
+    await SessionPreferences().clearSession();
     Rsession.token = null;
     Rsession.isGuest = false;
     state = const LoginState();
@@ -109,7 +109,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
                 'businessDetail': data['businessDetail'],
             });
           final updated = UserModel.fromMap(updatedMap);
-          await SessionPrefences().setUser(user: updated);
+          await SessionPreferences().setUser(user: updated);
           state = state.copyWith(isLoading: false, user: updated);
         } else {
           state = state.copyWith(isLoading: false);

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,7 +22,7 @@ const _vFillSvg = '''
 <path d="$_vPathData" fill="#F5B237"/>
 </svg>''';
 
-const _letterSvgs = [
+const _svgLetters = [
   '''<svg width="690" height="634" viewBox="0 0 690 634" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M111.803 544.311C111.803 578.442 98.2902 609.425 76.3116 632.231H29.4869L0.015625 532.202H42.632L62.4417 596.498C62.6445 596.245 62.8435 595.992 63.0426 595.735C72.7868 580.976 78.458 563.305 78.458 544.311C78.458 540.275 78.2007 536.296 77.705 532.395L110.949 529.531C111.052 530.419 111.803 540.226 111.803 544.311Z" fill="white"/></svg>''',
   '''<svg width="690" height="634" viewBox="0 0 690 634" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M209.319 570.488C207.992 565.307 205.348 560.89 201.376 557.255C197.404 553.51 192.278 551.629 185.989 551.629C182.018 551.629 178.328 552.183 174.91 553.283C166.749 556.037 160.905 560.945 157.379 568.006L159.033 525L119.816 528.526L124.133 632.352H154.571L156.225 594.145C156.779 583.002 160.305 577.44 166.813 577.44C169.457 577.44 171.33 578.54 172.438 580.748C173.538 582.957 174.42 587.365 175.083 593.981L178.718 632.352H207.665C210.201 612.394 211.473 598.389 211.473 590.337C211.473 582.284 210.755 575.668 209.319 570.488Z" fill="white"/></svg>''',
   '''<svg width="690" height="634" viewBox="0 0 690 634" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M249.724 633.995C241.235 633.995 234.228 631.513 228.72 626.551C223.322 621.589 220.613 614.591 220.613 605.548C220.613 596.505 223.703 589.779 229.874 585.699C236.045 581.509 243.489 579.41 252.205 579.41C260.92 579.41 268.473 580.791 274.862 583.545C273.426 574.393 267.637 569.812 257.494 569.812C252.859 569.812 247.133 570.748 240.29 572.621L236.154 557.734C246.079 553.653 256.167 551.617 266.428 551.617C295.984 551.617 310.761 564.186 310.761 589.334C310.761 597.932 309.771 609.847 307.78 625.061L306.953 632.341H279.661L278.67 623.243C271.172 630.414 261.52 633.995 249.724 633.995ZM264.61 613.482C269.573 613.482 273.817 612.101 277.343 609.347L276.353 598.432C273.599 596.559 270.509 595.623 267.091 595.623C263.674 595.623 261.03 596.45 258.821 598.104C256.722 599.759 255.676 601.794 255.676 604.221C255.676 606.648 256.503 608.802 258.158 610.674C259.812 612.546 261.966 613.482 264.61 613.482Z" fill="white"/></svg>''',
@@ -173,8 +172,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _checkSession() async {
     await ref.read(loginProvider.notifier).restoreSession();
-    final token = await SessionPrefences().getToken();
-    final isGuest = await SessionPrefences().getGuestMode();
+    final token = await SessionPreferences().getToken();
+    final isGuest = await SessionPreferences().getGuestMode();
     await Future.delayed(const Duration(milliseconds: 3600));
     if (!mounted) return;
     if ((token != null && token.isNotEmpty) || isGuest) {
@@ -236,7 +235,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       child: SlideTransition(
                                         position: _letterSlide[i],
                                         child: SvgPicture.string(
-                                          _letterSvgs[i],
+                                          _svgLetters[i],
                                           width: logoW,
                                           height: logoH,
                                           fit: BoxFit.contain,
@@ -261,7 +260,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         child: Text(
                           'Fastest Grocery Delivery App',
                           style: TextStyle(
-                            fontFamily: 'Volte',
+                            fontFamily: 'Volte', // cspell:ignore Volte
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w600,
                             color: AppColor.secondary,
