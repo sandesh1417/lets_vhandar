@@ -17,6 +17,7 @@ if (keyPropertiesFile.exists()) {
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     // The Flutter Gradle Plugin must be applied after the Android plugin.
     // Flutter handles Kotlin automatically via flutter-gradle-plugin.
     id("dev.flutter.flutter-gradle-plugin")
