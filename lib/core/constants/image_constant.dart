@@ -1,7 +1,7 @@
 class KImageConstant {
   static String vandharLogo = 'assets/images/vandhar_logo.png';
   static String appIcon = 'assets/images/app_icon.png';
-  static String v4bIcon = 'assets/images/v4b_icon.svg';
+  static String v4bIcon = 'assets/icons/v4b_icon.svg';
   static String splashScreen = 'assets/images/splashscreen_logo.svg';
   static String vandharIcon = 'assets/images/icon_logo.svg';
   static String vhandarPoints = 'assets/images/vhandar_points.svg';

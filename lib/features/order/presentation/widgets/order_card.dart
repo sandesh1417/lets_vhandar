@@ -11,8 +11,8 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 
 import 'order_status_badge.dart';
 
-// Steps: 0=Pending, 1=Processing, 2=Shipped, 3=Delivered
-const _stepLabels = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+// Steps: 0=Pending, 1=Processing, 2=On the Way, 3=Delivered
+const _stepLabels = ['Pending', 'Processing', 'On the Way', 'Delivered'];
 const _stepIcons = [
   Icons.receipt_long_rounded,
   Icons.inventory_2_rounded,
@@ -23,7 +23,8 @@ const _stepIcons = [
 int _statusIndex(String? s) {
   switch (s?.toLowerCase()) {
     case 'processing': return 1;
-    case 'shipped':    return 2;
+    case 'shipped':
+    case 'shipping':   return 2;
     case 'delivered':  return 3;
     default:           return 0;
   }

@@ -58,7 +58,7 @@ class ApiInterceptor extends Interceptor {
       scheduleMicrotask(() async {
         try {
           Rsession.token = null;
-          await SessionPrefences().clearSession();
+          await SessionPreferences().clearSession();
           locator<LVGoRouter>().goRoute.go(LVRoute.loginScreen.route);
         } finally {
           _loggingOut = false;

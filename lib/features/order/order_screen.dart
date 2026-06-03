@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/features/auth/login/domain/login_state.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
@@ -496,6 +497,17 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
     final loginState = ref.watch(loginProvider);
     final state = ref.watch(orderProvider);
+
+    // On cold start the session restore is async — if the user ID arrives
+    // after this widget was first mounted (and initState found userId null),
+    // re-fetch once the user becomes available.
+    ref.listen<LoginState>(loginProvider, (LoginState? prev, LoginState next) {
+      final hadUser = prev?.user?.id != null;
+      final hasUser = next.user?.id != null;
+      if (!hadUser && hasUser && next.isLoggedIn && !next.isGuest) {
+        _fetchOrders();
+      }
+    });
     final filteredOrders = state.filteredOrders;
     final isAnyFilterActive = _selectedStatus != null ||
         _selectedPaymentStatus != null ||

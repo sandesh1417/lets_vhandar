@@ -99,36 +99,77 @@ class PersonalInformationScreen extends ConsumerWidget {
 
             SizedBox(height: 62.h),
 
-            // Name + phone/category under avatar
-            Text(
-              isBusiness
-                  ? (businessDetail?['businessName'] as String? ??
-                      user?.name ??
-                      'Business')
-                  : (user?.name ?? 'User'),
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w800,
-                color: context.vColors.onSurface,
-              ),
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              isBusiness
-                  ? (businessDetail?['businessCategory'] as String? ?? '')
-                  : (user?.phoneNumber ?? ''),
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-                color: Colors.grey.shade500,
-              ),
-            ),
+            // Name + verified badge
+            Builder(builder: (ctx) {
+              final isComplete = _isProfileComplete(user, isBusiness, businessDetail);
+              final displayName = isBusiness
+                  ? (businessDetail?['businessName'] as String? ?? user?.name ?? 'Business')
+                  : (user?.name ?? 'User');
+              final category = businessDetail?['businessCategory'] as String?;
+              final phone = user?.phoneNumber ?? '';
+
+              return Column(
+                children: [
+                  // Name row with optional verified badge
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          displayName,
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w800,
+                            color: ctx.vColors.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      if (isComplete) ...[
+                        SizedBox(width: 6.w),
+                        Icon(Icons.verified_rounded,
+                            size: 20.sp, color: AppColor.primary),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: 8.h),
+                  // Business category pill OR phone number
+                  if (isBusiness && category != null && category.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF3CD),
+                        borderRadius: BorderRadius.circular(20.r),
+                        border: Border.all(color: const Color(0xFFE8C73A).withValues(alpha: 0.5)),
+                      ),
+                      child: Text(
+                        _capitalize(category),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF856404),
+                        ),
+                      ),
+                    )
+                  else if (!isBusiness && phone.isNotEmpty)
+                    Text(
+                      phone,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                ],
+              );
+            }),
 
             SizedBox(height: 20.h),
 
-            // ── Profile completion card ─────────────────────────────
+            // ── Profile completion card — hidden when 100% complete ──
             _ProfileCompletionCard(
               user: user,
               isBusiness: isBusiness,
@@ -370,6 +411,8 @@ class _ProfileCompletionCard extends StatelessWidget {
     final total = fields.length;
     final percent = total == 0 ? 1.0 : filled / total;
     final isComplete = filled == total;
+
+    if (isComplete) return const SizedBox.shrink();
 
     final Color progressColor = isComplete
         ? const Color(0xFF2E7D32)
@@ -629,6 +672,31 @@ class _InfoRow extends StatelessWidget {
       ],
     );
   }
+}
+
+String _capitalize(String s) =>
+    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+
+bool _isProfileComplete(dynamic user, bool isBusiness, Map<String, dynamic>? bd) {
+  if (isBusiness) {
+    final pan = bd?['panNumber'] as String?;
+    final vat = bd?['vatNumber'] as String?;
+    final location = bd?['locationAddress'] as String? ?? bd?['addressName'] as String?;
+    final fields = [
+      bd?['businessName'] as String?,
+      bd?['businessCategory'] as String?,
+      (pan != null && pan.isNotEmpty) ? pan : vat,
+      location,
+    ];
+    return fields.every((f) => f != null && f.isNotEmpty);
+  }
+  final fields = [
+    user?.name as String?,
+    user?.email as String?,
+    user?.birthDate as String?,
+    user?.gender as String?,
+  ];
+  return fields.every((f) => f != null && f.isNotEmpty);
 }
 
 String _locationAddress(Map<String, dynamic>? detail) {

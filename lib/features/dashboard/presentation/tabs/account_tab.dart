@@ -349,6 +349,7 @@ class AccountTab extends ConsumerWidget {
             // Manage Orders standalone card
             GestureDetector(
               onTap: () {
+                ref.read(visitedTabsProvider.notifier).update((s) => {...s, 2});
                 ref.read(dashboardIndexProvider.notifier).state = 2;
               },
               child: _buildManageOrdersCard(context),

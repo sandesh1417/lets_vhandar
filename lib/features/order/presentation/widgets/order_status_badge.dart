@@ -30,7 +30,7 @@ class OrderStatusBadge extends StatelessWidget {
           ),
           SizedBox(width: 6.w),
           Text(
-            status.toUpperCase(),
+            _displayLabel(status),
             style: TextStyle(
               fontSize: 10.sp,
               fontWeight: FontWeight.bold,
@@ -40,6 +40,14 @@ class OrderStatusBadge extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static String _displayLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'shipped':
+      case 'shipping': return 'ON THE WAY';
+      default: return status.toUpperCase();
+    }
   }
 
   _BadgeConfig _getBadgeConfig(String status, bool isDark) {
@@ -52,7 +60,7 @@ class OrderStatusBadge extends StatelessWidget {
       );
     }
     // Blue — in transit
-    if (s == 'shipped') {
+    if (s == 'shipped' || s == 'shipping') {
       return _BadgeConfig(
         backgroundColor: isDark ? const Color(0xFF0D47A1).withValues(alpha: 0.35) : const Color(0xFFE3F2FD),
         textColor: isDark ? const Color(0xFF90CAF9) : const Color(0xFF1565C0),

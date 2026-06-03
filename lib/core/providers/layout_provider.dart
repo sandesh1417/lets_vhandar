@@ -10,7 +10,7 @@ class AppLayoutNotifier extends StateNotifier<bool> {
     _loadPreference();
   }
 
-  final _prefs = SessionPrefences();
+  final _prefs = SessionPreferences();
 
   Future<void> _loadPreference() async {
     state = await _prefs.getLayoutPreference();

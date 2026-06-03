@@ -523,6 +523,11 @@ class _SelectPaymentMethodScreenState
                                   ],
                                 ),
                               ),
+                              SvgPicture.asset(
+                                'assets/images/cash on delivery.svg',
+                                width: 56.w,
+                                height: 56.w,
+                              ),
                             ],
                           ),
                         ),

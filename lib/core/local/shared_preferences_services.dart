@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SessionPrefences {
+class SessionPreferences {
   static const _secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(),
   );

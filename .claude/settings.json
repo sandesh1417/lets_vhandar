@@ -11,7 +11,8 @@
       "Bash(curl -s \"https://pub.dev/api/packages/google_maps_flutter\")",
       "Bash(curl -s \"https://pub.dev/api/packages/permission_handler_apple\")",
       "Bash(curl -s \"https://pub.dev/api/packages/google_maps_flutter_ios\")",
-      "Bash(curl -s \"https://pub.dev/api/packages/shared_preferences\")"
+      "Bash(curl -s \"https://pub.dev/api/packages/shared_preferences\")",
+      "Bash(dart analyze *)"
     ]
   }
 }

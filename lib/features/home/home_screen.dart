@@ -268,7 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 slivers: [
                   HomeHeader(onLogoTap: _scrollToTop),
                   if (isOffline)
-                    SliverFillRemaining(
+                    const SliverFillRemaining(
                       hasScrollBody: false,
                       child: _HomeOfflineBody(),
                     )

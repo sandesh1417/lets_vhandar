@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _loadRememberMe() async {
-    final saved = await SessionPrefences().getRememberMe();
+    final saved = await SessionPreferences().getRememberMe();
     final phone = saved['phone'];
     final password = saved['password'];
     if (phone != null && password != null) {
@@ -234,12 +234,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onPress: () async {
                           if (_formKey.currentState?.validate() ?? false) {
                             if (_rememberMe) {
-                              await SessionPrefences().saveRememberMe(
+                              await SessionPreferences().saveRememberMe(
                                 phone: _phoneController.text,
                                 password: _passwordController.text,
                               );
                             } else {
-                              await SessionPrefences().clearRememberMe();
+                              await SessionPreferences().clearRememberMe();
                             }
                             if (!context.mounted) return;
                             ref.read(loginProvider.notifier).login(
