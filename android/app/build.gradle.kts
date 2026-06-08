@@ -21,6 +21,7 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android plugin.
     // Flutter handles Kotlin automatically via flutter-gradle-plugin.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -71,4 +72,13 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
+
+    // Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
 }
