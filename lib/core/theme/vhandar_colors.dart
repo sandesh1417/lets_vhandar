@@ -39,8 +39,9 @@ class VhandarColors extends ThemeExtension<VhandarColors> {
     onSurface: Color(0xFF1A1A1A),
     onSurfaceMuted: Color(0xFF757575),
     divider: Color(0xFFF0F0F0),
-    navBarBg: Color(0xE1FFFFFF),
-    navBarBorder: Color(0x99FFFFFF),
+    navBarBg: Color(0xFFEFF7F2),
+    // navBarBg: Color(0xFFFFFFFF),
+    navBarBorder: Color(0xFFDDDDDD),
     inputFill: Color(0xFFFFFFFF),
     inputBorder: Color(0xFFE0E0E0),
     inputBorderFocused: Color(0xFF0A754E),
@@ -55,8 +56,8 @@ class VhandarColors extends ThemeExtension<VhandarColors> {
     onSurface: Color(0xFFF0F0F0),
     onSurfaceMuted: Color(0xFF9E9E9E),
     divider: Color(0xFF2C2C2C),
-    navBarBg: Color(0xE01A1A1A),
-    navBarBorder: Color(0x40FFFFFF),
+    navBarBg: Color(0xFF1D2A22),
+    navBarBorder: Color(0x660A754E),
     inputFill: Color(0xFF1E1E1E),
     inputBorder: Color(0xFF3A3A3A),
     inputBorderFocused: Color(0xFF0A754E),
@@ -114,7 +115,8 @@ class VhandarColors extends ThemeExtension<VhandarColors> {
       inputBorderFocused:
           Color.lerp(inputBorderFocused, other.inputBorderFocused, t)!,
       shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,
-      shimmerHighlight: Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,
+      shimmerHighlight:
+          Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,
     );
   }
 }

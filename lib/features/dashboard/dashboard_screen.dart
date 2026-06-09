@@ -182,7 +182,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Widget _buildIcon(BuildContext context, int i, bool isSelected) {
+  Widget _buildIcon(BuildContext context, int i, bool isSelected, double size) {
     final inactiveColor = context.vColors.onSurfaceMuted;
     final inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
 
@@ -192,16 +192,16 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           isSelected
               ? 'assets/icons/vhandar-home-active.svg'
               : 'assets/icons/vhandar-home.svg',
-          width: 22.w,
-          height: 22.w,
+          width: size,
+          height: size,
         );
       case 1:
         return SvgPicture.asset(
           isSelected
               ? 'assets/icons/category-active.svg'
               : 'assets/icons/categories.svg',
-          width: 22.w,
-          height: 22.w,
+          width: size,
+          height: size,
           colorFilter: isSelected ? null : inactiveFilter,
         );
       case 2:
@@ -209,8 +209,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           isSelected
               ? 'assets/icons/order-active.svg'
               : 'assets/icons/order.svg',
-          width: 22.w,
-          height: 22.w,
+          width: size,
+          height: size,
           colorFilter: isSelected ? null : inactiveFilter,
         );
       case 3:
@@ -218,8 +218,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           isSelected
               ? 'assets/icons/reorder-icon-active.svg'
               : 'assets/icons/reorder-icon.svg',
-          width: 22.w,
-          height: 22.w,
+          width: size,
+          height: size,
           colorFilter: isSelected ? null : inactiveFilter,
         );
       default:
@@ -227,8 +227,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           isSelected
               ? 'assets/icons/account-active.svg'
               : 'assets/icons/account.svg',
-          width: 22.w,
-          height: 22.w,
+          width: size,
+          height: size,
           colorFilter: isSelected ? null : inactiveFilter,
         );
     }
@@ -239,7 +239,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 13.h),
+        padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 10.h),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32.r),
@@ -256,97 +256,96 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(32.r),
               child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(
-                height: 68.h,
-                decoration: BoxDecoration(
-                  color: context.vColors.navBarBg,
-                  borderRadius: BorderRadius.circular(32.r),
-                  border: Border.all(
-                    color: context.vColors.navBarBorder,
-                    width: 1,
+                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                child: Container(
+                  height: 72.h,
+                  decoration: BoxDecoration(
+                    color: context.vColors.navBarBg,
+                    borderRadius: BorderRadius.circular(32.r),
+                    border: Border.all(
+                      color: context.vColors.navBarBorder,
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: List.generate(_labels.length, (i) {
-                    final isSelected = widget.currentIndex == i;
-                    return Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTapDown: (_) => _press[i].reverse(),
-                        onTapUp: (_) {
-                          _press[i].forward();
-                          widget.onTap(i);
-                        },
-                        onTapCancel: () => _press[i].forward(),
-                        child: AnimatedBuilder(
-                          animation: _press[i],
-                          builder: (context, child) => Transform.scale(
-                            scale: _press[i].value,
-                            child: child,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 7.h,
-                              horizontal: 5.w,
+                  child: Row(
+                    children: List.generate(_labels.length, (i) {
+                      final isSelected = widget.currentIndex == i;
+                      final iconSize = isSelected ? 24.w : 21.w;
+                      return Expanded(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapDown: (_) => _press[i].reverse(),
+                          onTapUp: (_) {
+                            _press[i].forward();
+                            widget.onTap(i);
+                          },
+                          onTapCancel: () => _press[i].forward(),
+                          child: AnimatedBuilder(
+                            animation: _press[i],
+                            builder: (context, child) => Transform.scale(
+                              scale: _press[i].value,
+                              child: child,
                             ),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeOutCubic,
-                              decoration: isSelected
-                                  ? BoxDecoration(
-                                      color: AppColor.primary
-                                          .withValues(alpha: 0.12),
-                                      borderRadius:
-                                          BorderRadius.circular(22.r),
-                                      border: Border.all(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 6.h,
+                                horizontal: 5.w,
+                              ),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeOutCubic,
+                                decoration: isSelected
+                                    ? BoxDecoration(
                                         color: AppColor.primary
-                                            .withValues(alpha: 0.25),
-                                        width: 1,
+                                            .withValues(alpha: 0.15),
+                                        borderRadius:
+                                            BorderRadius.circular(22.r),
+                                        border: Border.all(
+                                          color: AppColor.primary
+                                              .withValues(alpha: 0.45),
+                                          width: 1.5,
+                                        ),
+                                      )
+                                    : const BoxDecoration(),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildIcon(
+                                        context, i, isSelected, iconSize),
+                                    SizedBox(height: 3.h),
+                                    AnimatedDefaultTextStyle(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      style: TextStyle(
+                                        fontSize: isSelected ? 10.5.sp : 9.5.sp,
+                                        fontFamily: 'Inter',
+                                        fontWeight: isSelected
+                                            ? FontWeight.w800
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? AppColor.primary
+                                            : context.vColors.onSurfaceMuted,
                                       ),
-                                    )
-                                  : const BoxDecoration(),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildIcon(context, i, isSelected),
-                                  SizedBox(height: 3.h),
-                                  AnimatedDefaultTextStyle(
-                                    duration:
-                                        const Duration(milliseconds: 200),
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      fontFamily: 'Inter',
-                                      fontWeight: isSelected
-                                          ? FontWeight.w700
-                                          : FontWeight.w400,
-                                      color: isSelected
-                                          ? AppColor.primary
-                                          : Theme.of(context).brightness == Brightness.dark
-                                              ? context.vColors.onSurfaceMuted
-                                              : context.vColors.onSurfaceMuted,
+                                      child: Text(_labels[i]),
                                     ),
-                                    child: Text(_labels[i]),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 }
-
 
 class _AboveNavBarFABLocation extends FloatingActionButtonLocation {
   const _AboveNavBarFABLocation();
@@ -362,4 +361,3 @@ class _AboveNavBarFABLocation extends FloatingActionButtonLocation {
     return Offset(x, y);
   }
 }
-
