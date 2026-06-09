@@ -40,13 +40,15 @@ class CustomSnackbar {
   static void success(BuildContext context,
       {required String message,
       Duration duration = const Duration(milliseconds: 3000)}) {
-    _show(context, message: message, type: _SnackType.success, duration: duration);
+    _show(context,
+        message: message, type: _SnackType.success, duration: duration);
   }
 
   static void error(BuildContext context,
       {required String message,
       Duration duration = const Duration(milliseconds: 3000)}) {
-    _show(context, message: message, type: _SnackType.error, duration: duration);
+    _show(context,
+        message: message, type: _SnackType.error, duration: duration);
   }
 
   static void info(BuildContext context,
@@ -82,9 +84,9 @@ class _SnackOverlayState extends State<_SnackOverlay>
       duration: const Duration(milliseconds: 380),
     );
     _slide = Tween<Offset>(
-      begin: const Offset(0, -1),
+      begin: const Offset(0, 1),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _ctrl.forward();
   }
@@ -130,10 +132,10 @@ class _SnackOverlayState extends State<_SnackOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Positioned(
-      top: topPadding + 12.h,
+      bottom: bottomPadding + 96.h,
       left: 16.w,
       right: 16.w,
       child: FadeTransition(
@@ -143,10 +145,10 @@ class _SnackOverlayState extends State<_SnackOverlay>
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
               decoration: BoxDecoration(
                 color: _bgColor,
-                borderRadius: BorderRadius.circular(14.r),
+                borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
                     color: _bgColor.withValues(alpha: 0.35),
@@ -160,17 +162,10 @@ class _SnackOverlayState extends State<_SnackOverlay>
                 ),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(6.r),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(_icon,
-                        color: Colors.white, size: 18.sp),
-                  ),
-                  SizedBox(width: 12.w),
+                  Icon(_icon, color: Colors.white, size: 18.sp),
+                  SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
                       widget.message,
@@ -178,7 +173,7 @@ class _SnackOverlayState extends State<_SnackOverlay>
                         color: Colors.white,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
-                        height: 1.4,
+                        height: 1.3,
                       ),
                     ),
                   ),
