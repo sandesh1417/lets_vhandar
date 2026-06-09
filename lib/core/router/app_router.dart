@@ -128,7 +128,10 @@ const _publicRoutes = {
 };
 
 class LVGoRouter {
-  final GoRouter goRoute = GoRouter(
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  late final GoRouter goRoute = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: LVRoute.splashScreen.route,
     debugLogDiagnostics: kDebugMode,
     errorBuilder: (context, state) => _RouterErrorPage(error: state.error),
