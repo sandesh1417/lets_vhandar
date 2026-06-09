@@ -9,8 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
-import 'package:upgrader/upgrader.dart';
-import 'package:version/version.dart' as version_lib;
+import 'package:lets_vhandar/core/widgets/update_sheet.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
@@ -104,18 +103,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     });
 
     if (UpdateService.instance.updateType == UpdateType.optional) {
-      return UpgradeAlert(
-        upgrader: Upgrader(
-          durationUntilAlertAgain: const Duration(days: 2),
-          debugDisplayAlways: true, // TODO: remove before release
-          storeController: UpgraderStoreController(
-            onAndroid: () => _MockUpgraderStore(),
-            oniOS: () => _MockUpgraderStore(),
-          ),
-        ),
-        barrierDismissible: false,
-        showIgnore: false,
-        showLater: true,
+      return OptionalUpdateListener(
         child: _buildDashboard(context, currentIndex),
       );
     }
@@ -147,27 +135,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           },
         ),
       ),
-    );
-  }
-}
-
-class _MockUpgraderStore extends UpgraderStore {
-  @override
-  Future<UpgraderVersionInfo> getVersionInfo({
-    required UpgraderState state,
-    required version_lib.Version installedVersion,
-    required String? country,
-    required String? language,
-  }) async {
-    return UpgraderVersionInfo(
-      installedVersion: installedVersion,
-      appStoreVersion: version_lib.Version(
-        installedVersion.major,
-        installedVersion.minor,
-        installedVersion.patch + 1,
-      ),
-      appStoreListingURL:
-          'https://play.google.com/store/apps/details?id=com.vhandar.app',
     );
   }
 }

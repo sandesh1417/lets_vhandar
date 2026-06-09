@@ -6,7 +6,7 @@ import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
 import 'package:lets_vhandar/core/theme/app_theme.dart';
-import 'package:lets_vhandar/core/widgets/force_update_gate.dart';
+import 'package:lets_vhandar/core/widgets/update_sheet.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 
 class MyApp extends ConsumerWidget {
