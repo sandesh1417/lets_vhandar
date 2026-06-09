@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:version/version.dart' as version_lib;
 
 const _androidStoreUrl =
     'https://play.google.com/store/apps/details?id=com.vhandar.app';
@@ -201,13 +199,6 @@ class _OptionalUpdateListenerState extends State<OptionalUpdateListener> {
 
   late final Upgrader _upgrader = Upgrader(
     durationUntilAlertAgain: const Duration(days: 2),
-    debugDisplayAlways: kDebugMode, // TODO: remove before release
-    storeController: kDebugMode
-        ? UpgraderStoreController(
-            onAndroid: () => _MockUpgraderStore(),
-            oniOS: () => _MockUpgraderStore(),
-          )
-        : null,
   );
 
   @override
@@ -256,28 +247,4 @@ class _OptionalUpdateListenerState extends State<OptionalUpdateListener> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-// ---------------------------------------------------------------------------
-// Mock store for debug testing (no Play Store listing needed)
-// ---------------------------------------------------------------------------
-
-class _MockUpgraderStore extends UpgraderStore {
-  @override
-  Future<UpgraderVersionInfo> getVersionInfo({
-    required UpgraderState state,
-    required version_lib.Version installedVersion,
-    required String? country,
-    required String? language,
-  }) async {
-    return UpgraderVersionInfo(
-      installedVersion: installedVersion,
-      appStoreVersion: version_lib.Version(
-        installedVersion.major,
-        installedVersion.minor,
-        installedVersion.patch + 1,
-      ),
-      appStoreListingURL: _androidStoreUrl,
-    );
-  }
 }

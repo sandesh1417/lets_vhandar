@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -20,8 +19,7 @@ class UpdateService {
 
       await remoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval:
-            Duration.zero, // TODO: change to Duration(hours: 1) before release
+        minimumFetchInterval: const Duration(hours: 1),
       ));
 
       await remoteConfig.setDefaults(const {
@@ -40,10 +38,6 @@ class UpdateService {
       final forceVersions = (config['force_versions'] as List).cast<String>();
       final minVersion =
           (config['min_supported_version'] as String?) ?? '0.0.0';
-      print('123123 update config =$config');
-      print('123123min_supported_version =$minVersion');
-      print('123123current =$current');
-      print('123123forceVersions =$forceVersions');
       if (forceVersions.contains(current) ||
           _isVersionBelow(current, minVersion)) {
         _updateType = UpdateType.forced;
