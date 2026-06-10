@@ -19,12 +19,10 @@ class ReferAndEarnScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(loginProvider).user;
-    final profileAsync = user?.id != null
-        ? ref.watch(userProfileProvider(user!.id!))
-        : null;
-    final referralCode = profileAsync?.valueOrNull?.referalCode
-        ?? user?.referalCode
-        ?? '';
+    final profileAsync =
+        user?.id != null ? ref.watch(userProfileProvider(user!.id!)) : null;
+    final referralCode =
+        profileAsync?.valueOrNull?.referalCode ?? user?.referalCode ?? '';
     final vc = context.vColors;
 
     return CustomScaffoldWrapper(
@@ -37,7 +35,9 @@ class ReferAndEarnScreen extends ConsumerWidget {
           // ── Hero banner ──────────────────────────────────────────────
           _HeroBanner(
             referralCode: referralCode,
-            isLoading: profileAsync != null && profileAsync.isLoading && referralCode.isEmpty,
+            isLoading: profileAsync != null &&
+                profileAsync.isLoading &&
+                referralCode.isEmpty,
           ),
 
           // ── How it works ─────────────────────────────────────────────
@@ -59,22 +59,26 @@ class ReferAndEarnScreen extends ConsumerWidget {
                 const _Step(
                   number: '1',
                   icon: Icons.share_outlined,
-                  text: 'Share your referral code with a friend and ask them to enter it during Vhandar signup.',
+                  text:
+                      'Share your referral code with a friend and ask them to enter it during Vhandar signup.',
                 ),
                 const _Step(
                   number: '2',
                   icon: Icons.workspace_premium_outlined,
-                  text: 'You earn 100 Vhandar Points for every friend upon completion of their first order.',
+                  text:
+                      'You earn 100 Vhandar Points for every friend upon completion of their first order.',
                 ),
                 const _Step(
                   number: '3',
                   icon: Icons.local_offer_outlined,
-                  text: 'They get attractive discounts off their first purchase.',
+                  text:
+                      'They get attractive discounts off their first purchase.',
                 ),
                 const _Step(
                   number: '4',
                   icon: Icons.redeem_outlined,
-                  text: 'Vhandar Points can be redeemed on your next purchase — Rs.1 for every 10 points.',
+                  text:
+                      'Vhandar Points can be redeemed on your next purchase — Rs.1 for every 10 points.',
                   showLine: false,
                 ),
               ],
@@ -292,102 +296,103 @@ class _HeroBanner extends StatelessWidget {
                     ),
                   )
                 else
-                CustomPaint(
-                  painter: const _DashedBorderPainter(
-                    color: Color(0xFFD4A574),
-                    strokeWidth: 1.5,
-                    gap: 5,
-                    dashWidth: 6,
-                    radius: 8,
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 14.w, vertical: 12.h),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5DEB3),
-                      borderRadius: BorderRadius.circular(8.r),
+                  CustomPaint(
+                    painter: const _DashedBorderPainter(
+                      color: Color(0xFFD4A574),
+                      strokeWidth: 1.5,
+                      gap: 5,
+                      dashWidth: 6,
+                      radius: 8,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          referralCode,
-                          style: TextStyle(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF2D1A00),
-                            fontFamily: 'Inter',
-                            letterSpacing: 1.5,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 14.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5DEB3),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            referralCode,
+                            style: TextStyle(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2D1A00),
+                              fontFamily: 'Inter',
+                              letterSpacing: 1.5,
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Clipboard.setData(
-                                ClipboardData(text: referralCode));
-                            CustomSnackbar.success(context,
-                                message: 'Referral code copied!');
-                          },
-                          child: Row(
-                            children: [
-                              Icon(Icons.copy_rounded,
-                                  size: 15.sp,
-                                  color: const Color(0xFF8B4500)),
-                              SizedBox(width: 5.w),
-                              Text(
-                                'Copy',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF8B4500),
-                                  fontFamily: 'Inter',
+                          GestureDetector(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              Clipboard.setData(
+                                  ClipboardData(text: referralCode));
+                              CustomSnackbar.success(context,
+                                  message: 'Referral code copied!');
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.copy_rounded,
+                                    size: 15.sp,
+                                    color: const Color(0xFF8B4500)),
+                                SizedBox(width: 5.w),
+                                Text(
+                                  'Copy',
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF8B4500),
+                                    fontFamily: 'Inter',
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
                 SizedBox(height: 16.h),
 
                 // Share button
                 if (!isLoading && referralCode.isNotEmpty)
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    SharePlus.instance.share(ShareParams(
-                      text: 'Use my referral code $referralCode on Vhandar and get discounts on your first order! Download: https://play.google.com/store/apps/details?id=com.vhandar.app',
-                    ));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.w, vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.share_rounded,
-                            size: 15.sp, color: const Color(0xFFE8651A)),
-                        SizedBox(width: 6.w),
-                        Text(
-                          'Share Code',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFFE8651A),
-                            fontFamily: 'Inter',
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      SharePlus.instance.share(ShareParams(
+                        text:
+                            'Use my referral code $referralCode on Vhandar and get discounts on your first order! Download: https://play.google.com/store/apps/details?id=vhandar.com',
+                      ));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 10.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(50.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.share_rounded,
+                              size: 15.sp, color: const Color(0xFFE8651A)),
+                          SizedBox(width: 6.w),
+                          Text(
+                            'Share Code',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFE8651A),
+                              fontFamily: 'Inter',
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

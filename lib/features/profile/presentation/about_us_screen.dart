@@ -12,11 +12,12 @@ class AboutUsScreen extends StatelessWidget {
 
   static const String _appVersion = '1.0.0';
   static const String _playStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.vhandar.app';
+      'https://play.google.com/store/apps/details?id=vhandar.com';
 
   void _shareApp() {
     SharePlus.instance.share(ShareParams(
-      text: "Shop groceries fast with Vhandar!\n\nDownload the app: $_playStoreUrl",
+      text:
+          "Shop groceries fast with Vhandar!\n\nDownload the app: $_playStoreUrl",
       subject: "Let's Vhandar – Quick Grocery Delivery",
     ));
   }
@@ -35,7 +36,6 @@ class AboutUsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 40.h),
-
             Image.asset(
               KImageConstant.appIcon,
               width: 100.w,
@@ -43,7 +43,6 @@ class AboutUsScreen extends StatelessWidget {
               fit: BoxFit.contain,
             ),
             SizedBox(height: 12.h),
-
             Text(
               'Quick & easy way to get groceries delivered',
               textAlign: TextAlign.center,
@@ -79,7 +78,6 @@ class AboutUsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 14.h),
-
             Container(
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
               decoration: BoxDecoration(
@@ -96,13 +94,11 @@ class AboutUsScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             SizedBox(height: 32.h),
             const SocialMediaRow(),
             SizedBox(height: 28.h),
             Divider(color: vc.divider, thickness: 1),
             SizedBox(height: 16.h),
-
             Text(
               'Vhandar Merchandise Pvt Ltd',
               textAlign: TextAlign.center,
@@ -124,9 +120,7 @@ class AboutUsScreen extends StatelessWidget {
                 fontFamily: 'Inter',
               ),
             ),
-
             SizedBox(height: 28.h),
-
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(

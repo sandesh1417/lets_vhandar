@@ -85,8 +85,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     final url = "https://vhandar.com/product/${p.slug ?? p.id ?? ''}";
-    const store =
-        "https://play.google.com/store/apps/details?id=com.vhandar.app";
+    const store = "https://play.google.com/store/apps/details?id=vhandar.com";
     SharePlus.instance.share(ShareParams(
       text: "Check out *${p.name}* on Let's Vhandar!\n\n"
           "Price: Rs. ${p.actualPrice}\n"
@@ -104,7 +103,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     return BoxDecoration(
       color: vc.surface,
       borderRadius: BorderRadius.circular(_kCardRadius.r),
-     
     );
   }
 
@@ -115,7 +113,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final isBusiness = ref.watch(isBusinessUserProvider);
     final isOOS = product.isOutOfStock;
     final hasB2BPrice = isBusiness && (product.businessPricePerUnit ?? 0) > 0;
-    final price = hasB2BPrice ? product.businessActualPrice : product.actualPrice;
+    final price =
+        hasB2BPrice ? product.businessActualPrice : product.actualPrice;
     final mrp = hasB2BPrice
         ? (product.businessPricePerUnit ?? 0)
         : (product.pricePerUnit ?? 0);
@@ -237,343 +236,355 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
-          // ── Image Slider ───────────────────────────────────────────────
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            expandedHeight: 320.h,
-            pinned: false,
-            backgroundColor: vc.scaffoldBg,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ProductImageSlider(
-                product: product,
-                heroTag: 'product-img-${widget.product.id}',
-              ),
-            ),
-          ),
-
-          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
-
-          // ══════════════════════════════════════════════════════════════
-          // TICKET CARD
-          // • Shadow lives on the outer Container's BoxDecoration
-          // • NO ClipRRect here — ClipRRect eats the box-shadow AND clips
-          //   the _TicketCutoutDivider semicircle notches
-          // • Children that must be clipped (e.g. ProductVariantSelector)
-          //   should do their own internal clipping
-          // • Bottom radius: BorderRadius.circular gives all 4 corners
-          // ══════════════════════════════════════════════════════════════
-          SliverToBoxAdapter(
-            child: Container(
-              margin: cardMargin,
-              decoration: _cardDecoration(context),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Name & Price ───────────────────────────────────────
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.name ?? 'Product Name',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w800,
-                            color: vc.onSurface,
-                            height: 1.3,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          '${product.unitValue?.toInt()} ${product.unit}',
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: vc.onSurfaceMuted,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 12.h),
-
-                        // Price row
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Rs. ${price.toInt()}',
-                              style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.bold,
-                                color: vc.onSurface,
-                              ),
-                            ),
-                            if (hasDiscount) ...[
-                              SizedBox(width: 8.w),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 2.h),
-                                child: Text(
-                                  'MRP Rs.${mrp.toInt()}',
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    color: vc.onSurfaceMuted,
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 4.h),
-                                decoration: BoxDecoration(
-                                  color: AppColor.primary.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(6.r),
-                                ),
-                                child: Text(
-                                  'Save Rs.${(mrp - price).toInt()}',
-                                  style: TextStyle(
-                                    color: AppColor.primary,
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        SizedBox(height: 4.h),
-                        if (isOOS)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 3.h),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(6.r),
-                              border: Border.all(color: Colors.red.shade200),
-                            ),
-                            child: Text(
-                              'Out of Stock',
-                              style: TextStyle(
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.red.shade600,
-                              ),
-                            ),
-                          )
-                        else
-                          Text(
-                            'Inclusive of all taxes',
-                            style: TextStyle(
-                              fontSize: 9.sp,
-                              color: vc.onSurfaceMuted,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                      ],
-                    ),
+              // ── Image Slider ───────────────────────────────────────────────
+              SliverAppBar(
+                automaticallyImplyLeading: false,
+                expandedHeight: 320.h,
+                pinned: false,
+                backgroundColor: vc.scaffoldBg,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: ProductImageSlider(
+                    product: product,
+                    heroTag: 'product-img-${widget.product.id}',
                   ),
-
-                  // ── Variant Selector ───────────────────────────────────
-                  ProductVariantSelector(
-                    baseProduct: widget.product,
-                    selected: _currentProduct,
-                    onVariantChanged: (v) =>
-                        setState(() => _currentProduct = v),
-                  ),
-
-                  // ── Brand + Ticket Cutout ──────────────────────────────
-                  if (product.brandId != null) ...[
-                    _TicketCutoutDivider(
-                      bgColor: vc.scaffoldBg,
-                      surfaceColor: vc.surface,
-                    ),
-                    ProductBrandSection(brandId: product.brandId!),
-                  ],
-
-                  // Just enough clearance so content never touches the
-                  // rounded bottom corners of the card.
-                  SizedBox(height: 10.h),
-                ],
-              ),
-            ),
-          ),
-
-          // ══════════════════════════════════════════════════════════════
-          // PRODUCT DETAILS — own rounded card, outside ticket
-          // ══════════════════════════════════════════════════════════════
-          SliverToBoxAdapter(
-            child: Container(
-              margin: cardMargin,
-              decoration: _cardDecoration(context),
-              // ClipRRect safe here — no cutout notches, shadow is on parent
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(_kCardRadius.r),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () =>
-                          setState(() => _detailsExpanded = !_detailsExpanded),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 14.h),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Product Details',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: vc.onSurface,
-                                ),
-                              ),
-                            ),
-                            AnimatedRotation(
-                              turns: _detailsExpanded ? 0.5 : 0,
-                              duration: const Duration(milliseconds: 250),
-                              child: Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                color: vc.onSurfaceMuted,
-                                size: 20.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    AnimatedCrossFade(
-                      duration: const Duration(milliseconds: 250),
-                      crossFadeState: _detailsExpanded
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      firstChild: Column(
-                        children: [
-                          Divider(height: 1, thickness: 1, color: vc.divider),
-                          ProductDetailsTable(
-                              product: product, hideHeader: true),
-                          SizedBox(height: 8.h),
-                        ],
-                      ),
-                      secondChild: const SizedBox(width: double.infinity),
-                    ),
-                  ],
                 ),
               ),
-            ),
-          ),
 
-          // ══════════════════════════════════════════════════════════════
-          // SIMILAR PRODUCTS — own rounded card
-          // ══════════════════════════════════════════════════════════════
-          if (product.categoryIds?.isNotEmpty == true)
-            ref.watch(similarProductsProvider(product.categoryIds!.first)).when(
-                  data: (products) {
-                    final filtered =
-                        products.where((p) => p.id != product.id).toList();
-                    if (filtered.isEmpty) {
-                      return const SliverToBoxAdapter(child: SizedBox.shrink());
-                    }
-                    return SliverToBoxAdapter(
-                      child: Container(
-                        margin: cardMargin,
-                        decoration: _cardDecoration(context),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(_kCardRadius.r),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 16.h),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 3.w,
-                                      height: 16.h,
-                                      decoration: BoxDecoration(
-                                        color: AppColor.primary,
-                                        borderRadius:
-                                            BorderRadius.circular(2.r),
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    Text(
-                                      'Similar Products',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.w700,
-                                        color: vc.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 12.h),
-                              SizedBox(
-                                height: ProductItemCard.preferredHeight,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
-                                  itemCount: filtered.length,
-                                  itemBuilder: (context, index) {
-                                    final p = filtered[index];
-                                    return ProductItemCard(
-                                      product: p,
-                                      onTap: () => context.pushNamed(
-                                        LVRoute.productDetailScreen.route,
-                                        extra: p,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  loading: () => SliverToBoxAdapter(
-                    child: Container(
-                      margin: cardMargin,
-                      decoration: _cardDecoration(context),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(_kCardRadius.r),
+              SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+
+              // ══════════════════════════════════════════════════════════════
+              // TICKET CARD
+              // • Shadow lives on the outer Container's BoxDecoration
+              // • NO ClipRRect here — ClipRRect eats the box-shadow AND clips
+              //   the _TicketCutoutDivider semicircle notches
+              // • Children that must be clipped (e.g. ProductVariantSelector)
+              //   should do their own internal clipping
+              // • Bottom radius: BorderRadius.circular gives all 4 corners
+              // ══════════════════════════════════════════════════════════════
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: cardMargin,
+                  decoration: _cardDecoration(context),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Name & Price ───────────────────────────────────────
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 16.h),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.w),
-                              child: Row(
-                                children: [
-                                  const CustomShimmer.rectangular(width: 3, height: 16),
-                                  SizedBox(width: 8.w),
-                                  const CustomShimmer.rectangular(width: 120, height: 14),
-                                ],
+                            Text(
+                              product.name ?? 'Product Name',
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w800,
+                                color: vc.onSurface,
+                                height: 1.3,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              '${product.unitValue?.toInt()} ${product.unit}',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: vc.onSurfaceMuted,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             SizedBox(height: 12.h),
-                            const ProductHorizontalListShimmer(itemCount: 4),
-                            SizedBox(height: 16.h),
+
+                            // Price row
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Rs. ${price.toInt()}',
+                                  style: TextStyle(
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: vc.onSurface,
+                                  ),
+                                ),
+                                if (hasDiscount) ...[
+                                  SizedBox(width: 8.w),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 2.h),
+                                    child: Text(
+                                      'MRP Rs.${mrp.toInt()}',
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        color: vc.onSurfaceMuted,
+                                        fontWeight: FontWeight.w500,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 4.h),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.primary
+                                          .withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Text(
+                                      'Save Rs.${(mrp - price).toInt()}',
+                                      style: TextStyle(
+                                        color: AppColor.primary,
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            SizedBox(height: 4.h),
+                            if (isOOS)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w, vertical: 3.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(6.r),
+                                  border:
+                                      Border.all(color: Colors.red.shade200),
+                                ),
+                                child: Text(
+                                  'Out of Stock',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red.shade600,
+                                  ),
+                                ),
+                              )
+                            else
+                              Text(
+                                'Inclusive of all taxes',
+                                style: TextStyle(
+                                  fontSize: 9.sp,
+                                  color: vc.onSurfaceMuted,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
                           ],
                         ),
                       ),
+
+                      // ── Variant Selector ───────────────────────────────────
+                      ProductVariantSelector(
+                        baseProduct: widget.product,
+                        selected: _currentProduct,
+                        onVariantChanged: (v) =>
+                            setState(() => _currentProduct = v),
+                      ),
+
+                      // ── Brand + Ticket Cutout ──────────────────────────────
+                      if (product.brandId != null) ...[
+                        _TicketCutoutDivider(
+                          bgColor: vc.scaffoldBg,
+                          surfaceColor: vc.surface,
+                        ),
+                        ProductBrandSection(brandId: product.brandId!),
+                      ],
+
+                      // Just enough clearance so content never touches the
+                      // rounded bottom corners of the card.
+                      SizedBox(height: 10.h),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ══════════════════════════════════════════════════════════════
+              // PRODUCT DETAILS — own rounded card, outside ticket
+              // ══════════════════════════════════════════════════════════════
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: cardMargin,
+                  decoration: _cardDecoration(context),
+                  // ClipRRect safe here — no cutout notches, shadow is on parent
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(_kCardRadius.r),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => setState(
+                              () => _detailsExpanded = !_detailsExpanded),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 14.h),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Product Details',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: vc.onSurface,
+                                    ),
+                                  ),
+                                ),
+                                AnimatedRotation(
+                                  turns: _detailsExpanded ? 0.5 : 0,
+                                  duration: const Duration(milliseconds: 250),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    color: vc.onSurfaceMuted,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        AnimatedCrossFade(
+                          duration: const Duration(milliseconds: 250),
+                          crossFadeState: _detailsExpanded
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: Column(
+                            children: [
+                              Divider(
+                                  height: 1, thickness: 1, color: vc.divider),
+                              ProductDetailsTable(
+                                  product: product, hideHeader: true),
+                              SizedBox(height: 8.h),
+                            ],
+                          ),
+                          secondChild: const SizedBox(width: double.infinity),
+                        ),
+                      ],
                     ),
                   ),
-                  error: (e, s) =>
-                      const SliverToBoxAdapter(child: SizedBox.shrink()),
-                )
-          else
-            const SliverToBoxAdapter(child: SizedBox.shrink()),
+                ),
+              ),
 
-          SliverToBoxAdapter(
-            child: SizedBox(height: totalItems > 0 ? 120.h : 24.h),
-          ),
-          ],
+              // ══════════════════════════════════════════════════════════════
+              // SIMILAR PRODUCTS — own rounded card
+              // ══════════════════════════════════════════════════════════════
+              if (product.categoryIds?.isNotEmpty == true)
+                ref
+                    .watch(similarProductsProvider(product.categoryIds!.first))
+                    .when(
+                      data: (products) {
+                        final filtered =
+                            products.where((p) => p.id != product.id).toList();
+                        if (filtered.isEmpty) {
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
+                        }
+                        return SliverToBoxAdapter(
+                          child: Container(
+                            margin: cardMargin,
+                            decoration: _cardDecoration(context),
+                            child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(_kCardRadius.r),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16.h),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16.w),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 3.w,
+                                          height: 16.h,
+                                          decoration: BoxDecoration(
+                                            color: AppColor.primary,
+                                            borderRadius:
+                                                BorderRadius.circular(2.r),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Text(
+                                          'Similar Products',
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.w700,
+                                            color: vc.onSurface,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  SizedBox(
+                                    height: ProductItemCard.preferredHeight,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      itemCount: filtered.length,
+                                      itemBuilder: (context, index) {
+                                        final p = filtered[index];
+                                        return ProductItemCard(
+                                          product: p,
+                                          onTap: () => context.pushNamed(
+                                            LVRoute.productDetailScreen.route,
+                                            extra: p,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(height: 16.h),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      loading: () => SliverToBoxAdapter(
+                        child: Container(
+                          margin: cardMargin,
+                          decoration: _cardDecoration(context),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(_kCardRadius.r),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 16.h),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Row(
+                                    children: [
+                                      const CustomShimmer.rectangular(
+                                          width: 3, height: 16),
+                                      SizedBox(width: 8.w),
+                                      const CustomShimmer.rectangular(
+                                          width: 120, height: 14),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 12.h),
+                                const ProductHorizontalListShimmer(
+                                    itemCount: 4),
+                                SizedBox(height: 16.h),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      error: (e, s) =>
+                          const SliverToBoxAdapter(child: SizedBox.shrink()),
+                    )
+              else
+                const SliverToBoxAdapter(child: SizedBox.shrink()),
+
+              SliverToBoxAdapter(
+                child: SizedBox(height: totalItems > 0 ? 120.h : 24.h),
+              ),
+            ],
           ),
 
           // ── Floating View Cart badge — always in tree, reacts instantly ──
@@ -657,12 +668,16 @@ class _CutoutDividerPainter extends CustomPainter {
     );
     canvas.drawArc(
       Rect.fromCircle(center: Offset(0, cy), radius: _r),
-      -math.pi / 2, math.pi, true,
+      -math.pi / 2,
+      math.pi,
+      true,
       Paint()..color = bgColor,
     );
     canvas.drawArc(
       Rect.fromCircle(center: Offset(w, cy), radius: _r),
-      math.pi / 2, math.pi, true,
+      math.pi / 2,
+      math.pi,
+      true,
       Paint()..color = bgColor,
     );
 
@@ -707,9 +722,8 @@ class _GlassButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isGlass
-        ? (isDark ? Colors.white : AppColor.primary)
-        : Colors.white;
+    final iconColor =
+        isGlass ? (isDark ? Colors.white : AppColor.primary) : Colors.white;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(

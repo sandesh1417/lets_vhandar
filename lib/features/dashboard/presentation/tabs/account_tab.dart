@@ -270,7 +270,7 @@ class _AccountTabState extends ConsumerState<AccountTab> {
                   subtitle: 'App version $_appVersion',
                   onTap: () => launchUrl(
                     Uri.parse(
-                        'https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                        'https://play.google.com/store/apps/details?id=vhandar.com'),
                     mode: LaunchMode.externalApplication,
                   ),
                 ),
@@ -288,7 +288,7 @@ class _AccountTabState extends ConsumerState<AccountTab> {
                   showDivider: false,
                   onTap: () => launchUrl(
                     Uri.parse(
-                        'https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                        'https://play.google.com/store/apps/details?id=vhandar.com'),
                     mode: LaunchMode.externalApplication,
                   ),
                 ),

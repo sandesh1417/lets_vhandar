@@ -6,7 +6,7 @@ import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const _androidStoreUrl =
-    'https://play.google.com/store/apps/details?id=com.vhandar.app';
+    'https://play.google.com/store/apps/details?id=vhandar.com';
 const _iosStoreUrl = 'https://apps.apple.com/app/id'; // TODO: add App Store ID
 
 // ---------------------------------------------------------------------------
