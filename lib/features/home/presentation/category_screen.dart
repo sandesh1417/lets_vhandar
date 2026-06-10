@@ -66,9 +66,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         );
 
     return CustomScaffoldWrapper(
-      backgroundColor: AppColor.primary,
+      backgroundColor: vc.scaffoldBg,
       isScrollable: false,
       resizeToAvoidBottomInset: false,
+      bottomSafeArea: false,
       body: Column(
         children: [
           // ── Header ─────────────────────────────────────────────────

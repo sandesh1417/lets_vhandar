@@ -120,6 +120,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return CustomScaffoldWrapper(
       isScrollable: false,
       extendBody: true,
+      bottomSafeArea: false,
       floatingActionButtonLocation: const _AboveNavBarFABLocation(),
       floatingActionButton: CartFloatingBadge(
         onTap: () => context.push(LVRoute.cartScreen.route),

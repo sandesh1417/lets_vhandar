@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CustomScaffoldWrapper extends StatelessWidget {
   final Widget body;
   final double? horizontalPadding;
@@ -13,6 +12,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
   final bool extendBodyBehindAppBar;
   final bool extendBody;
   final bool? resizeToAvoidBottomInset;
+  final bool bottomSafeArea;
 
   const CustomScaffoldWrapper({
     super.key,
@@ -27,12 +27,14 @@ class CustomScaffoldWrapper extends StatelessWidget {
     this.extendBodyBehindAppBar = false,
     this.extendBody = false,
     this.resizeToAvoidBottomInset,
+    this.bottomSafeArea = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor:
+          backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       extendBody: extendBody,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
@@ -42,7 +44,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
       floatingActionButtonLocation: floatingActionButtonLocation,
       body: SafeArea(
         top: false,
-        bottom: true,
+        bottom: bottomSafeArea,
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 0),
