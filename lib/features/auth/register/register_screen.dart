@@ -77,9 +77,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         key: _formKey,
         child: Column(
           children: [
-            SizedBox(height: 30.h),
+            SizedBox(height: 12.h),
             SvgPicture.asset(KImageConstant.vandharIcon),
-            SizedBox(height: 15.h),
+            SizedBox(height: 10.h),
             Text(
               'Vhandar Grocery app',
               style: TextStyle(
@@ -99,7 +99,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 fontFamily: 'Inter',
               ),
             ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 20.h),
             CustomTextField(
               controller: _phoneController,
               hintText: 'Mobile Number',
@@ -112,7 +112,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               textInputFormatter: TenDigitInputFormatter(),
               validator: TFValidators.validatePhone,
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
             CustomTextField(
               controller: _nameController,
               hintText: 'Full Name',
@@ -123,7 +123,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               suffixIcon: const SizedBox(),
               validator: TFValidators.validateName,
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
             CustomTextField(
               controller: _passwordController,
               hintText: 'Password',
@@ -137,7 +137,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               },
               validator: TFValidators.validatePassword,
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
             CustomTextField(
               controller: _confirmPasswordController,
               hintText: 'Confirm Password',
@@ -153,7 +153,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   value, _passwordController.text),
               suffixIcon: const SizedBox(),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
             CustomTextField(
               controller: _referalCodeController,
               hintText: 'Referral Code (Optional)',
@@ -162,20 +162,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   size: 18.sp, color: context.vColors.onSurfaceMuted),
               suffixIcon: const SizedBox(),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 12.h),
             CustomButton(
               isLoading: registrationState.isLoading,
               btnHeight: 52.h,
-              buttonColor: _isFormFilled
-                  ? AppColor.secondary
-                  : const Color(0xFF9C9C9C),
+              buttonColor:
+                  _isFormFilled ? AppColor.secondary : const Color(0xFF9C9C9C),
               txtStyle: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Inter',
-                color: _isFormFilled
-                    ? const Color(0xFF1A1A1A)
-                    : Colors.white,
+                color: _isFormFilled ? const Color(0xFF1A1A1A) : Colors.white,
               ),
               onPress: () {
                 if (_formKey.currentState?.validate() ?? false) {
@@ -207,13 +204,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               },
               buttonTitle: 'Join Vhandar',
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                    child: Divider(
-                        color: context.vColors.divider, thickness: 1)),
+                    child:
+                        Divider(color: context.vColors.divider, thickness: 1)),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   child: Text(
@@ -227,11 +224,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                 ),
                 Expanded(
-                    child: Divider(
-                        color: context.vColors.divider, thickness: 1)),
+                    child:
+                        Divider(color: context.vColors.divider, thickness: 1)),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
             SizedBox(
               width: double.infinity,
               height: 52.h,
@@ -259,8 +256,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                top: 16.h,
-                bottom: MediaQuery.of(context).padding.bottom + 12.h,
+                top: 10.h,
+                bottom: MediaQuery.of(context).padding.bottom + 8.h,
               ),
               child: Column(
                 children: [
