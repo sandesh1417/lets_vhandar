@@ -16,6 +16,7 @@ import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'category_detail/widgets/category_product_grid.dart';
 import 'category_detail/widgets/category_sort_bar.dart';
 import 'category_detail/widgets/sub_category_sidebar.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class CategoryDetailScreen extends ConsumerStatefulWidget {
   final String categorySlug;
@@ -85,7 +86,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         0;
     final catDesc = _stripHtml(category.description as String?);
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -215,7 +216,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
     final detailFuture =
         ref.read(subCategoryBySlugProvider(selectedSlug).future);
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

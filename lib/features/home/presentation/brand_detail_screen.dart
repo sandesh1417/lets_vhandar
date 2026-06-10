@@ -18,6 +18,7 @@ import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/error_state.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class BrandDetailScreen extends ConsumerStatefulWidget {
   final String brandSlug;
@@ -358,7 +359,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -459,7 +460,7 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
       {'val': 'name_a_z', 'label': 'Name (A to Z)'},
     ];
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: context.vColors.surface,

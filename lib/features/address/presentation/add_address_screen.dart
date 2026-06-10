@@ -19,6 +19,7 @@ import '../data/location_search_service.dart';
 import '../widgets/address_form.dart';
 import '../widgets/address_location_banner.dart';
 import '../widgets/address_map_picker.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class AddAddressScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -158,7 +159,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   void _showLocationNotServiceablePopup() {
     final vc = context.vColors;
     final bottomPad = MediaQuery.of(context).padding.bottom;
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isDismissible: true,

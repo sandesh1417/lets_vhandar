@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class ProductItemCard extends ConsumerStatefulWidget {
   final ProductData product;
@@ -38,7 +39,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
   static void showVariantBottomSheet(
       BuildContext context, WidgetRef ref, ProductData product,
       {required Function(ProductData) onVariantSelected}) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(

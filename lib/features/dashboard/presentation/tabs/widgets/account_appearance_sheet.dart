@@ -4,10 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 void showAppearanceSheet(BuildContext context, WidgetRef ref) {
   final current = ref.read(themeModeProvider);
-  showModalBottomSheet(
+  showAppSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (_) => _AppearanceSheet(current: current, ref: ref),

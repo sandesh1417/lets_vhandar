@@ -19,6 +19,8 @@ import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:pinput/pinput.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 const _kBusinessCategories = [
   'Restaurant',
@@ -86,7 +88,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   }
 
   void _showCategoryPicker() {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
@@ -100,21 +102,22 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCategory == null) {
-      CustomSnackbar.error(context, message: 'Please select a business category');
+      CustomSnackbar.error(context,
+          message: 'Please select a business category');
       return;
     }
 
     // Send OTP first
     await ref.read(registrationProvider.notifier).sendOtp(
-      context,
-      phoneNumber: _phoneCtrl.text.trim(),
-      phoneCode: '+977',
-      onSuccess: () => _showOtpSheet(),
-    );
+          context,
+          phoneNumber: _phoneCtrl.text.trim(),
+          phoneCode: '+977',
+          onSuccess: () => _showOtpSheet(),
+        );
   }
 
   void _showOtpSheet() {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -124,10 +127,10 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
         onVerify: (otp) => _registerBusiness(otp),
         onResend: () {
           ref.read(registrationProvider.notifier).sendOtp(
-            context,
-            phoneNumber: _phoneCtrl.text.trim(),
-            phoneCode: '+977',
-          );
+                context,
+                phoneNumber: _phoneCtrl.text.trim(),
+                phoneCode: '+977',
+              );
         },
       ),
     );
@@ -163,7 +166,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     final isLoading = ref.watch(registrationProvider).isLoading;
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: vc.scaffoldBg,
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -237,7 +240,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     keyBoardType: TextInputType.number,
                     textInputFormatter: TenDigitInputFormatter(),
                     prefixIcon: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 13.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 13.h),
                       child: Text(
                         '+977',
                         style: TextStyle(
@@ -251,7 +255,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     validator: TFValidators.validatePhone,
                   ),
                   SizedBox(height: 14.h),
-
                   _Label('Email Address', vc),
                   SizedBox(height: 6.h),
                   CustomTextField(
@@ -263,7 +266,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     suffixIcon: const SizedBox.shrink(),
                   ),
                   SizedBox(height: 14.h),
-
                   _Label('Password', vc),
                   SizedBox(height: 6.h),
                   CustomTextField(
@@ -272,9 +274,12 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     obscureText: !_showPassword,
                     prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
                     suffixIcon: GestureDetector(
-                      onTap: () => setState(() => _showPassword = !_showPassword),
+                      onTap: () =>
+                          setState(() => _showPassword = !_showPassword),
                       child: Icon(
-                        _showPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _showPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         size: 18.sp,
                         color: vc.onSurfaceMuted,
                       ),
@@ -282,7 +287,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     validator: TFValidators.validatePassword,
                   ),
                   SizedBox(height: 14.h),
-
                   _Label('Confirm Password', vc),
                   SizedBox(height: 6.h),
                   CustomTextField(
@@ -293,12 +297,15 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     suffixIcon: GestureDetector(
                       onTap: () => setState(() => _showConfirm = !_showConfirm),
                       child: Icon(
-                        _showConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _showConfirm
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         size: 18.sp,
                         color: vc.onSurfaceMuted,
                       ),
                     ),
-                    validator: (v) => TFValidators.validateConfirmPassword(v, _passwordCtrl.text),
+                    validator: (v) => TFValidators.validateConfirmPassword(
+                        v, _passwordCtrl.text),
                   ),
                 ],
               ),
@@ -317,10 +324,10 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     hintText: 'Enter your business name',
                     prefixIcon: _PrefixIcon(Icons.storefront_outlined, vc),
                     suffixIcon: const SizedBox.shrink(),
-                    validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Required' : null,
                   ),
                   SizedBox(height: 14.h),
-
                   _Label('Category', vc),
                   SizedBox(height: 6.h),
                   _TapField(
@@ -332,7 +339,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     vc: vc,
                   ),
                   SizedBox(height: 14.h),
-
                   _Label('Tax Type', vc),
                   SizedBox(height: 8.h),
                   _PanVatToggle(
@@ -349,7 +355,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     hintText: _isPan ? 'Enter PAN number' : 'Enter VAT number',
                     prefixIcon: _PrefixIcon(Icons.badge_outlined, vc),
                     suffixIcon: const SizedBox.shrink(),
-                    validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Required' : null,
                   ),
                 ],
               ),
@@ -376,7 +383,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                     SizedBox(height: 6.h),
                     Row(
                       children: [
-                        Icon(Icons.my_location, size: 12.sp, color: AppColor.primary),
+                        Icon(Icons.my_location,
+                            size: 12.sp, color: AppColor.primary),
                         SizedBox(width: 4.w),
                         Text(
                           '${_locationLatLng!.latitude.toStringAsFixed(4)}, ${_locationLatLng!.longitude.toStringAsFixed(4)}',
@@ -581,7 +589,8 @@ class _TapField extends StatelessWidget {
               : vc.surfaceVariant,
           borderRadius: BorderRadius.circular(10.r),
           border: Border.all(
-            color: hasValue ? AppColor.primary.withValues(alpha: 0.4) : vc.divider,
+            color:
+                hasValue ? AppColor.primary.withValues(alpha: 0.4) : vc.divider,
           ),
         ),
         child: Row(
@@ -626,9 +635,17 @@ class _PanVatToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _Chip(label: 'PAN', selected: isPan, onTap: () => onChanged(true), vc: vc),
+        _Chip(
+            label: 'PAN',
+            selected: isPan,
+            onTap: () => onChanged(true),
+            vc: vc),
         SizedBox(width: 10.w),
-        _Chip(label: 'VAT', selected: !isPan, onTap: () => onChanged(false), vc: vc),
+        _Chip(
+            label: 'VAT',
+            selected: !isPan,
+            onTap: () => onChanged(false),
+            vc: vc),
       ],
     );
   }
@@ -693,8 +710,8 @@ class _CategorySheet extends StatelessWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).padding.bottom + 8.h),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 8.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -735,8 +752,7 @@ class _CategorySheet extends StatelessWidget {
               },
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
-                padding:
-                    EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColor.primary.withValues(alpha: 0.08)
@@ -753,8 +769,7 @@ class _CategorySheet extends StatelessWidget {
                     Icon(
                       Icons.restaurant_outlined,
                       size: 16.sp,
-                      color:
-                          isSelected ? AppColor.primary : vc.onSurfaceMuted,
+                      color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
                     ),
                     SizedBox(width: 10.w),
                     Expanded(
@@ -763,11 +778,9 @@ class _CategorySheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontFamily: 'Inter',
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                          color:
-                              isSelected ? AppColor.primary : vc.onSurface,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w400,
+                          color: isSelected ? AppColor.primary : vc.onSurface,
                         ),
                       ),
                     ),
@@ -848,8 +861,8 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
           color: vc.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
-        padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w,
-            MediaQuery.of(context).padding.bottom + 24.h),
+        padding: EdgeInsets.fromLTRB(
+            24.w, 20.h, 24.w, MediaQuery.of(context).padding.bottom + 24.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -991,11 +1004,11 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
                   ),
                   children: [
                     TextSpan(
-                      text: _canResend ? 'Resend OTP' : 'Resend in ${_seconds}s',
+                      text:
+                          _canResend ? 'Resend OTP' : 'Resend in ${_seconds}s',
                       style: TextStyle(
-                        color: _canResend
-                            ? AppColor.primary
-                            : vc.onSurfaceMuted,
+                        color:
+                            _canResend ? AppColor.primary : vc.onSurfaceMuted,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

@@ -23,7 +23,7 @@ class CartCheckoutBar extends ConsumerWidget {
     final isBusiness = ref.watch(isBusinessUserProvider);
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 20.h),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 20.h + MediaQuery.of(context).padding.bottom),
       child: InkWell(
         onTap: () {
           if (isBusiness) {

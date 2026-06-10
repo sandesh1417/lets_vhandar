@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class SearchSortBar extends ConsumerWidget {
   const SearchSortBar({super.key});
@@ -78,7 +79,7 @@ void showSearchSortModal(BuildContext context, WidgetRef ref) {
       // {'val': 'name_a_z', 'label': 'Name (A to Z)'},
     ];
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

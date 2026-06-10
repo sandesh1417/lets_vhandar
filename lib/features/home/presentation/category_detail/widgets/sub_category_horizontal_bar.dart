@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class SubCategoryHorizontalBar extends ConsumerWidget {
   final String categorySlug;
@@ -122,7 +123,7 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
 
   void _showInfoSheet(BuildContext context) {
     final desc = _stripHtml(widget.description);
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,

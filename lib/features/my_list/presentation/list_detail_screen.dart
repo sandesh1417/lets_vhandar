@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dar
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class ListDetailScreen extends ConsumerWidget {
   final String listId;
@@ -189,7 +190,7 @@ class ListDetailScreen extends ConsumerWidget {
 
   void _showAddProductSheet(
       BuildContext context, WidgetRef ref, SavedList list) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

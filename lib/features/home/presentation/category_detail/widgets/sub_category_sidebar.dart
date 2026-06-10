@@ -32,7 +32,7 @@ class SubCategorySidebar extends ConsumerWidget {
           child: ListView.builder(
             padding: EdgeInsets.only(
               top: 8.h,
-              bottom: 8.h + MediaQuery.of(context).padding.bottom,
+              bottom: 8.h,
             ),
             itemCount: subs.length + 1,
             itemBuilder: (context, index) {

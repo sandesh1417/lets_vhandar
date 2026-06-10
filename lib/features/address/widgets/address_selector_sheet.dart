@@ -9,6 +9,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 /// Shows the list of saved addresses and an "Add Address" button.
 /// Call via: showAddressSelectorSheet(context, userId: '...')
@@ -16,7 +17,7 @@ Future<void> showAddressSelectorSheet(
   BuildContext context, {
   required String userId,
 }) {
-  return showModalBottomSheet(
+  return showAppSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,

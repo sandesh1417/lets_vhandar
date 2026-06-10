@@ -23,6 +23,7 @@ import 'package:lets_vhandar/features/cart/widgets/cart_item_widget.dart';
 import 'package:lets_vhandar/features/cart/widgets/delivery_instructions_card.dart';
 import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -80,8 +81,8 @@ class CartScreen extends ConsumerWidget {
                       ref.read(cartProvider.notifier).clearCart();
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 12.w, vertical: 6.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8.r),
@@ -110,84 +111,87 @@ class CartScreen extends ConsumerWidget {
                     onRefresh: () async => ref.invalidate(addressProvider),
                     color: AppColor.primary,
                     child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
-                    children: [
-                      // ── Cart Items Card ──────────────────────────────
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16.w),
-                        decoration: BoxDecoration(
-                          color: context.vColors.surface,
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '$totalItems ${totalItems == 1 ? 'item' : 'items'} in cart',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColor.textMuted,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
+                      children: [
+                        // ── Cart Items Card ──────────────────────────────
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 16.w),
+                          decoration: BoxDecoration(
+                            color: context.vColors.surface,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '$totalItems ${totalItems == 1 ? 'item' : 'items'} in cart',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColor.textMuted,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            ListView.separated(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: cartItems.length,
-                              separatorBuilder: (_, __) => Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: Divider(
-                                    height: 1, color: context.vColors.divider),
+                              ListView.separated(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: cartItems.length,
+                                separatorBuilder: (_, __) => Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Divider(
+                                      height: 1,
+                                      color: context.vColors.divider),
+                                ),
+                                itemBuilder: (context, index) =>
+                                    CartItemWidget(item: cartItems[index]),
                               ),
-                              itemBuilder: (context, index) =>
-                                  CartItemWidget(item: cartItems[index]),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                      SizedBox(height: 10.h),
+                        SizedBox(height: 10.h),
 
-                      // ── Coupon Banner ────────────────────────────────
-                      const _CouponBanner(),
+                        // ── Coupon Banner ────────────────────────────────
+                        const _CouponBanner(),
 
-                      SizedBox(height: 10.h),
+                        SizedBox(height: 10.h),
 
-                      // ── Bill Details ─────────────────────────────────
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: BillDetailsCard(
-                          totalItems: totalItems,
-                          totalPrice: totalPrice,
-                          totalMrp: totalMrp,
+                        // ── Bill Details ─────────────────────────────────
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: BillDetailsCard(
+                            totalItems: totalItems,
+                            totalPrice: totalPrice,
+                            totalMrp: totalMrp,
+                          ),
                         ),
-                      ),
 
-                      SizedBox(height: 10.h),
+                        SizedBox(height: 10.h),
 
-                      // ── Additional Info Cards ────────────────────────
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: Column(
-                          children: [
-                            const DeliveryInstructionsCard(),
-                            SizedBox(height: 8.h),
-                            const DeliveryPartnerSafetyCard(),
-                            SizedBox(height: 8.h),
-                            const CancellationPolicyCard(),
-                          ],
+                        // ── Additional Info Cards ────────────────────────
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Column(
+                            children: [
+                              const DeliveryInstructionsCard(),
+                              SizedBox(height: 8.h),
+                              const DeliveryPartnerSafetyCard(),
+                              SizedBox(height: 8.h),
+                              const CancellationPolicyCard(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -271,7 +275,8 @@ class _CartStickyBottom extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBusiness = ref.watch(isBusinessUserProvider);
-    final selectedAddress = ref.watch(addressProvider.select((s) => s.selected));
+    final selectedAddress =
+        ref.watch(addressProvider.select((s) => s.selected));
     final addressError = ref.watch(cartAddressErrorProvider);
     final totalPrice = ref.watch(totalCartPriceProvider);
 
@@ -327,7 +332,8 @@ class _CartStickyBottom extends ConsumerWidget {
                 if (userId != null) {
                   showAddressSelectorSheet(context, userId: userId);
                 } else {
-                  CustomSnackbar.info(context, message: 'Please login to select address');
+                  CustomSnackbar.info(context,
+                      message: 'Please login to select address');
                 }
               },
             ),
@@ -397,9 +403,7 @@ class _NoAddressBanner extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: isError
-                  ? Colors.red.withValues(alpha: 0.04)
-                  : vc.surface,
+              color: isError ? Colors.red.withValues(alpha: 0.04) : vc.surface,
               borderRadius: BorderRadius.circular(14.r),
             ),
             child: Row(
@@ -506,8 +510,7 @@ class _DashedBorderPainter extends CustomPainter {
 class _HasAddressBanner extends StatelessWidget {
   final dynamic selectedAddress;
   final VoidCallback onTap;
-  const _HasAddressBanner(
-      {required this.selectedAddress, required this.onTap});
+  const _HasAddressBanner({required this.selectedAddress, required this.onTap});
 
   String _svgForAddressType(String? type) {
     switch (type?.toLowerCase()) {
@@ -560,7 +563,9 @@ class _HasAddressBanner extends StatelessWidget {
                 ),
                 SizedBox(height: 1.h),
                 Text(
-                  selectedAddress.name ?? selectedAddress.addressType ?? 'Address',
+                  selectedAddress.name ??
+                      selectedAddress.addressType ??
+                      'Address',
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
@@ -628,7 +633,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
     final textController = TextEditingController();
     String? sheetError;
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -651,184 +656,182 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                   right: 20.w,
                   top: 20.h,
                 ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Apply Coupon Code',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: vc.onSurface,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(sheetContext),
-                        icon: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: textController,
-                          decoration: InputDecoration(
-                            hintText: 'Enter coupon code (e.g. SUBARNABHD)',
-                            hintStyle: TextStyle(
-                                fontSize: 13.sp, color: vc.onSurfaceMuted),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 12.h),
-                            filled: true,
-                            fillColor: vc.surfaceVariant,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide:
-                                  BorderSide(color: vc.inputBorder),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide:
-                                  BorderSide(color: vc.inputBorder),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(color: AppColor.primary),
-                            ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Apply Coupon Code',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: vc.onSurface,
                           ),
-                          textCapitalization: TextCapitalization.characters,
                         ),
-                      ),
-                      SizedBox(width: 12.w),
-                      ElevatedButton(
-                        onPressed: _isValidating
-                            ? null
-                            : () async {
-                                final code = textController.text.trim();
-                                if (code.isEmpty) return;
-
-                                setSheetState(() {
-                                  _isValidating = true;
-                                  sheetError = null;
-                                });
-
-                                final errorMsg =
-                                    await _applyCouponCode(context, code);
-
-                                setSheetState(() {
-                                  _isValidating = false;
-                                  sheetError = errorMsg;
-                                });
-
-                                if (errorMsg == null) {
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.pop(sheetContext);
-                                  if (!context.mounted) return;
-                                  CustomSnackbar.success(context,
-                                      message:
-                                          'Coupon "$code" applied successfully! Saved Rs. ${ref.read(appliedCouponProvider)?.discountAmount.toInt() ?? 100} 🎉');
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColor.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 12.h),
-                          elevation: 0,
+                        IconButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          icon: const Icon(Icons.close),
                         ),
-                        child: _isValidating
-                            ? SizedBox(
-                                width: 18.w,
-                                height: 18.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                'Apply',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
-                    ],
-                  ),
-                  if (sheetError != null) ...[
-                    SizedBox(height: 12.h),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                      decoration: BoxDecoration(
-                        color: context.isDark
-                            ? const Color(0xFF4A0000).withValues(alpha: 0.5)
-                            : Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(
-                          color: context.isDark
-                              ? const Color(0xFF8B0000).withValues(alpha: 0.6)
-                              : Colors.red.shade100,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline,
-                              color: Colors.red.shade300, size: 16.sp),
-                          SizedBox(width: 8.w),
-                          Expanded(
-                            child: Text(
-                              sheetError!,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: context.isDark
-                                    ? Colors.red.shade300
-                                    : Colors.red.shade800,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: textController,
+                            decoration: InputDecoration(
+                              hintText: 'Enter coupon code (e.g. SUBARNABHD)',
+                              hintStyle: TextStyle(
+                                  fontSize: 13.sp, color: vc.onSurfaceMuted),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 12.h),
+                              filled: true,
+                              fillColor: vc.surfaceVariant,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                                borderSide: BorderSide(color: vc.inputBorder),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                                borderSide: BorderSide(color: vc.inputBorder),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                                borderSide: BorderSide(color: AppColor.primary),
+                              ),
+                            ),
+                            textCapitalization: TextCapitalization.characters,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        ElevatedButton(
+                          onPressed: _isValidating
+                              ? null
+                              : () async {
+                                  final code = textController.text.trim();
+                                  if (code.isEmpty) return;
+
+                                  setSheetState(() {
+                                    _isValidating = true;
+                                    sheetError = null;
+                                  });
+
+                                  final errorMsg =
+                                      await _applyCouponCode(context, code);
+
+                                  setSheetState(() {
+                                    _isValidating = false;
+                                    sheetError = errorMsg;
+                                  });
+
+                                  if (errorMsg == null) {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(sheetContext);
+                                    if (!context.mounted) return;
+                                    CustomSnackbar.success(context,
+                                        message:
+                                            'Coupon "$code" applied successfully! Saved Rs. ${ref.read(appliedCouponProvider)?.discountAmount.toInt() ?? 100} 🎉');
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColor.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.w, vertical: 12.h),
+                            elevation: 0,
+                          ),
+                          child: _isValidating
+                              ? SizedBox(
+                                  width: 18.w,
+                                  height: 18.w,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  'Apply',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                    if (sheetError != null) ...[
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 8.h),
+                        decoration: BoxDecoration(
+                          color: context.isDark
+                              ? const Color(0xFF4A0000).withValues(alpha: 0.5)
+                              : Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(
+                            color: context.isDark
+                                ? const Color(0xFF8B0000).withValues(alpha: 0.6)
+                                : Colors.red.shade100,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline,
+                                color: Colors.red.shade300, size: 16.sp),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                sheetError!,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: context.isDark
+                                      ? Colors.red.shade300
+                                      : Colors.red.shade800,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: 16.h),
+                    // Text(
+                    //   'Available Offers',
+                    //   style: TextStyle(
+                    //     fontSize: 14.sp,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: AppColor.textBlack,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 8.h),
+                    // _buildOfferTile(
+                    //   code: 'SUBARNABHD',
+                    //   title: 'Special Coupon',
+                    //   desc: 'Save Rs. 100 flat on all orders.',
+                    //   onTap: () {
+                    //     textController.text = 'SUBARNABHD';
+                    //   },
+                    // ),
+                    // _buildOfferTile(
+                    //   code: '123',
+                    //   title: 'Invalid Coupon Tester',
+                    //   desc: 'Test backend coupon validation errors.',
+                    //   onTap: () {
+                    //     textController.text = '123';
+                    //   },
+                    // ),
                   ],
-                  SizedBox(height: 16.h),
-                  // Text(
-                  //   'Available Offers',
-                  //   style: TextStyle(
-                  //     fontSize: 14.sp,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: AppColor.textBlack,
-                  //   ),
-                  // ),
-                  // SizedBox(height: 8.h),
-                  // _buildOfferTile(
-                  //   code: 'SUBARNABHD',
-                  //   title: 'Special Coupon',
-                  //   desc: 'Save Rs. 100 flat on all orders.',
-                  //   onTap: () {
-                  //     textController.text = 'SUBARNABHD';
-                  //   },
-                  // ),
-                  // _buildOfferTile(
-                  //   code: '123',
-                  //   title: 'Invalid Coupon Tester',
-                  //   desc: 'Test backend coupon validation errors.',
-                  //   onTap: () {
-                  //     textController.text = '123';
-                  //   },
-                  // ),
-                ],
+                ),
               ),
-            ),
             );
           },
         );

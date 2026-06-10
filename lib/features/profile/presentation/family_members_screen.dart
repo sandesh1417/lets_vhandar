@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/profile/providers/family_members_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class FamilyMembersScreen extends ConsumerStatefulWidget {
   const FamilyMembersScreen({super.key});
@@ -85,7 +86,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
 
   void _showAddSheet(BuildContext context) {
     ref.read(familyMembersProvider.notifier).resetSearch();
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -94,7 +95,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
   }
 
   void _showAcceptSheet(BuildContext context, String requestId) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -591,7 +592,7 @@ class _MemberTile extends StatelessWidget {
 
   void _showRemoveSheet(BuildContext context) {
     final member = _memberData(request);
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => _RemoveConfirmSheet(

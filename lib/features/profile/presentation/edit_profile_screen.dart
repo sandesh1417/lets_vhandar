@@ -12,6 +12,7 @@ import 'package:lets_vhandar/features/profile/presentation/business_location_pic
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 const _kBusinessCategories = [
   'Restaurant',
@@ -136,7 +137,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   void _showCategoryPicker(BuildContext ctx) {
-    showModalBottomSheet(
+    showAppSheet(
       context: ctx,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,

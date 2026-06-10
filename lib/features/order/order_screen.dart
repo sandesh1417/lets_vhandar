@@ -17,6 +17,7 @@ import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 import 'presentation/order_summary_screen.dart';
 import 'presentation/widgets/order_card.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
   const OrderScreen({super.key});
@@ -210,7 +211,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     String? sheetPayment = _selectedPaymentStatus;
     DateTimeRange? sheetDateRange = _selectedDateRange;
 
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

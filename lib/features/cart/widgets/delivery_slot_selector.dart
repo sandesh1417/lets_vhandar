@@ -7,13 +7,14 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/time_slot_model.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class DeliverySlotSelector extends ConsumerWidget {
   final bool isError;
   const DeliverySlotSelector({super.key, this.isError = false});
 
   void _openPicker(BuildContext context, WidgetRef ref, String? currentId, List<TimeSlot> slots) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,

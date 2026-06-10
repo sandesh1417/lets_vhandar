@@ -8,10 +8,11 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/product_suggestion_provider.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 /// Opens the product suggestion sheet from the bottom.
 void showProductSuggestionSheet(BuildContext context) {
-  showModalBottomSheet(
+  showAppSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,

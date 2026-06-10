@@ -42,7 +42,7 @@ class CustomScaffoldWrapper extends StatelessWidget {
       floatingActionButtonLocation: floatingActionButtonLocation,
       body: SafeArea(
         top: false,
-        bottom: false,
+        bottom: true,
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding ?? 0),

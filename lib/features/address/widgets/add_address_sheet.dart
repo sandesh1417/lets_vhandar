@@ -17,6 +17,7 @@ import '../data/location_search_service.dart';
 import 'address_form.dart';
 import 'address_location_banner.dart';
 import 'address_map_picker.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 /// Opens the add/edit address bottom sheet.
 Future<void> showAddAddressSheet(
@@ -24,7 +25,7 @@ Future<void> showAddAddressSheet(
   required String userId,
   AddressModel? existingAddress,
 }) {
-  return showModalBottomSheet(
+  return showAppSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,

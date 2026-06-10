@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dar
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 class MyListsScreen extends ConsumerWidget {
   const MyListsScreen({super.key});
@@ -218,7 +219,7 @@ class MyListsScreen extends ConsumerWidget {
   }
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -231,7 +232,7 @@ class MyListsScreen extends ConsumerWidget {
   }
 
   void _showRenameSheet(BuildContext context, WidgetRef ref, SavedList list) {
-    showModalBottomSheet(
+    showAppSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
