@@ -1,4 +1,4 @@
-package com.vhandar.lets_vhandar
+package vhandar.com
 
 import io.flutter.embedding.android.FlutterActivity
 

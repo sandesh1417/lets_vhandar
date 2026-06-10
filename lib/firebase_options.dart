@@ -14,10 +14,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCBFN4IsaNk0VE4A5chVM1uy4XGCuUm-n0',
-    appId: '1:683559346199:android:6a5ee3db2f9039a882fc52',
-    messagingSenderId: '683559346199',
-    projectId: 'vhandar-950a3',
-    storageBucket: 'vhandar-950a3.firebasestorage.app',
+    apiKey: 'AIzaSyClW2_ieHBeuFsUSPTdxYRVye8URqLu824',
+    appId: '1:994211517892:android:ad7074d9ae3cbe4ae1c091',
+    messagingSenderId: '994211517892',
+    projectId: 'vhandar-cf8f7',
+    storageBucket: 'vhandar-cf8f7.firebasestorage.app',
   );
 }

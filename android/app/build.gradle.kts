@@ -25,7 +25,7 @@ plugins {
 }
 
 android {
-    namespace = "com.vhandar.app"
+    namespace = "vhandar.com"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -42,7 +42,7 @@ android {
 
 
     defaultConfig {
-        applicationId = "com.vhandar.app"
+        applicationId = "vhandar.com"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
