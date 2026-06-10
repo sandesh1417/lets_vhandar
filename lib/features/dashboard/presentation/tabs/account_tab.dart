@@ -26,19 +26,46 @@ import 'widgets/account_support_card.dart';
 import 'widgets/account_v4b_card.dart';
 import 'widgets/account_version_footer.dart';
 
-class AccountTab extends ConsumerWidget {
+class AccountTab extends ConsumerStatefulWidget {
   const AccountTab({super.key});
 
+  @override
+  ConsumerState<AccountTab> createState() => _AccountTabState();
+}
+
+class _AccountTabState extends ConsumerState<AccountTab> {
   static const String _appVersion = '1.0.0';
   static const String _shareText =
       'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
+  static const int _accountTabIndex = 4;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    // Fetch fresh profile (incl. Vhandar points) on first build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(loginProvider.notifier).refreshProfile();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final loginState = ref.watch(loginProvider);
     final user = loginState.user;
     final isBusiness = user?.isBusiness == true;
     final vc = context.vColors;
+
+    // Refresh profile whenever the user switches to the Account tab.
+    ref.listen<int>(dashboardIndexProvider, (prev, next) {
+      if (next == _accountTabIndex && prev != _accountTabIndex) {
+        ref.read(loginProvider.notifier).refreshProfile();
+      }
+    });
+
+    // Refresh when the Account tab is re-tapped while already active.
+    ref.listen<int>(tabReactivateProvider(_accountTabIndex), (_, __) {
+      ref.read(loginProvider.notifier).refreshProfile();
+    });
 
     if (loginState.isGuest || !loginState.isLoggedIn) {
       return const AccountGuestView(appVersion: _appVersion);
@@ -78,8 +105,8 @@ class AccountTab extends ConsumerWidget {
                         AccountProfileHeader(user: user),
                         if (!isBusiness)
                           GestureDetector(
-                            onTap: () => context
-                                .push(LVRoute.vhandarPointsScreen.route),
+                            onTap: () =>
+                                context.push(LVRoute.vhandarPointsScreen.route),
                             child: AccountPointCard(
                                 points: user?.vandarPoints ?? 0),
                           ),
@@ -174,8 +201,7 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.lock_outline,
                   title: 'Change Password',
                   subtitle: 'Update your account password',
-                  onTap: () =>
-                      context.push(LVRoute.changePasswordScreen.route),
+                  onTap: () => context.push(LVRoute.changePasswordScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.brightness_6_outlined,
@@ -196,16 +222,14 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.help_center_outlined,
                   title: 'Help & Support',
                   subtitle: 'Get help with orders and queries',
-                  onTap: () =>
-                      context.push(LVRoute.helpSupportScreen.route),
+                  onTap: () => context.push(LVRoute.helpSupportScreen.route),
                 ),
                 if (!isBusiness)
                   AccountMenuItem(
                     icon: Icons.share_outlined,
                     title: 'Refer and Earn',
                     subtitle: 'Invite friends and earn Vhandar Points',
-                    onTap: () =>
-                        context.push(LVRoute.referAndEarnScreen.route),
+                    onTap: () => context.push(LVRoute.referAndEarnScreen.route),
                   ),
                 AccountMenuItem(
                   icon: Icons.lightbulb_outline,
@@ -238,8 +262,7 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.public_rounded,
                   title: 'More about Vhandar',
                   subtitle: 'Explore Vhandar policies and more',
-                  onTap: () =>
-                      context.push(LVRoute.aboutVhandarScreen.route),
+                  onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.system_update_outlined,
@@ -255,8 +278,8 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.ios_share_rounded,
                   title: 'Share this App',
                   subtitle: 'Share Vhandar with friends and family',
-                  onTap: () => SharePlus.instance
-                      .share(ShareParams(text: _shareText)),
+                  onTap: () =>
+                      SharePlus.instance.share(ShareParams(text: _shareText)),
                 ),
                 AccountMenuItem(
                   icon: Icons.star_outline_rounded,

@@ -83,6 +83,24 @@ class LoginNotifier extends StateNotifier<LoginState> {
     }
   }
 
+  Future<void> refreshProfile() async {
+    final id = state.user?.id;
+    if (id == null || id.isEmpty) return;
+    final result = await _authRepository.getUserProfile(id);
+    switch (result) {
+      case Success(value: final data):
+        final fresh = data.user;
+        if (fresh != null) {
+          await SessionPreferences().setUser(user: fresh);
+          state = state.copyWith(user: fresh);
+        }
+        break;
+      case Error():
+        // Keep existing cached user on failure
+        break;
+    }
+  }
+
   Future<void> logout() async {
     await SessionPreferences().clearSession();
     Rsession.token = null;
