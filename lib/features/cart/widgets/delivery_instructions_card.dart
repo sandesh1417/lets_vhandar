@@ -47,10 +47,10 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
         child: ExpansionTile(
           tilePadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
           leading: SvgPicture.asset(
-              'assets/icons/vhandar_delivery_info.svg',
-              width: 28.w,
-              height: 28.w,
-            ),
+            'assets/icons/vhandar_delivery_info.svg',
+            width: 28.w,
+            height: 28.w,
+          ),
           title: Text(
             'Delivery Instructions',
             style: TextStyle(
@@ -64,9 +64,9 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
           ),
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.h),
+              padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 12.h),
               child: SizedBox(
-                height: 120.h,
+                height: 100.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _options.length,
@@ -80,17 +80,16 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                         });
                       },
                       child: Container(
-                        width: 140.w,
+                        width: 130.w,
                         margin: EdgeInsets.only(right: 12.w),
-                        padding: EdgeInsets.all(12.w),
+                        padding: EdgeInsets.all(10.w),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColor.primary.withValues(alpha: 0.08)
                               : Colors.transparent,
                           border: Border.all(
-                              color: isSelected
-                                  ? AppColor.primary
-                                  : vc.divider),
+                              color:
+                                  isSelected ? AppColor.primary : vc.divider),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Column(
@@ -100,25 +99,25 @@ class _DeliveryInstructionsCardState extends State<DeliveryInstructionsCard> {
                                 color: isSelected
                                     ? AppColor.primary
                                     : vc.onSurfaceMuted,
-                                size: 24.sp),
-                            SizedBox(height: 8.h),
+                                size: 20.sp),
+                            SizedBox(height: 4.h),
                             Text(
                               opt['title'],
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: 11.sp,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
                                       ? AppColor.primary
                                       : vc.onSurface),
                             ),
-                            SizedBox(height: 4.h),
+                            SizedBox(height: 1.h),
                             Text(
                               opt['subtitle'],
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               style: TextStyle(
-                                  fontSize: 9.sp, color: vc.onSurfaceMuted),
+                                  fontSize: 8.sp, color: vc.onSurfaceMuted),
                             ),
                           ],
                         ),
