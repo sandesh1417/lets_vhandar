@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
@@ -612,13 +613,7 @@ class _SearchResultTile extends ConsumerWidget {
                         .read(myListProvider.notifier)
                         .addProduct(listId, saved);
                     if (!wasAdded && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              '${product.name ?? 'Item'} is already in this list'),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                      CustomSnackbar.info(context, message: '${product.name ?? 'Item'} is already in this list');
                     }
                   },
             child: AnimatedContainer(

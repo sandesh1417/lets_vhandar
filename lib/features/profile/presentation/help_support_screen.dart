@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -17,9 +18,7 @@ class HelpSupportScreen extends StatelessWidget {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open link')),
-        );
+        CustomSnackbar.error(context, message: 'Could not open link');
       }
     }
   }

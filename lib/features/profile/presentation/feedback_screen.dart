@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 
 class FeedbackScreen extends ConsumerStatefulWidget {
@@ -50,16 +51,12 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
 
   void _submit() {
     if (_rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a rating')),
-      );
+      CustomSnackbar.info(context, message: 'Please select a rating');
       return;
     }
     final user = ref.read(loginProvider).user;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to submit feedback')),
-      );
+      CustomSnackbar.info(context, message: 'Please login to submit feedback');
       return;
     }
     ref.read(feedbackProvider.notifier).submitFeedback(
@@ -77,16 +74,12 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
 
     ref.listen(feedbackProvider, (_, next) {
       if (next.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thank you for your feedback!')),
-        );
+        CustomSnackbar.success(context, message: 'Thank you for your feedback!');
         context.pop();
         ref.read(feedbackProvider.notifier).reset();
       }
       if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
+        CustomSnackbar.error(context, message: next.error!);
       }
     });
 

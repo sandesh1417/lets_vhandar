@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -275,12 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ]);
                 } catch (_) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Refresh failed. Check your connection.'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    CustomSnackbar.error(context, message: 'Refresh failed. Check your connection.');
                   }
                 }
               },

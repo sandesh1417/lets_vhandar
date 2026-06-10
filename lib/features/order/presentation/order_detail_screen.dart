@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
@@ -144,9 +145,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not generate receipt PDF')),
-        );
+        CustomSnackbar.error(context, message: 'Could not generate receipt PDF');
       }
     } finally {
       if (mounted) setState(() => _pdfLoading = false);
@@ -168,9 +167,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
       ));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not download receipt PDF')),
-        );
+        CustomSnackbar.error(context, message: 'Could not download receipt PDF');
       }
     } finally {
       if (mounted) setState(() => _pdfLoading = false);

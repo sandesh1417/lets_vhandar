@@ -10,6 +10,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 class HomeHeader extends ConsumerWidget {
@@ -267,16 +268,7 @@ class _AddressPill extends ConsumerWidget {
         if (userId.isNotEmpty) {
           showAddressSelectorSheet(context, userId: userId);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Please login to manage addresses'),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          CustomSnackbar.info(context, message: 'Please login to manage addresses');
         }
       },
       child: Container(

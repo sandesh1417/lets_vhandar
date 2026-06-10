@@ -327,10 +327,7 @@ class _CartStickyBottom extends ConsumerWidget {
                 if (userId != null) {
                   showAddressSelectorSheet(context, userId: userId);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please login to select address')),
-                  );
+                  CustomSnackbar.info(context, message: 'Please login to select address');
                 }
               },
             ),

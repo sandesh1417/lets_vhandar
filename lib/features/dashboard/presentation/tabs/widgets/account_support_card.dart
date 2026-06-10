@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class AccountSupportCard extends StatelessWidget {
   const AccountSupportCard({super.key});
@@ -77,9 +78,7 @@ class AccountSupportCard extends StatelessWidget {
                 await launchUrl(webUrl, mode: LaunchMode.externalApplication);
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Could not launch WhatsApp')),
-                  );
+                  CustomSnackbar.error(context, message: 'Could not launch WhatsApp');
                 }
               }
             },

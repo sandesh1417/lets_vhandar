@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class SocialMediaRow extends StatelessWidget {
   const SocialMediaRow({super.key});
@@ -23,9 +24,7 @@ class SocialMediaRow extends StatelessWidget {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open ${s.label}')),
-        );
+        CustomSnackbar.error(context, message: 'Could not open ${s.label}');
       }
     }
   }

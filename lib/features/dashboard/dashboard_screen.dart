@@ -23,6 +23,7 @@ import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/order/order_screen.dart';
 import 'package:lets_vhandar/features/reorder/reorder_screen.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -83,22 +84,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       final isOnline = next.valueOrNull ?? true;
       if (isOnline && !wasOnline) {
         _refreshAllProviders();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.wifi_rounded, color: Colors.white, size: 18),
-                SizedBox(width: 10.w),
-                const Text('Back online'),
-              ],
-            ),
-            backgroundColor: Colors.green.shade600,
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.r)),
-          ),
-        );
+        CustomSnackbar.success(context, message: 'Back online');
       }
     });
 
