@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,58 +35,70 @@ class AccountTab extends ConsumerWidget {
     required String title,
     required String subtitle,
     required bool showDivider,
+    VoidCallback? onTap,
   }) {
     final vc = context.vColors;
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-          child: Row(
-            children: [
-              Container(
-                width: 40.w,
-                height: 40.w,
-                decoration: BoxDecoration(
-                  color: AppColor.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10.r),
+        InkWell(
+          onTap: onTap,
+          borderRadius: showDivider
+              ? BorderRadius.zero
+              : BorderRadius.vertical(bottom: Radius.circular(16.r)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            child: Row(
+              children: [
+                Container(
+                  width: 40.w,
+                  height: 40.w,
+                  decoration: BoxDecoration(
+                    color: AppColor.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(icon, color: AppColor.primary, size: 20.sp),
                 ),
-                child: Icon(icon, color: AppColor.primary, size: 20.sp),
-              ),
-              SizedBox(width: 14.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Inter',
-                        color: vc.onSurface,
+                SizedBox(width: 14.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Inter',
+                          color: vc.onSurface,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontFamily: 'Inter',
-                        color: vc.onSurfaceMuted,
+                      SizedBox(height: 2.h),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          fontFamily: 'Inter',
+                          color: vc.onSurfaceMuted,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ), // InkWell
         if (showDivider)
-          Divider(height: 1, thickness: 1, color: vc.divider,
-              indent: 16.w, endIndent: 16.w),
+          Divider(
+              height: 1,
+              thickness: 1,
+              color: vc.divider,
+              indent: 16.w,
+              endIndent: 16.w),
       ],
     );
   }
+
   static const String _shareText =
       'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
 
@@ -203,6 +216,8 @@ class AccountTab extends ConsumerWidget {
                       title: 'Track your orders',
                       subtitle: 'Real-time updates on every delivery',
                       showDivider: true,
+                      onTap: () => CustomSnackbar.info(context,
+                          message: 'Login to track your orders'),
                     ),
                     _featureTile(
                       context,
@@ -210,6 +225,8 @@ class AccountTab extends ConsumerWidget {
                       title: 'Manage addresses',
                       subtitle: 'Save multiple delivery locations',
                       showDivider: true,
+                      onTap: () => CustomSnackbar.info(context,
+                          message: 'Login to manage your addresses'),
                     ),
                     _featureTile(
                       context,
@@ -217,6 +234,8 @@ class AccountTab extends ConsumerWidget {
                       title: 'Earn rewards',
                       subtitle: 'Get referral bonuses and exclusive deals',
                       showDivider: true,
+                      onTap: () => CustomSnackbar.info(context,
+                          message: 'Login to earn rewards'),
                     ),
                     _featureTile(
                       context,
@@ -224,6 +243,8 @@ class AccountTab extends ConsumerWidget {
                       title: 'Reorder with one tap',
                       subtitle: 'Instantly reorder your favourites',
                       showDivider: false,
+                      onTap: () => CustomSnackbar.info(context,
+                          message: 'Login to reorder your favourites'),
                     ),
                   ],
                 ),
@@ -257,17 +278,23 @@ class AccountTab extends ConsumerWidget {
                   AccountMenuItem(
                     icon: Icons.help_outline,
                     title: 'FAQs',
-                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/faq'), mode: LaunchMode.externalApplication),
+                    onTap: () => launchUrl(
+                        Uri.parse('https://www.vhandar.com/faq'),
+                        mode: LaunchMode.externalApplication),
                   ),
                   AccountMenuItem(
                     icon: Icons.contact_support_outlined,
                     title: 'Contact Us',
-                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/contact'), mode: LaunchMode.externalApplication),
+                    onTap: () => launchUrl(
+                        Uri.parse('https://www.vhandar.com/contact'),
+                        mode: LaunchMode.externalApplication),
                   ),
                   AccountMenuItem(
                     icon: Icons.article_outlined,
                     title: 'Blog',
-                    onTap: () => launchUrl(Uri.parse('https://www.vhandar.com/blog'), mode: LaunchMode.externalApplication),
+                    onTap: () => launchUrl(
+                        Uri.parse('https://www.vhandar.com/blog'),
+                        mode: LaunchMode.externalApplication),
                   ),
                 ],
               ),
@@ -286,7 +313,8 @@ class AccountTab extends ConsumerWidget {
               ),
               SizedBox(height: 12.h),
               GestureDetector(
-                onTap: () => context.push(LVRoute.vhandarForBusinessScreen.route),
+                onTap: () =>
+                    context.push(LVRoute.vhandarForBusinessScreen.route),
                 child: _buildV4BCard(context),
               ),
               SizedBox(height: 12.h),
@@ -314,10 +342,10 @@ class AccountTab extends ConsumerWidget {
                   color: AppColor.primary,
                 ),
                 GestureDetector(
-                  onTap: () => context.push(LVRoute.personalInformationScreen.route),
+                  onTap: () =>
+                      context.push(LVRoute.personalInformationScreen.route),
                   child: Container(
-                    margin: EdgeInsets.only(
-                        top: 80.h, left: 16.w, right: 16.w),
+                    margin: EdgeInsets.only(top: 80.h, left: 16.w, right: 16.w),
                     decoration: BoxDecoration(
                       color: vc.surface,
                       borderRadius: BorderRadius.circular(16.r),
@@ -334,8 +362,10 @@ class AccountTab extends ConsumerWidget {
                         _buildProfileHeader(context, user),
                         if (!isBusiness)
                           GestureDetector(
-                            onTap: () => context.push(LVRoute.vhandarPointsScreen.route),
-                            child: _buildVhandarPointCard(context, user?.vandarPoints ?? 0),
+                            onTap: () =>
+                                context.push(LVRoute.vhandarPointsScreen.route),
+                            child: _buildVhandarPointCard(
+                                context, user?.vandarPoints ?? 0),
                           ),
                       ],
                     ),
@@ -360,7 +390,8 @@ class AccountTab extends ConsumerWidget {
             // Vhandar For Business card — hidden for business users
             if (!isBusiness) ...[
               GestureDetector(
-                onTap: () => context.push(LVRoute.vhandarForBusinessScreen.route),
+                onTap: () =>
+                    context.push(LVRoute.vhandarForBusinessScreen.route),
                 child: _buildV4BCard(context),
               ),
               SizedBox(height: 12.h),
@@ -381,14 +412,16 @@ class AccountTab extends ConsumerWidget {
                     icon: Icons.location_on_outlined,
                     title: 'Manage Address',
                     subtitle: 'Add or update your delivery addresses',
-                    onTap: () => context.push(LVRoute.savedAddressesScreen.route),
+                    onTap: () =>
+                        context.push(LVRoute.savedAddressesScreen.route),
                   ),
                 if (!isBusiness)
                   AccountMenuItem(
                     icon: Icons.group_outlined,
                     title: 'Family Members',
                     subtitle: 'Manage family members on your account',
-                    onTap: () => context.push(LVRoute.familyMembersScreen.route),
+                    onTap: () =>
+                        context.push(LVRoute.familyMembersScreen.route),
                   ),
                 AccountMenuItem(
                   icon: Icons.account_balance_wallet_outlined,
@@ -413,10 +446,17 @@ class AccountTab extends ConsumerWidget {
               title: 'Account Settings',
               children: [
                 AccountMenuItem(
-                  icon: isBusiness ? Icons.business_outlined : Icons.person_outline,
-                  title: isBusiness ? 'Business Information' : 'Personal Information',
-                  subtitle: isBusiness ? 'Update your business details' : 'Update your personal details',
-                  onTap: () => context.push(LVRoute.personalInformationScreen.route),
+                  icon: isBusiness
+                      ? Icons.business_outlined
+                      : Icons.person_outline,
+                  title: isBusiness
+                      ? 'Business Information'
+                      : 'Personal Information',
+                  subtitle: isBusiness
+                      ? 'Update your business details'
+                      : 'Update your personal details',
+                  onTap: () =>
+                      context.push(LVRoute.personalInformationScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.lock_outline,
@@ -492,7 +532,8 @@ class AccountTab extends ConsumerWidget {
                   title: 'Check For Update',
                   subtitle: 'App version $_appVersion',
                   onTap: () => launchUrl(
-                    Uri.parse('https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                    Uri.parse(
+                        'https://play.google.com/store/apps/details?id=com.vhandar.app'),
                     mode: LaunchMode.externalApplication,
                   ),
                 ),
@@ -500,7 +541,8 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.ios_share_rounded,
                   title: 'Share this App',
                   subtitle: 'Share Vhandar with friends and family',
-                  onTap: () => SharePlus.instance.share(ShareParams(text: _shareText)),
+                  onTap: () =>
+                      SharePlus.instance.share(ShareParams(text: _shareText)),
                 ),
                 AccountMenuItem(
                   icon: Icons.star_outline_rounded,
@@ -508,7 +550,8 @@ class AccountTab extends ConsumerWidget {
                   subtitle: 'Love Vhandar? Give us a rating!',
                   showDivider: false,
                   onTap: () => launchUrl(
-                    Uri.parse('https://play.google.com/store/apps/details?id=com.vhandar.app'),
+                    Uri.parse(
+                        'https://play.google.com/store/apps/details?id=com.vhandar.app'),
                     mode: LaunchMode.externalApplication,
                   ),
                 ),
@@ -522,8 +565,12 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.logout,
                   title: 'Logout',
                   subtitle: 'Logout from your Vhandar account',
-                  titleColor: context.isDark ? Colors.red.shade300 : Colors.red.shade600,
-                  iconColor: context.isDark ? Colors.red.shade300 : Colors.red.shade600,
+                  titleColor: context.isDark
+                      ? Colors.red.shade300
+                      : Colors.red.shade600,
+                  iconColor: context.isDark
+                      ? Colors.red.shade300
+                      : Colors.red.shade600,
                   showRightArrow: false,
                   showDivider: false,
                   onTap: () => _showLogoutDialog(context, ref),
@@ -662,7 +709,6 @@ class AccountTab extends ConsumerWidget {
     );
   }
 
-
   Widget _buildV4BCard(BuildContext context) {
     final vc = context.vColors;
     return Container(
@@ -756,7 +802,9 @@ class AccountTab extends ConsumerWidget {
     final isBusiness = user?.isBusiness == true;
     final businessDetail = user?.businessDetail as Map<String, dynamic>?;
     final displayName = isBusiness
-        ? (businessDetail?['businessName'] as String? ?? user?.name ?? 'Business')
+        ? (businessDetail?['businessName'] as String? ??
+            user?.name ??
+            'Business')
         : (user?.name ?? 'User Name');
     final displayPhone = user?.phoneNumber ?? 'Phone Number';
     final category = businessDetail?['businessCategory'] as String?;
@@ -768,119 +816,118 @@ class AccountTab extends ConsumerWidget {
     final isVerified = percent == 100;
 
     return Container(
-        padding: EdgeInsets.fromLTRB(20.w, 20.w, 20.w, 16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  isBusiness
-                      ? KImageConstant.businessProfile
-                      : KImageConstant.userProfile,
-                  width: 60.w,
-                  height: 60.w,
-                ),
-                SizedBox(width: 14.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              displayName,
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.bold,
-                                color: vc.onSurface,
-                              ),
-                              overflow: TextOverflow.ellipsis,
+      padding: EdgeInsets.fromLTRB(20.w, 20.w, 20.w, 16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SvgPicture.asset(
+                isBusiness
+                    ? KImageConstant.businessProfile
+                    : KImageConstant.userProfile,
+                width: 60.w,
+                height: 60.w,
+              ),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            displayName,
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
+                              color: vc.onSurface,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          if (isVerified) ...[
-                            SizedBox(width: 5.w),
-                            Icon(Icons.verified_rounded,
-                                size: 17.sp,
-                                color: AppColor.primary),
-                          ],
+                        ),
+                        if (isVerified) ...[
+                          SizedBox(width: 5.w),
+                          Icon(Icons.verified_rounded,
+                              size: 17.sp, color: AppColor.primary),
                         ],
-                      ),
-                      SizedBox(height: 4.h),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    _IconInfoRow(
+                      icon: Icons.phone_outlined,
+                      text: displayPhone,
+                      vc: vc,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    if (email != null && email.isNotEmpty) ...[
+                      SizedBox(height: 3.h),
                       _IconInfoRow(
-                        icon: Icons.phone_outlined,
-                        text: displayPhone,
+                        icon: Icons.email_outlined,
+                        text: email,
                         vc: vc,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
                       ),
-                      if (email != null && email.isNotEmpty) ...[
-                        SizedBox(height: 3.h),
-                        _IconInfoRow(
-                          icon: Icons.email_outlined,
-                          text: email,
-                          vc: vc,
-                        ),
-                      ],
-                      if (!isBusiness &&
-                          birthDate != null &&
-                          birthDate.isNotEmpty) ...[
-                        SizedBox(height: 3.h),
-                        _IconInfoRow(
-                          icon: Icons.cake_outlined,
-                          text: birthDate,
-                          vc: vc,
-                        ),
-                      ],
-                      if (isBusiness) ...[
-                        if (category != null && category.isNotEmpty) ...[
-                          SizedBox(height: 5.h),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 3.h),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFF3CD),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Text(
-                              _capitalize(category),
-                              style: TextStyle(
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF856404),
-                              ),
-                            ),
+                    ],
+                    if (!isBusiness &&
+                        birthDate != null &&
+                        birthDate.isNotEmpty) ...[
+                      SizedBox(height: 3.h),
+                      _IconInfoRow(
+                        icon: Icons.cake_outlined,
+                        text: birthDate,
+                        vc: vc,
+                      ),
+                    ],
+                    if (isBusiness) ...[
+                      if (category != null && category.isNotEmpty) ...[
+                        SizedBox(height: 5.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 3.h),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF3CD),
+                            borderRadius: BorderRadius.circular(20.r),
                           ),
-                        ],
-                        if ((pan != null && pan.isNotEmpty) ||
-                            (vat != null && vat.isNotEmpty)) ...[
-                          SizedBox(height: 4.h),
-                          Text(
-                            pan != null && pan.isNotEmpty
-                                ? 'PAN: $pan'
-                                : 'VAT: $vat',
+                          child: Text(
+                            _capitalize(category),
                             style: TextStyle(
                               fontSize: 11.sp,
-                              color: vc.onSurfaceMuted,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF856404),
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                      if ((pan != null && pan.isNotEmpty) ||
+                          (vat != null && vat.isNotEmpty)) ...[
+                        SizedBox(height: 4.h),
+                        Text(
+                          pan != null && pan.isNotEmpty
+                              ? 'PAN: $pan'
+                              : 'VAT: $vat',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: vc.onSurfaceMuted,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ],
                     ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            if (!isVerified) ...[
-              SizedBox(height: 14.h),
-              _buildCompletionBar(context, percent, vc),
+              ),
             ],
+          ),
+          if (!isVerified) ...[
+            SizedBox(height: 14.h),
+            _buildCompletionBar(context, percent, vc),
           ],
-        ),
-      );
+        ],
+      ),
+    );
   }
 
   Widget _buildCompletionBar(
@@ -916,8 +963,7 @@ class AccountTab extends ConsumerWidget {
             value: percent / 100,
             minHeight: 5.h,
             backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-            valueColor:
-                AlwaysStoppedAnimation<Color>(AppColor.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColor.primary),
           ),
         ),
       ],
@@ -1127,7 +1173,8 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                       margin: EdgeInsets.symmetric(horizontal: 4.w),
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColor.primary : vc.surfaceVariant,
+                        color:
+                            isSelected ? AppColor.primary : vc.surfaceVariant,
                         borderRadius: BorderRadius.circular(14.r),
                       ),
                       child: Column(
@@ -1136,7 +1183,8 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                           Icon(
                             opt.icon,
                             size: 24.sp,
-                            color: isSelected ? Colors.white : vc.onSurfaceMuted,
+                            color:
+                                isSelected ? Colors.white : vc.onSurfaceMuted,
                           ),
                           SizedBox(height: 8.h),
                           Text(
@@ -1145,7 +1193,8 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                               fontSize: 13.sp,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white : vc.onSurfaceMuted,
+                              color:
+                                  isSelected ? Colors.white : vc.onSurfaceMuted,
                             ),
                           ),
                         ],
@@ -1163,7 +1212,6 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
     );
   }
 }
-
 
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
