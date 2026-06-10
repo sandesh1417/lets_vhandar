@@ -1,14 +1,46 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lets_vhandar/firebase_options.dart';
 
+// Must be top-level and annotated — runs in a separate isolate
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundMessageHandler(RemoteMessage message) async {
-  // Background messages are automatically shown by FCM on Android.
-  // This handler runs for data-only messages in the background.
-  debugPrint('[FCM] Background message: ${message.messageId}');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Notification messages are auto-shown by FCM on Android.
+  // For data-only messages, show manually.
+  if (message.notification == null && message.data.isNotEmpty) {
+    final title = message.data['title'] as String?;
+    final body = message.data['body'] as String?;
+    if (title != null || body != null) {
+      final plugin = FlutterLocalNotificationsPlugin();
+      await plugin.initialize(
+        const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/launcher_icon'),
+        ),
+      );
+      await plugin.show(
+        message.hashCode,
+        title,
+        body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'vhandar_high_importance',
+            'Vhandar Notifications',
+            channelDescription: 'Notifications for orders, offers and updates',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/launcher_icon',
+          ),
+        ),
+        payload: message.data.toString(),
+      );
+    }
+  }
 }
 
 class NotificationService {
@@ -83,26 +115,49 @@ class NotificationService {
 
   Future<void> _showForegroundNotification(RemoteMessage message) async {
     final notification = message.notification;
-    final android = message.notification?.android;
 
-    if (notification == null) return;
-
-    await _localNotifications.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _androidChannel.id,
-          _androidChannel.name,
-          channelDescription: _androidChannel.description,
-          importance: Importance.max,
-          priority: Priority.high,
-          icon: android?.smallIcon ?? '@mipmap/launcher_icon',
+    // Notification message
+    if (notification != null) {
+      await _localNotifications.show(
+        message.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _androidChannel.id,
+            _androidChannel.name,
+            channelDescription: _androidChannel.description,
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: notification.android?.smallIcon ?? '@mipmap/launcher_icon',
+          ),
         ),
-      ),
-      payload: message.data.toString(),
-    );
+        payload: message.data.toString(),
+      );
+      return;
+    }
+
+    // Data-only message — show manually if title/body present
+    final title = message.data['title'] as String?;
+    final body = message.data['body'] as String?;
+    if (title != null || body != null) {
+      await _localNotifications.show(
+        message.hashCode,
+        title,
+        body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'vhandar_high_importance',
+            'Vhandar Notifications',
+            channelDescription: 'Notifications for orders, offers and updates',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/launcher_icon',
+          ),
+        ),
+        payload: message.data.toString(),
+      );
+    }
   }
 
   void _onNotificationTap(NotificationResponse response) {

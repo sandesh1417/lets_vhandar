@@ -257,47 +257,55 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 32.h),
-            Text(
-              'By continuing, you agree to our ',
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: context.vColors.onSurfaceMuted,
-                fontWeight: FontWeight.w300,
-                fontFamily: 'Inter',
+            Padding(
+              padding: EdgeInsets.only(
+                top: 16.h,
+                bottom: MediaQuery.of(context).padding.bottom + 12.h,
               ),
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Privacy Policy',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: AppColor.primary,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Inter',
-                ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: ' & ',
+              child: Column(
+                children: [
+                  Text(
+                    'By continuing, you agree to our ',
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: context.vColors.onSurfaceMuted,
+                      fontWeight: FontWeight.w300,
                       fontFamily: 'Inter',
                     ),
                   ),
-                  TextSpan(
-                    text: 'Terms of Use',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColor.primary,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Inter',
+                  RichText(
+                    text: TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColor.primary,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: ' & ',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: context.vColors.onSurfaceMuted,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Terms of Use',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColor.primary,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20.h),
           ],
         ),
       ),

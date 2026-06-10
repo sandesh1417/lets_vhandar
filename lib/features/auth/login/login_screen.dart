@@ -178,10 +178,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         () => _rememberMe = v ?? false),
                                     activeColor: AppColor.primary,
                                     side: BorderSide(
-                                        color: context.vColors.onSurfaceMuted, width: 1.5),
+                                        color: context.vColors.onSurfaceMuted,
+                                        width: 1.5),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(4.r),
+                                      borderRadius: BorderRadius.circular(4.r),
                                     ),
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
@@ -253,8 +253,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       SizedBox(height: 20.h),
                       GestureDetector(
-                        onTap: () =>
-                            context.push(LVRoute.registerScreen.route),
+                        onTap: () => context.push(LVRoute.registerScreen.route),
                         child: RichText(
                           text: TextSpan(
                             text: "Don't have an account? ",
@@ -282,46 +281,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              Text(
-                'By continuing, you agree to our ',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: context.vColors.onSurfaceMuted,
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Inter',
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 22.h,
+                  top: 4.h,
                 ),
-              ),
-              RichText(
-                text: TextSpan(
-                  text: 'Privacy Policy',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColor.primary,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Inter',
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: ' & ',
+                child: Column(
+                  children: [
+                    Text(
+                      'By continuing, you agree to our ',
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: context.vColors.onSurfaceMuted,
+                        fontWeight: FontWeight.w300,
                         fontFamily: 'Inter',
                       ),
                     ),
-                    TextSpan(
-                      text: 'Terms of Use',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColor.primary,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Inter',
+                    RichText(
+                      text: TextSpan(
+                        text: 'Privacy Policy',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColor.primary,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Inter',
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: ' & ',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: context.vColors.onSurfaceMuted,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Terms of Use',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColor.primary,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 24.h),
             ],
           ),
         ),
