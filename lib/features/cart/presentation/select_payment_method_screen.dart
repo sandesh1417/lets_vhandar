@@ -65,8 +65,8 @@ class _ProductImage extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: fullUrl,
           fit: BoxFit.cover,
-          errorWidget: (context, _, __) =>
-              Icon(Icons.broken_image, color: Colors.grey.shade400, size: 24.sp),
+          errorWidget: (context, _, __) => Icon(Icons.broken_image,
+              color: Colors.grey.shade400, size: 24.sp),
         ),
       ),
     );
@@ -87,16 +87,21 @@ class _SelectPaymentMethodScreenState
 
   String _svgForType(String? type) {
     switch (type?.toLowerCase()) {
-      case 'home':   return 'assets/icons/address_home.svg';
-      case 'office': return 'assets/icons/address_office.svg';
-      default:       return 'assets/icons/address_other.svg';
+      case 'home':
+        return 'assets/icons/address_home.svg';
+      case 'office':
+        return 'assets/icons/address_office.svg';
+      default:
+        return 'assets/icons/address_other.svg';
     }
   }
 
   String _labelForType(String? type) {
     switch (type?.toLowerCase()) {
-      case 'home':   return 'Home';
-      case 'office': return 'Office';
+      case 'home':
+        return 'Home';
+      case 'office':
+        return 'Office';
       default:
         if (type != null && type.isNotEmpty) {
           return type[0].toUpperCase() + type.substring(1);
@@ -118,7 +123,8 @@ class _SelectPaymentMethodScreenState
     final isBusiness = ref.watch(isBusinessUserProvider);
     final selectedSlotId = ref.watch(selectedDeliverySlotProvider);
     final slots = ref.watch(timeSlotProvider).valueOrNull ?? [];
-    final selectedSlotObj = slots.where((s) => s.id == selectedSlotId).firstOrNull;
+    final selectedSlotObj =
+        slots.where((s) => s.id == selectedSlotId).firstOrNull;
     final selectedSlotLabel = selectedSlotObj != null
         ? '${selectedSlotObj.slotName}  ${selectedSlotObj.displayTime}'.trim()
         : selectedSlotId;
@@ -165,6 +171,7 @@ class _SelectPaymentMethodScreenState
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(height: 70.h),
                   Icon(Icons.shopping_bag_outlined,
                       size: 64.sp, color: vc.onSurfaceMuted),
                   SizedBox(height: 16.h),
@@ -222,8 +229,7 @@ class _SelectPaymentMethodScreenState
                                     padding: EdgeInsets.all(8.w),
                                     decoration: BoxDecoration(
                                       color: AppColor.primary,
-                                      borderRadius:
-                                          BorderRadius.circular(10.r),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     ),
                                     child: Icon(Icons.schedule_rounded,
                                         color: Colors.white, size: 18.sp),
@@ -281,12 +287,10 @@ class _SelectPaymentMethodScreenState
                                     decoration: BoxDecoration(
                                       color: AppColor.secondary
                                           .withValues(alpha: 0.12),
-                                      borderRadius:
-                                          BorderRadius.circular(12.r),
+                                      borderRadius: BorderRadius.circular(12.r),
                                     ),
                                     child: SvgPicture.asset(
-                                      _svgForType(
-                                          selectedAddress.addressType),
+                                      _svgForType(selectedAddress.addressType),
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -332,8 +336,7 @@ class _SelectPaymentMethodScreenState
                                       selectedAddress.floor!.isNotEmpty)
                                     'Floor ${selectedAddress.floor}',
                                   if (selectedAddress.houseNumber != null &&
-                                      selectedAddress
-                                          .houseNumber!.isNotEmpty)
+                                      selectedAddress.houseNumber!.isNotEmpty)
                                     'House ${selectedAddress.houseNumber}',
                                   if (selectedAddress.landMark != null &&
                                       selectedAddress.landMark!.isNotEmpty)
@@ -345,8 +348,7 @@ class _SelectPaymentMethodScreenState
                               ),
                               // ── Phone row ─────────────────────────────
                               if (selectedAddress.phoneNumber != null &&
-                                  selectedAddress
-                                      .phoneNumber!.isNotEmpty) ...[
+                                  selectedAddress.phoneNumber!.isNotEmpty) ...[
                                 SizedBox(height: 8.h),
                                 _AddressRow(
                                   icon: Icons.phone_outlined,
@@ -374,7 +376,7 @@ class _SelectPaymentMethodScreenState
                       decoration: BoxDecoration(
                         color: vc.surface,
                         borderRadius: BorderRadius.circular(12.r),
-                        ),
+                      ),
                       child: ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -461,7 +463,7 @@ class _SelectPaymentMethodScreenState
                       decoration: BoxDecoration(
                         color: vc.surface,
                         borderRadius: BorderRadius.circular(12.r),
-                        ),
+                      ),
                       child: InkWell(
                         onTap: () => setState(() {
                           _selectedMethod =
@@ -563,8 +565,7 @@ class _SelectPaymentMethodScreenState
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.info_outline,
-                                size: 14.sp,
-                                color: Colors.orange.shade600),
+                                size: 14.sp, color: Colors.orange.shade600),
                             SizedBox(width: 6.w),
                             Text(
                               'Please select a payment method to continue',
@@ -637,8 +638,8 @@ class _SelectPaymentMethodScreenState
       barrierDismissible: false,
       builder: (ctx) => Dialog(
         backgroundColor: vc.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
         child: Padding(
           padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
           child: Column(
@@ -712,12 +713,14 @@ class _SelectPaymentMethodScreenState
 
     if (isBusiness) {
       if (selectedSlot == null) {
-        CustomSnackbar.error(context, message: 'Please select a delivery time slot');
+        CustomSnackbar.error(context,
+            message: 'Please select a delivery time slot');
         return;
       }
     } else {
       if (selectedAddress == null) {
-        CustomSnackbar.error(context, message: 'Please select a delivery address first');
+        CustomSnackbar.error(context,
+            message: 'Please select a delivery address first');
         return;
       }
     }
@@ -756,7 +759,8 @@ class _SelectPaymentMethodScreenState
             'long': (bd?['long'] ?? bd?['longitude']) as num?,
             'userId': userId,
             'name': bd?['businessName'] ?? '',
-            'description': (bd?['locationAddress'] ?? bd?['addressName']) as String? ?? '',
+            'description':
+                (bd?['locationAddress'] ?? bd?['addressName']) as String? ?? '',
             'addressType': 'others',
           }
         : {
@@ -882,8 +886,7 @@ class _AddressRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 14.sp,
-            color: AppColor.primary.withValues(alpha: 0.7)),
+        Icon(icon, size: 14.sp, color: AppColor.primary.withValues(alpha: 0.7)),
         SizedBox(width: 8.w),
         Expanded(
           child: Text(
