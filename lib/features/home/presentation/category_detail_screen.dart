@@ -219,6 +219,9 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (ctx) {
         final vc = ctx.vColors;
         return SafeArea(
