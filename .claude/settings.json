@@ -13,6 +13,14 @@
       "Bash(curl -s \"https://pub.dev/api/packages/google_maps_flutter_ios\")",
       "Bash(curl -s \"https://pub.dev/api/packages/shared_preferences\")",
       "Bash(dart analyze *)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions",
+    "autoAcceptEdits": true,
+    "skipPermissionPrompts": true
   }
 }
+// // ~/.claude/settings.json
+// {
+//   "autoAcceptEdits": true,
+//   "skipPermissionPrompts": true
+// }

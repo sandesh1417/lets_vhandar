@@ -75,16 +75,23 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
   }
 
   void _showCategorySheet(dynamic category) {
-    final imageUrl =
-        category.images?.firstOrNull?.url ?? category.images?.firstOrNull?.path;
-    final productCount =
-        ref.read(categoryProductsProvider(widget.categorySlug)).valueOrNull?.length ?? 0;
+    final _imgs = category.images as List?;
+    final _firstImg = (_imgs != null && _imgs.isNotEmpty) ? _imgs.first : null;
+    final imageUrl = _firstImg?.url ?? _firstImg?.path;
+    final productCount = ref
+            .read(categoryProductsProvider(widget.categorySlug))
+            .valueOrNull
+            ?.length ??
+        0;
     final catDesc = _stripHtml(category.description as String?);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (ctx) {
         final vc = ctx.vColors;
         return SafeArea(
@@ -315,7 +322,6 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -548,7 +554,8 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                               bottom: 16.h,
                               child: Center(
                                 child: CartFloatingBadge(
-                                  onTap: () => context.push(LVRoute.cartScreen.route),
+                                  onTap: () =>
+                                      context.push(LVRoute.cartScreen.route),
                                 ),
                               ),
                             ),
