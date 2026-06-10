@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/constants/image_constant.dart';
-import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -13,92 +10,26 @@ import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
-import 'package:lets_vhandar/widgets/social_media_row.dart';
 
+import 'widgets/account_appearance_sheet.dart';
+import 'widgets/account_guest_view.dart';
 import 'widgets/account_menu_item.dart';
+import 'widgets/account_orders_card.dart';
+import 'widgets/account_point_card.dart';
+import 'widgets/account_profile_header.dart';
 import 'widgets/account_section.dart';
 import 'widgets/account_support_card.dart';
+import 'widgets/account_v4b_card.dart';
+import 'widgets/account_version_footer.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
 
   static const String _appVersion = '1.0.0';
-
-  static Widget _featureTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool showDivider,
-    VoidCallback? onTap,
-  }) {
-    final vc = context.vColors;
-    return Column(
-      children: [
-        InkWell(
-          onTap: onTap,
-          borderRadius: showDivider
-              ? BorderRadius.zero
-              : BorderRadius.vertical(bottom: Radius.circular(16.r)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            child: Row(
-              children: [
-                Container(
-                  width: 40.w,
-                  height: 40.w,
-                  decoration: BoxDecoration(
-                    color: AppColor.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Icon(icon, color: AppColor.primary, size: 20.sp),
-                ),
-                SizedBox(width: 14.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Inter',
-                          color: vc.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          fontFamily: 'Inter',
-                          color: vc.onSurfaceMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ), // InkWell
-        if (showDivider)
-          Divider(
-              height: 1,
-              thickness: 1,
-              color: vc.divider,
-              indent: 16.w,
-              endIndent: 16.w),
-      ],
-    );
-  }
-
   static const String _shareText =
       'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
 
@@ -107,225 +38,10 @@ class AccountTab extends ConsumerWidget {
     final loginState = ref.watch(loginProvider);
     final user = loginState.user;
     final isBusiness = user?.isBusiness == true;
-
     final vc = context.vColors;
 
     if (loginState.isGuest || !loginState.isLoggedIn) {
-      return Scaffold(
-        backgroundColor: vc.scaffoldBg,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              // ── Hero area ───────────────────────────────────────────
-              Container(
-                width: double.infinity,
-                color: AppColor.primary,
-                padding: EdgeInsets.fromLTRB(
-                  24.w,
-                  MediaQuery.of(context).padding.top + 32.h,
-                  24.w,
-                  40.h,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80.w,
-                      height: 80.w,
-                      padding: EdgeInsets.all(14.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.10),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/images/icon_logo.svg',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      'Welcome to Vhandar',
-                      style: TextStyle(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Inter',
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Login to unlock your full experience',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontFamily: 'Inter',
-                        color: Colors.white.withValues(alpha: 0.80),
-                        height: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: 28.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          ref.read(dashboardIndexProvider.notifier).state = 0;
-                          context.go(LVRoute.loginScreen.route);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: AppColor.primary,
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14.r),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Inter',
-                            color: AppColor.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // ── Feature highlights ──────────────────────────────────
-              Container(
-                margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                decoration: BoxDecoration(
-                  color: vc.surface,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(color: vc.divider),
-                ),
-                child: Column(
-                  children: [
-                    _featureTile(
-                      context,
-                      icon: Icons.receipt_long_outlined,
-                      title: 'Track your orders',
-                      subtitle: 'Real-time updates on every delivery',
-                      showDivider: true,
-                      onTap: () => CustomSnackbar.info(context,
-                          message: 'Login to track your orders'),
-                    ),
-                    _featureTile(
-                      context,
-                      icon: Icons.location_on_outlined,
-                      title: 'Manage addresses',
-                      subtitle: 'Save multiple delivery locations',
-                      showDivider: true,
-                      onTap: () => CustomSnackbar.info(context,
-                          message: 'Login to manage your addresses'),
-                    ),
-                    _featureTile(
-                      context,
-                      icon: Icons.card_giftcard_outlined,
-                      title: 'Earn rewards',
-                      subtitle: 'Get referral bonuses and exclusive deals',
-                      showDivider: true,
-                      onTap: () => CustomSnackbar.info(context,
-                          message: 'Login to earn rewards'),
-                    ),
-                    _featureTile(
-                      context,
-                      icon: Icons.replay_outlined,
-                      title: 'Reorder with one tap',
-                      subtitle: 'Instantly reorder your favourites',
-                      showDivider: false,
-                      onTap: () => CustomSnackbar.info(context,
-                          message: 'Login to reorder your favourites'),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16.h),
-              AccountSection(
-                title: 'Appearance',
-                children: [
-                  AccountMenuItem(
-                    icon: Icons.brightness_6_outlined,
-                    title: 'Appearance',
-                    showDivider: false,
-                    onTap: () => _showAppearanceSheet(context, ref),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              AccountSection(
-                title: 'Support & Info',
-                children: [
-                  AccountMenuItem(
-                    icon: Icons.support_agent_outlined,
-                    title: 'Help & Support',
-                    onTap: () => context.push(LVRoute.helpSupportScreen.route),
-                  ),
-                  AccountMenuItem(
-                    icon: Icons.info_outline,
-                    title: 'About',
-                    onTap: () => context.push(LVRoute.aboutUsScreen.route),
-                  ),
-                  AccountMenuItem(
-                    icon: Icons.help_outline,
-                    title: 'FAQs',
-                    onTap: () => launchUrl(
-                        Uri.parse('https://www.vhandar.com/faq'),
-                        mode: LaunchMode.externalApplication),
-                  ),
-                  AccountMenuItem(
-                    icon: Icons.contact_support_outlined,
-                    title: 'Contact Us',
-                    onTap: () => launchUrl(
-                        Uri.parse('https://www.vhandar.com/contact'),
-                        mode: LaunchMode.externalApplication),
-                  ),
-                  AccountMenuItem(
-                    icon: Icons.article_outlined,
-                    title: 'Blog',
-                    onTap: () => launchUrl(
-                        Uri.parse('https://www.vhandar.com/blog'),
-                        mode: LaunchMode.externalApplication),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              AccountSection(
-                title: 'More',
-                children: [
-                  AccountMenuItem(
-                    icon: Icons.public_rounded,
-                    title: 'More about Vhandar',
-                    subtitle: 'Explore Vhandar policies and more',
-                    showDivider: false,
-                    onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              GestureDetector(
-                onTap: () =>
-                    context.push(LVRoute.vhandarForBusinessScreen.route),
-                child: _buildV4BCard(context),
-              ),
-              SizedBox(height: 12.h),
-              const AccountSupportCard(),
-              SizedBox(height: 22.h),
-              _buildAppVersionFooter(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
-            ],
-          ),
-        ),
-      );
+      return const AccountGuestView(appVersion: _appVersion);
     }
 
     return Scaffold(
@@ -333,7 +49,7 @@ class AccountTab extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Green cover + floating profile+points card
+            // Green cover + floating profile card
             Stack(
               children: [
                 Container(
@@ -359,13 +75,13 @@ class AccountTab extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildProfileHeader(context, user),
+                        AccountProfileHeader(user: user),
                         if (!isBusiness)
                           GestureDetector(
-                            onTap: () =>
-                                context.push(LVRoute.vhandarPointsScreen.route),
-                            child: _buildVhandarPointCard(
-                                context, user?.vandarPoints ?? 0),
+                            onTap: () => context
+                                .push(LVRoute.vhandarPointsScreen.route),
+                            child: AccountPointCard(
+                                points: user?.vandarPoints ?? 0),
                           ),
                       ],
                     ),
@@ -376,28 +92,25 @@ class AccountTab extends ConsumerWidget {
 
             SizedBox(height: 12.h),
 
-            // Manage Orders standalone card
             GestureDetector(
               onTap: () {
                 ref.read(visitedTabsProvider.notifier).update((s) => {...s, 2});
                 ref.read(dashboardIndexProvider.notifier).state = 2;
               },
-              child: _buildManageOrdersCard(context),
+              child: const AccountOrdersCard(),
             ),
 
             SizedBox(height: 12.h),
 
-            // Vhandar For Business card — hidden for business users
             if (!isBusiness) ...[
               GestureDetector(
                 onTap: () =>
                     context.push(LVRoute.vhandarForBusinessScreen.route),
-                child: _buildV4BCard(context),
+                child: const AccountV4BCard(),
               ),
               SizedBox(height: 12.h),
             ],
 
-            // My Activity
             AccountSection(
               title: 'Manage',
               children: [
@@ -441,7 +154,6 @@ class AccountTab extends ConsumerWidget {
 
             SizedBox(height: 12.h),
 
-            // Settings
             AccountSection(
               title: 'Account Settings',
               children: [
@@ -462,21 +174,21 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.lock_outline,
                   title: 'Change Password',
                   subtitle: 'Update your account password',
-                  onTap: () => context.push(LVRoute.changePasswordScreen.route),
+                  onTap: () =>
+                      context.push(LVRoute.changePasswordScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.brightness_6_outlined,
                   title: 'Appearance',
                   subtitle: 'Switch between light and dark mode',
                   showDivider: false,
-                  onTap: () => _showAppearanceSheet(context, ref),
+                  onTap: () => showAppearanceSheet(context, ref),
                 ),
               ],
             ),
 
             SizedBox(height: 12.h),
 
-            // Support & Feedback
             AccountSection(
               title: 'Support & Feedback',
               children: [
@@ -484,14 +196,16 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.help_center_outlined,
                   title: 'Help & Support',
                   subtitle: 'Get help with orders and queries',
-                  onTap: () => context.push(LVRoute.helpSupportScreen.route),
+                  onTap: () =>
+                      context.push(LVRoute.helpSupportScreen.route),
                 ),
                 if (!isBusiness)
                   AccountMenuItem(
                     icon: Icons.share_outlined,
                     title: 'Refer and Earn',
                     subtitle: 'Invite friends and earn Vhandar Points',
-                    onTap: () => context.push(LVRoute.referAndEarnScreen.route),
+                    onTap: () =>
+                        context.push(LVRoute.referAndEarnScreen.route),
                   ),
                 AccountMenuItem(
                   icon: Icons.lightbulb_outline,
@@ -511,7 +225,6 @@ class AccountTab extends ConsumerWidget {
 
             SizedBox(height: 12.h),
 
-            // More
             AccountSection(
               title: 'More',
               children: [
@@ -525,7 +238,8 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.public_rounded,
                   title: 'More about Vhandar',
                   subtitle: 'Explore Vhandar policies and more',
-                  onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
+                  onTap: () =>
+                      context.push(LVRoute.aboutVhandarScreen.route),
                 ),
                 AccountMenuItem(
                   icon: Icons.system_update_outlined,
@@ -541,8 +255,8 @@ class AccountTab extends ConsumerWidget {
                   icon: Icons.ios_share_rounded,
                   title: 'Share this App',
                   subtitle: 'Share Vhandar with friends and family',
-                  onTap: () =>
-                      SharePlus.instance.share(ShareParams(text: _shareText)),
+                  onTap: () => SharePlus.instance
+                      .share(ShareParams(text: _shareText)),
                 ),
                 AccountMenuItem(
                   icon: Icons.star_outline_rounded,
@@ -557,8 +271,9 @@ class AccountTab extends ConsumerWidget {
                 ),
               ],
             ),
+
             SizedBox(height: 12.h),
-            // Danger Zone
+
             AccountSection(
               children: [
                 AccountMenuItem(
@@ -577,451 +292,15 @@ class AccountTab extends ConsumerWidget {
                 ),
               ],
             ),
+
             SizedBox(height: 16.h),
-
             const AccountSupportCard(),
-
             SizedBox(height: 22.h),
-            _buildAppVersionFooter(),
-            SizedBox(height: MediaQuery.of(context).padding.bottom + 150.h),
+            const AccountVersionFooter(version: _appVersion),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 16.h),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildVhandarPointCard(BuildContext context, int points) {
-    final vc = context.vColors;
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: vc.divider)),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            KImageConstant.pointsBadge,
-            width: 34.w,
-            height: 34.w,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: 14.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  KImageConstant.vhandarPoints,
-                  height: 22.h,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.centerLeft,
-                ),
-                SizedBox(height: 5.h),
-                Text(
-                  'Earn rewards on every order',
-                  style: TextStyle(
-                    color: vc.onSurfaceMuted,
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
-            decoration: BoxDecoration(
-              color: AppColor.primary.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              '$points pts',
-              style: TextStyle(
-                color: AppColor.primary,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildManageOrdersCard(BuildContext context) {
-    final vc = context.vColors;
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: vc.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            KImageConstant.deliveryInformation,
-            width: 34.w,
-            height: 34.w,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: 14.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Manage Orders',
-                  style: TextStyle(
-                    color: vc.onSurface,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 3.h),
-                Text(
-                  'View all your purchases, manage your orders or start a return.',
-                  style: TextStyle(
-                    color: vc.onSurfaceMuted,
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: vc.onSurfaceMuted,
-            size: 20.sp,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildV4BCard(BuildContext context) {
-    final vc = context.vColors;
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: vc.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            KImageConstant.v4bIcon,
-            width: 34.w,
-            height: 34.w,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: 14.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Vhandar For Business',
-                  style: TextStyle(
-                    color: vc.onSurface,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 3.h),
-                Text(
-                  'Register your business and grow with Vhandar.',
-                  style: TextStyle(
-                    color: vc.onSurfaceMuted,
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: vc.onSurfaceMuted,
-            size: 20.sp,
-          ),
-        ],
-      ),
-    );
-  }
-
-  int _completionPercent(user) {
-    final isBusiness = user?.isBusiness == true;
-    final bd = user?.businessDetail as Map<String, dynamic>?;
-    if (isBusiness) {
-      final fields = [
-        bd?['businessName'] as String?,
-        user?.phoneNumber as String?,
-        bd?['businessCategory'] as String?,
-        (bd?['panNumber'] as String?)?.isNotEmpty == true
-            ? bd!['panNumber'] as String
-            : bd?['vatNumber'] as String?,
-        user?.email as String?,
-      ];
-      final filled = fields.where((f) => f != null && f.isNotEmpty).length;
-      return ((filled / fields.length) * 100).round();
-    } else {
-      final fields = [
-        user?.name as String?,
-        user?.phoneNumber as String?,
-        user?.email as String?,
-        user?.birthDate as String?,
-        user?.gender as String?,
-      ];
-      final filled = fields.where((f) => f != null && f.isNotEmpty).length;
-      return ((filled / fields.length) * 100).round();
-    }
-  }
-
-  Widget _buildProfileHeader(BuildContext context, user) {
-    final vc = context.vColors;
-    final isBusiness = user?.isBusiness == true;
-    final businessDetail = user?.businessDetail as Map<String, dynamic>?;
-    final displayName = isBusiness
-        ? (businessDetail?['businessName'] as String? ??
-            user?.name ??
-            'Business')
-        : (user?.name ?? 'User Name');
-    final displayPhone = user?.phoneNumber ?? 'Phone Number';
-    final category = businessDetail?['businessCategory'] as String?;
-    final pan = businessDetail?['panNumber'] as String?;
-    final vat = businessDetail?['vatNumber'] as String?;
-    final email = user?.email as String?;
-    final birthDate = user?.birthDate as String?;
-    final percent = _completionPercent(user);
-    final isVerified = percent == 100;
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(20.w, 20.w, 20.w, 16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SvgPicture.asset(
-                isBusiness
-                    ? KImageConstant.businessProfile
-                    : KImageConstant.userProfile,
-                width: 60.w,
-                height: 60.w,
-              ),
-              SizedBox(width: 14.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            displayName,
-                            style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.bold,
-                              color: vc.onSurface,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (isVerified) ...[
-                          SizedBox(width: 5.w),
-                          Icon(Icons.verified_rounded,
-                              size: 17.sp, color: AppColor.primary),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: 4.h),
-                    _IconInfoRow(
-                      icon: Icons.phone_outlined,
-                      text: displayPhone,
-                      vc: vc,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    if (email != null && email.isNotEmpty) ...[
-                      SizedBox(height: 3.h),
-                      _IconInfoRow(
-                        icon: Icons.email_outlined,
-                        text: email,
-                        vc: vc,
-                      ),
-                    ],
-                    if (!isBusiness &&
-                        birthDate != null &&
-                        birthDate.isNotEmpty) ...[
-                      SizedBox(height: 3.h),
-                      _IconInfoRow(
-                        icon: Icons.cake_outlined,
-                        text: birthDate,
-                        vc: vc,
-                      ),
-                    ],
-                    if (isBusiness) ...[
-                      if (category != null && category.isNotEmpty) ...[
-                        SizedBox(height: 5.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 8.w, vertical: 3.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF3CD),
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          child: Text(
-                            _capitalize(category),
-                            style: TextStyle(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF856404),
-                            ),
-                          ),
-                        ),
-                      ],
-                      if ((pan != null && pan.isNotEmpty) ||
-                          (vat != null && vat.isNotEmpty)) ...[
-                        SizedBox(height: 4.h),
-                        Text(
-                          pan != null && pan.isNotEmpty
-                              ? 'PAN: $pan'
-                              : 'VAT: $vat',
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: vc.onSurfaceMuted,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (!isVerified) ...[
-            SizedBox(height: 14.h),
-            _buildCompletionBar(context, percent, vc),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompletionBar(
-      BuildContext context, int percent, VhandarColors vc) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Complete your profile',
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w600,
-                color: vc.onSurfaceMuted,
-              ),
-            ),
-            Text(
-              '$percent%',
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w700,
-                color: AppColor.primary,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 6.h),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4.r),
-          child: LinearProgressIndicator(
-            value: percent / 100,
-            minHeight: 5.h,
-            backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-            valueColor: AlwaysStoppedAnimation<Color>(AppColor.primary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAppVersionFooter() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Column(
-        children: [
-          const SocialMediaRow(),
-          SizedBox(height: 20.h),
-          SvgPicture.asset(
-            'assets/icons/vhandar-white-logo.svg',
-            width: 110.w,
-            colorFilter: const ColorFilter.mode(
-              Color(0xFFB0B8B4),
-              BlendMode.srcIn,
-            ),
-          ),
-          SizedBox(height: 6.h),
-          Text(
-            'Version $_appVersion',
-            style: TextStyle(
-              color: AppColor.textMuted,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
-    CustomDialog.show(
-      context: context,
-      icon: Icons.delete_forever_outlined,
-      iconColor: Colors.red.shade400,
-      iconBgColor: Colors.red.shade50,
-      title: 'Delete Account',
-      message:
-          'This action is permanent and cannot be undone. All your data, orders, and addresses will be removed.',
-      confirmLabel: 'Yes, Delete Account',
-      confirmGradient: [Colors.red.shade600, Colors.red.shade400],
-      onConfirm: () async {
-        await ref.read(loginProvider.notifier).deleteAccount(context);
-      },
-    );
-  }
-
-  void _showAppearanceSheet(BuildContext context, WidgetRef ref) {
-    final current = ref.read(themeModeProvider);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _AppearanceSheet(current: current, ref: ref),
     );
   }
 
@@ -1041,214 +320,6 @@ class AccountTab extends ConsumerWidget {
           context.go(LVRoute.loginScreen.route);
         }
       },
-    );
-  }
-}
-
-class _AppearanceSheet extends StatefulWidget {
-  final ThemeMode current;
-  final WidgetRef ref;
-  const _AppearanceSheet({required this.current, required this.ref});
-
-  @override
-  State<_AppearanceSheet> createState() => _AppearanceSheetState();
-}
-
-class _AppearanceSheetState extends State<_AppearanceSheet> {
-  late ThemeMode _selected;
-
-  static const _options = [
-    (
-      mode: ThemeMode.light,
-      label: 'Light',
-      icon: Icons.wb_sunny_rounded,
-    ),
-    (
-      mode: ThemeMode.dark,
-      label: 'Dark',
-      icon: Icons.nights_stay_rounded,
-    ),
-    (
-      mode: ThemeMode.system,
-      label: 'System',
-      icon: Icons.desktop_mac_rounded,
-    ),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.current;
-  }
-
-  void _pick(ThemeMode mode) {
-    setState(() => _selected = mode);
-    widget.ref.read(themeModeProvider.notifier).setMode(mode);
-    Future.delayed(const Duration(milliseconds: 180), () {
-      if (mounted) Navigator.pop(context);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final vc = context.vColors;
-    final bottom = MediaQuery.of(context).padding.bottom;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: vc.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      ),
-      padding: EdgeInsets.fromLTRB(0, 0, 0, bottom + 16.h),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle
-          Center(
-            child: Container(
-              margin: EdgeInsets.only(top: 12.h, bottom: 4.h),
-              width: 36.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: vc.divider,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-          ),
-
-          // Header
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 0),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(9.w),
-                  decoration: BoxDecoration(
-                    color: AppColor.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Icon(Icons.palette_outlined,
-                      color: AppColor.primary, size: 20.sp),
-                ),
-                SizedBox(width: 12.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Appearance',
-                      style: TextStyle(
-                        fontSize: 17.sp,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        color: vc.onSurface,
-                      ),
-                    ),
-                    Text(
-                      'Choose how Vhandar looks on this device',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontFamily: 'Inter',
-                        color: vc.onSurfaceMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 20.h),
-
-          // Options — horizontal cards
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              children: _options.map((opt) {
-                final isSelected = _selected == opt.mode;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => _pick(opt.mode),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: EdgeInsets.symmetric(horizontal: 4.w),
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected ? AppColor.primary : vc.surfaceVariant,
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            opt.icon,
-                            size: 24.sp,
-                            color:
-                                isSelected ? Colors.white : vc.onSurfaceMuted,
-                          ),
-                          SizedBox(height: 8.h),
-                          Text(
-                            opt.label,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  isSelected ? Colors.white : vc.onSurfaceMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-
-          SizedBox(height: 20.h),
-        ],
-      ),
-    );
-  }
-}
-
-String _capitalize(String s) =>
-    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
-
-class _IconInfoRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final VhandarColors vc;
-  final double? fontSize;
-  final FontWeight? fontWeight;
-
-  const _IconInfoRow({
-    required this.icon,
-    required this.text,
-    required this.vc,
-    this.fontSize,
-    this.fontWeight,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 12.sp, color: vc.onSurfaceMuted),
-        SizedBox(width: 5.w),
-        Flexible(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: fontSize ?? 11.sp,
-              color: vc.onSurfaceMuted,
-              fontWeight: fontWeight ?? FontWeight.w400,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }
