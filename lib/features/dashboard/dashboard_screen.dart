@@ -42,6 +42,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   ];
 
   late final List<Widget?> _cache = List.filled(_builders.length, null);
+  DateTime? _lastBackPressTime;
 
   Widget _tab(int index) {
     final visited = ref.read(visitedTabsProvider);
@@ -67,6 +68,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.invalidate(allCategoryProvider);
   }
 
+  Future<bool> _onBackPressed() {
+    final now = DateTime.now();
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      CustomSnackbar.info(context, message: 'Press again to exit');
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(dashboardIndexProvider);
@@ -88,13 +100,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       }
     });
 
-    if (UpdateService.instance.updateType == UpdateType.optional) {
-      return OptionalUpdateListener(
-        child: _buildDashboard(context, currentIndex),
-      );
-    }
+    final dashboard = UpdateService.instance.updateType == UpdateType.optional
+        ? OptionalUpdateListener(child: _buildDashboard(context, currentIndex))
+        : _buildDashboard(context, currentIndex);
 
-    return _buildDashboard(context, currentIndex);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (!didPop) {
+          final should = await _onBackPressed();
+          if (should && mounted) SystemNavigator.pop();
+        }
+      },
+      child: dashboard,
+    );
   }
 
   Widget _buildDashboard(BuildContext context, int currentIndex) {
