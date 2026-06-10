@@ -160,7 +160,7 @@ class _SidebarItemState extends ConsumerState<_SidebarItem>
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeInOut,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 3.w),
+            padding: EdgeInsets.only(top: 10.h, bottom: 10.h, left: 3.w),
             decoration: BoxDecoration(
               color: widget.isSelected
                   ? AppColor.primary.withValues(alpha: 0.07)
@@ -209,9 +209,8 @@ class _SidebarItemState extends ConsumerState<_SidebarItem>
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 9.sp,
-                    fontWeight: widget.isSelected
-                        ? FontWeight.bold
-                        : FontWeight.w500,
+                    fontWeight:
+                        widget.isSelected ? FontWeight.bold : FontWeight.w500,
                     color: widget.isSelected
                         ? AppColor.primary
                         : vc.onSurfaceMuted,

@@ -109,14 +109,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
             child: Row(
               children: [
-                _pill('Category', tab == 0,
-                    () => ref.read(categoryScreenTabProvider.notifier).state = 0),
+                _pill(
+                    'Category',
+                    tab == 0,
+                    () =>
+                        ref.read(categoryScreenTabProvider.notifier).state = 0),
                 SizedBox(width: 8.w),
-                _pill('Sub Category', tab == 1,
-                    () => ref.read(categoryScreenTabProvider.notifier).state = 1),
+                _pill(
+                    'Sub Category',
+                    tab == 1,
+                    () =>
+                        ref.read(categoryScreenTabProvider.notifier).state = 1),
                 SizedBox(width: 8.w),
-                _pill('Brand', tab == 2,
-                    () => ref.read(categoryScreenTabProvider.notifier).state = 2),
+                _pill(
+                    'Brand',
+                    tab == 2,
+                    () =>
+                        ref.read(categoryScreenTabProvider.notifier).state = 2),
               ],
             ),
           ),
@@ -198,8 +207,7 @@ class _CategoryTabState extends ConsumerState<_CategoryTab> {
           slivers: [
             if (categories.isNotEmpty) ...[
               SliverPadding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.w, vertical: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 sliver: SliverToBoxAdapter(
                   child: Text(
                     'Shop by Category',
@@ -264,8 +272,7 @@ class _SubCategoryTab extends ConsumerWidget {
           padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).padding.bottom + 180.h),
           itemCount: categories.length,
-          itemBuilder: (_, index) =>
-              _SubSection(category: categories[index]),
+          itemBuilder: (_, index) => _SubSection(category: categories[index]),
         );
       },
       loading: () => const _LoadingShimmer(),
@@ -295,8 +302,7 @@ class _BrandTab extends ConsumerWidget {
           color: AppColor.primary,
           onRefresh: () async => ref.invalidate(brandProvider),
           child: GridView.builder(
-            padding: EdgeInsets.fromLTRB(
-                16.w, 16.h, 16.w,
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w,
                 MediaQuery.of(context).padding.bottom + 180.h),
             physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics()),
@@ -311,11 +317,9 @@ class _BrandTab extends ConsumerWidget {
               final b = brands[index];
               return BrandCard(
                 name: b.name ?? '',
-                imageUrl: b.images?.isNotEmpty == true
-                    ? b.images!.first.url
-                    : null,
-                onTap: () =>
-                    navigateToSlug(context, b.slug, isBrand: true),
+                imageUrl:
+                    b.images?.isNotEmpty == true ? b.images!.first.url : null,
+                onTap: () => navigateToSlug(context, b.slug, isBrand: true),
               );
             },
           ),
@@ -344,10 +348,13 @@ class _SubSection extends ConsumerWidget {
       data: (subs) {
         if (subs.isEmpty) return const SizedBox.shrink();
         return Container(
-          margin: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 0),
+          margin: EdgeInsets.fromLTRB(12.w, 10.h, 0.w, 0),
           decoration: BoxDecoration(
             color: vc.surface,
-            borderRadius: BorderRadius.circular(14.r),
+            // color: Colors.red,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12.r),
+                bottomLeft: Radius.circular(12.r)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,7 +370,7 @@ class _SubSection extends ConsumerWidget {
                         height: 28.w,
                         margin: EdgeInsets.only(right: 8.w),
                         decoration: BoxDecoration(
-                          color: context.isDark
+                          color: !context.isDark
                               ? vc.surfaceVariant
                               : const Color(0xFFE7F1ED),
                           borderRadius: BorderRadius.circular(6.r),
@@ -404,7 +411,7 @@ class _SubSection extends ConsumerWidget {
                 height: 98.h,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w),
+                  padding: EdgeInsets.only(left: 14.w),
                   itemCount: subs.length,
                   separatorBuilder: (_, __) => SizedBox(width: 10.w),
                   itemBuilder: (_, i) {
@@ -479,21 +486,19 @@ class _SubSection extends ConsumerWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6.r),
-                    child: CustomShimmer.rectangular(
-                        width: 28.w, height: 28.w),
+                    child: CustomShimmer.rectangular(width: 28.w, height: 28.w),
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
-                      child: CustomShimmer.rectangular(
-                          width: 100.w, height: 14.h),
+                      child:
+                          CustomShimmer.rectangular(width: 100.w, height: 14.h),
                     ),
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4.r),
-                    child: CustomShimmer.rectangular(
-                        width: 40.w, height: 12.h),
+                    child: CustomShimmer.rectangular(width: 40.w, height: 12.h),
                   ),
                 ],
               ),
@@ -504,21 +509,21 @@ class _SubSection extends ConsumerWidget {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 14.w),
+                padding: EdgeInsets.only(left: 14.w),
                 itemCount: 5,
                 separatorBuilder: (_, __) => SizedBox(width: 10.w),
                 itemBuilder: (_, __) => Column(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10.r),
-                      child: CustomShimmer.rectangular(
-                          width: 68.w, height: 68.w),
+                      child:
+                          CustomShimmer.rectangular(width: 68.w, height: 68.w),
                     ),
                     SizedBox(height: 4.h),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
-                      child: CustomShimmer.rectangular(
-                          width: 52.w, height: 9.h),
+                      child:
+                          CustomShimmer.rectangular(width: 52.w, height: 9.h),
                     ),
                   ],
                 ),
@@ -532,8 +537,6 @@ class _SubSection extends ConsumerWidget {
     );
   }
 }
-
-
 
 // ── Shimmer loading ───────────────────────────────────────────────────────
 class _LoadingShimmer extends StatelessWidget {
@@ -569,8 +572,8 @@ class _LoadingShimmer extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
-                    child: const CustomShimmer.rectangular(
-                        width: double.infinity),
+                    child:
+                        const CustomShimmer.rectangular(width: double.infinity),
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -582,8 +585,7 @@ class _LoadingShimmer extends StatelessWidget {
                 SizedBox(height: 3.h),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4.r),
-                  child:
-                      CustomShimmer.rectangular(width: 30.w, height: 9.h),
+                  child: CustomShimmer.rectangular(width: 30.w, height: 9.h),
                 ),
               ],
             ),
