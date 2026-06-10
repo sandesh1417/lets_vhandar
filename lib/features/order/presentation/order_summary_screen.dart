@@ -1575,7 +1575,7 @@ class _SummaryTile extends StatelessWidget {
     return Container(
       width: 120.w,
       margin: EdgeInsets.only(right: 10.w),
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: vc.surface,
         borderRadius: BorderRadius.circular(14.r),
@@ -1608,7 +1608,7 @@ class _SummaryTile extends StatelessWidget {
                   color: vc.onSurface),
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
-          SizedBox(height: 1.h),
+          SizedBox(height: 0.5.h),
           Text(label,
               style: TextStyle(
                   fontSize: 11.sp,
