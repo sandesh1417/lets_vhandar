@@ -198,7 +198,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                 child: Column(
                   children: [
                     SvgPicture.asset(
-                      'assets/images/v4b_icon.svg',
+                      'assets/images/V4B_logo.svg',
                       width: 72.w,
                       height: 72.w,
                     ),
