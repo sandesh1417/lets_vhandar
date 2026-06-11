@@ -20,6 +20,7 @@ import '../widgets/address_form.dart';
 import '../widgets/address_location_banner.dart';
 import '../widgets/address_map_picker.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class AddAddressScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -237,17 +238,52 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
 
   Future<void> _goToCurrentLocation() async {
     try {
-      if (!await Geolocator.isLocationServiceEnabled()) return;
+      // 1. Location services (GPS) must be on.
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!mounted) return;
+        CustomSnackbar.error(context,
+            message: 'Location is turned off. Please enable GPS.');
+        await Geolocator.openLocationSettings();
+        return;
+      }
+
+      // 2. Permission.
       var perm = await Geolocator.checkPermission();
       if (perm == LocationPermission.denied) {
         perm = await Geolocator.requestPermission();
-        if (perm == LocationPermission.denied) return;
       }
-      final pos = await Geolocator.getCurrentPosition();
+      if (perm == LocationPermission.deniedForever) {
+        if (!mounted) return;
+        CustomSnackbar.error(context,
+            message:
+                'Location permission is blocked. Enable it from Settings.');
+        await Geolocator.openAppSettings();
+        return;
+      }
+      if (perm == LocationPermission.denied) {
+        if (!mounted) return;
+        CustomSnackbar.error(context,
+            message: 'Location permission is needed to use your location.');
+        return;
+      }
+
+      // 3. Fetch position (with a loading state + timeout).
+      setState(() => _isGeocoding = true);
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 15),
+      );
+      if (!mounted) return;
       final latlng = LatLng(pos.latitude, pos.longitude);
       _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latlng, 16));
       await _onMapTap(latlng);
-    } catch (_) {}
+    } catch (e) {
+      log('Current location error: $e');
+      if (!mounted) return;
+      setState(() => _isGeocoding = false);
+      CustomSnackbar.error(context,
+          message: 'Could not get your location. Please try again.');
+    }
   }
 
   void _onSearchChanged(String query) {
