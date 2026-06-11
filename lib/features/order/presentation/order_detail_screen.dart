@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:printing/printing.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,10 +31,13 @@ class _StepDef {
 }
 
 const _orderSteps = [
-  _StepDef('Order Placed', 'Your order has been received', Icons.receipt_long_rounded),
-  _StepDef('Processing', 'Your order is being packed', Icons.inventory_2_rounded),
+  _StepDef('Order Placed', 'Your order has been received',
+      Icons.receipt_long_rounded),
+  _StepDef(
+      'Processing', 'Your order is being packed', Icons.inventory_2_rounded),
   _StepDef('On the Way', 'Out for delivery', Icons.local_shipping_rounded),
-  _StepDef('Delivered', 'Order delivered successfully', Icons.check_circle_rounded),
+  _StepDef(
+      'Delivered', 'Order delivered successfully', Icons.check_circle_rounded),
 ];
 
 class OrderDetailScreen extends ConsumerWidget {
@@ -106,8 +109,18 @@ class OrderDetailScreen extends ConsumerWidget {
 
 String _monthName(int month) {
   const m = [
-    'Jan','Feb','Mar','Apr','May','Jun',
-    'Jul','Aug','Sep','Oct','Nov','Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
   ];
   return m[month - 1];
 }
@@ -122,7 +135,8 @@ class _OrderDetailBody extends StatefulWidget {
 }
 
 class _OrderDetailBodyState extends State<_OrderDetailBody> {
-  bool _pdfLoading = false;
+  bool _shareLoading = false;
+  bool _downloadLoading = false;
 
   OrderData get order => widget.order;
 
@@ -136,7 +150,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
   }
 
   Future<void> _shareReceiptPdf() async {
-    setState(() => _pdfLoading = true);
+    setState(() => _shareLoading = true);
     try {
       final bytes = await buildReceiptPdf(order);
       await Printing.sharePdf(
@@ -145,40 +159,83 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
       );
     } catch (_) {
       if (mounted) {
-        CustomSnackbar.error(context, message: 'Could not generate receipt PDF');
+        CustomSnackbar.error(context,
+            message: 'Could not generate receipt PDF');
       }
     } finally {
-      if (mounted) setState(() => _pdfLoading = false);
+      if (mounted) setState(() => _shareLoading = false);
     }
   }
 
   Future<void> _downloadReceiptPdf() async {
-    setState(() => _pdfLoading = true);
+    setState(() => _downloadLoading = true);
     try {
       final bytes = await buildReceiptPdf(order);
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File(
-          '${dir.path}/Vhandar_Receipt_${order.orderId ?? 'order'}.pdf');
-      await file.writeAsBytes(bytes);
+      final filename = 'Vhandar_Receipt_${order.orderId ?? 'order'}.pdf';
+      final file = await _savePdf(bytes, filename);
+
       if (!mounted) return;
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(file.path, mimeType: 'application/pdf')],
-        subject: 'Vhandar Receipt – ${order.orderId ?? ''}',
-      ));
+      if (file == null) {
+        CustomSnackbar.error(context,
+            message: 'Could not download receipt PDF');
+      } else {
+        final toDownloads = file.path.contains('/Download');
+        CustomSnackbar.success(
+          context,
+          message: toDownloads
+              ? 'Saved to Downloads: $filename'
+              : 'Receipt saved: $filename',
+        );
+      }
     } catch (_) {
       if (mounted) {
-        CustomSnackbar.error(context, message: 'Could not download receipt PDF');
+        CustomSnackbar.error(context,
+            message: 'Could not download receipt PDF');
       }
     } finally {
-      if (mounted) setState(() => _pdfLoading = false);
+      if (mounted) setState(() => _downloadLoading = false);
+    }
+  }
+
+  /// Writes the PDF to the device. Tries the public Downloads folder on
+  /// Android, then app-external storage, then app documents as a fallback.
+  Future<File?> _savePdf(Uint8List bytes, String filename) async {
+    try {
+      if (Platform.isAndroid) {
+        final downloads = Directory('/storage/emulated/0/Download');
+        if (await downloads.exists()) {
+          try {
+            final f = File('${downloads.path}/$filename');
+            await f.writeAsBytes(bytes, flush: true);
+            return f;
+          } catch (_) {
+            // Scoped storage blocked the direct write — fall through.
+          }
+        }
+        final ext = await getExternalStorageDirectory();
+        if (ext != null) {
+          final f = File('${ext.path}/$filename');
+          await f.writeAsBytes(bytes, flush: true);
+          return f;
+        }
+      }
+      final docs = await getApplicationDocumentsDirectory();
+      final f = File('${docs.path}/$filename');
+      await f.writeAsBytes(bytes, flush: true);
+      return f;
+    } catch (_) {
+      return null;
     }
   }
 
   String _svgForType(String? type) {
     switch (type?.toLowerCase()) {
-      case 'home':   return 'assets/icons/address_home.svg';
-      case 'office': return 'assets/icons/address_office.svg';
-      default:       return 'assets/icons/address_other.svg';
+      case 'home':
+        return 'assets/icons/address_home.svg';
+      case 'office':
+        return 'assets/icons/address_office.svg';
+      default:
+        return 'assets/icons/address_other.svg';
     }
   }
 
@@ -190,249 +247,118 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
       onRefresh: widget.onRefresh,
       color: AppColor.primary,
       child: SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Order hero card ────────────────────────────────────────
-          Container(
-            decoration: BoxDecoration(
-              color: vc.surface,
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: vc.divider),
-            ),
-            child: Column(
-              children: [
-                // Green strip with order ID + date
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-                  decoration: BoxDecoration(
-                    color: AppColor.primary,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16.r)),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Order hero card ────────────────────────────────────────
+            Container(
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: vc.divider),
+              ),
+              child: Column(
+                children: [
+                  // Green strip with order ID + date
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: AppColor.primary,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(16.r)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Order #${order.orderId ?? '—'}',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 3.h),
+                              Text(
+                                _dateStr,
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: Colors.white.withValues(alpha: 0.80),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Share button
+                        GestureDetector(
+                          onTap: _shareLoading ? null : _shareReceiptPdf,
+                          child: Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: _shareLoading
+                                ? SizedBox(
+                                    width: 18.sp,
+                                    height: 18.sp,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Icon(Icons.ios_share_rounded,
+                                    color: Colors.white, size: 18.sp),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                  // Status + payment row
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    child: Row(
+                      children: [
+                        _InfoChip(
+                          label: 'Order',
+                          child: OrderStatusBadge(
+                              status: order.status ?? 'Pending'),
+                        ),
+                        SizedBox(width: 12.w),
+                        _InfoChip(
+                          label: 'Payment',
+                          child: OrderStatusBadge(
+                              status: order.paymentStatus ?? 'Pending'),
+                        ),
+                        const Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              'Order #${order.orderId ?? '—'}',
+                              'Rs. ${order.totalPayableAmount ?? 0}',
                               style: TextStyle(
-                                fontSize: 16.sp,
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white,
+                                color: AppColor.primary,
                               ),
                             ),
-                            SizedBox(height: 3.h),
                             Text(
-                              _dateStr,
+                              'Total paid',
                               style: TextStyle(
-                                fontSize: 11.sp,
-                                color: Colors.white.withValues(alpha: 0.80),
+                                fontSize: 10.sp,
+                                color: vc.onSurfaceMuted,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      // Share button
-                      GestureDetector(
-                        onTap: _pdfLoading ? null : _shareReceiptPdf,
-                        child: Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: _pdfLoading
-                              ? SizedBox(
-                                  width: 18.sp,
-                                  height: 18.sp,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Icon(Icons.ios_share_rounded,
-                                  color: Colors.white, size: 18.sp),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Status + payment row
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 16.w, vertical: 14.h),
-                  child: Row(
-                    children: [
-                      _InfoChip(
-                        label: 'Order',
-                        child: OrderStatusBadge(
-                            status: order.status ?? 'Pending'),
-                      ),
-                      SizedBox(width: 12.w),
-                      _InfoChip(
-                        label: 'Payment',
-                        child: OrderStatusBadge(
-                            status: order.paymentStatus ?? 'Pending'),
-                      ),
-                      const Spacer(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Rs. ${order.totalPayableAmount ?? 0}',
-                            style: TextStyle(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w800,
-                              color: AppColor.primary,
-                            ),
-                          ),
-                          Text(
-                            'Total paid',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              color: vc.onSurfaceMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 20.h),
-
-          // ── Order Status Stepper ────────────────────────────────────
-          _OrderStatusStepper(status: order.status),
-
-          SizedBox(height: 20.h),
-
-          // ── Products ────────────────────────────────────────────────
-          const _SectionLabel(label: 'Items Ordered'),
-          SizedBox(height: 10.h),
-          Container(
-            decoration: BoxDecoration(
-              color: vc.surface,
-              borderRadius: BorderRadius.circular(14.r),
-              border: Border.all(color: vc.divider),
-            ),
-            child: Column(
-              children: [
-                for (int i = 0; i < (order.products?.length ?? 0); i++) ...[
-                  OrderProductItem(product: order.products![i]),
-                  if (i < (order.products!.length - 1))
-                    Divider(height: 1, thickness: 0.5, color: vc.divider),
-                ],
-              ],
-            ),
-          ),
-
-          SizedBox(height: 20.h),
-
-          // ── Delivery Info ────────────────────────────────────────────
-          if (_hasDeliveryInfo(order)) ...[
-            const _SectionLabel(label: 'Delivery Info'),
-            SizedBox(height: 10.h),
-            _DeliveryInfoCard(order: order),
-            SizedBox(height: 20.h),
-          ],
-
-          // ── Bill ────────────────────────────────────────────────────
-          const _SectionLabel(label: 'Bill Details'),
-          SizedBox(height: 10.h),
-          BillDetailsCard(order: order),
-
-          SizedBox(height: 20.h),
-
-          // ── Delivery Address ────────────────────────────────────────
-          const _SectionLabel(label: 'Delivery Address'),
-          SizedBox(height: 10.h),
-          if (order.location != null)
-            Container(
-              padding: EdgeInsets.all(14.w),
-              decoration: BoxDecoration(
-                color: vc.surface,
-                borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(color: vc.divider),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 44.w,
-                    height: 44.w,
-                    padding: EdgeInsets.all(9.w),
-                    decoration: BoxDecoration(
-                      color: AppColor.secondary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: SvgPicture.asset(
-                      _svgForType(order.location?.addressType),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          order.location?.name?.isNotEmpty == true
-                              ? order.location!.name!
-                              : _labelForType(order.location?.addressType),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
-                            color: vc.onSurface,
-                          ),
-                        ),
-                        if (order.location?.description?.isNotEmpty == true) ...[
-                          SizedBox(height: 4.h),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.location_on_outlined,
-                                  size: 13.sp, color: AppColor.primary),
-                              SizedBox(width: 4.w),
-                              Expanded(
-                                child: Text(
-                                  order.location!.description!,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: vc.onSurfaceMuted,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        if (order.location?.phoneNumber?.isNotEmpty == true) ...[
-                          SizedBox(height: 4.h),
-                          Row(
-                            children: [
-                              Icon(Icons.phone_outlined,
-                                  size: 13.sp, color: AppColor.primary),
-                              SizedBox(width: 4.w),
-                              Text(
-                                order.location!.phoneNumber!,
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: vc.onSurfaceMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
                       ],
                     ),
                   ),
@@ -440,86 +366,219 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
               ),
             ),
 
-          SizedBox(height: 20.h),
+            SizedBox(height: 20.h),
 
-          // ── Payment Method ──────────────────────────────────────────
-          const _SectionLabel(label: 'Payment Method'),
-          SizedBox(height: 10.h),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-            decoration: BoxDecoration(
-              color: vc.surface,
-              borderRadius: BorderRadius.circular(14.r),
-              border: Border.all(color: vc.divider),
+            // ── Order Status Stepper ────────────────────────────────────
+            _OrderStatusStepper(status: order.status),
+
+            SizedBox(height: 20.h),
+
+            // ── Products ────────────────────────────────────────────────
+            const _SectionLabel(label: 'Items Ordered'),
+            SizedBox(height: 10.h),
+            Container(
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: vc.divider),
+              ),
+              child: Column(
+                children: [
+                  for (int i = 0; i < (order.products?.length ?? 0); i++) ...[
+                    OrderProductItem(product: order.products![i]),
+                    if (i < (order.products!.length - 1))
+                      Divider(height: 1, thickness: 0.5, color: vc.divider),
+                  ],
+                ],
+              ),
             ),
-            child: Row(
+
+            SizedBox(height: 20.h),
+
+            // ── Delivery Info ────────────────────────────────────────────
+            if (_hasDeliveryInfo(order)) ...[
+              const _SectionLabel(label: 'Delivery Info'),
+              SizedBox(height: 10.h),
+              _DeliveryInfoCard(order: order),
+              SizedBox(height: 20.h),
+            ],
+
+            // ── Bill ────────────────────────────────────────────────────
+            const _SectionLabel(label: 'Bill Details'),
+            SizedBox(height: 10.h),
+            BillDetailsCard(order: order),
+
+            SizedBox(height: 20.h),
+
+            // ── Delivery Address ────────────────────────────────────────
+            const _SectionLabel(label: 'Delivery Address'),
+            SizedBox(height: 10.h),
+            if (order.location != null)
+              Container(
+                padding: EdgeInsets.all(14.w),
+                decoration: BoxDecoration(
+                  color: vc.surface,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(color: vc.divider),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44.w,
+                      height: 44.w,
+                      padding: EdgeInsets.all(9.w),
+                      decoration: BoxDecoration(
+                        color: AppColor.secondary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: SvgPicture.asset(
+                        _svgForType(order.location?.addressType),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            order.location?.name?.isNotEmpty == true
+                                ? order.location!.name!
+                                : _labelForType(order.location?.addressType),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: vc.onSurface,
+                            ),
+                          ),
+                          if (order.location?.description?.isNotEmpty ==
+                              true) ...[
+                            SizedBox(height: 4.h),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.location_on_outlined,
+                                    size: 13.sp, color: AppColor.primary),
+                                SizedBox(width: 4.w),
+                                Expanded(
+                                  child: Text(
+                                    order.location!.description!,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: vc.onSurfaceMuted,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          if (order.location?.phoneNumber?.isNotEmpty ==
+                              true) ...[
+                            SizedBox(height: 4.h),
+                            Row(
+                              children: [
+                                Icon(Icons.phone_outlined,
+                                    size: 13.sp, color: AppColor.primary),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  order.location!.phoneNumber!,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: vc.onSurfaceMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            SizedBox(height: 20.h),
+
+            // ── Payment Method ──────────────────────────────────────────
+            const _SectionLabel(label: 'Payment Method'),
+            SizedBox(height: 10.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+              decoration: BoxDecoration(
+                color: vc.surface,
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: vc.divider),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44.w,
+                    height: 44.w,
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Icon(Icons.account_balance_wallet_outlined,
+                        color: Colors.orange.shade700, size: 22.sp),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          order.paymentMethod ?? 'Cash on Delivery',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                            color: vc.onSurface,
+                          ),
+                        ),
+                        Text(
+                          'Payment method used',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: vc.onSurfaceMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  OrderStatusBadge(status: order.paymentStatus ?? 'Pending'),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // ── PDF actions ─────────────────────────────────────────────
+            Row(
               children: [
-                Container(
-                  width: 44.w,
-                  height: 44.w,
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(Icons.account_balance_wallet_outlined,
-                      color: Colors.orange.shade700, size: 22.sp),
-                ),
-                SizedBox(width: 14.w),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        order.paymentMethod ?? 'Cash on Delivery',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
-                          color: vc.onSurface,
-                        ),
-                      ),
-                      Text(
-                        'Payment method used',
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: vc.onSurfaceMuted,
-                        ),
-                      ),
-                    ],
+                  child: _PdfButton(
+                    label: 'Share Receipt',
+                    icon: Icons.ios_share_rounded,
+                    loading: _shareLoading,
+                    onTap: _shareReceiptPdf,
                   ),
                 ),
-                OrderStatusBadge(status: order.paymentStatus ?? 'Pending'),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: _PdfButton(
+                    label: 'Download PDF',
+                    icon: Icons.download_rounded,
+                    loading: _downloadLoading,
+                    onTap: _downloadReceiptPdf,
+                    filled: true,
+                  ),
+                ),
               ],
             ),
-          ),
-
-          SizedBox(height: 24.h),
-
-          // ── PDF actions ─────────────────────────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: _PdfButton(
-                  label: 'Share Receipt',
-                  icon: Icons.ios_share_rounded,
-                  loading: _pdfLoading,
-                  onTap: _shareReceiptPdf,
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: _PdfButton(
-                  label: 'Download PDF',
-                  icon: Icons.download_rounded,
-                  loading: _pdfLoading,
-                  onTap: _downloadReceiptPdf,
-                  filled: true,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -532,8 +591,10 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
 
   String _labelForType(String? type) {
     switch (type?.toLowerCase()) {
-      case 'home':   return 'Home';
-      case 'office': return 'Office';
+      case 'home':
+        return 'Home';
+      case 'office':
+        return 'Office';
       default:
         if (type != null && type.isNotEmpty) {
           return type[0].toUpperCase() + type.substring(1);
@@ -541,7 +602,6 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
         return 'Others';
     }
   }
-
 }
 
 // ── PDF action button ─────────────────────────────────────────────────────────
@@ -624,11 +684,15 @@ class _OrderStatusStepperState extends State<_OrderStatusStepper>
 
   static int _stepIndex(String? s) {
     switch (s?.toLowerCase()) {
-      case 'processing': return 1;
+      case 'processing':
+        return 1;
       case 'shipped':
-      case 'shipping':   return 2;
-      case 'delivered':  return 3;
-      default:           return 0; // pending
+      case 'shipping':
+        return 2;
+      case 'delivered':
+        return 3;
+      default:
+        return 0; // pending
     }
   }
 
@@ -674,7 +738,9 @@ class _OrderStatusStepperState extends State<_OrderStatusStepper>
               Icon(Icons.timeline_rounded, color: activeColor, size: 18.sp),
               SizedBox(width: 8.w),
               Text(
-                cancelled ? 'Order ${widget.status ?? 'Cancelled'}' : 'Order Progress',
+                cancelled
+                    ? 'Order ${widget.status ?? 'Cancelled'}'
+                    : 'Order Progress',
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
@@ -760,7 +826,8 @@ class _StepRow extends StatelessWidget {
               height: 40.w + 10 * pulseAnimation!.value,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: activeColor.withValues(alpha: 0.15 * (1 - pulseAnimation!.value)),
+                color: activeColor.withValues(
+                    alpha: 0.15 * (1 - pulseAnimation!.value)),
               ),
             ),
             child!,
@@ -827,8 +894,8 @@ class _StepRow extends StatelessWidget {
                   if (isActive) ...[
                     SizedBox(height: 6.h),
                     Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 8.w, vertical: 3.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                       decoration: BoxDecoration(
                         color: activeColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20.r),
@@ -861,9 +928,21 @@ class _CancelledBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = status?.toLowerCase();
     final (label, color, icon) = switch (s) {
-      'returned' => ('This order has been Returned', Colors.purple.shade600, Icons.assignment_return_rounded),
-      'refunded' => ('This order has been Refunded', const Color(0xFF00695C), Icons.currency_exchange_rounded),
-      _ => ('This order has been Cancelled', Colors.red.shade600, Icons.cancel_rounded),
+      'returned' => (
+          'This order has been Returned',
+          Colors.purple.shade600,
+          Icons.assignment_return_rounded
+        ),
+      'refunded' => (
+          'This order has been Refunded',
+          const Color(0xFF00695C),
+          Icons.currency_exchange_rounded
+        ),
+      _ => (
+          'This order has been Cancelled',
+          Colors.red.shade600,
+          Icons.cancel_rounded
+        ),
     };
 
     return Container(
