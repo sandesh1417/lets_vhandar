@@ -137,15 +137,27 @@ class _BusinessLocationPickerScreenState
     });
   }
 
-  void _onSuggestionTap(LocationSuggestion s) {
+  Future<void> _onSuggestionTap(LocationSuggestion s) async {
     setState(() {
-      _selectedLatLng = s.latLng;
-      _locationAddress = s.displayName;
       _suggestions = [];
       _searchCtrl.text = s.displayName;
+      _isSearching = true;
     });
-    _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(s.latLng, 15));
+
+    LatLng? latLng = s.latLng;
+    if (latLng == null && s.placeId != null) {
+      latLng = await _searchService.getPlaceLatLng(s.placeId!);
+    }
+
+    if (!mounted) return;
+    setState(() => _isSearching = false);
+    if (latLng == null) return;
+
+    setState(() {
+      _selectedLatLng = latLng!;
+      _locationAddress = s.displayName;
+    });
+    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
   }
 
   String _coordsString(LatLng pos) =>

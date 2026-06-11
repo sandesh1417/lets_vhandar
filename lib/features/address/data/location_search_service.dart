@@ -1,105 +1,143 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationSuggestion {
   final String displayName;
-  final LatLng latLng;
 
-  LocationSuggestion({required this.displayName, required this.latLng});
+  /// Google Places `place_id`. Coordinates are resolved lazily via
+  /// [LocationSearchService.getPlaceLatLng] when the suggestion is tapped.
+  final String? placeId;
+
+  /// May be null for Google Places predictions until resolved.
+  final LatLng? latLng;
+
+  LocationSuggestion({
+    required this.displayName,
+    this.placeId,
+    this.latLng,
+  });
 }
 
-/// Searches for locations within Nepal using Nominatim (OpenStreetMap).
-/// `countrycodes=np` strictly limits results to Nepal.
+/// Address search backed by the Google Places API (same data source as the
+/// website), restricted to Nepal. Autocomplete returns predictions with a
+/// `place_id`; coordinates are fetched on demand via Place Details.
 class LocationSearchService {
   final Dio _dio = Dio();
 
-  // Nepal viewbox for Nominatim: left,top,right,bottom
-  static const _nepalViewbox = '80.058,30.447,88.201,26.347';
+  static const _autocompleteUrl =
+      'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+  static const _detailsUrl =
+      'https://maps.googleapis.com/maps/api/place/details/json';
+
+  String get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+
+  // Billing-efficient session: one token spans the autocomplete keystrokes +
+  // the final details call, then is reset.
+  String? _sessionToken;
+
+  String _newSessionToken() {
+    final rnd = Random();
+    return List.generate(16, (_) => rnd.nextInt(16).toRadixString(16)).join();
+  }
 
   Future<List<LocationSuggestion>> getSuggestions(String query) async {
-    if (query.trim().isEmpty) return [];
+    final q = query.trim();
+    if (q.isEmpty) return [];
+
+    final key = _apiKey;
+    if (key.isEmpty) {
+      debugPrint('Places search: GOOGLE_MAPS_API_KEY is empty (.env not loaded?)');
+      return [];
+    }
+
+    _sessionToken ??= _newSessionToken();
+
     try {
       final response = await _dio.get(
-        'https://nominatim.openstreetmap.org/search',
+        _autocompleteUrl,
         queryParameters: {
-          'q': query.trim(),
-          'countrycodes': 'np',
-          'viewbox': _nepalViewbox,
-          'bounded': 0,           // soft bound — still shows Nepal results outside viewbox
-          'format': 'json',
-          'limit': 8,
-          'addressdetails': 1,
-          'accept-language': 'en',
+          'input': q,
+          'components': 'country:np',
+          'language': 'en',
+          'key': key,
+          'sessiontoken': _sessionToken,
         },
         options: Options(
-          headers: {
-            'User-Agent': 'LetsVhandarApp/1.0 (letsvhandar@gmail.com)',
-            'Accept': 'application/json',
-          },
           sendTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
         ),
       );
 
-      if (response.statusCode == 200) {
-        final items = response.data as List? ?? [];
-        final seen = <String>{};
-        final results = <LocationSuggestion>[];
+      final data = response.data as Map<String, dynamic>? ?? {};
+      final status = data['status'] as String?;
 
-        for (final item in items) {
-          final lat = double.tryParse(item['lat']?.toString() ?? '');
-          final lon = double.tryParse(item['lon']?.toString() ?? '');
-          if (lat == null || lon == null) continue;
-
-          final label = _buildLabel(item);
-          if (label.isNotEmpty && seen.add(label)) {
-            results.add(LocationSuggestion(
-              displayName: label,
-              latLng: LatLng(lat, lon),
-            ));
-          }
-        }
-        return results;
+      if (status != 'OK' && status != 'ZERO_RESULTS') {
+        debugPrint(
+            'Places autocomplete error: $status — ${data['error_message']}');
+        return [];
       }
+
+      final predictions = data['predictions'] as List? ?? [];
+      final results = <LocationSuggestion>[];
+      for (final p in predictions) {
+        final description = p['description'] as String? ?? '';
+        final placeId = p['place_id'] as String?;
+        if (description.isEmpty || placeId == null) continue;
+        results.add(LocationSuggestion(
+          displayName: description,
+          placeId: placeId,
+        ));
+      }
+      return results;
     } catch (e) {
-      debugPrint('Nominatim search error: $e');
+      debugPrint('Places autocomplete exception: $e');
+      return [];
     }
-    return [];
   }
 
-  static String _buildLabel(Map<String, dynamic> item) {
-    final addr = item['address'] as Map<String, dynamic>? ?? {};
+  /// Resolves the coordinates for a tapped prediction. Ends the billing session.
+  Future<LatLng?> getPlaceLatLng(String placeId) async {
+    final key = _apiKey;
+    if (key.isEmpty) return null;
 
-    // Build a short, human-readable label:
-    // neighbourhood/suburb/town + city/county + state — drop "Nepal" to save space
-    final parts = <String>[];
+    try {
+      final response = await _dio.get(
+        _detailsUrl,
+        queryParameters: {
+          'place_id': placeId,
+          'fields': 'geometry/location',
+          'language': 'en',
+          'key': key,
+          if (_sessionToken != null) 'sessiontoken': _sessionToken,
+        },
+        options: Options(
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
 
-    for (final key in [
-      'shop', 'amenity', 'road', 'neighbourhood',
-      'suburb', 'village', 'town', 'city_district',
-      'city', 'county', 'state_district', 'state',
-    ]) {
-      final v = addr[key] as String?;
-      if (v != null && v.isNotEmpty && !parts.contains(v)) {
-        parts.add(v);
+      // Session consumed — reset so the next search starts a new one.
+      _sessionToken = null;
+
+      final data = response.data as Map<String, dynamic>? ?? {};
+      if (data['status'] != 'OK') {
+        debugPrint(
+            'Place details error: ${data['status']} — ${data['error_message']}');
+        return null;
       }
-      if (parts.length >= 4) break;
-    }
 
-    // Fallback to full display_name (trimmed)
-    if (parts.isEmpty) {
-      final full = item['display_name'] as String? ?? '';
-      // Remove trailing ", Nepal" and keep first 3 comma-parts
-      final segments = full
-          .split(',')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty && s.toLowerCase() != 'nepal')
-          .take(3)
-          .toList();
-      return segments.join(', ');
+      final loc = data['result']?['geometry']?['location'];
+      final lat = (loc?['lat'] as num?)?.toDouble();
+      final lng = (loc?['lng'] as num?)?.toDouble();
+      if (lat == null || lng == null) return null;
+      return LatLng(lat, lng);
+    } catch (e) {
+      debugPrint('Place details exception: $e');
+      return null;
     }
-
-    return parts.join(', ');
   }
 }

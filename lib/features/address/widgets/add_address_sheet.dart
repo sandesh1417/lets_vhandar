@@ -225,10 +225,23 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     setState(() {
       _suggestions = [];
       _searchCtrl.text = suggestion.displayName;
+      _isSearching = true;
     });
-    _mapController
-        ?.animateCamera(CameraUpdate.newLatLngZoom(suggestion.latLng, 16));
-    await _onMapTap(suggestion.latLng);
+
+    LatLng? latLng = suggestion.latLng;
+    if (latLng == null && suggestion.placeId != null) {
+      latLng = await _searchService.getPlaceLatLng(suggestion.placeId!);
+    }
+
+    if (!mounted) return;
+    setState(() => _isSearching = false);
+    if (latLng == null) {
+      setState(() => _locationError = 'Could not load this location.');
+      return;
+    }
+
+    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 16));
+    await _onMapTap(latLng);
   }
 
   Future<void> _searchLocation(String query) async {
