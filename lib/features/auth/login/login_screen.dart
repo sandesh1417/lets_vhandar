@@ -14,6 +14,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -38,6 +39,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _phoneController.addListener(_onFormChanged);
     _passwordController.addListener(_onFormChanged);
     _loadRememberMe();
+  }
+
+  Future<void> _openUrl(String url) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {}
   }
 
   Future<void> _loadRememberMe() async {
@@ -297,26 +304,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontFamily: 'Inter',
                       ),
                     ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColor.primary,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Inter',
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: ' & ',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: context.vColors.onSurfaceMuted,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Terms of Use',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _openUrl(
+                              'https://www.vhandar.com/privacy-policy'),
+                          child: Text(
+                            'Privacy Policy',
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: AppColor.primary,
@@ -324,8 +320,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontFamily: 'Inter',
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Text(
+                          ' & ',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: context.vColors.onSurfaceMuted,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _openUrl(
+                              'https://www.vhandar.com/terms-of-service'),
+                          child: Text(
+                            'Terms of Use',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColor.primary,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
