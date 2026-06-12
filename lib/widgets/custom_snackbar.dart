@@ -132,10 +132,17 @@ class _SnackOverlayState extends State<_SnackOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final mq = MediaQuery.of(context);
+    final keyboard = mq.viewInsets.bottom;
+    // When the keyboard is open, float just above it; otherwise sit above the
+    // bottom button area (clearing the system navigation bar).
+    final double bottomOffset =
+        keyboard > 0 ? keyboard + 16.h : mq.padding.bottom + 96.h;
 
-    return Positioned(
-      bottom: bottomPadding + 96.h,
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      bottom: bottomOffset,
       left: 16.w,
       right: 16.w,
       child: FadeTransition(
