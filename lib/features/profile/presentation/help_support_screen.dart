@@ -204,11 +204,14 @@ class _HeroBanner extends StatelessWidget {
 
           // ── Left: text + button ──────────────────────────────────────
           Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 20.h, 160.w, 20.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 160.w, 16.h),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 RichText(
                   text: TextSpan(
                     style: TextStyle(
@@ -269,6 +272,7 @@ class _HeroBanner extends StatelessWidget {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         ],
