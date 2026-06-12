@@ -187,29 +187,31 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 40.h),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Logo + headline
-              Center(
+              // ── Green hero header ───────────────────────────────────────
+              Container(
+                width: double.infinity,
+                color: AppColor.primary,
+                padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 36.h),
                 child: Column(
                   children: [
                     SvgPicture.asset(
                       'assets/images/V4B_logo.svg',
-                      width: 72.w,
-                      height: 72.w,
+                      height: 44.h,
+                      fit: BoxFit.contain,
                     ),
-                    SizedBox(height: 12.h),
+                    SizedBox(height: 16.h),
                     Text(
                       'Create Business Account',
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w800,
                         fontFamily: 'Inter',
-                        color: vc.onSurface,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(height: 4.h),
@@ -217,221 +219,246 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                       'Fill in your details to get started',
                       style: TextStyle(
                         fontSize: 13.sp,
-                        color: vc.onSurfaceMuted,
+                        color: Colors.white.withValues(alpha: 0.85),
                         fontFamily: 'Inter',
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 28.h),
 
-              // ── Contact & Security ──────────────────────────────────────
-              _SectionCard(
-                vc: vc,
-                icon: Icons.lock_outline,
-                title: 'Contact & Security',
-                children: [
-                  _Label('Mobile Number', vc),
-                  SizedBox(height: 6.h),
-                  CustomTextField(
-                    controller: _phoneCtrl,
-                    hintText: 'Enter 10-digit mobile number',
-                    keyBoardType: TextInputType.number,
-                    textInputFormatter: TenDigitInputFormatter(),
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 12.w, vertical: 13.h),
-                      child: Text(
-                        '+977',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: vc.onSurface,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                    validator: TFValidators.validatePhone,
+              // ── Light form area (rises over the green hero) ─────────────
+              Transform.translate(
+                offset: Offset(0, -20.h),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: vc.scaffoldBg,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(24.r)),
                   ),
-                  SizedBox(height: 14.h),
-                  _Label('Email Address', vc),
-                  SizedBox(height: 6.h),
-                  CustomTextField(
-                    controller: _emailCtrl,
-                    hintText: 'Enter business email',
-                    keyBoardType: TextInputType.emailAddress,
-                    prefixIcon: _PrefixIcon(Icons.email_outlined, vc),
-                    validator: TFValidators.validateEmail,
-                    suffixIcon: const SizedBox.shrink(),
-                  ),
-                  SizedBox(height: 14.h),
-                  _Label('Password', vc),
-                  SizedBox(height: 6.h),
-                  CustomTextField(
-                    controller: _passwordCtrl,
-                    hintText: 'Create a password',
-                    obscureText: !_showPassword,
-                    prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
-                    suffixIcon: GestureDetector(
-                      onTap: () =>
-                          setState(() => _showPassword = !_showPassword),
-                      child: Icon(
-                        _showPassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        size: 18.sp,
-                        color: vc.onSurfaceMuted,
-                      ),
-                    ),
-                    validator: TFValidators.validatePassword,
-                  ),
-                  SizedBox(height: 14.h),
-                  _Label('Confirm Password', vc),
-                  SizedBox(height: 6.h),
-                  CustomTextField(
-                    controller: _confirmPassCtrl,
-                    hintText: 'Repeat your password',
-                    obscureText: !_showConfirm,
-                    prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
-                    suffixIcon: GestureDetector(
-                      onTap: () => setState(() => _showConfirm = !_showConfirm),
-                      child: Icon(
-                        _showConfirm
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        size: 18.sp,
-                        color: vc.onSurfaceMuted,
-                      ),
-                    ),
-                    validator: (v) => TFValidators.validateConfirmPassword(
-                        v, _passwordCtrl.text),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-
-              // ── Business Details ────────────────────────────────────────
-              _SectionCard(
-                vc: vc,
-                icon: Icons.store_outlined,
-                title: 'Business Details',
-                children: [
-                  _Label('Business Name', vc),
-                  SizedBox(height: 6.h),
-                  CustomTextField(
-                    controller: _businessNameCtrl,
-                    hintText: 'Enter your business name',
-                    prefixIcon: _PrefixIcon(Icons.storefront_outlined, vc),
-                    suffixIcon: const SizedBox.shrink(),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
-                  ),
-                  SizedBox(height: 14.h),
-                  _Label('Category', vc),
-                  SizedBox(height: 6.h),
-                  _TapField(
-                    icon: Icons.category_outlined,
-                    text: _selectedCategory ?? 'Select business category',
-                    hasValue: _selectedCategory != null,
-                    trailingIcon: Icons.keyboard_arrow_down_rounded,
-                    onTap: _showCategoryPicker,
-                    vc: vc,
-                  ),
-                  SizedBox(height: 14.h),
-                  _Label('Tax Type', vc),
-                  SizedBox(height: 8.h),
-                  _PanVatToggle(
-                    isPan: _isPan,
-                    onChanged: (v) => setState(() {
-                      _isPan = v;
-                      _taxNumberCtrl.clear();
-                    }),
-                    vc: vc,
-                  ),
-                  SizedBox(height: 10.h),
-                  CustomTextField(
-                    controller: _taxNumberCtrl,
-                    hintText: _isPan ? 'Enter PAN number' : 'Enter VAT number',
-                    prefixIcon: _PrefixIcon(Icons.badge_outlined, vc),
-                    suffixIcon: const SizedBox.shrink(),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-
-              // ── Business Location ───────────────────────────────────────
-              _SectionCard(
-                vc: vc,
-                icon: Icons.location_on_outlined,
-                title: 'Business Location',
-                children: [
-                  _Label('Pin Location on Map', vc),
-                  SizedBox(height: 6.h),
-                  _TapField(
-                    icon: Icons.map_outlined,
-                    text: _locationAddress ?? 'Tap to select on map',
-                    hasValue: _locationAddress != null,
-                    trailingIcon: Icons.open_in_new_rounded,
-                    onTap: _pickLocation,
-                    vc: vc,
-                    maxLines: 2,
-                  ),
-                  if (_locationLatLng != null) ...[
-                    SizedBox(height: 6.h),
-                    Row(
-                      children: [
-                        Icon(Icons.my_location,
-                            size: 12.sp, color: AppColor.primary),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '${_locationLatLng!.latitude.toStringAsFixed(4)}, ${_locationLatLng!.longitude.toStringAsFixed(4)}',
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: vc.onSurfaceMuted,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-              SizedBox(height: 32.h),
-
-              CustomButton(
-                buttonTitle: 'Register & Send OTP',
-                isLoading: isLoading,
-                isEnabled: !isLoading,
-                onPress: _submit,
-              ),
-              SizedBox(height: 16.h),
-
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'By registering, you agree to our ',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: vc.onSurfaceMuted,
-                      fontFamily: 'Inter',
-                    ),
+                  padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 40.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(
-                          color: AppColor.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      // ── Contact & Security ──────────────────────────────────────
+                      _SectionCard(
+                        vc: vc,
+                        icon: Icons.lock_outline,
+                        title: 'Contact & Security',
+                        children: [
+                          _Label('Mobile Number', vc),
+                          SizedBox(height: 6.h),
+                          CustomTextField(
+                            controller: _phoneCtrl,
+                            hintText: 'Enter 10-digit mobile number',
+                            keyBoardType: TextInputType.number,
+                            textInputFormatter: TenDigitInputFormatter(),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w, vertical: 13.h),
+                              child: Text(
+                                '+977',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: vc.onSurface,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                            validator: TFValidators.validatePhone,
+                          ),
+                          SizedBox(height: 14.h),
+                          _Label('Email Address', vc),
+                          SizedBox(height: 6.h),
+                          CustomTextField(
+                            controller: _emailCtrl,
+                            hintText: 'Enter business email',
+                            keyBoardType: TextInputType.emailAddress,
+                            prefixIcon: _PrefixIcon(Icons.email_outlined, vc),
+                            validator: TFValidators.validateEmail,
+                            suffixIcon: const SizedBox.shrink(),
+                          ),
+                          SizedBox(height: 14.h),
+                          _Label('Password', vc),
+                          SizedBox(height: 6.h),
+                          CustomTextField(
+                            controller: _passwordCtrl,
+                            hintText: 'Create a password',
+                            obscureText: !_showPassword,
+                            prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
+                            suffixIcon: GestureDetector(
+                              onTap: () => setState(
+                                  () => _showPassword = !_showPassword),
+                              child: Icon(
+                                _showPassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                size: 18.sp,
+                                color: vc.onSurfaceMuted,
+                              ),
+                            ),
+                            validator: TFValidators.validatePassword,
+                          ),
+                          SizedBox(height: 14.h),
+                          _Label('Confirm Password', vc),
+                          SizedBox(height: 6.h),
+                          CustomTextField(
+                            controller: _confirmPassCtrl,
+                            hintText: 'Repeat your password',
+                            obscureText: !_showConfirm,
+                            prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
+                            suffixIcon: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _showConfirm = !_showConfirm),
+                              child: Icon(
+                                _showConfirm
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                size: 18.sp,
+                                color: vc.onSurfaceMuted,
+                              ),
+                            ),
+                            validator: (v) =>
+                                TFValidators.validateConfirmPassword(
+                                    v, _passwordCtrl.text),
+                          ),
+                        ],
                       ),
-                      TextSpan(text: ' & '),
-                      TextSpan(
-                        text: 'Terms of Use',
-                        style: TextStyle(
-                          color: AppColor.primary,
-                          fontWeight: FontWeight.w600,
+                      SizedBox(height: 16.h),
+
+                      // ── Business Details ────────────────────────────────────────
+                      _SectionCard(
+                        vc: vc,
+                        icon: Icons.store_outlined,
+                        title: 'Business Details',
+                        children: [
+                          _Label('Business Name', vc),
+                          SizedBox(height: 6.h),
+                          CustomTextField(
+                            controller: _businessNameCtrl,
+                            hintText: 'Enter your business name',
+                            prefixIcon:
+                                _PrefixIcon(Icons.storefront_outlined, vc),
+                            suffixIcon: const SizedBox.shrink(),
+                            validator: (v) => v == null || v.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                          SizedBox(height: 14.h),
+                          _Label('Category', vc),
+                          SizedBox(height: 6.h),
+                          _TapField(
+                            icon: Icons.category_outlined,
+                            text:
+                                _selectedCategory ?? 'Select business category',
+                            hasValue: _selectedCategory != null,
+                            trailingIcon: Icons.keyboard_arrow_down_rounded,
+                            onTap: _showCategoryPicker,
+                            vc: vc,
+                          ),
+                          SizedBox(height: 14.h),
+                          _Label('Tax Type', vc),
+                          SizedBox(height: 8.h),
+                          _PanVatToggle(
+                            isPan: _isPan,
+                            onChanged: (v) => setState(() {
+                              _isPan = v;
+                              _taxNumberCtrl.clear();
+                            }),
+                            vc: vc,
+                          ),
+                          SizedBox(height: 10.h),
+                          CustomTextField(
+                            controller: _taxNumberCtrl,
+                            hintText: _isPan
+                                ? 'Enter PAN number'
+                                : 'Enter VAT number',
+                            prefixIcon: _PrefixIcon(Icons.badge_outlined, vc),
+                            suffixIcon: const SizedBox.shrink(),
+                            validator: (v) => v == null || v.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+
+                      // ── Business Location ───────────────────────────────────────
+                      _SectionCard(
+                        vc: vc,
+                        icon: Icons.location_on_outlined,
+                        title: 'Business Location',
+                        children: [
+                          _Label('Pin Location on Map', vc),
+                          SizedBox(height: 6.h),
+                          _TapField(
+                            icon: Icons.map_outlined,
+                            text: _locationAddress ?? 'Tap to select on map',
+                            hasValue: _locationAddress != null,
+                            trailingIcon: Icons.open_in_new_rounded,
+                            onTap: _pickLocation,
+                            vc: vc,
+                            maxLines: 2,
+                          ),
+                          if (_locationLatLng != null) ...[
+                            SizedBox(height: 6.h),
+                            Row(
+                              children: [
+                                Icon(Icons.my_location,
+                                    size: 12.sp, color: AppColor.primary),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  '${_locationLatLng!.latitude.toStringAsFixed(4)}, ${_locationLatLng!.longitude.toStringAsFixed(4)}',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    color: vc.onSurfaceMuted,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                      SizedBox(height: 32.h),
+
+                      CustomButton(
+                        buttonTitle: 'Register & Send OTP',
+                        isLoading: isLoading,
+                        isEnabled: !isLoading,
+                        onPress: _submit,
+                      ),
+                      SizedBox(height: 16.h),
+
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'By registering, you agree to our ',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: vc.onSurfaceMuted,
+                              fontFamily: 'Inter',
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  color: AppColor.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              TextSpan(text: ' & '),
+                              TextSpan(
+                                text: 'Terms of Use',
+                                style: TextStyle(
+                                  color: AppColor.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
