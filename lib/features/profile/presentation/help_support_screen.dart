@@ -166,7 +166,8 @@ class _HeroBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
+      margin: EdgeInsets.zero,
+      width: double.infinity,
       height: 180.h,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -174,7 +175,7 @@ class _HeroBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24.r)),
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
@@ -193,14 +194,14 @@ class _HeroBanner extends StatelessWidget {
             ),
           ),
 
-          // ── Agent photo — bottom right, full image visible ───────────
+          // ── Agent photo — fills the banner height on the right ───────
           Positioned(
             right: 0,
+            top: 0,
             bottom: 0,
             child: Image.asset(
               KImageConstant.supportAgent,
-              height: 160.h,
-              fit: BoxFit.contain,
+              fit: BoxFit.fitHeight,
               alignment: Alignment.bottomRight,
             ),
           ),
