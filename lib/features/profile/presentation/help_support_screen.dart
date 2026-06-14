@@ -37,7 +37,9 @@ class HelpSupportScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Hero banner ───────────────────────────────────────────────
-            _HeroBanner(onChatTap: () => _launch(context, 'https://wa.me/9779851357358')),
+            _HeroBanner(
+                onChatTap: () =>
+                    _launch(context, 'https://wa.me/9779851357358')),
 
             SizedBox(height: 24.h),
 
@@ -63,7 +65,8 @@ class HelpSupportScreen extends StatelessWidget {
                     icon: _kWhatsappSvg,
                     label: 'WhatsApp',
                     color: const Color(0xFF25D366),
-                    onTap: () => _launch(context, 'https://wa.me/9779851357358'),
+                    onTap: () =>
+                        _launch(context, 'https://wa.me/9779851357358'),
                   ),
                   SizedBox(width: 10.w),
                   _QuickContactButton(
@@ -84,8 +87,7 @@ class HelpSupportScreen extends StatelessWidget {
                     icon: _kEmailSvg,
                     label: 'Email',
                     color: const Color(0xFFE34234),
-                    onTap: () =>
-                        _launch(context, 'mailto:support@vhandar.com'),
+                    onTap: () => _launch(context, 'mailto:support@vhandar.com'),
                   ),
                 ],
               ),
@@ -112,7 +114,8 @@ class HelpSupportScreen extends StatelessWidget {
               icon: Icons.inventory_2_outlined,
               iconColor: const Color(0xFF7B5EA7),
               title: 'Order Related Queries',
-              body: 'Connect with our customer support team on the app, or reach us via ',
+              body:
+                  'Connect with our customer support team on the app, or reach us via ',
               links: const [
                 _LinkItem('WhatsApp', 'https://wa.me/9779851357358'),
                 _LinkItem('Messenger', 'https://m.me/letsvhandar'),
@@ -185,7 +188,7 @@ class _HeroBanner extends StatelessWidget {
               height: 100.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.06),
+                color: Colors.red.withValues(alpha: 0.06),
               ),
             ),
           ),
@@ -212,66 +215,66 @@ class _HeroBanner extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 19.sp,
-                      fontWeight: FontWeight.w800,
-                      height: 1.25,
-                      color: Colors.white,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Chat ',
-                        style: TextStyle(color: AppColor.secondary),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 19.sp,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
+                        color: Colors.white,
                       ),
-                      const TextSpan(
-                          text: "with us if\nYou've Any\nQuestions."),
+                      children: [
+                        TextSpan(
+                          text: 'Chat ',
+                          style: TextStyle(color: AppColor.secondary),
+                        ),
+                        const TextSpan(
+                            text: "with us if\nYou've Any\nQuestions."),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Row(
+                    children: [
+                      Icon(Icons.chat_bubble_outline_rounded,
+                          size: 11.sp, color: Colors.white60),
+                      SizedBox(width: 5.w),
+                      Text(
+                        '24/7 Free Support',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: Colors.white70,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    Icon(Icons.chat_bubble_outline_rounded,
-                        size: 11.sp, color: Colors.white60),
-                    SizedBox(width: 5.w),
-                    Text(
-                      '24/7 Free Support',
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: Colors.white70,
-                        fontFamily: 'Inter',
+                  SizedBox(height: 14.h),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      onChatTap();
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 18.w, vertical: 9.h),
+                      decoration: BoxDecoration(
+                        color: AppColor.secondary,
+                        borderRadius: BorderRadius.circular(50.r),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14.h),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    onChatTap();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 18.w, vertical: 9.h),
-                    decoration: BoxDecoration(
-                      color: AppColor.secondary,
-                      borderRadius: BorderRadius.circular(50.r),
-                    ),
-                    child: Text(
-                      'Chat Now',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1A1A1A),
-                        fontFamily: 'Inter',
+                      child: Text(
+                        'Chat Now',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
               ),
             ),
           ),
@@ -443,8 +446,7 @@ class _InfoCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (i < links.length - 1)
-                          const TextSpan(text: ', '),
+                        if (i < links.length - 1) const TextSpan(text: ', '),
                       ],
                     ],
                   ),
@@ -460,8 +462,7 @@ class _InfoCard extends StatelessWidget {
                         height: 1.5,
                       ),
                       children: [
-                        if (extraPrefix != null)
-                          TextSpan(text: extraPrefix),
+                        if (extraPrefix != null) TextSpan(text: extraPrefix),
                         WidgetSpan(
                           child: GestureDetector(
                             onTap: extraUrl != null
@@ -525,7 +526,8 @@ class _PhoneCard extends StatelessWidget {
             width: 40.w,
             height: 40.w,
             decoration: BoxDecoration(
-              color: AppColor.primary.withValues(alpha: context.isDark ? 0.2 : 0.12),
+              color: AppColor.primary
+                  .withValues(alpha: context.isDark ? 0.2 : 0.12),
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: Icon(Icons.phone_outlined,
@@ -547,8 +549,8 @@ class _PhoneCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 ...numbers.map((n) => GestureDetector(
-                      onTap: () => onLaunch(
-                          context, 'tel:${n.replaceAll(' ', '')}'),
+                      onTap: () =>
+                          onLaunch(context, 'tel:${n.replaceAll(' ', '')}'),
                       child: Padding(
                         padding: EdgeInsets.only(bottom: 6.h),
                         child: Row(
@@ -609,7 +611,8 @@ class _AddressCard extends StatelessWidget {
             width: 40.w,
             height: 40.w,
             decoration: BoxDecoration(
-              color: const Color(0xFFE87040).withValues(alpha: context.isDark ? 0.2 : 0.12),
+              color: const Color(0xFFE87040)
+                  .withValues(alpha: context.isDark ? 0.2 : 0.12),
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: Icon(Icons.location_on_outlined,
