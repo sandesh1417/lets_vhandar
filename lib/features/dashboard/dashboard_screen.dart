@@ -44,6 +44,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   late final List<Widget?> _cache = List.filled(_builders.length, null);
   DateTime? _lastBackPressTime;
 
+  // Drives the scroll-reactive navbar: 0 = expanded (at top), 1 = compact.
+  // Only the navbar listens to this, so scrolling never rebuilds the page.
+  final ValueNotifier<double> _scrollProgress = ValueNotifier<double>(0);
+
+  @override
+  void dispose() {
+    _scrollProgress.dispose();
+    super.dispose();
+  }
+
+  // Feeds the active tab's primary vertical scroll into [_scrollProgress].
+  bool _onScroll(ScrollNotification n) {
+    // Ignore horizontal carousels and nested inner scrollables.
+    if (n.metrics.axis != Axis.vertical || n.depth != 0) return false;
+    final p = (n.metrics.pixels / _NavTuning.scrollThreshold).clamp(0.0, 1.0);
+    if ((p - _scrollProgress.value).abs() > 0.002) {
+      _scrollProgress.value = p;
+    }
+    return false;
+  }
+
   Widget _tab(int index) {
     final visited = ref.read(visitedTabsProvider);
     if (!visited.contains(index)) return const SizedBox.shrink();
@@ -55,10 +76,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (index == current) {
       // Same tab tapped again — signal it to scroll-to-top / refresh
       ref.read(tabReactivateProvider(index).notifier).state++;
+      _scrollProgress.value = 0; // bar expands as content returns to top
       return;
     }
     ref.read(visitedTabsProvider.notifier).update((s) => {...s, index});
     ref.read(dashboardIndexProvider.notifier).state = index;
+    _scrollProgress.value = 0; // new tab starts expanded
   }
 
   void _refreshAllProviders() {
@@ -125,16 +148,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       floatingActionButton: CartFloatingBadge(
         onTap: () => context.push(LVRoute.cartScreen.route),
       ),
-      body: RepaintBoundary(
-        child: IndexedStack(
-          index: currentIndex,
-          children: List.generate(_builders.length, _tab),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: RepaintBoundary(
+          child: IndexedStack(
+            index: currentIndex,
+            children: List.generate(_builders.length, _tab),
+          ),
         ),
       ),
       bottomNavigationBar: Material(
         color: Colors.transparent,
         child: _NavBar(
           currentIndex: currentIndex,
+          scrollProgress: _scrollProgress,
           onTap: (index) {
             HapticFeedback.lightImpact();
             _goToTab(index);
@@ -145,13 +172,68 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
+/// ───────────────────────────────────────────────────────────────────────────
+/// One place to tune the floating navbar's look & motion.
+/// `*Expanded` = value at scroll top; `*Scrolled` = value once fully compact.
+/// ───────────────────────────────────────────────────────────────────────────
+class _NavTuning {
+  // Scroll → progress.
+  static const double scrollThreshold = 80; // px of scroll to go fully compact
+  static const Curve resizeCurve = Curves.easeOutCubic;
+
+  // Outer side padding (bigger ⇒ narrower bar) — ~10% width shrink.
+  static const double sidePadExpanded = 12;
+  static const double sidePadScrolled = 26;
+  // Gap beneath the bar.
+  static const double bottomPadExpanded = 10;
+  static const double bottomPadScrolled = 8;
+  // Bar height — ~19% shrink.
+  static const double heightExpanded = 72;
+  static const double heightScrolled = 58;
+  // Corner radius — tighter pill when scrolled.
+  static const double radiusExpanded = 30;
+  static const double radiusScrolled = 34;
+
+  // Frosted-glass blur sigma.
+  static const double blurExpanded = 9;
+  static const double blurScrolled = 22;
+  // Translucent fill over the blur (content stays faintly visible).
+  static const double fillAlphaExpanded = 0.55;
+  static const double fillAlphaScrolled = 0.72;
+  // Specular top-edge highlight (white).
+  static const double borderAlphaExpanded = 0.22;
+  static const double borderAlphaScrolled = 0.30;
+
+  // Soft drop shadow (deepens as the bar lifts off content).
+  static const double shadowBlurExpanded = 18;
+  static const double shadowBlurScrolled = 28;
+  static const double shadowAlphaExpanded = 0.08;
+  static const double shadowAlphaScrolled = 0.13;
+  static const double shadowDyExpanded = 4;
+  static const double shadowDyScrolled = 10;
+
+  // Icon sizes.
+  static const double iconSelected = 24;
+  static const double iconUnselected = 21;
+
+  // Motion.
+  static const Duration selectBounce = Duration(milliseconds: 420);
+  static const double selectPop = 1.18; // overshoot scale on selection
+  static const Duration indicatorMorph = Duration(milliseconds: 250);
+  static const Duration pressIn = Duration(milliseconds: 100);
+  static const Duration pressOut = Duration(milliseconds: 220);
+  static const double pressScale = 0.86;
+}
+
 class _NavBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final ValueNotifier<double> scrollProgress;
 
   const _NavBar({
     required this.currentIndex,
     required this.onTap,
+    required this.scrollProgress,
   });
 
   @override
@@ -161,8 +243,12 @@ class _NavBar extends StatefulWidget {
 class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   static const _labels = ['Home', 'Category', 'Orders', 'Reorder', 'Account'];
 
-  // Per-item press scale
+  // Per-item press scale.
   late final List<AnimationController> _press;
+
+  // Gentle spring bounce played on the newly selected item.
+  late final AnimationController _selectCtrl;
+  late final Animation<double> _selectScale;
 
   @override
   void initState() {
@@ -171,13 +257,34 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
       _labels.length,
       (_) => AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 100),
-        reverseDuration: const Duration(milliseconds: 220),
-        lowerBound: 0.86,
+        duration: _NavTuning.pressIn,
+        reverseDuration: _NavTuning.pressOut,
+        lowerBound: _NavTuning.pressScale,
         upperBound: 1.0,
         value: 1.0,
       ),
     );
+
+    _selectCtrl = AnimationController(
+      vsync: this,
+      duration: _NavTuning.selectBounce,
+      value: 1.0,
+    );
+    _selectScale = TweenSequence<double>([
+      TweenSequenceItem(
+          tween: Tween(begin: 1.0, end: _NavTuning.selectPop), weight: 40),
+      TweenSequenceItem(
+          tween: Tween(begin: _NavTuning.selectPop, end: 0.96), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 0.96, end: 1.0), weight: 30),
+    ]).animate(CurvedAnimation(parent: _selectCtrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void didUpdateWidget(covariant _NavBar old) {
+    super.didUpdateWidget(old);
+    if (old.currentIndex != widget.currentIndex) {
+      _selectCtrl.forward(from: 0); // pop the newly selected tab
+    }
   }
 
   @override
@@ -185,6 +292,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     for (final c in _press) {
       c.dispose();
     }
+    _selectCtrl.dispose();
     super.dispose();
   }
 
@@ -242,108 +350,139 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final vc = context.vColors;
+    // Only the bar repaints on scroll — the page never rebuilds.
     return SafeArea(
       top: false,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 10.h),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.10),
-                blurRadius: 20,
-                spreadRadius: -2,
-                offset: const Offset(0, 6),
+      child: ValueListenableBuilder<double>(
+        valueListenable: widget.scrollProgress,
+        builder: (context, raw, _) {
+          final p = _NavTuning.resizeCurve.transform(raw.clamp(0.0, 1.0));
+          double lp(double a, double b) => lerpDouble(a, b, p)!;
+
+          final sidePad =
+              lp(_NavTuning.sidePadExpanded, _NavTuning.sidePadScrolled).w;
+          final bottomPad =
+              lp(_NavTuning.bottomPadExpanded, _NavTuning.bottomPadScrolled).h;
+          final height =
+              lp(_NavTuning.heightExpanded, _NavTuning.heightScrolled).h;
+          final radius =
+              lp(_NavTuning.radiusExpanded, _NavTuning.radiusScrolled).r;
+          final blur = lp(_NavTuning.blurExpanded, _NavTuning.blurScrolled);
+          final fillAlpha =
+              lp(_NavTuning.fillAlphaExpanded, _NavTuning.fillAlphaScrolled);
+          final borderAlpha = lp(
+              _NavTuning.borderAlphaExpanded, _NavTuning.borderAlphaScrolled);
+          final shadowBlur =
+              lp(_NavTuning.shadowBlurExpanded, _NavTuning.shadowBlurScrolled);
+          final shadowAlpha = lp(
+              _NavTuning.shadowAlphaExpanded, _NavTuning.shadowAlphaScrolled);
+          final shadowDy =
+              lp(_NavTuning.shadowDyExpanded, _NavTuning.shadowDyScrolled);
+
+          return Padding(
+            padding: EdgeInsets.fromLTRB(sidePad, 0, sidePad, bottomPad),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: shadowAlpha),
+                    blurRadius: shadowBlur,
+                    spreadRadius: -2,
+                    offset: Offset(0, shadowDy),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: RepaintBoundary(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32.r),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                child: Container(
-                  height: 72.h,
-                  decoration: BoxDecoration(
-                    color: context.vColors.navBarBg,
-                    borderRadius: BorderRadius.circular(32.r),
-                    border: Border.all(
-                      color: context.vColors.navBarBorder,
-                      width: 1,
+              child: RepaintBoundary(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                    child: Container(
+                      height: height,
+                      decoration: BoxDecoration(
+                        color: vc.navBarBg.withValues(alpha: fillAlpha),
+                        borderRadius: BorderRadius.circular(radius),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: borderAlpha),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: List.generate(
+                            _labels.length, (i) => _item(context, i, p)),
+                      ),
                     ),
                   ),
-                  child: Row(
-                    children: List.generate(_labels.length, (i) {
-                      final isSelected = widget.currentIndex == i;
-                      final iconSize = isSelected ? 24.w : 21.w;
-                      return Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTapDown: (_) => _press[i].reverse(),
-                          onTapUp: (_) {
-                            _press[i].forward();
-                            widget.onTap(i);
-                          },
-                          onTapCancel: () => _press[i].forward(),
-                          child: AnimatedBuilder(
-                            animation: _press[i],
-                            builder: (context, child) => Transform.scale(
-                              scale: _press[i].value,
-                              child: child,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 6.h,
-                                horizontal: 5.w,
-                              ),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 250),
-                                curve: Curves.easeOutCubic,
-                                decoration: isSelected
-                                    ? BoxDecoration(
-                                        color: AppColor.primary
-                                            .withValues(alpha: 0.15),
-                                        borderRadius:
-                                            BorderRadius.circular(22.r),
-                                        border: Border.all(
-                                          color: AppColor.primary
-                                              .withValues(alpha: 0.45),
-                                          width: 1.5,
-                                        ),
-                                      )
-                                    : const BoxDecoration(),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _buildIcon(
-                                        context, i, isSelected, iconSize),
-                                    SizedBox(height: 3.h),
-                                    AnimatedDefaultTextStyle(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      style: TextStyle(
-                                        fontSize: isSelected ? 10.5.sp : 9.5.sp,
-                                        fontFamily: 'Inter',
-                                        fontWeight: isSelected
-                                            ? FontWeight.w800
-                                            : FontWeight.w500,
-                                        color: isSelected
-                                            ? AppColor.primary
-                                            : context.vColors.onSurfaceMuted,
-                                      ),
-                                      child: Text(_labels[i]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
                 ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _item(BuildContext context, int i, double p) {
+    final isSelected = widget.currentIndex == i;
+    final iconSize =
+        (isSelected ? _NavTuning.iconSelected : _NavTuning.iconUnselected).w;
+    // Inner content tightens as the bar compacts.
+    final vPad = lerpDouble(6, 3, p)!.h;
+    final labelGap = lerpDouble(3, 1.5, p)!.h;
+
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _press[i].reverse(),
+        onTapUp: (_) {
+          _press[i].forward();
+          widget.onTap(i);
+        },
+        onTapCancel: () => _press[i].forward(),
+        child: AnimatedBuilder(
+          // Press scale + selection spring-bounce drive the same transform.
+          animation: Listenable.merge([_press[i], _selectCtrl]),
+          builder: (context, child) {
+            final sel = isSelected ? _selectScale.value : 1.0;
+            return Transform.scale(scale: _press[i].value * sel, child: child);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: vPad, horizontal: 5.w),
+            child: AnimatedContainer(
+              duration: _NavTuning.indicatorMorph,
+              curve: Curves.easeOutCubic,
+              decoration: isSelected
+                  ? BoxDecoration(
+                      color: AppColor.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(22.r),
+                      border: Border.all(
+                        color: AppColor.primary.withValues(alpha: 0.45),
+                        width: 1.5,
+                      ),
+                    )
+                  : const BoxDecoration(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildIcon(context, i, isSelected, iconSize),
+                  SizedBox(height: labelGap),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: TextStyle(
+                      fontSize: isSelected ? 10.5.sp : 9.5.sp,
+                      fontFamily: 'Inter',
+                      fontWeight:
+                          isSelected ? FontWeight.w800 : FontWeight.w500,
+                      color: isSelected
+                          ? AppColor.primary
+                          : context.vColors.onSurfaceMuted,
+                    ),
+                    child: Text(_labels[i]),
+                  ),
+                ],
               ),
             ),
           ),
