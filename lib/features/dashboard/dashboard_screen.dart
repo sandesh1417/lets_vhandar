@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,7 +33,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with TickerProviderStateMixin {
   static const List<Widget Function()> _builders = [
     HomeScreen.new,
     CategoryScreen.new,
@@ -44,24 +46,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   late final List<Widget?> _cache = List.filled(_builders.length, null);
   DateTime? _lastBackPressTime;
 
-  // Drives the scroll-reactive navbar: 0 = expanded (at top), 1 = compact.
-  // Only the navbar listens to this, so scrolling never rebuilds the page.
-  final ValueNotifier<double> _scrollProgress = ValueNotifier<double>(0);
+  // Drives the navbar: value 0 = full/expanded, 1 = compact. Animated by
+  // scroll DIRECTION (Instagram style). Only the navbar listens to it, so
+  // scrolling never rebuilds the page.
+  late final AnimationController _navCtrl = AnimationController(
+    vsync: this,
+    duration: _NavTuning.animDuration,
+  );
+  double _lastScrollOffset = 0;
 
   @override
   void dispose() {
-    _scrollProgress.dispose();
+    _navCtrl.dispose();
     super.dispose();
   }
 
-  // Feeds the active tab's primary vertical scroll into [_scrollProgress].
+  // Scroll DIRECTION → expand/collapse. Throttled to ±2px.
   bool _onScroll(ScrollNotification n) {
     // Ignore horizontal carousels and nested inner scrollables.
     if (n.metrics.axis != Axis.vertical || n.depth != 0) return false;
-    final p = (n.metrics.pixels / _NavTuning.scrollThreshold).clamp(0.0, 1.0);
-    if ((p - _scrollProgress.value).abs() > 0.002) {
-      _scrollProgress.value = p;
+    final px = n.metrics.pixels;
+
+    if (px <= 0) {
+      _navCtrl.animateTo(0, curve: _NavTuning.animCurve); // top → expanded
+    } else if (px > _lastScrollOffset + _NavTuning.scrollDelta) {
+      _navCtrl.animateTo(1, curve: _NavTuning.animCurve); // down → compact
+    } else if (px < _lastScrollOffset - _NavTuning.scrollDelta) {
+      _navCtrl.animateTo(0, curve: _NavTuning.animCurve); // up → expand
     }
+    _lastScrollOffset = px;
     return false;
   }
 
@@ -76,12 +89,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (index == current) {
       // Same tab tapped again — signal it to scroll-to-top / refresh
       ref.read(tabReactivateProvider(index).notifier).state++;
-      _scrollProgress.value = 0; // bar expands as content returns to top
+      _navCtrl.animateTo(0, curve: _NavTuning.animCurve); // expand
+      _lastScrollOffset = 0;
       return;
     }
     ref.read(visitedTabsProvider.notifier).update((s) => {...s, index});
     ref.read(dashboardIndexProvider.notifier).state = index;
-    _scrollProgress.value = 0; // new tab starts expanded
+    _navCtrl.animateTo(0, curve: _NavTuning.animCurve); // new tab starts full
+    _lastScrollOffset = 0;
   }
 
   void _refreshAllProviders() {
@@ -161,7 +176,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         color: Colors.transparent,
         child: _NavBar(
           currentIndex: currentIndex,
-          scrollProgress: _scrollProgress,
+          scrollProgress: _navCtrl,
           onTap: (index) {
             HapticFeedback.lightImpact();
             _goToTab(index);
@@ -173,62 +188,72 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 }
 
 /// ───────────────────────────────────────────────────────────────────────────
-/// One place to tune the floating navbar's look & motion.
-/// `*Expanded` = value at scroll top; `*Scrolled` = value once fully compact.
+/// One place to tune the floating navbar. `*Exp` = full state, `*Cmp` = compact
+/// (scrolled-down) state. The bar lerps between them by scroll DIRECTION.
 /// ───────────────────────────────────────────────────────────────────────────
 class _NavTuning {
-  // Scroll → progress.
-  static const double scrollThreshold = 80; // px of scroll to go fully compact
-  static const Curve resizeCurve = Curves.easeOutCubic;
+  // Scroll → direction detection + animation.
+  static const double scrollDelta = 2; // px before a direction change counts
+  static const Duration animDuration = Duration(milliseconds: 280);
+  static const Curve animCurve = Curves.easeOutCubic;
 
-  // Outer side padding (bigger ⇒ narrower bar) — ~10% width shrink.
-  static const double sidePadExpanded = 12;
-  static const double sidePadScrolled = 26;
-  // Gap beneath the bar.
-  static const double bottomPadExpanded = 10;
-  static const double bottomPadScrolled = 8;
-  // Bar height — ~19% shrink.
-  static const double heightExpanded = 72;
-  static const double heightScrolled = 58;
-  // Corner radius — tighter pill when scrolled.
-  static const double radiusExpanded = 30;
-  static const double radiusScrolled = 34;
+  // Pill geometry.
+  static const double heightExp = 64;
+  static const double heightCmp = 52;
+  static const double radiusExp = 28; // gets rounder/tighter when shrunk
+  static const double radiusCmp = 32;
+  static const double sideMarginExp = 20; // from screen edges
+  static const double sideMarginCmp = 28;
+  static const double bottomMargin = 12; // floating gap above safe area
+  static const double innerPadH = 8; // padding inside the pill
 
-  // Frosted-glass blur sigma.
-  static const double blurExpanded = 9;
-  static const double blurScrolled = 22;
-  // Translucent fill over the blur (content stays faintly visible).
-  static const double fillAlphaExpanded = 0.55;
-  static const double fillAlphaScrolled = 0.72;
-  // Specular top-edge highlight (white).
-  static const double borderAlphaExpanded = 0.22;
-  static const double borderAlphaScrolled = 0.30;
+  // Icons + labels.
+  static const double iconExp = 26;
+  static const double iconCmp = 22;
+  static const double labelSize = 11;
+  static const double labelGap = 3; // icon → label (collapses with the label)
 
-  // Soft drop shadow (deepens as the bar lifts off content).
-  static const double shadowBlurExpanded = 18;
-  static const double shadowBlurScrolled = 28;
-  static const double shadowAlphaExpanded = 0.08;
-  static const double shadowAlphaScrolled = 0.13;
-  static const double shadowDyExpanded = 4;
-  static const double shadowDyScrolled = 10;
+  // Frosted glass — kept quite transparent in BOTH states (compact stays
+  // glassy, only a touch more opaque for legibility). Heavy blur turns the
+  // page behind into a soft frosted wash: colors/text show through, softened.
+  static const double fillAlphaExp = 0.40;
+  static const double fillAlphaCmp = 0.46;
+  static const double blurExp = 26;
+  static const double blurCmp = 34;
+  // Glossy "shine": extra opacity added to the TOP of the fill gradient so the
+  // bar catches light at the top edge and reads as polished glass.
+  static const double sheenBoost = 0.20;
 
-  // Icon sizes.
-  static const double iconSelected = 24;
-  static const double iconUnselected = 21;
+  // Bright glass rim (specular edge) — brighter = shinier/more visible.
+  static const double rimAlphaLight = 0.70; // white rim in light mode
+  static const double rimAlphaDark = 0.22; // white rim in dark mode
+  static const double rimWidth = 1.2;
 
-  // Motion.
-  static const Duration selectBounce = Duration(milliseconds: 420);
-  static const double selectPop = 1.18; // overshoot scale on selection
-  static const Duration indicatorMorph = Duration(milliseconds: 250);
+  // Upward lift shadow — slightly deeper to keep the translucent bar prominent.
+  static const double shadowOpacityExp = 0.14;
+  static const double shadowOpacityCmp = 0.20;
+  static const double shadowBlur = 26;
+  static const Offset shadowOffset = Offset(0, -5);
+
+  // Selected chip (the indicator — no dot).
+  static const double chipPadH = 12;
+  static const double chipPadV = 4;
+  static const double chipRadius = 12;
+  static const double selectedScale = 1.1;
+  static const Color unselectedColor = Color(0xFF636366); // darker iOS grey
+
+  // Selection spring + press feedback.
+  static const double springStiffness = 300;
+  static const double springDamping = 28;
   static const Duration pressIn = Duration(milliseconds: 100);
   static const Duration pressOut = Duration(milliseconds: 220);
-  static const double pressScale = 0.86;
+  static const double pressScale = 0.9;
 }
 
 class _NavBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  final ValueNotifier<double> scrollProgress;
+  final Animation<double> scrollProgress; // 0 = full, 1 = compact
 
   const _NavBar({
     required this.currentIndex,
@@ -246,9 +271,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   // Per-item press scale.
   late final List<AnimationController> _press;
 
-  // Gentle spring bounce played on the newly selected item.
+  // Spring pop played on the selected icon (SpringSimulation).
   late final AnimationController _selectCtrl;
-  late final Animation<double> _selectScale;
 
   @override
   void initState() {
@@ -265,25 +289,28 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
       ),
     );
 
-    _selectCtrl = AnimationController(
-      vsync: this,
-      duration: _NavTuning.selectBounce,
-      value: 1.0,
-    );
-    _selectScale = TweenSequence<double>([
-      TweenSequenceItem(
-          tween: Tween(begin: 1.0, end: _NavTuning.selectPop), weight: 40),
-      TweenSequenceItem(
-          tween: Tween(begin: _NavTuning.selectPop, end: 0.96), weight: 30),
-      TweenSequenceItem(tween: Tween(begin: 0.96, end: 1.0), weight: 30),
-    ]).animate(CurvedAnimation(parent: _selectCtrl, curve: Curves.easeOut));
+    // Unbounded so the spring can overshoot past 1.0 then settle.
+    _selectCtrl = AnimationController.unbounded(vsync: this, value: 1.0);
+  }
+
+  void _popSelected() {
+    _selectCtrl.animateWith(SpringSimulation(
+      const SpringDescription(
+        mass: 1,
+        stiffness: _NavTuning.springStiffness,
+        damping: _NavTuning.springDamping,
+      ),
+      0.0, // from
+      1.0, // to (rest)
+      0.0, // initial velocity
+    ));
   }
 
   @override
   void didUpdateWidget(covariant _NavBar old) {
     super.didUpdateWidget(old);
     if (old.currentIndex != widget.currentIndex) {
-      _selectCtrl.forward(from: 0); // pop the newly selected tab
+      _popSelected(); // spring-pop the newly selected tab
     }
   }
 
@@ -297,8 +324,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   }
 
   Widget _buildIcon(BuildContext context, int i, bool isSelected, double size) {
-    final inactiveColor = context.vColors.onSurfaceMuted;
-    final inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
+    const inactiveColor = _NavTuning.unselectedColor;
+    const inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
 
     switch (i) {
       case 0:
@@ -350,47 +377,44 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final vc = context.vColors;
+    final isDark = context.isDark;
+    // Translucent base so the page color bleeds through the frosted glass.
+    final baseFill = isDark ? const Color(0xFF1C1C1E) : Colors.white;
+    // Bright specular rim — what makes it read as shiny glass.
+    final rimColor = Colors.white.withValues(
+        alpha: isDark ? _NavTuning.rimAlphaDark : _NavTuning.rimAlphaLight);
+
     // Only the bar repaints on scroll — the page never rebuilds.
     return SafeArea(
       top: false,
-      child: ValueListenableBuilder<double>(
-        valueListenable: widget.scrollProgress,
-        builder: (context, raw, _) {
-          final p = _NavTuning.resizeCurve.transform(raw.clamp(0.0, 1.0));
+      child: AnimatedBuilder(
+        animation: widget.scrollProgress,
+        builder: (context, _) {
+          final p = widget.scrollProgress.value.clamp(0.0, 1.0);
           double lp(double a, double b) => lerpDouble(a, b, p)!;
 
-          final sidePad =
-              lp(_NavTuning.sidePadExpanded, _NavTuning.sidePadScrolled).w;
-          final bottomPad =
-              lp(_NavTuning.bottomPadExpanded, _NavTuning.bottomPadScrolled).h;
-          final height =
-              lp(_NavTuning.heightExpanded, _NavTuning.heightScrolled).h;
-          final radius =
-              lp(_NavTuning.radiusExpanded, _NavTuning.radiusScrolled).r;
-          final blur = lp(_NavTuning.blurExpanded, _NavTuning.blurScrolled);
+          final sideMargin =
+              lp(_NavTuning.sideMarginExp, _NavTuning.sideMarginCmp).w;
+          final height = lp(_NavTuning.heightExp, _NavTuning.heightCmp).h;
+          final radius = lp(_NavTuning.radiusExp, _NavTuning.radiusCmp).r;
+          final blur = lp(_NavTuning.blurExp, _NavTuning.blurCmp);
           final fillAlpha =
-              lp(_NavTuning.fillAlphaExpanded, _NavTuning.fillAlphaScrolled);
-          final borderAlpha = lp(
-              _NavTuning.borderAlphaExpanded, _NavTuning.borderAlphaScrolled);
-          final shadowBlur =
-              lp(_NavTuning.shadowBlurExpanded, _NavTuning.shadowBlurScrolled);
-          final shadowAlpha = lp(
-              _NavTuning.shadowAlphaExpanded, _NavTuning.shadowAlphaScrolled);
-          final shadowDy =
-              lp(_NavTuning.shadowDyExpanded, _NavTuning.shadowDyScrolled);
+              lp(_NavTuning.fillAlphaExp, _NavTuning.fillAlphaCmp);
+          final topAlpha = (fillAlpha + _NavTuning.sheenBoost).clamp(0.0, 1.0);
+          final shadowAlpha =
+              lp(_NavTuning.shadowOpacityExp, _NavTuning.shadowOpacityCmp);
 
           return Padding(
-            padding: EdgeInsets.fromLTRB(sidePad, 0, sidePad, bottomPad),
+            padding: EdgeInsets.fromLTRB(
+                sideMargin, 0, sideMargin, _NavTuning.bottomMargin.h),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(radius),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: shadowAlpha),
-                    blurRadius: shadowBlur,
-                    spreadRadius: -2,
-                    offset: Offset(0, shadowDy),
+                    blurRadius: _NavTuning.shadowBlur,
+                    offset: _NavTuning.shadowOffset,
                   ),
                 ],
               ),
@@ -401,13 +425,22 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                     filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                     child: Container(
                       height: height,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: _NavTuning.innerPadH.w),
                       decoration: BoxDecoration(
-                        color: vc.navBarBg.withValues(alpha: fillAlpha),
+                        // Glossy top→bottom sheen over the translucent base.
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            baseFill.withValues(alpha: topAlpha),
+                            baseFill.withValues(alpha: fillAlpha),
+                          ],
+                          stops: const [0.0, 0.7],
+                        ),
                         borderRadius: BorderRadius.circular(radius),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: borderAlpha),
-                          width: 1,
-                        ),
+                            color: rimColor, width: _NavTuning.rimWidth),
                       ),
                       child: Row(
                         children: List.generate(
@@ -426,11 +459,9 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
 
   Widget _item(BuildContext context, int i, double p) {
     final isSelected = widget.currentIndex == i;
-    final iconSize =
-        (isSelected ? _NavTuning.iconSelected : _NavTuning.iconUnselected).w;
-    // Inner content tightens as the bar compacts.
-    final vPad = lerpDouble(6, 3, p)!.h;
-    final labelGap = lerpDouble(3, 1.5, p)!.h;
+    final iconSize = lerpDouble(_NavTuning.iconExp, _NavTuning.iconCmp, p)!.w;
+    // Labels fade + collapse as the bar shrinks.
+    final labelFactor = (1 - p).clamp(0.0, 1.0);
 
     return Expanded(
       child: GestureDetector(
@@ -442,50 +473,68 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
         },
         onTapCancel: () => _press[i].forward(),
         child: AnimatedBuilder(
-          // Press scale + selection spring-bounce drive the same transform.
           animation: Listenable.merge([_press[i], _selectCtrl]),
-          builder: (context, child) {
-            final sel = isSelected ? _selectScale.value : 1.0;
-            return Transform.scale(scale: _press[i].value * sel, child: child);
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: vPad, horizontal: 5.w),
-            child: AnimatedContainer(
-              duration: _NavTuning.indicatorMorph,
-              curve: Curves.easeOutCubic,
-              decoration: isSelected
-                  ? BoxDecoration(
-                      color: AppColor.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(22.r),
-                      border: Border.all(
-                        color: AppColor.primary.withValues(alpha: 0.45),
-                        width: 1.5,
-                      ),
-                    )
-                  : const BoxDecoration(),
+          builder: (context, _) {
+            // Selected icon springs to ~1.1× (overshoots, then settles).
+            final selScale = isSelected
+                ? lerpDouble(0.9, _NavTuning.selectedScale, _selectCtrl.value)!
+                : 1.0;
+            return Transform.scale(
+              scale: _press[i].value,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildIcon(context, i, isSelected, iconSize),
-                  SizedBox(height: labelGap),
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    style: TextStyle(
-                      fontSize: isSelected ? 10.5.sp : 9.5.sp,
-                      fontFamily: 'Inter',
-                      fontWeight:
-                          isSelected ? FontWeight.w800 : FontWeight.w500,
-                      color: isSelected
-                          ? AppColor.primary
-                          : context.vColors.onSurfaceMuted,
+                  // Icon + green chip indicator (the chip IS the indicator).
+                  Transform.scale(
+                    scale: selScale,
+                    child: AnimatedContainer(
+                      duration: _NavTuning.animDuration,
+                      curve: _NavTuning.animCurve,
+                      padding: isSelected
+                          ? EdgeInsets.symmetric(
+                              horizontal: _NavTuning.chipPadH.w,
+                              vertical: _NavTuning.chipPadV.h)
+                          : EdgeInsets.zero,
+                      decoration: isSelected
+                          ? BoxDecoration(
+                              color: AppColor.primary.withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(
+                                  _NavTuning.chipRadius.r),
+                            )
+                          : const BoxDecoration(),
+                      child: _buildIcon(context, i, isSelected, iconSize),
                     ),
-                    child: Text(_labels[i]),
+                  ),
+                  // Collapsing + fading label.
+                  ClipRect(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      heightFactor: labelFactor,
+                      child: Opacity(
+                        opacity: labelFactor,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: _NavTuning.labelGap.h),
+                          child: Text(
+                            _labels[i],
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: _NavTuning.labelSize.sp,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                              color: isSelected
+                                  ? AppColor.primary
+                                  : _NavTuning.unselectedColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
