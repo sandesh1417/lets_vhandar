@@ -198,7 +198,7 @@ class _NavTuning {
   static const Curve animCurve = Curves.easeOutCubic;
 
   // Pill geometry.
-  static const double heightExp = 64;
+  static const double heightExp = 68;
   static const double heightCmp = 52;
   static const double radiusExp = 28; // gets rounder/tighter when shrunk
   static const double radiusCmp = 32;
@@ -242,17 +242,25 @@ class _NavTuning {
   static const double rimWidth = 1.6;
 
   // Drop shadow — adds lift/separation from the background. HIGHER opacity and
-  // blur = more obviously "floating" and distinct.
+  // blur = more obviously "floating" and distinct. Set [showShadow] = false to
+  // remove the shadow entirely.
+  static const bool showShadow = true;
   static const Color shadowColor = Colors.black;
   static const double shadowOpacityExp = 0.24;
   static const double shadowOpacityCmp = 0.32;
   static const double shadowBlur = 30;
   static const Offset shadowOffset = Offset(0, -5);
 
-  // Selected chip (the indicator — no dot).
-  static const double chipPadH = 12;
-  static const double chipPadV = 4;
-  static const double chipRadius = 12;
+  // Selected chip (the indicator — wraps icon + label). Applied to every item
+  // so all cells share one baseline; only the selected one paints a fill.
+  // Set [showSelectedChip] = false to remove the green background entirely;
+  // [selectedChipAlpha] controls how strong that green fill is.
+  static const bool showSelectedChip = false;
+  static const double selectedChipAlpha = 0.12;
+  static const double chipPadH = 6;
+  static const double chipPadV = 6;
+  // chipRadius is no longer a constant — it tracks the navbar's outer radius
+  // (radiusExp/radiusCmp) so the selected pill matches the bar's rounding.
   static const double selectedScale = 1.1;
   // Unselected icon + label colour — theme-aware so it stays legible on the
   // light bar (dark grey) and the dark bar (light grey).
@@ -430,14 +438,16 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(radius),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        _NavTuning.shadowColor.withValues(alpha: shadowAlpha),
-                    blurRadius: _NavTuning.shadowBlur,
-                    offset: _NavTuning.shadowOffset,
-                  ),
-                ],
+                boxShadow: _NavTuning.showShadow
+                    ? [
+                        BoxShadow(
+                          color: _NavTuning.shadowColor
+                              .withValues(alpha: shadowAlpha),
+                          blurRadius: _NavTuning.shadowBlur,
+                          offset: _NavTuning.shadowOffset,
+                        ),
+                      ]
+                    : null,
               ),
               child: RepaintBoundary(
                 child: ClipRRect(
@@ -464,8 +474,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                             color: rimColor, width: _NavTuning.rimWidth),
                       ),
                       child: Row(
-                        children: List.generate(
-                            _labels.length, (i) => _item(context, i, p)),
+                        children: List.generate(_labels.length,
+                            (i) => _item(context, i, p, radius)),
                       ),
                     ),
                   ),
@@ -478,7 +488,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
     );
   }
 
-  Widget _item(BuildContext context, int i, double p) {
+  Widget _item(BuildContext context, int i, double p, double barRadius) {
     final isSelected = widget.currentIndex == i;
     final iconSize = lerpDouble(_NavTuning.iconExp, _NavTuning.iconCmp, p)!.w;
     // Labels fade + collapse as the bar shrinks.
@@ -502,57 +512,61 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                 : 1.0;
             return Transform.scale(
               scale: _press[i].value,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Icon + green chip indicator (the chip IS the indicator).
-                  Transform.scale(
-                    scale: selScale,
-                    child: AnimatedContainer(
-                      duration: _NavTuning.animDuration,
-                      curve: _NavTuning.animCurve,
-                      padding: isSelected
-                          ? EdgeInsets.symmetric(
-                              horizontal: _NavTuning.chipPadH.w,
-                              vertical: _NavTuning.chipPadV.h)
-                          : EdgeInsets.zero,
-                      decoration: isSelected
-                          ? BoxDecoration(
-                              color: AppColor.primary.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(
-                                  _NavTuning.chipRadius.r),
-                            )
-                          : const BoxDecoration(),
+              // Every item uses identical padding so all cells share one
+              // baseline; only the selected item paints the green background.
+              // The chip wraps BOTH the icon and its label.
+              child: AnimatedContainer(
+                duration: _NavTuning.animDuration,
+                curve: _NavTuning.animCurve,
+                padding: EdgeInsets.symmetric(
+                    horizontal: _NavTuning.chipPadH.w,
+                    vertical: _NavTuning.chipPadV.h),
+                decoration: BoxDecoration(
+                  color: isSelected && _NavTuning.showSelectedChip
+                      ? AppColor.primary
+                          .withValues(alpha: _NavTuning.selectedChipAlpha)
+                      : Colors.transparent,
+                  // Exact same radius value the navbar pill is drawn with.
+                  borderRadius: BorderRadius.circular(barRadius),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon springs to ~1.1× when newly selected.
+                    Transform.scale(
+                      scale: selScale,
                       child: _buildIcon(context, i, isSelected, iconSize),
                     ),
-                  ),
-                  // Collapsing + fading label.
-                  ClipRect(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      heightFactor: labelFactor,
-                      child: Opacity(
-                        opacity: labelFactor,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: _NavTuning.labelGap.h),
-                          child: Text(
-                            _labels[i],
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: _NavTuning.labelSize.sp,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w500,
-                              color: isSelected
-                                  ? AppColor.primary
-                                  : _NavTuning.unselected(context.isDark),
+                    // Collapsing + fading label, inside the chip.
+                    ClipRect(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        heightFactor: labelFactor,
+                        child: Opacity(
+                          opacity: labelFactor,
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(top: _NavTuning.labelGap.h),
+                            child: Text(
+                              _labels[i],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: _NavTuning.labelSize.sp,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                                color: isSelected
+                                    ? AppColor.primary
+                                    : _NavTuning.unselected(context.isDark),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
