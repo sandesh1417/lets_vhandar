@@ -239,7 +239,7 @@ class _NavTuning {
   static const Color rimColor = Colors.white;
   static const double rimAlphaLight = 0.95; // light mode
   static const double rimAlphaDark = 0.28; // dark mode
-  static const double rimWidth = 1.6;
+  static const double rimWidth = 1;
 
   // Drop shadow — adds lift/separation from the background. HIGHER opacity and
   // blur = more obviously "floating" and distinct. Set [showShadow] = false to
