@@ -213,26 +213,40 @@ class _NavTuning {
   static const double labelSize = 11;
   static const double labelGap = 3; // icon → label (collapses with the label)
 
-  // Frosted glass — kept quite transparent in BOTH states (compact stays
-  // glassy, only a touch more opaque for legibility). Heavy blur turns the
-  // page behind into a soft frosted wash: colors/text show through, softened.
-  static const double fillAlphaExp = 0.40;
-  static const double fillAlphaCmp = 0.46;
-  static const double blurExp = 26;
-  static const double blurCmp = 34;
-  // Glossy "shine": extra opacity added to the TOP of the fill gradient so the
-  // bar catches light at the top edge and reads as polished glass.
-  static const double sheenBoost = 0.20;
+  // ── GLASS APPEARANCE — tune these to taste ───────────────────────────────
+  // Base color the translucent fill is made of. Light mode = white; nudge
+  // toward a tint (e.g. a brand colour) if you want the bar to read coloured.
+  static const Color fillColorLight = Colors.white;
+  static const Color fillColorDark = Color(0xFF1C1C1E);
 
-  // Bright glass rim (specular edge) — brighter = shinier/more visible.
-  static const double rimAlphaLight = 0.70; // white rim in light mode
-  static const double rimAlphaDark = 0.22; // white rim in dark mode
-  static const double rimWidth = 1.2;
+  // Fill opacity. LOWER = more of the page behind shows through (more glassy /
+  // background more visible). HIGHER = more solid. Kept low so content reads
+  // through; the bar is made DISTINCT via the rim + shadow below, not opacity.
+  static const double fillAlphaExp = 0.34; // expanded (at top)
+  static const double fillAlphaCmp = 0.42; // compact (scrolled)
 
-  // Upward lift shadow — slightly deeper to keep the translucent bar prominent.
-  static const double shadowOpacityExp = 0.14;
-  static const double shadowOpacityCmp = 0.20;
-  static const double shadowBlur = 26;
+  // Backdrop blur. HIGHER = frostier wash; LOWER = colours/text behind sharper
+  // and more recognisable.
+  static const double blurExp = 22;
+  static const double blurCmp = 30;
+
+  // Glossy top "shine": extra opacity at the TOP edge so the bar catches light.
+  // HIGHER = brighter, shinier top.
+  static const double sheenBoost = 0.28;
+
+  // Bright glass rim (specular edge) — THE main thing that separates the bar
+  // from the background. HIGHER alpha + WIDTH = crisper, more distinct edge.
+  static const Color rimColor = Colors.white;
+  static const double rimAlphaLight = 0.95; // light mode
+  static const double rimAlphaDark = 0.28; // dark mode
+  static const double rimWidth = 1.6;
+
+  // Drop shadow — adds lift/separation from the background. HIGHER opacity and
+  // blur = more obviously "floating" and distinct.
+  static const Color shadowColor = Colors.black;
+  static const double shadowOpacityExp = 0.24;
+  static const double shadowOpacityCmp = 0.32;
+  static const double shadowBlur = 30;
   static const Offset shadowOffset = Offset(0, -5);
 
   // Selected chip (the indicator — no dot).
@@ -240,7 +254,12 @@ class _NavTuning {
   static const double chipPadV = 4;
   static const double chipRadius = 12;
   static const double selectedScale = 1.1;
-  static const Color unselectedColor = Color(0xFF636366); // darker iOS grey
+  // Unselected icon + label colour — theme-aware so it stays legible on the
+  // light bar (dark grey) and the dark bar (light grey).
+  static const Color unselectedColorLight = Color(0xFF48484A); // on light bar
+  static const Color unselectedColorDark = Color(0xFFAEAEB2); // on dark bar
+  static Color unselected(bool isDark) =>
+      isDark ? unselectedColorDark : unselectedColorLight;
 
   // Selection spring + press feedback.
   static const double springStiffness = 300;
@@ -324,8 +343,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   }
 
   Widget _buildIcon(BuildContext context, int i, bool isSelected, double size) {
-    const inactiveColor = _NavTuning.unselectedColor;
-    const inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
+    final inactiveColor = _NavTuning.unselected(context.isDark);
+    final inactiveFilter = ColorFilter.mode(inactiveColor, BlendMode.srcIn);
 
     switch (i) {
       case 0:
@@ -379,9 +398,10 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     // Translucent base so the page color bleeds through the frosted glass.
-    final baseFill = isDark ? const Color(0xFF1C1C1E) : Colors.white;
-    // Bright specular rim — what makes it read as shiny glass.
-    final rimColor = Colors.white.withValues(
+    final baseFill =
+        isDark ? _NavTuning.fillColorDark : _NavTuning.fillColorLight;
+    // Bright specular rim — what makes it read as shiny glass / distinct edge.
+    final rimColor = _NavTuning.rimColor.withValues(
         alpha: isDark ? _NavTuning.rimAlphaDark : _NavTuning.rimAlphaLight);
 
     // Only the bar repaints on scroll — the page never rebuilds.
@@ -412,7 +432,8 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(radius),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: shadowAlpha),
+                    color:
+                        _NavTuning.shadowColor.withValues(alpha: shadowAlpha),
                     blurRadius: _NavTuning.shadowBlur,
                     offset: _NavTuning.shadowOffset,
                   ),
@@ -524,7 +545,7 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                               fontWeight: FontWeight.w500,
                               color: isSelected
                                   ? AppColor.primary
-                                  : _NavTuning.unselectedColor,
+                                  : _NavTuning.unselected(context.isDark),
                             ),
                           ),
                         ),
