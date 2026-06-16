@@ -31,7 +31,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   late TextEditingController _referalCodeController;
-  bool isPasswordVisible = false;
+  bool isPasswordVisible = true;
   bool _isFormFilled = false;
 
   @override

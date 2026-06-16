@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
+import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
@@ -338,6 +339,9 @@ class _AccountTabState extends ConsumerState<AccountTab> {
       onConfirm: () async {
         ref.read(cartProvider.notifier).clearCart();
         ref.invalidate(userProfileProvider);
+        ref.invalidate(dashboardIndexProvider);
+        ref.invalidate(visitedTabsProvider);
+        ref.invalidate(addressProvider);
         await ref.read(loginProvider.notifier).logout();
         if (context.mounted) {
           context.go(LVRoute.loginScreen.route);
