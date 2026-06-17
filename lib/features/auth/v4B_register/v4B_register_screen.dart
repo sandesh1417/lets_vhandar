@@ -58,6 +58,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   bool _isPan = true;
   LatLng? _locationLatLng;
   String? _locationAddress;
+  bool _showLocationError = false;
 
   Future<void> _openUrl(String url) async {
     try {
@@ -91,6 +92,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
       setState(() {
         _locationLatLng = result.latLng;
         _locationAddress = result.address;
+        _showLocationError = false;
       });
     }
   }
@@ -112,13 +114,14 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
 
   Future<void> _submit() async {
     final formValid = _formKey.currentState!.validate();
-    if (_selectedCategory == null) {
-      setState(() => _showCategoryError = true);
+    if (_selectedCategory == null) setState(() => _showCategoryError = true);
+    if (_locationAddress == null) setState(() => _showLocationError = true);
+    if (!formValid || _selectedCategory == null || _locationAddress == null) {
+      return;
     }
-    if (!formValid || _selectedCategory == null) return;
 
-    // Send OTP first
-    await ref.read(registrationProvider.notifier).sendOtp(
+    // Send OTP via the business endpoint (?isBusiness=true)
+    await ref.read(registrationProvider.notifier).sendOtpForBusiness(
           context,
           phoneNumber: _phoneCtrl.text.trim(),
           phoneCode: '+977',
@@ -136,7 +139,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
         phoneNumber: _phoneCtrl.text.trim(),
         onVerify: (otp) => _registerBusiness(otp),
         onResend: () {
-          ref.read(registrationProvider.notifier).sendOtp(
+          ref.read(registrationProvider.notifier).sendOtpForBusiness(
                 context,
                 phoneNumber: _phoneCtrl.text.trim(),
                 phoneCode: '+977',
@@ -422,11 +425,26 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             icon: Icons.map_outlined,
                             text: _locationAddress ?? 'Tap to select on map',
                             hasValue: _locationAddress != null,
+                            hasError: _showLocationError,
                             trailingIcon: Icons.open_in_new_rounded,
                             onTap: _pickLocation,
                             vc: vc,
                             maxLines: 2,
                           ),
+                          if (_showLocationError) ...[
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.only(left: 4.w),
+                              child: Text(
+                                'Please pin your business location on the map',
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                          ],
                           if (_locationLatLng != null) ...[
                             SizedBox(height: 6.h),
                             Row(

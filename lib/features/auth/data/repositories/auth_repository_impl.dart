@@ -71,6 +71,26 @@ class AuthRepositoryImpl {
     }
   }
 
+  Future<Result<GenericResponseModal, Failure>> sendOtpForBusiness(
+      String phoneNumber, String? phoneCode) async {
+    try {
+      final result = await _apiClient.post(
+        ApiUrl.sendOTP,
+        queryParameters: {'isBusiness': true},
+        data: {
+          'phoneNumber': phoneNumber,
+          'phoneCode': phoneCode ?? '+977',
+        },
+      );
+      final parsed = _handleResult(result);
+      return Success(parsed);
+    } on Failure catch (e) {
+      return Error(e);
+    } catch (e) {
+      return Error(ServerFailure(e.toString()));
+    }
+  }
+
   Future<Result<GenericResponseModal, Failure>> sendOtpForgetPassword(
       String phoneNumber, String? phoneCode) async {
     try {
@@ -214,8 +234,8 @@ class AuthRepositoryImpl {
     required String panNumber,
     required String vatNumber,
     String? referalCode,
-    String? lat,
-    String? long,
+    double? lat,
+    double? long,
     String? address,
   }) async {
     try {
@@ -235,7 +255,7 @@ class AuthRepositoryImpl {
         "addressName": address ?? "GX4J+X5 Dadhuwa"
       };
       final result = await _apiClient.post(
-        ApiUrl.register,
+        ApiUrl.registerBusiness,
         data: data,
       );
       final parsed = _handleResult(result);

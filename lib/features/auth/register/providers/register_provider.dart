@@ -53,6 +53,38 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
     }
   }
 
+  /// **Send OTP for business registration** — hits /send-otp/register?isBusiness=true
+  Future<void> sendOtpForBusiness(BuildContext context,
+      {required String phoneNumber,
+      required String phoneCode,
+      VoidCallback? onSuccess}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    final result =
+        await _authRepository.sendOtpForBusiness(phoneNumber, phoneCode);
+
+    switch (result) {
+      case Success(value: final data):
+        state = state.copyWith(
+          isLoading: false,
+          isOtpSent: true,
+          phoneNumber: phoneNumber,
+          phoneCode: phoneCode,
+        );
+        CustomSnackbar.success(context,
+            message: data.message ?? 'OTP successfully sent');
+        onSuccess?.call();
+        break;
+      case Error(failure: final failure):
+        CustomSnackbar.error(context, message: failure.message);
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: failure.message,
+        );
+        break;
+    }
+  }
+
   /// **Register User**
   Future<void> registerWithOtp(
     BuildContext context, {
@@ -128,8 +160,8 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
       name: businessName,
       panNumber: panNumber,
       vatNumber: vatNumber,
-      lat: lat?.toString(),
-      long: long?.toString(),
+      lat: lat,
+      long: long,
       address: address,
     );
 
