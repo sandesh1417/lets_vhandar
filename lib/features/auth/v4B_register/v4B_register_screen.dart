@@ -432,7 +432,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                       SizedBox(height: 32.h),
 
                       CustomButton(
-                        buttonTitle: 'Register & Send OTP',
+                        buttonTitle: 'Register',
                         isLoading: isLoading,
                         isEnabled: !isLoading,
                         onPress: _submit,
@@ -456,7 +456,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 GestureDetector(
-                                  onTap: () => _openUrl('https://www.vhandar.com/privacy-policy'),
+                                  onTap: () => _openUrl(
+                                      'https://www.vhandar.com/privacy-policy'),
                                   child: Text(
                                     'Privacy Policy',
                                     style: TextStyle(
@@ -476,7 +477,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () => _openUrl('https://www.vhandar.com/terms-of-service'),
+                                  onTap: () => _openUrl(
+                                      'https://www.vhandar.com/terms-of-service'),
                                   child: Text(
                                     'Terms of Use',
                                     style: TextStyle(
