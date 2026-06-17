@@ -64,7 +64,10 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       _canResendOTP = false;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) { timer.cancel(); return; }
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (_timerSeconds > 0) {
         setState(() => _timerSeconds--);
       } else {
@@ -101,16 +104,16 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         );
       } else {
         await ref.read(registrationProvider.notifier).registerWithOtp(
-          context,
-          otp: otp,
-          password: widget.password ?? '',
-          confirmPassword: widget.confirmPassword,
-          name: widget.name,
-          referalCode: widget.referalCode,
-          phoneNumber: widget.phoneNumber,
-          phoneCode: widget.phoneCode,
-          onSuccess: () => context.go(LVRoute.loginScreen.route),
-        );
+              context,
+              otp: otp,
+              password: widget.password ?? '',
+              confirmPassword: widget.confirmPassword,
+              name: widget.name,
+              referalCode: widget.referalCode,
+              phoneNumber: widget.phoneNumber,
+              phoneCode: widget.phoneCode,
+              onSuccess: () => context.go(LVRoute.loginScreen.route),
+            );
       }
     }
   }
@@ -190,7 +193,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
                     // Phone number badge
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: AppColor.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(20.r),
@@ -285,7 +289,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
             CustomButton(
               isLoading: isLoading,
               onPress: _verifyOTP,
-              buttonTitle: 'Verify & Continue',
+              buttonTitle: 'Verify',
             ),
             SizedBox(height: 16.h),
           ],

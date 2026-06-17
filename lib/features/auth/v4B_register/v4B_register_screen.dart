@@ -23,13 +23,13 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _kBusinessCategories = [
-  'Restaurant',
-  'Cafe',
-  'Hotel',
-  'Resort',
-  'Hostel',
-  'Canteen',
+const _kBusinessCategories = <({String name, IconData icon})>[
+  (name: 'Restaurant', icon: Icons.restaurant_outlined),
+  (name: 'Cafe', icon: Icons.local_cafe_outlined),
+  (name: 'Hotel', icon: Icons.hotel_outlined),
+  (name: 'Resort', icon: Icons.beach_access_outlined),
+  (name: 'Hostel', icon: Icons.bed_outlined),
+  (name: 'Canteen', icon: Icons.lunch_dining_outlined),
 ];
 
 class V4BRegistrationScreen extends ConsumerStatefulWidget {
@@ -54,6 +54,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   bool _showPassword = false;
   bool _showConfirm = false;
   String? _selectedCategory;
+  bool _showCategoryError = false;
   bool _isPan = true;
   LatLng? _locationLatLng;
   String? _locationAddress;
@@ -101,18 +102,20 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
       isScrollControlled: true,
       builder: (_) => _CategorySheet(
         selected: _selectedCategory,
-        onSelected: (c) => setState(() => _selectedCategory = c),
+        onSelected: (c) => setState(() {
+          _selectedCategory = c;
+          _showCategoryError = false;
+        }),
       ),
     );
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    final formValid = _formKey.currentState!.validate();
     if (_selectedCategory == null) {
-      CustomSnackbar.error(context,
-          message: 'Please select a business category');
-      return;
+      setState(() => _showCategoryError = true);
     }
+    if (!formValid || _selectedCategory == null) return;
 
     // Send OTP first
     await ref.read(registrationProvider.notifier).sendOtp(
@@ -361,10 +364,25 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             text:
                                 _selectedCategory ?? 'Select business category',
                             hasValue: _selectedCategory != null,
+                            hasError: _showCategoryError,
                             trailingIcon: Icons.keyboard_arrow_down_rounded,
                             onTap: _showCategoryPicker,
                             vc: vc,
                           ),
+                          if (_showCategoryError) ...[
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.only(left: 4.w),
+                              child: Text(
+                                'Please select a business category',
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                          ],
                           SizedBox(height: 14.h),
                           _Label('Tax Type', vc),
                           SizedBox(height: 8.h),
@@ -622,6 +640,7 @@ class _TapField extends StatelessWidget {
   final IconData icon;
   final String text;
   final bool hasValue;
+  final bool hasError;
   final IconData trailingIcon;
   final VoidCallback onTap;
   final VhandarColors vc;
@@ -634,30 +653,42 @@ class _TapField extends StatelessWidget {
     required this.trailingIcon,
     required this.onTap,
     required this.vc,
+    this.hasError = false,
     this.maxLines = 1,
   });
 
   @override
   Widget build(BuildContext context) {
+    final errorColor = Theme.of(context).colorScheme.error;
+    final borderColor = hasError
+        ? errorColor
+        : hasValue
+            ? AppColor.primary.withValues(alpha: 0.4)
+            : vc.divider;
+    final bgColor = hasError
+        ? errorColor.withValues(alpha: 0.04)
+        : hasValue
+            ? AppColor.primary.withValues(alpha: 0.05)
+            : vc.surfaceVariant;
+    final iconColor = hasError
+        ? errorColor
+        : hasValue
+            ? AppColor.primary
+            : vc.onSurfaceMuted;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
         decoration: BoxDecoration(
-          color: hasValue
-              ? AppColor.primary.withValues(alpha: 0.05)
-              : vc.surfaceVariant,
+          color: bgColor,
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(
-            color:
-                hasValue ? AppColor.primary.withValues(alpha: 0.4) : vc.divider,
-          ),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
-            Icon(icon,
-                size: 18.sp,
-                color: hasValue ? AppColor.primary : vc.onSurfaceMuted),
+            Icon(icon, size: 18.sp, color: iconColor),
             SizedBox(width: 10.w),
             Expanded(
               child: Text(
@@ -765,94 +796,166 @@ class _CategorySheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        color: vc.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 8.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // ── Drag handle ────────────────────────────────────────────
           SizedBox(height: 12.h),
           Container(
-            width: 36.w,
+            width: 40.w,
             height: 4.h,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: vc.divider,
               borderRadius: BorderRadius.circular(2.r),
             ),
           ),
+          SizedBox(height: 4.h),
+
+          // ── Header ─────────────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: Row(
               children: [
-                Icon(Icons.category_outlined,
-                    size: 18.sp, color: AppColor.primary),
-                SizedBox(width: 8.w),
-                Text(
-                  'Select Category',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Inter',
-                    color: vc.onSurface,
+                Container(
+                  width: 36.w,
+                  height: 36.w,
+                  decoration: BoxDecoration(
+                    color: AppColor.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(Icons.category_outlined,
+                      size: 18.sp, color: AppColor.primary),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Business Category',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Inter',
+                          color: vc.onSurface,
+                        ),
+                      ),
+                      Text(
+                        'What type of business do you run?',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: vc.onSurfaceMuted,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: BoxDecoration(
+                      color: vc.surfaceVariant,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.close_rounded,
+                        size: 16.sp, color: vc.onSurfaceMuted),
                   ),
                 ),
               ],
             ),
           ),
-          ...(_kBusinessCategories.map((cat) {
-            final isSelected = cat == selected;
-            return InkWell(
-              onTap: () {
-                onSelected(cat);
-                Navigator.pop(context);
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColor.primary.withValues(alpha: 0.08)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
+
+          Divider(height: 1, color: vc.divider),
+          SizedBox(height: 8.h),
+
+          // ── Category list ───────────────────────────────────────────
+          ...(_kBusinessCategories.map((entry) {
+            final isSelected = entry.name == selected;
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12.r),
+                onTap: () {
+                  onSelected(entry.name);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColor.primary.withValues(alpha: 0.3)
+                        ? AppColor.primary.withValues(alpha: 0.08)
                         : Colors.transparent,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.restaurant_outlined,
-                      size: 16.sp,
-                      color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColor.primary.withValues(alpha: 0.25)
+                          : Colors.transparent,
+                      width: 1.5,
                     ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: 'Inter',
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.w400,
-                          color: isSelected ? AppColor.primary : vc.onSurface,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38.w,
+                        height: 38.w,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColor.primary.withValues(alpha: 0.12)
+                              : vc.surfaceVariant,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Icon(
+                          entry.icon,
+                          size: 18.sp,
+                          color:
+                              isSelected ? AppColor.primary : vc.onSurfaceMuted,
                         ),
                       ),
-                    ),
-                    if (isSelected)
-                      Icon(Icons.check_circle_rounded,
-                          color: AppColor.primary, size: 18.sp),
-                  ],
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Text(
+                          entry.name,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontFamily: 'Inter',
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected ? AppColor.primary : vc.onSurface,
+                          ),
+                        ),
+                      ),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: isSelected
+                            ? Icon(Icons.check_circle_rounded,
+                                key: const ValueKey('check'),
+                                color: AppColor.primary,
+                                size: 20.sp)
+                            : Icon(Icons.radio_button_unchecked_rounded,
+                                key: const ValueKey('empty'),
+                                color: vc.divider,
+                                size: 20.sp),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           })),
-          SizedBox(height: 8.h),
+
+          SizedBox(height: 12.h + bottomPad),
         ],
       ),
     );
@@ -1028,11 +1131,11 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
                     ? SizedBox(
                         width: 20.w,
                         height: 20.w,
-                        child: CircularProgressIndicator(
+                        child: const CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
-                        'Verify & Register',
+                        'Verify',
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
