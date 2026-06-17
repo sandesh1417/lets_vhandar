@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/home/providers/banner_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/features/home/providers/product_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_back_to_top_button.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/features/home/widgets/home_banner_slider.dart';
 import 'package:lets_vhandar/features/home/widgets/home_categories_grid.dart';
 import 'package:lets_vhandar/features/home/widgets/home_category_product_list.dart';
@@ -107,8 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: context.vColors.scaffoldBg,
         child: Stack(
           children: [
-            RefreshIndicator(
-              color: AppColor.primary,
+            AppRefreshIndicator(
               onRefresh: () async {
                 ref.invalidate(bannerProvider);
                 ref.invalidate(featuredProductsProvider);
@@ -127,6 +127,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   }
                 }
               },
+              // Float the refresh pill just above the banner slider — the
+              // header is 136.h tall (+ status bar) with a 16.h gap before the
+              // banner; subtract the pill height so it rests right above it.
+              // topOffset: 152.h + MediaQuery.of(context).padding.top - 66,
+              topOffset: 152.h + MediaQuery.of(context).padding.top - 20,
               child: CustomScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(
@@ -198,8 +203,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           SizedBox(
-                              height:
-                                  MediaQuery.of(context).padding.bottom + 110.h),
+                              height: MediaQuery.of(context).padding.bottom +
+                                  110.h),
                         ],
                       ),
                     ),

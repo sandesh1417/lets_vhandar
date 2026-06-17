@@ -13,6 +13,7 @@ import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
   const AddressScreen({super.key});
@@ -91,8 +92,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           );
         }
         if (addressState.addresses.isEmpty) {
-          return RefreshIndicator(
-            color: AppColor.primary,
+          return AppRefreshIndicator(
             onRefresh: () async {
               if (user?.id != null) {
                 await ref
@@ -117,8 +117,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         return Column(
           children: [
             Expanded(
-              child: RefreshIndicator(
-                color: AppColor.primary,
+              child: AppRefreshIndicator(
                 onRefresh: () async {
                   if (user?.id != null) {
                     await ref

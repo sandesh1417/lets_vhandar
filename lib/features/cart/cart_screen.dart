@@ -13,6 +13,7 @@ import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/delivery_slot_selector.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
@@ -107,9 +108,8 @@ class CartScreen extends ConsumerWidget {
           : Column(
               children: [
                 Expanded(
-                  child: RefreshIndicator(
+                  child: AppRefreshIndicator(
                     onRefresh: () async => ref.invalidate(addressProvider),
-                    color: AppColor.primary,
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.only(top: 4.h, bottom: 8.h),

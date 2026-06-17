@@ -11,6 +11,7 @@ import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/category_modal.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/features/home/providers/brand_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_detail_provider.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
@@ -198,8 +199,7 @@ class _CategoryTabState extends ConsumerState<_CategoryTab> {
     final vc = context.vColors;
 
     return categoriesAsync.when(
-      data: (categories) => RefreshIndicator(
-        color: AppColor.primary,
+      data: (categories) => AppRefreshIndicator(
         onRefresh: () async => ref.invalidate(allCategoryProvider),
         child: CustomScrollView(
           controller: _scroll,
@@ -299,8 +299,7 @@ class _BrandTab extends ConsumerWidget {
                 style: TextStyle(fontSize: 14.sp, color: vc.onSurfaceMuted)),
           );
         }
-        return RefreshIndicator(
-          color: AppColor.primary,
+        return AppRefreshIndicator(
           onRefresh: () async => ref.invalidate(brandProvider),
           child: GridView.builder(
             padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w,

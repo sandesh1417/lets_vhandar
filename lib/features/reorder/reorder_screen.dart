@@ -13,6 +13,7 @@ import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
@@ -289,18 +290,16 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
           return ref.watch(reorderLiveProductsProvider).when(
             data: (products) {
               final filtered = _filterProducts(products, query);
-              return RefreshIndicator(
+              return AppRefreshIndicator(
                 onRefresh: _onRefresh,
-                color: AppColor.primary,
                 child: filtered.isEmpty
                     ? _buildEmptyState()
                     : _buildGrid(filtered, bottomPad),
               );
             },
             loading: () => _buildShimmer(),
-            error: (_, __) => RefreshIndicator(
+            error: (_, __) => AppRefreshIndicator(
               onRefresh: _onRefresh,
-              color: AppColor.primary,
               child: _buildEmptyState(),
             ),
           );

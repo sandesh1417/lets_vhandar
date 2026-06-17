@@ -14,6 +14,7 @@ import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dar
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 
 import 'presentation/order_summary_screen.dart';
 import 'presentation/widgets/order_card.dart';
@@ -734,9 +735,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         children: [
           // Main Orders List Area
           Expanded(
-            child: RefreshIndicator(
+            child: AppRefreshIndicator(
               onRefresh: _onRefresh,
-              color: AppColor.primary,
               child: state.isLoading
                   ? const OrderListShimmer()
                   : filteredOrders.isEmpty

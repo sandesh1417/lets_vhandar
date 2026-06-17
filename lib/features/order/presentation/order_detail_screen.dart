@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
@@ -243,9 +244,8 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return RefreshIndicator(
+    return AppRefreshIndicator(
       onRefresh: widget.onRefresh,
-      color: AppColor.primary,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),

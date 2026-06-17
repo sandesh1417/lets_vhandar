@@ -12,6 +12,7 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/error_state.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 
 class BrandScreen extends ConsumerStatefulWidget {
   const BrandScreen({super.key});
@@ -85,8 +86,7 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
 
                 final filteredBrands = brands;
 
-                return RefreshIndicator(
-                  color: AppColor.primary,
+                return AppRefreshIndicator(
                   onRefresh: () async {
                     ref.invalidate(brandProvider);
                   },
