@@ -21,6 +21,7 @@ import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:pinput/pinput.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const _kBusinessCategories = [
   'Restaurant',
@@ -56,6 +57,12 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   bool _isPan = true;
   LatLng? _locationLatLng;
   String? _locationAddress;
+
+  Future<void> _openUrl(String url) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -433,32 +440,56 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                       SizedBox(height: 16.h),
 
                       Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'By registering, you agree to our ',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: vc.onSurfaceMuted,
-                              fontFamily: 'Inter',
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'By registering, you agree to our ',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: vc.onSurfaceMuted,
+                                fontFamily: 'Inter',
+                              ),
                             ),
-                            children: [
-                              TextSpan(
-                                text: 'Privacy Policy',
-                                style: TextStyle(
-                                  color: AppColor.primary,
-                                  fontWeight: FontWeight.w600,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _openUrl('https://www.vhandar.com/privacy-policy'),
+                                  child: Text(
+                                    'Privacy Policy',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColor.primary,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              TextSpan(text: ' & '),
-                              TextSpan(
-                                text: 'Terms of Use',
-                                style: TextStyle(
-                                  color: AppColor.primary,
-                                  fontWeight: FontWeight.w600,
+                                Text(
+                                  ' & ',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: vc.onSurfaceMuted,
+                                    fontFamily: 'Inter',
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                GestureDetector(
+                                  onTap: () => _openUrl('https://www.vhandar.com/terms-of-service'),
+                                  child: Text(
+                                    'Terms of Use',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColor.primary,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],

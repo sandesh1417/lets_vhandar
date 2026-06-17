@@ -15,6 +15,7 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -33,6 +34,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _referalCodeController;
   bool isPasswordVisible = true;
   bool _isFormFilled = false;
+
+  Future<void> _openUrl(String url) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
 
   @override
   void initState() {
@@ -270,26 +277,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       fontFamily: 'Inter',
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      text: 'Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColor.primary,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Inter',
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: ' & ',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: context.vColors.onSurfaceMuted,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'Terms of Use',
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            _openUrl('https://www.vhandar.com/privacy-policy'),
+                        child: Text(
+                          'Privacy Policy',
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: AppColor.primary,
@@ -297,8 +293,29 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             fontFamily: 'Inter',
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Text(
+                        ' & ',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: context.vColors.onSurfaceMuted,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _openUrl(
+                            'https://www.vhandar.com/terms-of-service'),
+                        child: Text(
+                          'Terms of Use',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColor.primary,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
