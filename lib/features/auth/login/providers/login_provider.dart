@@ -9,18 +9,20 @@ import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/features/auth/login/domain/login_state.dart';
 import 'package:lets_vhandar/features/auth/login/models/user_model.dart';
+import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
 final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) {
-  return LoginNotifier(locator<AuthRepositoryImpl>());
+  return LoginNotifier(locator<AuthRepositoryImpl>(), ref);
 });
 
 class LoginNotifier extends StateNotifier<LoginState> {
   final AuthRepositoryImpl _authRepository;
+  final Ref _ref;
 
-  LoginNotifier(this._authRepository) : super(const LoginState());
+  LoginNotifier(this._authRepository, this._ref) : super(const LoginState());
 
   Future<void> login(
       BuildContext context, String phoneNumber, String password) async {
@@ -106,6 +108,10 @@ class LoginNotifier extends StateNotifier<LoginState> {
     Rsession.token = null;
     Rsession.isGuest = false;
     state = const LoginState();
+    // Clear user-scoped state so the next session starts clean. Done after the
+    // login state is cleared so address-watching widgets (e.g. the home header)
+    // don't re-fetch the old user's addresses.
+    _ref.read(addressProvider.notifier).reset();
   }
 
   Future<bool> updateProfile(

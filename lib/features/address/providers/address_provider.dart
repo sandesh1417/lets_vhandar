@@ -44,6 +44,10 @@ class AddressNotifier extends StateNotifier<AddressState> {
 
   AddressNotifier(this._repo) : super(const AddressState());
 
+  /// Clears all address state (list + selected). Called on logout so a new
+  /// session doesn't inherit the previous user's addresses.
+  void reset() => state = const AddressState();
+
   Future<void> loadAddresses(String userId) async {
     state = state.copyWith(isLoading: true);
     final result = await _repo.getAddresses(userId);
