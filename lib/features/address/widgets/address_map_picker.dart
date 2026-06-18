@@ -180,6 +180,10 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
                       position: widget.selectedLatLng,
                       draggable: true,
                       onDragEnd: widget.onMapTap,
+                      // A tap that lands on the marker is routed here by the
+                      // map (not to GoogleMap.onTap), so forward it to the same
+                      // handler — otherwise tapping the pin selects nothing.
+                      onTap: () => widget.onMapTap(widget.selectedLatLng),
                     ),
                   },
                   myLocationButtonEnabled: false,
