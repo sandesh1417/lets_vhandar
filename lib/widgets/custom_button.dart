@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -5,54 +6,6 @@ import 'package:lets_vhandar/widgets/loader.dart';
 
 import '../core/constants/app_style.dart';
 import '../core/constants/color_constant.dart';
-
-class CustomButton extends StatelessWidget {
-  final Function()? onPress;
-  final double? borderRadius;
-  final String buttonTitle;
-  final bool? isLoading;
-  final bool? isEnabled;
-  final Color? buttonColor;
-  final double? btnWidth;
-  final double? btnHeight;
-  final TextStyle? txtStyle;
-
-  const CustomButton({
-    super.key,
-    required this.onPress,
-    this.borderRadius,
-    required this.buttonTitle,
-    this.isLoading = false,
-    this.buttonColor,
-    this.btnWidth,
-    this.btnHeight,
-    this.txtStyle,
-    this.isEnabled = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: isEnabled ?? true ? onPress : null,
-      disabledColor: AppColor.primary.withValues(alpha: 0.3),
-      color: buttonColor ?? AppColor.secondary,
-      minWidth: btnWidth ?? double.infinity,
-      height: btnHeight ?? 45.h,
-      elevation: 0,
-      highlightElevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius ?? 10),
-      ),
-      splashColor: AppColor.primary.withValues(alpha: 0.5),
-      child: !(isLoading ?? false)
-          ? Text(
-              buttonTitle,
-              style: txtStyle ?? KTextStyle.roboto16white7W,
-            )
-          : const CircularLoader(),
-    );
-  }
-}
 
 class CustomCardBtn extends StatelessWidget {
   final void Function()? onPress;
@@ -163,6 +116,117 @@ class CustomBackButton extends StatelessWidget {
             context.pop();
             // navigatePop(context);
           }),
+    );
+  }
+}
+
+/// Single source of truth for the app's elevated button.
+///
+/// Defaults to [AppColor.primary] / white text, but every visual aspect
+/// (background, foreground/text color, border radius, padding, size,
+/// elevation, loader) can be overridden per call site. Pass
+/// `backgroundColor: AppColor.secondary` (and a matching [foregroundColor])
+/// to get the secondary variant instead of adding a separate widget.
+class CustomElevatedButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String? text;
+  final Widget? child;
+  final IconData? icon;
+  final double? iconSize;
+  final double iconSpacing;
+  final bool isLoading;
+  final bool isEnabled;
+  final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
+  final Color? foregroundColor;
+  final Color? loaderColor;
+  final double? loaderSize;
+  final double borderRadius;
+  final BorderSide? side;
+  final double elevation;
+  final double? width;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+  final TextStyle? textStyle;
+
+  const CustomElevatedButton({
+    super.key,
+    required this.onPressed,
+    this.text,
+    this.child,
+    this.icon,
+    this.iconSize,
+    this.iconSpacing = 8,
+    this.isLoading = false,
+    this.isEnabled = true,
+    this.backgroundColor,
+    this.disabledBackgroundColor,
+    this.foregroundColor,
+    this.loaderColor,
+    this.loaderSize,
+    this.borderRadius = 10,
+    this.side,
+    this.elevation = 0,
+    this.width,
+    this.height,
+    this.padding,
+    this.textStyle,
+  }) : assert(
+            text != null || child != null, 'Provide either `text` or `child`');
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? AppColor.primary;
+    final fgColor = foregroundColor ?? AppColor.white;
+
+    final Widget content = isLoading
+        ? Center(
+            child: CupertinoActivityIndicator(
+              color: loaderColor ?? fgColor,
+              radius: loaderSize != null ? loaderSize! / 2 : 10,
+            ),
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: iconSize ?? 18.sp, color: fgColor),
+                SizedBox(width: iconSpacing.w),
+              ],
+              child ??
+                  Text(
+                    text!,
+                    style: textStyle ??
+                        KTextStyle.roboto16white7W.copyWith(color: fgColor),
+                  ),
+            ],
+          );
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ElevatedButton(
+        onPressed: isEnabled && !isLoading ? onPressed : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          // While loading the button is disabled, so keep (almost) the real
+          // color — only a 10% dim. A genuinely disabled button fades more.
+          disabledBackgroundColor: disabledBackgroundColor ??
+              (isLoading
+                  ? bgColor.withValues(alpha: 0.9)
+                  : bgColor.withValues(alpha: 0.4)),
+          foregroundColor: fgColor,
+          elevation: elevation,
+          padding:
+              padding ?? EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius.r),
+            side: side ?? BorderSide.none,
+          ),
+        ),
+        child: content,
+      ),
     );
   }
 }

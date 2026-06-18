@@ -10,7 +10,6 @@ import 'package:lets_vhandar/features/profile/providers/change_password_provider
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
@@ -30,6 +29,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   bool _oldVisible = false;
   bool _newVisible = false;
   bool _confirmVisible = false;
+  bool _submitted = false;
 
   @override
   void dispose() {
@@ -51,6 +51,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       horizontalPadding: 16.w,
       body: Form(
         key: _formKey,
+        autovalidateMode: _submitted
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
         child: Column(
           children: [
             Expanded(
@@ -82,9 +85,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           size: 18.sp, color: vc.onSurfaceMuted),
                       onObscurePressed: () =>
                           setState(() => _oldVisible = !_oldVisible),
-                      validator: (v) => (v == null || v.isEmpty)
-                          ? 'Current password is required'
-                          : null,
+                      validator: AppValidators.required,
                     ),
 
                     SizedBox(height: 14.h),
@@ -99,7 +100,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           size: 18.sp, color: vc.onSurfaceMuted),
                       onObscurePressed: () =>
                           setState(() => _newVisible = !_newVisible),
-                      validator: TFValidators.validatePassword,
+                      validator: (v) {
+                        final base = AppValidators.validatePassword(v);
+                        if (base != null) return base;
+                        if (v == _oldPasswordController.text) {
+                          return 'New password must be different from current';
+                        }
+                        return null;
+                      },
                     ),
 
                     SizedBox(height: 14.h),
@@ -114,7 +122,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           size: 18.sp, color: vc.onSurfaceMuted),
                       onObscurePressed: () =>
                           setState(() => _confirmVisible = !_confirmVisible),
-                      validator: (v) => TFValidators.validateConfirmPassword(
+                      validator: (v) => AppValidators.validateConfirmPassword(
                           v, _newPasswordController.text),
                     ),
 
@@ -146,28 +154,25 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             ),
 
             // Button
-            CustomButton(
+            CustomElevatedButton(
               isLoading: isLoading,
-              onPress: () {
+              width: double.infinity,
+              height: 45.h,
+              backgroundColor: AppColor.secondary,
+              onPressed: () {
+                setState(() => _submitted = true);
                 if (_formKey.currentState?.validate() ?? false) {
-                  if (_newPasswordController.text ==
-                      _oldPasswordController.text) {
-                    CustomSnackbar.error(context,
-                        message:
-                            'New password must be different from current password');
-                    return;
-                  }
                   ref.read(changePasswordProvider.notifier).changePassword(
-                    context,
-                    userId: userId,
-                    oldPassword: _oldPasswordController.text,
-                    password: _newPasswordController.text,
-                    confirmPassword: _confirmPasswordController.text,
-                    onSuccess: () => context.pop(),
-                  );
+                        context,
+                        userId: userId,
+                        oldPassword: _oldPasswordController.text,
+                        password: _newPasswordController.text,
+                        confirmPassword: _confirmPasswordController.text,
+                        onSuccess: () => context.pop(),
+                      );
                 }
               },
-              buttonTitle: 'Update Password',
+              text: 'Update Password',
             ),
             SizedBox(height: 16.h),
           ],

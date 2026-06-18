@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
@@ -800,7 +801,7 @@ class _VariantCartButton extends ConsumerWidget {
     if (cartCount == 0) {
       return SizedBox(
         height: btnHeight,
-        child: ElevatedButton(
+        child: CustomElevatedButton(
           onPressed: () {
             final loginState = ref.read(loginProvider);
             if (loginState.isGuest || !loginState.isLoggedIn) {
@@ -810,15 +811,9 @@ class _VariantCartButton extends ConsumerWidget {
             HapticFeedback.mediumImpact();
             ref.read(cartProvider.notifier).addToCart(product);
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: context.vColors.surface,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            side: BorderSide(color: AppColor.primary),
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-          ),
-          child: Text('ADD', style: TextStyle(color: AppColor.primary, fontSize: 12.sp, fontWeight: FontWeight.w800)),
+          backgroundColor: context.vColors.surface,
+          side: BorderSide(color: AppColor.primary),
+          text: 'ADD',
         ),
       );
     }

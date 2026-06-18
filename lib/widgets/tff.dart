@@ -113,8 +113,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           fontWeight: FontWeight.w400,
         ),
         prefixIcon: widget.prefixIcon,
-        prefixIconConstraints:
-            BoxConstraints(minWidth: 48.w, minHeight: 0),
+        prefixIconConstraints: BoxConstraints(minWidth: 48.w, minHeight: 0),
         prefixText: widget.prefixText,
         prefixStyle: TextStyle(
           color: context.vColors.onSurface,
@@ -174,8 +173,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
       ),
       cursorColor: context.vColors.inputBorderFocused,
-      autovalidateMode:
-          widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
+      // Default to disabled so the parent Form controls validation timing
+      // (silent before first submit, then re-validate on user interaction).
+      autovalidateMode: widget.autovalidateMode ?? AutovalidateMode.disabled,
       validator: widget.validator,
     );
   }

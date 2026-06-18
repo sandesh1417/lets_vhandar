@@ -53,6 +53,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   // State
   bool _showPassword = false;
   bool _showConfirm = false;
+  bool _submitted = false;
   String? _selectedCategory;
   bool _showCategoryError = false;
   bool _isPan = true;
@@ -113,6 +114,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   }
 
   Future<void> _submit() async {
+    setState(() => _submitted = true);
     final formValid = _formKey.currentState!.validate();
     if (_selectedCategory == null) setState(() => _showCategoryError = true);
     if (_locationAddress == null) setState(() => _showLocationError = true);
@@ -202,6 +204,9 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
+          autovalidateMode: _submitted
+              ? AutovalidateMode.onUserInteraction
+              : AutovalidateMode.disabled,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -280,7 +285,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                 ),
                               ),
                             ),
-                            validator: TFValidators.validatePhone,
+                            validator: AppValidators.validatePhone,
                           ),
                           SizedBox(height: 14.h),
                           _Label('Email Address', vc),
@@ -290,7 +295,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             hintText: 'Enter business email',
                             keyBoardType: TextInputType.emailAddress,
                             prefixIcon: _PrefixIcon(Icons.email_outlined, vc),
-                            validator: TFValidators.validateEmail,
+                            validator: AppValidators.validateEmail,
                             suffixIcon: const SizedBox.shrink(),
                           ),
                           SizedBox(height: 14.h),
@@ -312,7 +317,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                 color: vc.onSurfaceMuted,
                               ),
                             ),
-                            validator: TFValidators.validatePassword,
+                            validator: AppValidators.validatePassword,
                           ),
                           SizedBox(height: 14.h),
                           _Label('Confirm Password', vc),
@@ -334,7 +339,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                               ),
                             ),
                             validator: (v) =>
-                                TFValidators.validateConfirmPassword(
+                                AppValidators.validateConfirmPassword(
                                     v, _passwordCtrl.text),
                           ),
                         ],
@@ -467,11 +472,14 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                       ),
                       SizedBox(height: 32.h),
 
-                      CustomButton(
-                        buttonTitle: 'Register',
+                      CustomElevatedButton(
+                        text: 'Register',
                         isLoading: isLoading,
                         isEnabled: !isLoading,
-                        onPress: _submit,
+                        width: double.infinity,
+                        height: 45.h,
+                        backgroundColor: AppColor.secondary,
+                        onPressed: _submit,
                       ),
                       SizedBox(height: 16.h),
 
@@ -1124,7 +1132,7 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
             SizedBox(height: 24.h),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 onPressed: isLoading
                     ? null
                     : () async {
@@ -1135,31 +1143,10 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
                         }
                         await widget.onVerify(_otpCtrl.text);
                       },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor:
-                      AppColor.primary.withValues(alpha: 0.5),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r)),
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  elevation: 0,
-                ),
-                child: isLoading
-                    ? SizedBox(
-                        width: 20.w,
-                        height: 20.w,
-                        child: const CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text(
-                        'Verify',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
+                // backgroundColor: AppColor.primary,
+                // foregroundColor: Colors.white,
+                isLoading: isLoading,
+                text: 'Verify',
               ),
             ),
             SizedBox(height: 14.h),

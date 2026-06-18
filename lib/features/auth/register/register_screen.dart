@@ -13,7 +13,6 @@ import 'package:lets_vhandar/features/auth/register/providers/register_provider.
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,7 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   late TextEditingController _confirmPasswordController;
   late TextEditingController _referalCodeController;
   bool isPasswordVisible = true;
-  bool _isFormFilled = false;
+  bool _submitted = false;
 
   Future<void> _openUrl(String url) async {
     try {
@@ -49,18 +48,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _referalCodeController = TextEditingController();
-    _phoneController.addListener(_onFormChanged);
-    _nameController.addListener(_onFormChanged);
-    _passwordController.addListener(_onFormChanged);
-    _confirmPasswordController.addListener(_onFormChanged);
-  }
-
-  void _onFormChanged() {
-    final filled = _phoneController.text.length == 10 &&
-        _nameController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty &&
-        _confirmPasswordController.text.isNotEmpty;
-    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -82,6 +69,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
+        autovalidateMode: _submitted
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
         child: Column(
           children: [
             SizedBox(height: 12.h),
@@ -117,7 +107,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               autofillHints: const [AutofillHints.username],
               keyBoardType: const TextInputType.numberWithOptions(),
               textInputFormatter: TenDigitInputFormatter(),
-              validator: TFValidators.validatePhone,
+              validator: AppValidators.validatePhone,
             ),
             SizedBox(height: 8.h),
             CustomTextField(
@@ -128,7 +118,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               prefixIcon: Icon(Icons.person_outline_rounded,
                   size: 18.sp, color: context.vColors.onSurfaceMuted),
               suffixIcon: const SizedBox(),
-              validator: TFValidators.validateName,
+              validator: AppValidators.validateName,
             ),
             SizedBox(height: 8.h),
             CustomTextField(
@@ -142,7 +132,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               onObscurePressed: () {
                 setState(() => isPasswordVisible = !isPasswordVisible);
               },
-              validator: TFValidators.validatePassword,
+              validator: AppValidators.validatePassword,
             ),
             SizedBox(height: 8.h),
             CustomTextField(
@@ -156,7 +146,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               onObscurePressed: () {
                 setState(() => isPasswordVisible = !isPasswordVisible);
               },
-              validator: (value) => TFValidators.validateConfirmPassword(
+              validator: (value) => AppValidators.validateConfirmPassword(
                   value, _passwordController.text),
               suffixIcon: const SizedBox(),
             ),
@@ -170,25 +160,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               suffixIcon: const SizedBox(),
             ),
             SizedBox(height: 12.h),
-            CustomButton(
+            CustomElevatedButton(
               isLoading: registrationState.isLoading,
-              btnHeight: 52.h,
-              buttonColor:
-                  _isFormFilled ? AppColor.secondary : const Color(0xFF9C9C9C),
-              txtStyle: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Inter',
-                color: _isFormFilled ? const Color(0xFF1A1A1A) : Colors.white,
-              ),
-              onPress: () {
+              width: double.infinity,
+              height: 52.h,
+              backgroundColor: AppColor.secondary,
+              foregroundColor: const Color(0xFF1A1A1A),
+              onPressed: () {
+                setState(() => _submitted = true);
                 if (_formKey.currentState?.validate() ?? false) {
-                  if (_passwordController.text !=
-                      _confirmPasswordController.text) {
-                    CustomSnackbar.error(context,
-                        message: 'Passwords do not match');
-                    return;
-                  }
                   ref.read(registrationProvider.notifier).sendOtp(
                     context,
                     phoneNumber: _phoneController.text,
@@ -209,7 +189,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   );
                 }
               },
-              buttonTitle: 'Join Vhandar',
+              text: 'Join Vhandar',
             ),
             SizedBox(height: 12.h),
             Row(

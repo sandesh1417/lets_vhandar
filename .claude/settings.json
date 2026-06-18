@@ -19,8 +19,3 @@
     "skipPermissionPrompts": true
   }
 }
-// // ~/.claude/settings.json
-// {
-//   "autoAcceptEdits": true,
-//   "skipPermissionPrompts": true
-// }

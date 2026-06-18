@@ -18,6 +18,7 @@ import 'address_form.dart';
 import 'address_location_banner.dart';
 import 'address_map_picker.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 /// Opens the add/edit address bottom sheet.
@@ -71,6 +72,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   String _addressType = 'home';
   bool _isSaving = false;
   bool _isLocationConfirmed = false;
+  bool _submitted = false;
 
   // Controllers
   final _nameCtrl = TextEditingController();
@@ -311,6 +313,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
   // ---------------------------------------------------------------------------
 
   Future<void> _save() async {
+    setState(() => _submitted = true);
     if (_locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location') {
       setState(() => _locationError = 'Please select a location on the map');
@@ -423,220 +426,205 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                     ),
                   ),
 
-                if (!_isLocationConfirmed) ...[
-                  // Header
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 4.h, 8.w, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Select Delivery Location',
-                                style: TextStyle(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.vColors.onSurface,
+                  if (!_isLocationConfirmed) ...[
+                    // Header
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16.w, 4.h, 8.w, 0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select Delivery Location',
+                                  style: TextStyle(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.vColors.onSurface,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 2.h),
-                              Text(
-                                'Search or tap on the map to pin your location',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: context.vColors.onSurfaceMuted,
+                                SizedBox(height: 2.h),
+                                Text(
+                                  'Search or tap on the map to pin your location',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: context.vColors.onSurfaceMuted,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: Container(
-                            padding: EdgeInsets.all(4.w),
-                            decoration: BoxDecoration(
-                              color: context.vColors.surfaceVariant,
-                              shape: BoxShape.circle,
+                              ],
                             ),
-                            child: Icon(Icons.close_rounded,
-                                color: context.vColors.onSurfaceMuted,
-                                size: 16.sp),
                           ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        SizedBox(width: 8.w),
-                      ],
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Container(
+                              padding: EdgeInsets.all(4.w),
+                              decoration: BoxDecoration(
+                                color: context.vColors.surfaceVariant,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.close_rounded,
+                                  color: context.vColors.onSurfaceMuted,
+                                  size: 16.sp),
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                          SizedBox(width: 8.w),
+                        ],
+                      ),
                     ),
-                  ),
-                  Divider(
-                      height: 14.h,
-                      thickness: 1,
-                      color: context.vColors.divider),
-                  // Big Map Picker
-                  Expanded(
-                    child: AddressMapPicker(
-                      height: double.infinity,
-                      selectedLatLng: _selectedLatLng,
-                      searchController: _searchCtrl,
-                      isSearching: _isSearching,
-                      suggestions: _suggestions,
-                      onMapCreated: (c) => _mapController = c,
-                      onMapTap: _onMapTap,
-                      onCurrentLocationTap: _goToCurrentLocation,
-                      onSearchSubmitted: _searchLocation,
-                      onSearchChanged: _onSearchChanged,
-                      onSuggestionTap: _selectSuggestion,
-                      onClearSearch: () {
-                        _searchCtrl.clear();
-                        setState(() => _suggestions = []);
-                      },
+                    Divider(
+                        height: 14.h,
+                        thickness: 1,
+                        color: context.vColors.divider),
+                    // Big Map Picker
+                    Expanded(
+                      child: AddressMapPicker(
+                        height: double.infinity,
+                        selectedLatLng: _selectedLatLng,
+                        searchController: _searchCtrl,
+                        isSearching: _isSearching,
+                        suggestions: _suggestions,
+                        onMapCreated: (c) => _mapController = c,
+                        onMapTap: _onMapTap,
+                        onCurrentLocationTap: _goToCurrentLocation,
+                        onSearchSubmitted: _searchLocation,
+                        onSearchChanged: _onSearchChanged,
+                        onSuggestionTap: _selectSuggestion,
+                        onClearSearch: () {
+                          _searchCtrl.clear();
+                          setState(() => _suggestions = []);
+                        },
+                      ),
                     ),
-                  ),
-                  // Location Banner
-                  AddressLocationBanner(
-                    description: _locationDescription,
-                    isGeocoding: _isGeocoding,
-                    error: _locationError,
-                  ),
-                  // Confirm Button
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        16.w,
-                        4.h,
-                        16.w,
-                        MediaQuery.of(context).padding.bottom + 12.h),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 52.h,
-                      child: ElevatedButton(
-                        onPressed: (_locationDescription.isEmpty ||
+                    // Location Banner
+                    AddressLocationBanner(
+                      description: _locationDescription,
+                      isGeocoding: _isGeocoding,
+                      error: _locationError,
+                    ),
+                    // Confirm Button
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w,
+                          MediaQuery.of(context).padding.bottom + 12.h),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 52.h,
+                        child: CustomElevatedButton(
+                          // Always tappable; the location banner surfaces any
+                          // error (no location picked / outside delivery area).
+                          onPressed: () {
+                            if (_isGeocoding) return;
+                            if (_locationDescription.isEmpty ||
                                 _locationDescription ==
-                                    'Tap on map to select location' ||
-                                _locationError != null ||
-                                _isGeocoding)
-                            ? null
-                            : () =>
-                                setState(() => _isLocationConfirmed = true),
-                        style: ElevatedButton.styleFrom(
+                                    'Tap on map to select location') {
+                              setState(() => _locationError =
+                                  'Please select a location on the map');
+                              return;
+                            }
+                            if (_locationError != null) return;
+                            setState(() => _isLocationConfirmed = true);
+                          },
                           backgroundColor: AppColor.secondary,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: const Color(0xFF9C9C9C),
-                          disabledForegroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14.r),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.check_circle_rounded, size: 18.sp),
-                            SizedBox(width: 8.w),
-                            Text(
-                              'Confirm Location',
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+                          icon: Icons.check_circle_rounded,
+                          iconSize: 18.sp,
+                          text: 'Confirm Location',
                         ),
                       ),
                     ),
-                  ),
-                ] else ...[
-                  // Small Location Summary Banner
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: context.vColors.surface,
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: context.vColors.divider),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.location_on_rounded,
-                            color: AppColor.primary, size: 20.sp),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            _locationDescription,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: context.vColors.onSurface,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        TextButton(
-                          onPressed: () =>
-                              setState(() => _isLocationConfirmed = false),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12.w, vertical: 6.h),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Change',
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Form
-                  Expanded(
-                    child: Container(
+                  ] else ...[
+                    // Small Location Summary Banner
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 12.h),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       decoration: BoxDecoration(
                         color: context.vColors.surface,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(24.r)),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: context.vColors.divider),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: AddressForm(
-                        formKey: _formKey,
-                        scrollController: scrollController,
-                        addressType: _addressType,
-                        onAddressTypeChanged: (type) =>
-                            setState(() => _addressType = type),
-                        houseCtrl: _houseCtrl,
-                        floorCtrl: _floorCtrl,
-                        localityCtrl: _localityCtrl,
-                        landMarkCtrl: _landMarkCtrl,
-                        nameCtrl: _nameCtrl,
-                        phoneCtrl: _phoneCtrl,
-                        isSaving: _isSaving,
-                        isEditing: _isEditing,
-                        onSave: _save,
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on_rounded,
+                              color: AppColor.primary, size: 20.sp),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: Text(
+                              _locationDescription,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: context.vColors.onSurface,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          TextButton(
+                            onPressed: () =>
+                                setState(() => _isLocationConfirmed = false),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w, vertical: 6.h),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Change',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.primary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                    // Form
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: context.vColors.surface,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(24.r)),
+                        ),
+                        child: AddressForm(
+                          formKey: _formKey,
+                          scrollController: scrollController,
+                          addressType: _addressType,
+                          onAddressTypeChanged: (type) =>
+                              setState(() => _addressType = type),
+                          houseCtrl: _houseCtrl,
+                          floorCtrl: _floorCtrl,
+                          localityCtrl: _localityCtrl,
+                          landMarkCtrl: _landMarkCtrl,
+                          nameCtrl: _nameCtrl,
+                          phoneCtrl: _phoneCtrl,
+                          isSaving: _isSaving,
+                          isEditing: _isEditing,
+                          submitted: _submitted,
+                          onSave: _save,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ),   // Container
-        );   // CustomPaint
+          ), // Container
+        ); // CustomPaint
       },
     );
   }

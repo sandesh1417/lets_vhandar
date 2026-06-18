@@ -8,8 +8,8 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
-import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 
 class FeedbackScreen extends ConsumerStatefulWidget {
   const FeedbackScreen({super.key});
@@ -113,27 +113,18 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 12.h),
-            child: ElevatedButton(
-              onPressed: state.isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(
+            child: SizedBox(
+              width: double.infinity,
+              height: 50.h,
+              child: CustomElevatedButton(
+                onPressed: state.isLoading ? null : _submit,
+                isLoading: state.isLoading,
                 backgroundColor: AppColor.primary,
                 foregroundColor: Colors.white,
-                minimumSize: Size(double.infinity, 50.h),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
+                loaderSize: 24.w,
+                loaderColor: AppColor.primary,
+                text: 'Submit Feedback',
               ),
-              child: state.isLoading
-                  ? const CustomCircularLoader()
-                  : Text(
-                      'Submit Feedback',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
             ),
           ),
         ),

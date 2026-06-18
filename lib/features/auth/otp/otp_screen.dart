@@ -286,10 +286,13 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
             ),
 
             // Verify button pinned to bottom
-            CustomButton(
+            CustomElevatedButton(
               isLoading: isLoading,
-              onPress: _verifyOTP,
-              buttonTitle: 'Verify',
+              width: double.infinity,
+              height: 45.h,
+              backgroundColor: AppColor.secondary,
+              onPressed: _verifyOTP,
+              text: 'Verify',
             ),
             SizedBox(height: 16.h),
           ],

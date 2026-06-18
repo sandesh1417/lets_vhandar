@@ -2,6 +2,7 @@
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:lets_vhandar/core/constants/r_session.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -510,10 +511,10 @@ class _RouterErrorPage extends StatelessWidget {
                 style: TextStyle(fontSize: 13.sp, color: Colors.grey),
               ),
               SizedBox(height: 24.h),
-              ElevatedButton.icon(
+              CustomElevatedButton(
                 onPressed: () => context.go(LVRoute.dashboardScreen.route),
-                icon: const Icon(Icons.home_rounded),
-                label: const Text('Go Home'),
+                icon: Icons.home_rounded,
+                text: 'Go Home',
               ),
             ],
           ),

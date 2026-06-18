@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 
 class VhandarForBusinessScreen extends StatelessWidget {
@@ -173,25 +174,12 @@ class VhandarForBusinessScreen extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               height: 52.h,
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 onPressed: () =>
                     context.push(LVRoute.v4BRegistrationScreen.route),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.r),
-                  ),
-                ),
-                child: Text(
-                  'Register as Business',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Inter',
-                  ),
-                ),
+                backgroundColor: AppColor.primary,
+                foregroundColor: Colors.white,
+                text: 'Register as Business',
               ),
             ),
           ),

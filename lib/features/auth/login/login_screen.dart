@@ -28,7 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
-  bool _isFormFilled = false;
+  bool _submitted = false;
   bool _rememberMe = false;
 
   @override
@@ -36,8 +36,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
-    _phoneController.addListener(_onFormChanged);
-    _passwordController.addListener(_onFormChanged);
     _loadRememberMe();
   }
 
@@ -56,12 +54,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _passwordController.text = password;
       setState(() => _rememberMe = true);
     }
-  }
-
-  void _onFormChanged() {
-    final filled = _phoneController.text.length == 10 &&
-        _passwordController.text.isNotEmpty;
-    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -110,6 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: AutofillGroup(
         child: Form(
           key: _formKey,
+          autovalidateMode: _submitted
+              ? AutovalidateMode.onUserInteraction
+              : AutovalidateMode.disabled,
           child: Column(
             children: [
               Expanded(
@@ -149,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         autofillHints: const [AutofillHints.username],
                         keyBoardType: const TextInputType.numberWithOptions(),
                         textInputFormatter: TenDigitInputFormatter(),
-                        validator: TFValidators.validatePhone,
+                        validator: AppValidators.validatePhone,
                       ),
                       SizedBox(height: 12.h),
                       CustomTextField(
@@ -165,7 +160,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .read(passwordVisibilityProvider.notifier)
                               .update((state) => !isPasswordVisible);
                         },
-                        validator: TFValidators.validatePassword,
+                        validator: AppValidators.validatePassword,
                       ),
                       SizedBox(height: 12.h),
                       Row(
@@ -224,21 +219,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                       ),
                       SizedBox(height: 16.h),
-                      CustomButton(
+                      CustomElevatedButton(
                         isLoading: loginState.isLoading,
-                        btnHeight: 52.h,
-                        buttonColor: _isFormFilled
-                            ? AppColor.secondary
-                            : const Color(0xFF9C9C9C),
-                        txtStyle: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Inter',
-                          color: _isFormFilled
-                              ? const Color(0xFF1A1A1A)
-                              : Colors.white,
-                        ),
-                        onPress: () async {
+                        width: double.infinity,
+                        height: 52.h,
+                        backgroundColor: AppColor.secondary,
+                        foregroundColor: const Color(0xFF1A1A1A),
+                        onPressed: () async {
+                          setState(() => _submitted = true);
                           if (_formKey.currentState?.validate() ?? false) {
                             if (_rememberMe) {
                               await SessionPreferences().saveRememberMe(
@@ -256,7 +244,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 );
                           }
                         },
-                        buttonTitle: 'Continue',
+                        text: 'Continue',
                       ),
                       SizedBox(height: 20.h),
                       GestureDetector(

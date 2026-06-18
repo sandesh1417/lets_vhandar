@@ -9,6 +9,7 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/my_list/domain/models/saved_list_model.dart';
 import 'package:lets_vhandar/features/my_list/providers/my_list_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
@@ -164,25 +165,13 @@ class ListDetailScreen extends ConsumerWidget {
       child: SizedBox(
         width: double.infinity,
         height: 50.h,
-        child: ElevatedButton.icon(
+        child: CustomElevatedButton(
           onPressed: () => _showAddProductSheet(context, ref, list),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColor.primary,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14.r),
-            ),
-          ),
-          icon: const Icon(Icons.add_rounded, size: 20),
-          label: Text(
-            'Add Products',
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          backgroundColor: AppColor.primary,
+          foregroundColor: Colors.white,
+          icon: Icons.add_rounded,
+          iconSize: 20,
+          text: 'Add Products',
         ),
       ),
     );

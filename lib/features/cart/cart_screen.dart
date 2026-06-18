@@ -25,6 +25,7 @@ import 'package:lets_vhandar/features/cart/widgets/delivery_instructions_card.da
 import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -237,28 +238,13 @@ class CartScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: 20.h),
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: () {
                 context.pop();
                 ref.read(dashboardIndexProvider.notifier).state = 0;
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.secondary,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 12.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-              ),
-              child: Text(
-                'Start Shopping',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Inter',
-                  color: const Color(0xFF1A1A1A),
-                ),
-              ),
+              backgroundColor: AppColor.secondary,
+              text: 'Start Shopping',
             ),
           ],
         ),
@@ -708,7 +694,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                           ),
                         ),
                         SizedBox(width: 12.w),
-                        ElevatedButton(
+                        CustomElevatedButton(
                           onPressed: _isValidating
                               ? null
                               : () async {
@@ -737,32 +723,10 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                                             'Coupon "$code" applied successfully! Saved Rs. ${ref.read(appliedCouponProvider)?.discountAmount.toInt() ?? 100} 🎉');
                                   }
                                 },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20.w, vertical: 12.h),
-                            elevation: 0,
-                          ),
-                          child: _isValidating
-                              ? SizedBox(
-                                  width: 18.w,
-                                  height: 18.w,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  'Apply',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                          isLoading: _isValidating,
+                          loaderSize: 18.w,
+                          backgroundColor: AppColor.primary,
+                          text: 'Apply',
                         ),
                       ],
                     ),

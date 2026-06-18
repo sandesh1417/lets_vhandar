@@ -4,8 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class AddressForm extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -20,6 +21,7 @@ class AddressForm extends ConsumerStatefulWidget {
   final TextEditingController phoneCtrl;
   final bool isSaving;
   final bool isEditing;
+  final bool submitted;
   final VoidCallback onSave;
 
   const AddressForm({
@@ -36,6 +38,7 @@ class AddressForm extends ConsumerStatefulWidget {
     required this.phoneCtrl,
     required this.isSaving,
     required this.isEditing,
+    required this.submitted,
     required this.onSave,
   });
 
@@ -67,6 +70,9 @@ class _AddressFormState extends ConsumerState<AddressForm> {
 
     return Form(
       key: widget.formKey,
+      autovalidateMode: widget.submitted
+          ? AutovalidateMode.onUserInteraction
+          : AutovalidateMode.disabled,
       child: SingleChildScrollView(
         controller: widget.scrollController,
         padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 40.h),
@@ -135,9 +141,7 @@ class _AddressFormState extends ConsumerState<AddressForm> {
               controller: widget.localityCtrl,
               hint: 'e.g. Thamel, Kathmandu',
               fill: fieldFill,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Locality is required'
-                  : null,
+              validator: AppValidators.required,
             ),
             SizedBox(height: 14.h),
 
@@ -180,17 +184,15 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                   onTap: () => _toggleReceiver(!_iAmReceiver),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: _iAmReceiver
                           ? AppColor.primary.withValues(alpha: 0.1)
                           : vc.surfaceVariant,
                       borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(
-                        color: _iAmReceiver
-                            ? AppColor.primary
-                            : vc.divider,
+                        color: _iAmReceiver ? AppColor.primary : vc.divider,
                       ),
                     ),
                     child: Row(
@@ -238,9 +240,7 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 controller: widget.nameCtrl,
                 hint: 'Full name',
                 fill: fieldFill,
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Name is required'
-                    : null,
+                validator: AppValidators.required,
               ),
               SizedBox(height: 14.h),
               const _FieldLabel('Receiver phone *'),
@@ -250,14 +250,7 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 hint: '+977 9XXXXXXXXX',
                 fill: fieldFill,
                 keyboardType: TextInputType.phone,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Required';
-                  if (!RegExp(r'^\d+$').hasMatch(v.trim())) {
-                    return 'Digits only';
-                  }
-                  if (v.trim().length < 10) return 'Min 10 digits';
-                  return null;
-                },
+                validator: AppValidators.validatePhone,
               ),
             ],
             SizedBox(height: 32.h),
@@ -266,28 +259,13 @@ class _AddressFormState extends ConsumerState<AddressForm> {
             SizedBox(
               width: double.infinity,
               height: 56.h,
-              child: ElevatedButton(
-                onPressed: widget.isSaving ? null : widget.onSave,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: const Color(0xFF9C9C9C),
-                  disabledForegroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.r),
-                  ),
-                ),
-                child: widget.isSaving
-                    ? const CustomCircularLoader(
-                        size: 22, strokeWidth: 2.5, color: Colors.white)
-                    : Text(
-                        widget.isEditing ? 'Update Address' : 'Save Address',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+              child: CustomElevatedButton(
+                onPressed: widget.onSave,
+                isLoading: widget.isSaving,
+                loaderSize: 22,
+                backgroundColor: AppColor.primary,
+                foregroundColor: Colors.white,
+                text: widget.isEditing ? 'Update Address' : 'Save Address',
               ),
             ),
           ],
@@ -350,8 +328,7 @@ class _TypeChip extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontWeight:
-                        selected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                     color: selected ? _selectedText : vc.onSurface,
                   ),
                 ),
@@ -414,18 +391,17 @@ class _InputField extends StatelessWidget {
     );
     final errorBorder = OutlineInputBorder(
       borderRadius: radius,
-      borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+      borderSide: BorderSide(color: AppColor.error, width: 1),
     );
     final focusedErrorBorder = OutlineInputBorder(
       borderRadius: radius,
-      borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+      borderSide: BorderSide(color: AppColor.error, width: 1.5),
     );
 
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       style: TextStyle(
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
@@ -441,8 +417,7 @@ class _InputField extends StatelessWidget {
         filled: true,
         fillColor: fill,
         isDense: true,
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
         border: defaultBorder,
         enabledBorder: defaultBorder,
         focusedBorder: focusedBorder,
@@ -450,7 +425,7 @@ class _InputField extends StatelessWidget {
         focusedErrorBorder: focusedErrorBorder,
         errorStyle: TextStyle(
           fontSize: 11.sp,
-          color: Colors.red.shade600,
+          color: AppColor.error,
         ),
       ),
     );

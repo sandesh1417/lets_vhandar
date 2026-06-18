@@ -27,18 +27,12 @@ class ForgetPasswordScreen extends ConsumerStatefulWidget {
 class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   late TextEditingController phoneController;
   final _formKey = GlobalKey<FormState>();
-  bool _isFormFilled = false;
+  bool _submitted = false;
 
   @override
   void initState() {
     super.initState();
     phoneController = TextEditingController();
-    phoneController.addListener(_onFormChanged);
-  }
-
-  void _onFormChanged() {
-    final filled = phoneController.text.length == 10;
-    if (filled != _isFormFilled) setState(() => _isFormFilled = filled);
   }
 
   @override
@@ -58,6 +52,9 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
       appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
+        autovalidateMode: _submitted
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
         child: Column(
           children: [
             Expanded(
@@ -99,25 +96,21 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
                       prefixText: '+977 ',
                       keyBoardType: const TextInputType.numberWithOptions(),
                       textInputFormatter: TenDigitInputFormatter(),
-                      validator: TFValidators.validatePhone,
+                      validator: AppValidators.validatePhone,
                     ),
                     SizedBox(height: 28.h),
                   ],
                 ),
               ),
             ),
-            CustomButton(
+            CustomElevatedButton(
               isLoading: forgetPasswordState.isLoading,
-              btnHeight: 52.h,
-              buttonColor:
-                  _isFormFilled ? AppColor.secondary : const Color(0xFF9C9C9C),
-              txtStyle: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Inter',
-                color: _isFormFilled ? const Color(0xFF1A1A1A) : Colors.white,
-              ),
-              onPress: () {
+              width: double.infinity,
+              height: 52.h,
+              backgroundColor: AppColor.secondary,
+              foregroundColor: const Color(0xFF1A1A1A),
+              onPressed: () {
+                setState(() => _submitted = true);
                 if (_formKey.currentState?.validate() ?? false) {
                   ref.read(forgetPasswordProvider.notifier).sendOtp(
                     context,
@@ -136,7 +129,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
                   );
                 }
               },
-              buttonTitle: 'Send Reset Code',
+              text: 'Send Reset Code',
             ),
             SizedBox(height: 16.h),
           ],

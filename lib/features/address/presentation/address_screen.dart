@@ -14,6 +14,7 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
   const AddressScreen({super.key});
@@ -185,25 +186,13 @@ class _AddAddressButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 52.h,
-        child: ElevatedButton.icon(
+        child: CustomElevatedButton(
           onPressed: onTap,
-          icon: Icon(Icons.add_location_alt_outlined,
-              size: 20.sp, color: Colors.white),
-          label: Text(
-            'Add New Address',
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColor.primary,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14.r),
-            ),
-          ),
+          icon: Icons.add_location_alt_outlined,
+          iconSize: 20.sp,
+          backgroundColor: AppColor.primary,
+          foregroundColor: Colors.white,
+          text: 'Add New Address',
         ),
       ),
     );
@@ -476,25 +465,13 @@ class _EmptyState extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 52.h,
-            child: ElevatedButton.icon(
+            child: CustomElevatedButton(
               onPressed: onAdd,
-              icon: Icon(Icons.add_location_alt_outlined,
-                  size: 20.sp, color: Colors.white),
-              label: Text(
-                'Add Your First Address',
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                ),
-              ),
+              icon: Icons.add_location_alt_outlined,
+              iconSize: 20.sp,
+              backgroundColor: AppColor.primary,
+              foregroundColor: Colors.white,
+              text: 'Add Your First Address',
             ),
           ),
         ],

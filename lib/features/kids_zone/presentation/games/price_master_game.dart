@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class PriceMasterProduct {
   final String name;
@@ -352,23 +353,11 @@ class _PriceMasterGameState extends ConsumerState<PriceMasterGame> {
                 SizedBox(
                   width: double.infinity,
                   height: 52.h,
-                  child: ElevatedButton(
+                  child: CustomElevatedButton(
                     onPressed: _hasGuessed ? _nextProduct : _submitGuess,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                    ),
-                    child: Text(
-                      _hasGuessed ? 'Next Item ➡️' : 'Submit Guess 🎯',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    text: _hasGuessed ? 'Next Item ➡️' : 'Submit Guess 🎯',
                   ),
                 ),
               ] else ...[
@@ -443,18 +432,11 @@ class _PriceMasterGameState extends ConsumerState<PriceMasterGame> {
                               fontSize: 12.sp, color: Colors.grey.shade500),
                         ),
                       SizedBox(height: 28.h),
-                      ElevatedButton(
+                      CustomElevatedButton(
                         onPressed: _startNewGame,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 32.w, vertical: 14.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                        ),
-                        child: const Text('Play Again 🔄'),
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                        text: 'Play Again 🔄',
                       ),
                     ],
                   ),

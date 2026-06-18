@@ -18,6 +18,7 @@ import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
@@ -218,25 +219,11 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                 SizedBox(height: 28.h),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: CustomElevatedButton(
                     onPressed: () => context.go(LVRoute.loginScreen.route),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.secondary,
-                      foregroundColor: const Color(0xFF1A1A1A),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
+                    backgroundColor: AppColor.secondary,
+                    foregroundColor: const Color(0xFF1A1A1A),
+                    text: 'Login',
                   ),
                 ),
               ],

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class FloatingFruit {
   double x;
@@ -484,20 +485,11 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
+                child: CustomElevatedButton(
                   onPressed: _startGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE94560),
-                    foregroundColor: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Start Popping! 🚀',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  backgroundColor: const Color(0xFFE94560),
+                  foregroundColor: Colors.white,
+                  text: 'Start Popping! 🚀',
                 ),
               ),
             ],
@@ -586,20 +578,11 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
+                child: CustomElevatedButton(
                   onPressed: _startGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE94560),
-                    foregroundColor: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Play Again 🔄',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  backgroundColor: const Color(0xFFE94560),
+                  foregroundColor: Colors.white,
+                  text: 'Play Again 🔄',
                 ),
               ),
             ],

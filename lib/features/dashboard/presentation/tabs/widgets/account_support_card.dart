@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class AccountSupportCard extends StatelessWidget {
@@ -71,7 +72,7 @@ class AccountSupportCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 8.w),
-          ElevatedButton(
+          CustomElevatedButton(
             onPressed: () async {
               final Uri webUrl = Uri.parse('https://wa.me/9779851357358');
               try {
@@ -82,19 +83,9 @@ class AccountSupportCard extends StatelessWidget {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF075E54),
-              elevation: 0,
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-            ),
-            child: Text(
-              'Chat Now',
-              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold),
-            ),
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF075E54),
+            text: 'Chat Now',
           ),
         ],
       ),

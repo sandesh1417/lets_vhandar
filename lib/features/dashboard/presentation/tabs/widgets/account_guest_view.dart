@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -88,29 +89,14 @@ class AccountGuestView extends ConsumerWidget {
                   SizedBox(height: 28.h),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: CustomElevatedButton(
                       onPressed: () {
                         ref.read(dashboardIndexProvider.notifier).state = 0;
                         context.go(LVRoute.loginScreen.route);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColor.primary,
-                        padding: EdgeInsets.symmetric(vertical: 14.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14.r),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Inter',
-                          color: AppColor.primary,
-                        ),
-                      ),
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColor.primary,
+                      text: 'Login',
                     ),
                   ),
                 ],

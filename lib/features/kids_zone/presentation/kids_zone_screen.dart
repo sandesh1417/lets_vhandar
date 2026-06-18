@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
@@ -497,27 +498,18 @@ class KidsZoneScreen extends ConsumerWidget {
           ),
           SizedBox(width: 12.w),
           if (isRedeemed)
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: couponCode));
                 CustomSnackbar.success(context,
                     message: 'Coupon code $couponCode copied to clipboard!');
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary.withValues(alpha: 0.1),
-                foregroundColor: AppColor.primary,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-              ),
-              child: Text(
-                'Copy Code',
-                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-              ),
+              backgroundColor: AppColor.primary.withValues(alpha: 0.1),
+              foregroundColor: AppColor.primary,
+              text: 'Copy Code',
             )
           else
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: userCoins < cost
                   ? null
                   : () {
@@ -540,18 +532,9 @@ class KidsZoneScreen extends ConsumerWidget {
                         },
                       );
                     },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-              ),
-              child: Text(
-                'Unlock',
-                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-              ),
+              backgroundColor: AppColor.primary,
+              foregroundColor: Colors.white,
+              text: 'Unlock',
             ),
         ],
       ),

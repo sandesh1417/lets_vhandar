@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 /// Generic user-friendly error state — never shows raw exception strings.
 class ErrorStateWidget extends StatelessWidget {
@@ -53,24 +54,13 @@ class ErrorStateWidget extends StatelessWidget {
               SizedBox(
                 width: 140.w,
                 height: 44.h,
-                child: ElevatedButton.icon(
+                child: CustomElevatedButton(
                   onPressed: onRetry,
-                  icon: Icon(Icons.refresh_rounded, size: 16.sp),
-                  label: Text(
-                    'Try Again',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
+                  icon: Icons.refresh_rounded,
+                  iconSize: 16.sp,
+                  backgroundColor: AppColor.primary,
+                  foregroundColor: Colors.white,
+                  text: 'Try Again',
                 ),
               ),
             ],

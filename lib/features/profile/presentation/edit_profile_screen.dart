@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/validation.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/presentation/business_location_picker_screen.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
@@ -32,6 +33,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _submitted = false;
 
   // Personal fields
   late TextEditingController _nameController;
@@ -150,7 +152,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _save(bool isBusiness) async {
-    if (!_formKey.currentState!.validate()) return;
+    setState(() => _submitted = true);
+    final formValid = _formKey.currentState!.validate();
+    // Category is a custom picker (not a TextFormField); validate it manually.
+    if (!formValid || (isBusiness && _selectedCategory == null)) return;
 
     Map<String, dynamic> payload;
 
@@ -214,6 +219,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
               child: Form(
                 key: _formKey,
+                autovalidateMode: _submitted
+                    ? AutovalidateMode.onUserInteraction
+                    : AutovalidateMode.disabled,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -223,13 +231,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       _buildPersonalForm(vc),
                     ],
                     SizedBox(height: 32.h),
-                    CustomButton(
-                      buttonTitle:
-                          loginState.isLoading ? 'Saving...' : 'Save Changes',
+                    CustomElevatedButton(
+                      text: loginState.isLoading ? 'Saving...' : 'Save Changes',
                       isLoading: loginState.isLoading,
-                      isEnabled: !loginState.isLoading &&
-                          (!isBusiness || _selectedCategory != null),
-                      onPress: () => _save(isBusiness),
+                      width: double.infinity,
+                      height: 45.h,
+                      backgroundColor: AppColor.secondary,
+                      onPressed: () => _save(isBusiness),
                     ),
                     SizedBox(height: 32.h),
                   ],
@@ -269,8 +277,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             CustomTextField(
               controller: _businessNameController,
               hintText: 'Enter business name',
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Required' : null,
+              validator: AppValidators.required,
             ),
             SizedBox(height: 16.h),
 
@@ -281,11 +288,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               onTap: () => _showCategoryPicker(context),
               vc: vc,
             ),
-            if (_selectedCategory == null) ...[
+            if (_submitted && _selectedCategory == null) ...[
               SizedBox(height: 4.h),
               Text(
                 'Please select a category',
-                style: TextStyle(fontSize: 11.sp, color: Colors.red.shade400),
+                style: TextStyle(fontSize: 11.sp, color: AppColor.error),
               ),
             ],
             SizedBox(height: 16.h),
@@ -318,8 +325,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             CustomTextField(
               controller: _panVatController,
               hintText: _isPan ? 'Enter PAN number' : 'Enter VAT number',
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Required' : null,
+              validator: AppValidators.required,
             ),
           ],
         ),
@@ -341,8 +347,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             CustomTextField(
               controller: _nameController,
               hintText: 'Enter your name',
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Required' : null,
+              validator: AppValidators.required,
             ),
             SizedBox(height: 16.h),
             _FieldLabel('Email Address', vc),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -107,9 +108,9 @@ class _GenericWebViewScreenState extends State<GenericWebViewScreen> {
                   const SizedBox(height: 16),
                   Text('Failed to load: $_error', textAlign: TextAlign.center),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  CustomElevatedButton(
                     onPressed: () => _controller.reload(),
-                    child: const Text('Retry'),
+                    text: 'Retry',
                   ),
                 ],
               ),

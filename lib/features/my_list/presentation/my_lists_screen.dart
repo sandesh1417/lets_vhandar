@@ -12,6 +12,7 @@ import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class MyListsScreen extends ConsumerWidget {
   const MyListsScreen({super.key});
@@ -673,32 +674,14 @@ class _NewListSheetState extends State<_NewListSheet> {
           SizedBox(
             width: double.infinity,
             height: 52.h,
-            child: ElevatedButton(
+            child: CustomElevatedButton(
               onPressed:
                   (_controller.text.trim().isEmpty || _isLoading) ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary,
-                disabledBackgroundColor: vc.divider,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.r)),
-              ),
-              child: _isLoading
-                  ? SizedBox(
-                      width: 22.w,
-                      height: 22.w,
-                      child: const CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2),
-                    )
-                  : Text(
-                      widget.buttonLabel,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+              backgroundColor: AppColor.primary,
+              foregroundColor: Colors.white,
+              isLoading: _isLoading,
+              loaderSize: 22.w,
+              text: widget.buttonLabel,
             ),
           ),
         ],

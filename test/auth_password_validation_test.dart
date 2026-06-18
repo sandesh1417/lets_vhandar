@@ -5,48 +5,48 @@ void main() {
   group('Password Validation Tests', () {
     test('validatePassword should return null for valid password', () {
       const validPassword = 'Test123!';
-      final result = TFValidators.validatePassword(validPassword);
+      final result = AppValidators.validatePassword(validPassword);
       expect(result, isNull);
     });
 
     test('validatePassword should return error for empty password', () {
       const emptyPassword = '';
-      final result = TFValidators.validatePassword(emptyPassword);
-      expect(result, equals('Password is required'));
+      final result = AppValidators.validatePassword(emptyPassword);
+      expect(result, equals('This field is required'));
     });
 
     test('validatePassword should return error for short password', () {
       const shortPassword = '123';
-      final result = TFValidators.validatePassword(shortPassword);
+      final result = AppValidators.validatePassword(shortPassword);
       expect(result, equals('Password must be at least 6 characters'));
     });
 
     test('validateConfirmPassword should return null for matching passwords', () {
       const password = 'Test123!';
       const confirmPassword = 'Test123!';
-      final result = TFValidators.validateConfirmPassword(confirmPassword, password);
+      final result = AppValidators.validateConfirmPassword(confirmPassword, password);
       expect(result, isNull);
     });
 
     test('validateConfirmPassword should return error for non-matching passwords', () {
       const password = 'Test123!';
       const confirmPassword = 'Test456!';
-      final result = TFValidators.validateConfirmPassword(confirmPassword, password);
+      final result = AppValidators.validateConfirmPassword(confirmPassword, password);
       expect(result, equals('Passwords do not match'));
     });
 
     test('validateConfirmPassword should return error for empty confirm password', () {
       const password = 'Test123!';
       const confirmPassword = '';
-      final result = TFValidators.validateConfirmPassword(confirmPassword, password);
-      expect(result, equals('Confirm Password is required'));
+      final result = AppValidators.validateConfirmPassword(confirmPassword, password);
+      expect(result, equals('This field is required'));
     });
 
     test('validateConfirmPassword should return error for null confirm password', () {
       const password = 'Test123!';
       const confirmPassword = null;
-      final result = TFValidators.validateConfirmPassword(confirmPassword, password);
-      expect(result, equals('Confirm Password is required'));
+      final result = AppValidators.validateConfirmPassword(confirmPassword, password);
+      expect(result, equals('This field is required'));
     });
   });
 

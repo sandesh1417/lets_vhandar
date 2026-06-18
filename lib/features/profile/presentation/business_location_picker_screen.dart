@@ -10,6 +10,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/data/location_search_service.dart';
 import 'package:lets_vhandar/features/address/widgets/address_map_picker.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class BusinessLocationResult {
   final LatLng latLng;
@@ -276,7 +277,7 @@ class _BusinessLocationPickerScreenState
                 SizedBox(height: 12.h),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: CustomElevatedButton(
                     onPressed: _isGeocoding
                         ? null
                         : () => Navigator.pop(
@@ -286,25 +287,9 @@ class _BusinessLocationPickerScreenState
                                 address: _locationAddress,
                               ),
                             ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.primary,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor:
-                          AppColor.primary.withValues(alpha: 0.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Confirm Location',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
+                    backgroundColor: AppColor.primary,
+                    foregroundColor: Colors.white,
+                    text: 'Confirm Location',
                   ),
                 ),
               ],

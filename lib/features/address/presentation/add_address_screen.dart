@@ -20,6 +20,7 @@ import '../widgets/address_form.dart';
 import '../widgets/address_location_banner.dart';
 import '../widgets/address_map_picker.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class AddAddressScreen extends ConsumerStatefulWidget {
@@ -54,6 +55,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   String _addressType = 'home';
   bool _isSaving = false;
   bool _isLocationConfirmed = false;
+  bool _submitted = false;
 
   final _nameCtrl = TextEditingController();
   final _landMarkCtrl = TextEditingController();
@@ -121,8 +123,11 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
         final parts = [
-          p.name, p.subLocality, p.locality,
-          p.subAdministrativeArea, p.administrativeArea,
+          p.name,
+          p.subLocality,
+          p.locality,
+          p.subAdministrativeArea,
+          p.administrativeArea,
         ].where((e) => e != null && e.isNotEmpty).toSet().toList();
         setState(() => _locationDescription =
             parts.isEmpty ? _coordsString(pos) : parts.join(', '));
@@ -211,23 +216,11 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
             SizedBox(
               width: double.infinity,
               height: 50.h,
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 onPressed: () => context.pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.r),
-                  ),
-                ),
-                child: Text(
-                  'Change Location',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                backgroundColor: AppColor.primary,
+                foregroundColor: Colors.white,
+                text: 'Change Location',
               ),
             ),
           ],
@@ -353,6 +346,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   }
 
   Future<void> _save() async {
+    setState(() => _submitted = true);
     if (_locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location') {
       setState(() => _locationError = 'Please select a location on the map');
@@ -447,10 +441,6 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
     final bottomPad = MediaQuery.of(context).padding.bottom;
     final bool noLocation = _locationDescription.isEmpty ||
         _locationDescription == 'Tap on map to select location';
-    final bool isOutsideArea = _locationError != null;
-    // Truly disabled (no action possible): no location picked yet or still geocoding.
-    // Outside-area is handled separately — button stays tappable but shows popup.
-    final bool isHardDisabled = noLocation || _isGeocoding;
 
     return Column(
       children: [
@@ -482,7 +472,8 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: context.isDark ? 0.3 : 0.08),
+                color:
+                    Colors.black.withValues(alpha: context.isDark ? 0.3 : 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, -3),
               ),
@@ -517,37 +508,27 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 52.h,
-                child: ElevatedButton(
-                  onPressed: isHardDisabled
-                      ? null
-                      : isOutsideArea
-                          ? _showLocationNotServiceablePopup
-                          : () => setState(() => _isLocationConfirmed = true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isOutsideArea ? const Color(0xFF9C9C9C) : AppColor.secondary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: const Color(0xFF9C9C9C),
-                    disabledForegroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle_rounded, size: 18.sp),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Confirm Location',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: CustomElevatedButton(
+                  // Always tappable; preconditions are surfaced on tap
+                  // (banner error for no location, popup for out-of-area).
+                  onPressed: () {
+                    if (_isGeocoding) return;
+                    if (noLocation) {
+                      setState(() => _locationError =
+                          'Please select a location on the map');
+                      return;
+                    }
+                    if (_locationError != null) {
+                      _showLocationNotServiceablePopup();
+                      return;
+                    }
+                    setState(() => _isLocationConfirmed = true);
+                  },
+                  backgroundColor: AppColor.secondary,
+                  foregroundColor: Colors.white,
+                  icon: Icons.check_circle_rounded,
+                  iconSize: 18.sp,
+                  text: 'Confirm Location',
                 ),
               ),
             ],
@@ -569,8 +550,8 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
             decoration: BoxDecoration(
               color: AppColor.primary.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                  color: AppColor.primary.withValues(alpha: 0.2)),
+              border:
+                  Border.all(color: AppColor.primary.withValues(alpha: 0.2)),
             ),
             child: Row(
               children: [
@@ -591,8 +572,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
                 ),
                 SizedBox(width: 8.w),
                 GestureDetector(
-                  onTap: () =>
-                      setState(() => _isLocationConfirmed = false),
+                  onTap: () => setState(() => _isLocationConfirmed = false),
                   child: Text(
                     'Change',
                     style: TextStyle(
@@ -622,6 +602,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
               phoneCtrl: _phoneCtrl,
               isSaving: _isSaving,
               isEditing: _isEditing,
+              submitted: _submitted,
               onSave: _save,
             ),
           ),

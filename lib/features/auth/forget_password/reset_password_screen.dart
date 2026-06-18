@@ -11,7 +11,6 @@ import 'package:lets_vhandar/features/auth/forget_password/providers/forget_pass
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
@@ -36,6 +35,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   late TextEditingController confirmPasswordController;
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
+  bool _submitted = false;
 
   @override
   void initState() {
@@ -60,6 +60,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       appBar: const CustomScreenHeader(title: ''),
       body: Form(
         key: _formKey,
+        autovalidateMode: _submitted
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
         child: Column(
           children: [
             Container(
@@ -68,14 +71,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 shape: BoxShape.circle,
                 color: AppColor.primary.withValues(alpha: 0.1),
               ),
-              child:
-                  Icon(Icons.lock_reset, size: 50, color: AppColor.primary),
+              child: Icon(Icons.lock_reset, size: 50, color: AppColor.primary),
             ),
             SizedBox(height: 24.h),
-            Text('Set New Password', style: KTextStyle.roboto24blackD7W.copyWith(color: context.vColors.onSurface)),
+            Text('Set New Password',
+                style: KTextStyle.roboto24blackD7W
+                    .copyWith(color: context.vColors.onSurface)),
             SizedBox(height: 8.h),
             Text('Create a new password for your account.',
-                style: KTextStyle.roboto14Gray4W.copyWith(color: context.vColors.onSurfaceMuted)),
+                style: KTextStyle.roboto14Gray4W
+                    .copyWith(color: context.vColors.onSurfaceMuted)),
             SizedBox(height: 32.h),
             CustomTextField(
               controller: passwordController,
@@ -85,7 +90,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               onObscurePressed: () {
                 setState(() => _isPasswordVisible = !_isPasswordVisible);
               },
-              validator: TFValidators.validatePassword,
+              validator: AppValidators.validatePassword,
             ),
             SizedBox(height: 16.h),
             CustomTextField(
@@ -96,21 +101,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               onObscurePressed: () {
                 setState(() => _isPasswordVisible = !_isPasswordVisible);
               },
-              validator: (value) => TFValidators.validateConfirmPassword(
+              validator: (value) => AppValidators.validateConfirmPassword(
                   value, passwordController.text),
             ),
             SizedBox(height: 32.h),
-            CustomButton(
+            CustomElevatedButton(
               isLoading: forgetPasswordState.isLoading,
-              onPress: () {
+              width: double.infinity,
+              height: 45.h,
+              backgroundColor: AppColor.secondary,
+              onPressed: () {
+                setState(() => _submitted = true);
                 if (_formKey.currentState?.validate() ?? false) {
-                  if (passwordController.text !=
-                      confirmPasswordController.text) {
-                    CustomSnackbar.error(context,
-                        message: 'Passwords do not match');
-                    return;
-                  }
-
                   ref.read(forgetPasswordProvider.notifier).resetPassword(
                     context,
                     phoneNumber: widget.phoneNumber,
@@ -124,7 +126,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   );
                 }
               },
-              buttonTitle: 'Update Password',
+              text: 'Update Password',
             ),
           ],
         ),

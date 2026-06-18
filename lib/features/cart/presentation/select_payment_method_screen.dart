@@ -17,6 +17,7 @@ import 'package:lets_vhandar/features/home/providers/general_settings_provider.d
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
@@ -582,7 +583,7 @@ class _SelectPaymentMethodScreenState
                     SizedBox(
                       width: double.infinity,
                       height: 48.h,
-                      child: ElevatedButton(
+                      child: CustomElevatedButton(
                         onPressed: isLoading
                             ? null
                             : () {
@@ -592,35 +593,12 @@ class _SelectPaymentMethodScreenState
                                 }
                                 _placeOrder(context);
                               },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedMethod == null
-                              ? Colors.grey.shade300
-                              : AppColor.primary,
-                          disabledBackgroundColor: Colors.grey.shade300,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? SizedBox(
-                                width: 20.w,
-                                height: 20.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                'Place Order',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: _selectedMethod == null
-                                      ? Colors.grey.shade500
-                                      : Colors.white,
-                                ),
-                              ),
+                        isLoading: isLoading,
+                        loaderSize: 20.w,
+                        backgroundColor: _selectedMethod == null
+                            ? Colors.grey.shade300
+                            : AppColor.primary,
+                        text: 'Place Order',
                       ),
                     ),
                     SizedBox(height: 10.h),
@@ -679,23 +657,11 @@ class _SelectPaymentMethodScreenState
               SizedBox(
                 width: double.infinity,
                 height: 50.h,
-                child: ElevatedButton(
+                child: CustomElevatedButton(
                   onPressed: () => Navigator.pop(ctx),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  child: Text(
-                    'View My Orders',
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  backgroundColor: AppColor.primary,
+                  foregroundColor: Colors.white,
+                  text: 'View My Orders',
                 ),
               ),
             ],

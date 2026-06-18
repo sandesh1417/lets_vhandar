@@ -15,6 +15,7 @@ import 'package:lets_vhandar/features/home/providers/search_provider.dart';
 import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/features/home/widgets/search_sort_bar.dart';
 import 'package:lets_vhandar/features/home/presentation/widgets/brand_card.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/error_state.dart';
@@ -201,23 +202,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 32.h),
-                    ElevatedButton(
-                      onPressed: () => showProductSuggestionSheet(context),
-                      style: ElevatedButton.styleFrom(
+                    SizedBox(
+                      width: 120.w,
+                      height: 44.h,
+                      child: CustomElevatedButton(
+                        onPressed: () => showProductSuggestionSheet(context),
                         backgroundColor: const Color(0xFFF9B141),
                         foregroundColor: Colors.white,
-                        minimumSize: Size(120.w, 44.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.r),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'Suggest Product',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        text: 'Suggest Product',
                       ),
                     ),
                   ],

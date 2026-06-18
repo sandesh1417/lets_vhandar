@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class MemoryCard {
   final int id;
@@ -282,18 +283,11 @@ class _GroceryMatcherGameState extends ConsumerState<GroceryMatcherGame> {
                           ),
                         ],
                         SizedBox(height: 28.h),
-                        ElevatedButton(
+                        CustomElevatedButton(
                           onPressed: _startNewGame,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple.shade700,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 32.w, vertical: 14.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                          ),
-                          child: const Text('Play Again 🔄'),
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                          text: 'Play Again 🔄',
                         ),
                       ],
                     ),

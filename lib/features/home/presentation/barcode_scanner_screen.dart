@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/home/data/repositories/product_repository.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -415,12 +416,11 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24.h),
-              ElevatedButton(
+              CustomElevatedButton(
                 onPressed: _checkPermission,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primary,
-                    foregroundColor: Colors.white),
-                child: const Text('Grant Permission'),
+                backgroundColor: AppColor.primary,
+                foregroundColor: Colors.white,
+                text: 'Grant Permission',
               ),
               TextButton(
                 onPressed: () => setState(() => _isManualEntry = true),
@@ -643,39 +643,18 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                   child: SizedBox(
                     width: double.infinity,
                     height: 56.h,
-                    child: ElevatedButton(
+                    child: CustomElevatedButton(
                       onPressed: _isProcessing
                           ? null
                           : () {
                               final code = _manualController.text.trim();
                               if (code.isNotEmpty) _handleBarcode(code);
                             },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.secondary,
-                        foregroundColor: Colors.white,
-                        disabledBackgroundColor:
-                            AppColor.secondary.withValues(alpha: 0.5),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14.r),
-                        ),
-                      ),
-                      child: _isProcessing
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2.5, color: Colors.white),
-                            )
-                          : Text(
-                              'Search',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Inter',
-                                color: Colors.white,
-                              ),
-                            ),
+                      isLoading: _isProcessing,
+                      backgroundColor: AppColor.secondary,
+                      foregroundColor: Colors.white,
+                      loaderSize: 22,
+                      text: 'Search',
                     ),
                   ),
                 ),
@@ -875,22 +854,11 @@ class _ScanningTipsSheet extends StatelessWidget {
                 child: SizedBox(
                   width: double.infinity,
                   height: 54.h,
-                  child: ElevatedButton(
+                  child: CustomElevatedButton(
                     onPressed: () => context.pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.secondary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text(
-                      'Dismiss',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
+                    backgroundColor: AppColor.secondary,
+                    foregroundColor: Colors.white,
+                    text: 'Dismiss',
                   ),
                 ),
               ),

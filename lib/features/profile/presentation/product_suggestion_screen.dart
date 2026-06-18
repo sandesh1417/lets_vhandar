@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/product_suggestion_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
@@ -203,32 +204,13 @@ class _ProductSuggestionSheetState
           SizedBox(
             width: double.infinity,
             height: 50.h,
-            child: ElevatedButton(
+            child: CustomElevatedButton(
               onPressed: state.isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: AppColor.primary.withValues(alpha: 0.5),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                ),
-              ),
-              child: state.isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2.5),
-                    )
-                  : Text(
-                      'Submit Suggestion',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
+              isLoading: state.isLoading,
+              backgroundColor: AppColor.primary,
+              foregroundColor: Colors.white,
+              loaderSize: 20,
+              text: 'Submit Suggestion',
             ),
           ),
         ],

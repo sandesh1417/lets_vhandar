@@ -13,20 +13,38 @@ extension ValidateExtension on String {
 // final MaskTextInputFormatter dateFormatter =
 //     MaskTextInputFormatter(mask: '####-##-##', filter: {"#": RegExp(r'[0-9]')});
 
-class TFValidators {
+/// Single source of truth for form field validation across the app.
+///
+/// All validators return `null` when valid and a user-facing error string
+/// otherwise. Error copy is standardized here — do not duplicate validator
+/// logic or re-word these messages per screen.
+class AppValidators {
+  AppValidators._();
+
+  /// Standard copy for an empty required field.
+  static const String requiredMessage = 'This field is required';
+
+  /// Generic "required" validator. Trims whitespace before checking.
+  static String? required(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return requiredMessage;
+    }
+    return null;
+  }
+
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Phone is required';
+      return requiredMessage;
     }
     if (value.length != 10) {
-      return 'Please enter exactly 10 digits';
+      return 'Enter a valid 10-digit number';
     }
     return null;
   }
 
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return requiredMessage;
     }
     if (!value.isEmailValid) {
       return 'Enter a valid email address';
@@ -34,9 +52,19 @@ class TFValidators {
     return null;
   }
 
+  static String? validatePincode(String? value) {
+    if (value == null || value.isEmpty) {
+      return requiredMessage;
+    }
+    if (!RegExp(r'^\d{6}$').hasMatch(value.trim())) {
+      return 'Enter a valid 6-digit pincode';
+    }
+    return null;
+  }
+
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return requiredMessage;
     }
     if (value.length < 6) {
       return 'Password must be at least 6 characters';
@@ -46,7 +74,7 @@ class TFValidators {
 
   static String? validateConfirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
-      return 'Confirm Password is required';
+      return requiredMessage;
     }
     if (value != password) {
       return 'Passwords do not match';
@@ -54,24 +82,9 @@ class TFValidators {
     return null;
   }
 
-  static String? validateBusinessName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Business Name is required';
-    }
-    return null;
-  }
+  static String? validateBusinessName(String? value) => required(value);
 
-  static String? validatePanNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'PAN Number is required';
-    }
-    return null;
-  }
+  static String? validatePanNumber(String? value) => required(value);
 
-  static String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Name is required';
-    }
-    return null;
-  }
+  static String? validateName(String? value) => required(value);
 }

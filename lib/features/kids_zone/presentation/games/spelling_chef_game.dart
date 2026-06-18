@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/features/kids_zone/providers/kids_zone_provider.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class SpellingWord {
   final String displayEmoji;
@@ -370,23 +371,11 @@ class _SpellingChefGameState extends ConsumerState<SpellingChefGame> {
                   SizedBox(
                     width: double.infinity,
                     height: 52.h,
-                    child: ElevatedButton(
+                    child: CustomElevatedButton(
                       onPressed: _nextQuestion,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber.shade800,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                      ),
-                      child: Text(
-                        'Next Word ➡️',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      backgroundColor: Colors.amber.shade800,
+                      foregroundColor: Colors.white,
+                      text: 'Next Word ➡️',
                     ),
                   ),
                 ],
@@ -457,18 +446,11 @@ class _SpellingChefGameState extends ConsumerState<SpellingChefGame> {
                         ),
                       ],
                       SizedBox(height: 28.h),
-                      ElevatedButton(
+                      CustomElevatedButton(
                         onPressed: _startNewGame,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber.shade800,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 32.w, vertical: 14.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                        ),
-                        child: const Text('Play Again 🔄'),
+                        backgroundColor: Colors.amber.shade800,
+                        foregroundColor: Colors.white,
+                        text: 'Play Again 🔄',
                       ),
                     ],
                   ),

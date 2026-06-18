@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/profile/providers/family_members_provider.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class FamilyMembersScreen extends ConsumerStatefulWidget {
   const FamilyMembersScreen({super.key});
@@ -222,27 +223,11 @@ class _EmptyBenefitsCard extends StatelessWidget {
           SizedBox(height: 20.h),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
+            child: CustomElevatedButton(
               onPressed: onAdd,
-              icon:
-                  const Icon(Icons.person_add_outlined, color: Colors.white),
-              label: Text(
-                'Add Family Member',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primary,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                elevation: 0,
-              ),
+              icon: Icons.person_add_outlined,
+              backgroundColor: AppColor.primary,
+              text: 'Add Family Member',
             ),
           ),
         ],
@@ -455,25 +440,10 @@ class _ReceivedRequestTile extends StatelessWidget {
               ),
               SizedBox(width: 10.w),
               Expanded(
-                child: ElevatedButton(
+                child: CustomElevatedButton(
                   onPressed: onAccept,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primary,
-                    padding: EdgeInsets.symmetric(vertical: 9.h),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Accept',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  backgroundColor: AppColor.primary,
+                  text: 'Accept',
                 ),
               ),
             ],
@@ -698,28 +668,13 @@ class _RemoveConfirmSheet extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               Expanded(
-                child: ElevatedButton(
+                child: CustomElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                     onConfirm();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade500,
-                    padding: EdgeInsets.symmetric(vertical: 13.h),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Remove',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
+                  backgroundColor: Colors.red.shade500,
+                  text: 'Remove',
                 ),
               ),
             ],
@@ -792,7 +747,7 @@ class _AcceptRequestSheetState extends ConsumerState<_AcceptRequestSheet> {
             SizedBox(height: 24.h),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 onPressed: isActioning
                     ? null
                     : () async {
@@ -802,30 +757,9 @@ class _AcceptRequestSheetState extends ConsumerState<_AcceptRequestSheet> {
                                 context, widget.requestId, _relation);
                         if (context.mounted) Navigator.pop(context);
                       },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                child: isActioning
-                    ? SizedBox(
-                        width: 20.w,
-                        height: 20.w,
-                        child: const CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text(
-                        'Accept',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
+                isLoading: isActioning,
+                backgroundColor: AppColor.primary,
+                text: 'Accept',
               ),
             ),
           ],
@@ -945,7 +879,7 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                 SizedBox(width: 10.w),
                 SizedBox(
                   height: 48.h,
-                  child: ElevatedButton(
+                  child: CustomElevatedButton(
                     onPressed: state.isSearching
                         ? null
                         : () {
@@ -954,32 +888,10 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                                 .read(familyMembersProvider.notifier)
                                 .searchByPhone(_phoneController.text);
                           },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.primary,
-                      disabledBackgroundColor:
-                          AppColor.primary.withValues(alpha: 0.5),
-                      padding: EdgeInsets.symmetric(horizontal: 18.w),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    child: state.isSearching
-                        ? SizedBox(
-                            width: 18.w,
-                            height: 18.w,
-                            child: const CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
-                          )
-                        : Text(
-                            'Search',
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                    isLoading: state.isSearching,
+                    backgroundColor: AppColor.primary,
+                    loaderSize: 18.w,
+                    text: 'Search',
                   ),
                 ),
               ],
@@ -1016,7 +928,7 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
             SizedBox(height: 24.h),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 onPressed: (state.foundUser == null || state.isSending)
                     ? null
                     : () async {
@@ -1027,34 +939,11 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                           Navigator.pop(context);
                         }
                       },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary,
-                  disabledBackgroundColor:
-                      AppColor.primary.withValues(alpha: 0.4),
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  elevation: 0,
-                ),
-                child: state.isSending
-                    ? SizedBox(
-                        width: 20.w,
-                        height: 20.w,
-                        child: const CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text(
-                        state.foundUser != null
-                            ? 'Send Invite to ${(state.foundUser!['name'] as String?) ?? 'Member'}'
-                            : 'Search first',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
+                isLoading: state.isSending,
+                backgroundColor: AppColor.primary,
+                text: state.foundUser != null
+                    ? 'Send Invite to ${(state.foundUser!['name'] as String?) ?? 'Member'}'
+                    : 'Search first',
               ),
             ),
           ],
