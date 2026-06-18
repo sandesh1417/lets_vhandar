@@ -11,7 +11,7 @@ import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/forget_password/providers/forget_password_provider.dart';
-import 'package:lets_vhandar/features/auth/otp/widgets/otp_section_widget.dart';
+import 'package:lets_vhandar/widgets/otp_field.dart';
 import 'package:lets_vhandar/features/auth/register/providers/register_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
@@ -221,15 +221,18 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                     SizedBox(height: 32.h),
 
                     // OTP input
-                    PinputExample(
-                      controller: _otpController,
-                      focusNode: focusNode,
-                      formKey: formKey,
-                      onCompleted: (_) {},
-                      validator: (value) => value != null &&
-                              value.length == AppConstants.otpLength
-                          ? null
-                          : 'Invalid OTP',
+                    Form(
+                      key: formKey,
+                      child: OtpField(
+                        length: AppConstants.otpLength,
+                        controller: _otpController,
+                        focusNode: focusNode,
+                        onCompleted: (_) {},
+                        validator: (value) => value != null &&
+                                value.length == AppConstants.otpLength
+                            ? null
+                            : 'Invalid OTP',
+                      ),
                     ),
 
                     SizedBox(height: 20.h),

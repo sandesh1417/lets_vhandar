@@ -18,7 +18,7 @@ import 'package:lets_vhandar/features/profile/presentation/business_location_pic
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
-import 'package:pinput/pinput.dart';
+import 'package:lets_vhandar/widgets/otp_field.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1107,38 +1107,11 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
             SizedBox(height: 24.h),
             Form(
               key: _formKey,
-              child: Pinput(
+              child: OtpField(
                 length: 5,
                 controller: _otpCtrl,
                 focusNode: _focusNode,
                 autofocus: true,
-                defaultPinTheme: PinTheme(
-                  width: 52.w,
-                  height: 52.w,
-                  textStyle: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    color: vc.onSurface,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                        color: AppColor.primary.withValues(alpha: 0.35)),
-                  ),
-                ),
-                focusedPinTheme: PinTheme(
-                  width: 52.w,
-                  height: 52.w,
-                  textStyle: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    color: vc.onSurface,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColor.primary, width: 2),
-                  ),
-                ),
               ),
             ),
             SizedBox(height: 24.h),
