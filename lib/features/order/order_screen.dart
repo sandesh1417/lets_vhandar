@@ -533,7 +533,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         _searchController.text.isNotEmpty;
 
     if (loginState.isGuest || !loginState.isLoggedIn) {
-      return Scaffold(
+      return CustomScaffoldWrapper(
+        isScrollable: false,
+        bottomSafeArea: false,
         backgroundColor: context.vColors.scaffoldBg,
         appBar: AppBar(
           backgroundColor: AppColor.primary,
@@ -602,7 +604,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       );
     }
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       resizeToAvoidBottomInset: false,
       backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(

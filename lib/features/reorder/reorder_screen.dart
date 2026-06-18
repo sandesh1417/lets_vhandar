@@ -163,7 +163,9 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
 
     // ── Not logged in ─────────────────────────────────────────────────────────
     if (loginState.isGuest || !loginState.isLoggedIn) {
-      return Scaffold(
+      return CustomScaffoldWrapper(
+        isScrollable: false,
+        bottomSafeArea: false,
         backgroundColor: context.vColors.scaffoldBg,
         appBar: AppBar(
           backgroundColor: AppColor.primary,
@@ -238,7 +240,9 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
     }
 
     // ── Logged in ─────────────────────────────────────────────────────────────
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,

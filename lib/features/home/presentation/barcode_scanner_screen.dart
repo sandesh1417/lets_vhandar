@@ -13,6 +13,7 @@ import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class BarcodeScannerScreen extends ConsumerStatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -116,7 +117,9 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
-      child: Scaffold(
+      child: CustomScaffoldWrapper(
+        isScrollable: false,
+        bottomSafeArea: false,
         backgroundColor: Colors.black,
         body: _buildBody(),
       ),
@@ -457,7 +460,9 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
     final inputFill =
         isDark ? cs.surfaceContainerHighest : const Color(0xFFF4F6F9);
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: bgColor,
       body: Column(
         children: [

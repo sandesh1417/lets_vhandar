@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class ProductImageSlider extends StatefulWidget {
   final ProductData product;
@@ -149,7 +150,9 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
   Widget build(BuildContext context) {
     final images = widget.images;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Colors.black,
       body: Stack(
         children: [

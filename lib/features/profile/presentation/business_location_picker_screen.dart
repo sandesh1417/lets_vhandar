@@ -11,6 +11,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/data/location_search_service.dart';
 import 'package:lets_vhandar/features/address/widgets/address_map_picker.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class BusinessLocationResult {
   final LatLng latLng;
@@ -168,7 +169,9 @@ class _BusinessLocationPickerScreenState
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.surface,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
