@@ -136,7 +136,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      isDismissible: false,
+      // isDismissible: false,
       builder: (_) => _OtpSheet(
         phoneNumber: _phoneCtrl.text.trim(),
         onVerify: (otp) => _registerBusiness(otp),
@@ -306,17 +306,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             hintText: 'Create a password',
                             obscureText: !_showPassword,
                             prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
-                            suffixIcon: GestureDetector(
-                              onTap: () => setState(
-                                  () => _showPassword = !_showPassword),
-                              child: Icon(
-                                _showPassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                size: 18.sp,
-                                color: vc.onSurfaceMuted,
-                              ),
-                            ),
+                            onObscurePressed: () =>
+                                setState(() => _showPassword = !_showPassword),
                             validator: AppValidators.validatePassword,
                           ),
                           SizedBox(height: 14.h),
@@ -327,17 +318,8 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             hintText: 'Repeat your password',
                             obscureText: !_showConfirm,
                             prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
-                            suffixIcon: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _showConfirm = !_showConfirm),
-                              child: Icon(
-                                _showConfirm
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                size: 18.sp,
-                                color: vc.onSurfaceMuted,
-                              ),
-                            ),
+                            onObscurePressed: () =>
+                                setState(() => _showConfirm = !_showConfirm),
                             validator: (v) =>
                                 AppValidators.validateConfirmPassword(
                                     v, _passwordCtrl.text),
