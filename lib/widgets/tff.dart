@@ -35,6 +35,10 @@ class CustomTextField extends StatefulWidget {
   final List<String>? autofillHints;
   final String? prefixText;
 
+  /// Optional key forwarded to the inner [TextFormField] so callers can drive
+  /// validation of this single field (e.g. `fieldKey.currentState?.validate()`).
+  final Key? fieldKey;
+
   const CustomTextField({
     required this.hintText,
     this.labelText,
@@ -66,6 +70,7 @@ class CustomTextField extends StatefulWidget {
     this.enabled,
     this.autofillHints,
     this.prefixText,
+    this.fieldKey,
   });
 
   final AutovalidateMode? autovalidateMode;
@@ -78,6 +83,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: widget.fieldKey,
       enabled: widget.enabled,
       autofocus: widget.autofocus,
       readOnly: widget.isReadOnly ?? false,

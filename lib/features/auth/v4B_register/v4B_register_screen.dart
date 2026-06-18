@@ -50,6 +50,11 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   final _businessNameCtrl = TextEditingController();
   final _taxNumberCtrl = TextEditingController();
 
+  // Drives validation of the confirm-password field on its own (so it can be
+  // re-checked when focus lands on it or when the password above changes).
+  final _confirmFieldKey = GlobalKey<FormFieldState<String>>();
+  final _confirmFocus = FocusNode();
+
   // State
   bool _showPassword = false;
   bool _showConfirm = false;
@@ -60,6 +65,17 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
   LatLng? _locationLatLng;
   String? _locationAddress;
   bool _showLocationError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Validate the confirm-password field as soon as focus shifts to it.
+    _confirmFocus.addListener(() {
+      if (_confirmFocus.hasFocus) {
+        _confirmFieldKey.currentState?.validate();
+      }
+    });
+  }
 
   Future<void> _openUrl(String url) async {
     try {
@@ -75,6 +91,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     _confirmPassCtrl.dispose();
     _businessNameCtrl.dispose();
     _taxNumberCtrl.dispose();
+    _confirmFocus.dispose();
     super.dispose();
   }
 
@@ -308,18 +325,31 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                             prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
                             onObscurePressed: () =>
                                 setState(() => _showPassword = !_showPassword),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            onChanged: (_) {
+                              // Keep the match error in sync while editing the
+                              // password after the confirm field is filled.
+                              if (_confirmPassCtrl.text.isNotEmpty) {
+                                _confirmFieldKey.currentState?.validate();
+                              }
+                            },
                             validator: AppValidators.validatePassword,
                           ),
                           SizedBox(height: 14.h),
                           _Label('Confirm Password', vc),
                           SizedBox(height: 6.h),
                           CustomTextField(
+                            fieldKey: _confirmFieldKey,
+                            focusNode: _confirmFocus,
                             controller: _confirmPassCtrl,
                             hintText: 'Repeat your password',
                             obscureText: !_showConfirm,
                             prefixIcon: _PrefixIcon(Icons.key_outlined, vc),
                             onObscurePressed: () =>
                                 setState(() => _showConfirm = !_showConfirm),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (v) =>
                                 AppValidators.validateConfirmPassword(
                                     v, _passwordCtrl.text),
