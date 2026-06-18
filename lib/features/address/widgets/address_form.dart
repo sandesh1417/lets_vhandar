@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -250,6 +251,10 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 hint: '+977 9XXXXXXXXX',
                 fill: fieldFill,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
                 validator: AppValidators.validatePhone,
               ),
             ],
@@ -265,9 +270,10 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 loaderSize: 22,
                 backgroundColor: AppColor.primary,
                 foregroundColor: Colors.white,
-                text: widget.isEditing ? 'Update Address' : 'Save Address',
+                text: widget.isEditing ? 'Update Address' : 'Save AddressX',
               ),
             ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
@@ -368,6 +374,7 @@ class _InputField extends StatelessWidget {
   final Color fill;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const _InputField({
     required this.controller,
@@ -375,6 +382,7 @@ class _InputField extends StatelessWidget {
     required this.fill,
     this.keyboardType,
     this.validator,
+    this.inputFormatters,
   });
 
   @override
@@ -401,6 +409,7 @@ class _InputField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       validator: validator,
       style: TextStyle(
         fontSize: 14.sp,
