@@ -50,7 +50,6 @@ final selectedSortProvider = StateProvider.autoDispose
 final searchQueryProvider =
     StateProvider.autoDispose.family<String, String>((ref, slug) => '');
 
-
 final categoryProductsProvider =
     FutureProvider.family<List<ProductData>, String>((ref, slug) async {
   final subCategorySlug = ref.watch(selectedSubCategorySlugProvider(slug));

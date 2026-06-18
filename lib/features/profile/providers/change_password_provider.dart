@@ -4,14 +4,16 @@ import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
-final changePasswordProvider = StateNotifierProvider<ChangePasswordNotifier, AsyncValue<void>>((ref) {
+final changePasswordProvider =
+    StateNotifierProvider<ChangePasswordNotifier, AsyncValue<void>>((ref) {
   return ChangePasswordNotifier(locator<AuthRepositoryImpl>());
 });
 
 class ChangePasswordNotifier extends StateNotifier<AsyncValue<void>> {
   final AuthRepositoryImpl _authRepository;
 
-  ChangePasswordNotifier(this._authRepository) : super(const AsyncValue.data(null));
+  ChangePasswordNotifier(this._authRepository)
+      : super(const AsyncValue.data(null));
 
   Future<void> changePassword(
     BuildContext context, {
@@ -33,7 +35,8 @@ class ChangePasswordNotifier extends StateNotifier<AsyncValue<void>> {
     result.when(
       success: (data) {
         state = const AsyncValue.data(null);
-        CustomSnackbar.success(context, message: data.message ?? 'Password changed successfully');
+        CustomSnackbar.success(context,
+            message: data.message ?? 'Password changed successfully');
         onSuccess?.call();
       },
       failure: (failure) {

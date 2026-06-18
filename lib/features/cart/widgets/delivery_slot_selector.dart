@@ -13,7 +13,8 @@ class DeliverySlotSelector extends ConsumerWidget {
   final bool isError;
   const DeliverySlotSelector({super.key, this.isError = false});
 
-  void _openPicker(BuildContext context, WidgetRef ref, String? currentId, List<TimeSlot> slots) {
+  void _openPicker(BuildContext context, WidgetRef ref, String? currentId,
+      List<TimeSlot> slots) {
     showAppSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -91,7 +92,8 @@ class DeliverySlotSelector extends ConsumerWidget {
                       'Delivery Time Slot',
                       style: TextStyle(
                         fontSize: 11.sp,
-                        color: hasError ? Colors.red.shade600 : vc.onSurfaceMuted,
+                        color:
+                            hasError ? Colors.red.shade600 : vc.onSurfaceMuted,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -165,7 +167,8 @@ class _SlotPickerSheet extends StatelessWidget {
         color: vc.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16.h),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

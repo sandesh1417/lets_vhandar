@@ -103,9 +103,7 @@ class BillDetailsCard extends StatelessWidget {
                         _BillRow(data: e.value),
                         if (e.key < rows.length - 1)
                           Divider(
-                              height: 16.h,
-                              thickness: 1,
-                              color: vc.divider),
+                              height: 16.h, thickness: 1, color: vc.divider),
                       ],
                     )),
               ],

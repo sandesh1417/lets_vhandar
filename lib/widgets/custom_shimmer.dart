@@ -49,8 +49,7 @@ class _CustomShimmerState extends State<CustomShimmer>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final shimmerBase =
-        isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade200;
+    final shimmerBase = isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade200;
     final shimmerHighlight =
         isDark ? const Color(0xFF383838) : Colors.grey.shade100;
 
@@ -553,9 +552,11 @@ class OrderDetailShimmer extends StatelessWidget {
                           const CustomShimmer.rectangular(
                               height: 12, width: double.infinity),
                           SizedBox(height: 8.h),
-                          const CustomShimmer.rectangular(height: 11, width: 80),
+                          const CustomShimmer.rectangular(
+                              height: 11, width: 80),
                           SizedBox(height: 8.h),
-                          const CustomShimmer.rectangular(height: 14, width: 60),
+                          const CustomShimmer.rectangular(
+                              height: 14, width: 60),
                         ],
                       ),
                     ),

@@ -79,7 +79,8 @@ class AccountSupportCard extends StatelessWidget {
                 await launchUrl(webUrl, mode: LaunchMode.externalApplication);
               } catch (e) {
                 if (context.mounted) {
-                  CustomSnackbar.error(context, message: 'Could not launch WhatsApp');
+                  CustomSnackbar.error(context,
+                      message: 'Could not launch WhatsApp');
                 }
               }
             },

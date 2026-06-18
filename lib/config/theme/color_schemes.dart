@@ -156,7 +156,9 @@ class AppColors {
     surface: Color(0xFF2F3541),
     onSurface: Colors.white,
   );
-  static const Color greenTxt = Color(0xFF264136); // Can be used for consistent green text
+  static const Color greenTxt =
+      Color(0xFF264136); // Can be used for consistent green text
 
-  static Color primary(BuildContext context) => Theme.of(context).colorScheme.primary; // Dynamic based on theme
+  static Color primary(BuildContext context) =>
+      Theme.of(context).colorScheme.primary; // Dynamic based on theme
 }

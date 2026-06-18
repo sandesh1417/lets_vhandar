@@ -26,6 +26,7 @@ import 'package:lets_vhandar/features/cart/widgets/delivery_partner_safety_card.
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -37,7 +38,9 @@ class CartScreen extends ConsumerWidget {
     final totalPrice = ref.watch(totalCartPriceProvider);
     final totalMrp = ref.watch(totalCartMrpProvider);
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: context.vColors.scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColor.primary,

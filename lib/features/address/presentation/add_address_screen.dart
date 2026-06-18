@@ -21,6 +21,7 @@ import '../widgets/address_location_banner.dart';
 import '../widgets/address_map_picker.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class AddAddressScreen extends ConsumerStatefulWidget {
@@ -407,9 +408,11 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
       backgroundColor: vc.scaffoldBg,
       resizeToAvoidBottomInset: true,
+      isScrollable: false,
+      bottomSafeArea: false,
       appBar: AppBar(
         backgroundColor: AppColor.primary,
         elevation: 0,

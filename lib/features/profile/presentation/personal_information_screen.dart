@@ -10,6 +10,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class PersonalInformationScreen extends ConsumerWidget {
   const PersonalInformationScreen({super.key});
@@ -20,7 +21,9 @@ class PersonalInformationScreen extends ConsumerWidget {
     final isBusiness = user?.isBusiness == true;
     final businessDetail = user?.businessDetail;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomScreenHeader(
         title: isBusiness ? 'Business Information' : 'Personal Information',
@@ -101,9 +104,12 @@ class PersonalInformationScreen extends ConsumerWidget {
 
             // Name + verified badge
             Builder(builder: (ctx) {
-              final isComplete = _isProfileComplete(user, isBusiness, businessDetail);
+              final isComplete =
+                  _isProfileComplete(user, isBusiness, businessDetail);
               final displayName = isBusiness
-                  ? (businessDetail?['businessName'] as String? ?? user?.name ?? 'Business')
+                  ? (businessDetail?['businessName'] as String? ??
+                      user?.name ??
+                      'Business')
                   : (user?.name ?? 'User');
               final category = businessDetail?['businessCategory'] as String?;
               final phone = user?.phoneNumber ?? '';
@@ -137,11 +143,14 @@ class PersonalInformationScreen extends ConsumerWidget {
                   // Business category pill OR phone number
                   if (isBusiness && category != null && category.isNotEmpty)
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFF3CD),
                         borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(color: const Color(0xFFE8C73A).withValues(alpha: 0.5)),
+                        border: Border.all(
+                            color:
+                                const Color(0xFFE8C73A).withValues(alpha: 0.5)),
                       ),
                       child: Text(
                         _capitalize(category),
@@ -677,11 +686,13 @@ class _InfoRow extends StatelessWidget {
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
-bool _isProfileComplete(dynamic user, bool isBusiness, Map<String, dynamic>? bd) {
+bool _isProfileComplete(
+    dynamic user, bool isBusiness, Map<String, dynamic>? bd) {
   if (isBusiness) {
     final pan = bd?['panNumber'] as String?;
     final vat = bd?['vatNumber'] as String?;
-    final location = bd?['locationAddress'] as String? ?? bd?['addressName'] as String?;
+    final location =
+        bd?['locationAddress'] as String? ?? bd?['addressName'] as String?;
     final fields = [
       bd?['businessName'] as String?,
       bd?['businessCategory'] as String?,

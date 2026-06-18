@@ -63,7 +63,8 @@ class GeneralSettings {
         showSliderBanners: json["showSliderBanners"],
         deliveryTimeSlots: json["deliveryTimeSlots"] == null
             ? null
-            : List<String>.from(json["deliveryTimeSlots"].map((x) => x.toString())),
+            : List<String>.from(
+                json["deliveryTimeSlots"].map((x) => x.toString())),
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),

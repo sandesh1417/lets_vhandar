@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class VhandarForBusinessScreen extends StatelessWidget {
   const VhandarForBusinessScreen({super.key});
@@ -15,7 +16,8 @@ class VhandarForBusinessScreen extends StatelessWidget {
     (
       icon: Icons.inventory_2_outlined,
       title: 'Bulk Ordering',
-      desc: 'Order large quantities at wholesale prices tailored for businesses.',
+      desc:
+          'Order large quantities at wholesale prices tailored for businesses.',
     ),
     (
       icon: Icons.local_offer_outlined,
@@ -25,7 +27,8 @@ class VhandarForBusinessScreen extends StatelessWidget {
     (
       icon: Icons.receipt_long_outlined,
       title: 'Invoice & Billing',
-      desc: 'Get itemised invoices and easy billing for your business expenses.',
+      desc:
+          'Get itemised invoices and easy billing for your business expenses.',
     ),
     (
       icon: Icons.support_agent_rounded,
@@ -43,7 +46,9 @@ class VhandarForBusinessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       appBar: const CustomScreenHeader(title: 'Vhandar For Business'),
       body: Column(

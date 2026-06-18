@@ -11,9 +11,7 @@ class WarehouseResponse {
 
   factory WarehouseResponse.fromMap(Map<String, dynamic> json) =>
       WarehouseResponse(
-        data: json["data"] == null
-            ? null
-            : WarehouseData.fromMap(json["data"]),
+        data: json["data"] == null ? null : WarehouseData.fromMap(json["data"]),
         status: json["status"],
       );
 }

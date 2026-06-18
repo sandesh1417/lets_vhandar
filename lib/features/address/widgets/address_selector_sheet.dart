@@ -90,8 +90,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
 
               // Header
               Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 child: Row(
                   children: [
                     Container(
@@ -184,48 +183,48 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: Row(
-                          children: [
-                            Container(
-                              width: 40.w,
-                              height: 40.w,
-                              decoration: BoxDecoration(
-                                color: vc.surface,
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(color: vc.divider),
-                              ),
-                              child: Icon(
-                                Icons.add,
-                                color: AppColor.primary,
-                                size: 22.sp,
-                              ),
-                            ),
-                            SizedBox(width: 14.w),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Add new address',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColor.primary,
-                                  ),
+                            children: [
+                              Container(
+                                width: 40.w,
+                                height: 40.w,
+                                decoration: BoxDecoration(
+                                  color: vc.surface,
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  border: Border.all(color: vc.divider),
                                 ),
-                                SizedBox(height: 2.h),
-                                Text(
-                                  'Save a location for faster checkout',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: AppColor.primary
-                                        .withValues(alpha: 0.7),
-                                  ),
+                                child: Icon(
+                                  Icons.add,
+                                  color: AppColor.primary,
+                                  size: 22.sp,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              SizedBox(width: 14.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Add new address',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColor.primary,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Text(
+                                    'Save a location for faster checkout',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColor.primary
+                                          .withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     ),
                     SizedBox(height: 20.h),
 
@@ -377,8 +376,7 @@ class _AddressTile extends StatelessWidget {
                   SizedBox(height: 2.h),
                   Text(
                     address.description ?? '',
-                    style: TextStyle(
-                        fontSize: 12.sp, color: vc.onSurfaceMuted),
+                    style: TextStyle(fontSize: 12.sp, color: vc.onSurfaceMuted),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -389,8 +387,7 @@ class _AddressTile extends StatelessWidget {
             GestureDetector(
               onTap: onEdit,
               child: Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: vc.surfaceVariant,
                   borderRadius: BorderRadius.circular(8.r),

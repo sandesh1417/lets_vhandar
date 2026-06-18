@@ -214,9 +214,12 @@ class _AddressPill extends ConsumerWidget {
 
     if (isBusiness) {
       final bd = user?.businessDetail;
-      final address = (bd?['locationAddress'] ?? bd?['addressName'] ?? '') as String;
+      final address =
+          (bd?['locationAddress'] ?? bd?['addressName'] ?? '') as String;
       final businessName = (bd?['businessName'] ?? '') as String;
-      final displayAddress = address.isNotEmpty ? address : (businessName.isNotEmpty ? businessName : 'Business Location');
+      final displayAddress = address.isNotEmpty
+          ? address
+          : (businessName.isNotEmpty ? businessName : 'Business Location');
 
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
@@ -268,7 +271,8 @@ class _AddressPill extends ConsumerWidget {
         if (userId.isNotEmpty) {
           showAddressSelectorSheet(context, userId: userId);
         } else {
-          CustomSnackbar.info(context, message: 'Please login to manage addresses');
+          CustomSnackbar.info(context,
+              message: 'Please login to manage addresses');
         }
       },
       child: Container(
@@ -306,7 +310,8 @@ class _AddressPill extends ConsumerWidget {
             ),
             Text(
               selected != null
-                  ? _truncate(selected.description ?? 'Select delivery location')
+                  ? _truncate(
+                      selected.description ?? 'Select delivery location')
                   : 'Select delivery location',
               style: TextStyle(
                 fontSize: 13.sp,

@@ -6,7 +6,7 @@ final faqRepositoryProvider = Provider((ref) => FAQRepository());
 final faqProvider = FutureProvider<List<FAQData>>((ref) async {
   final repository = ref.watch(faqRepositoryProvider);
   final result = await repository.getFAQs();
-  
+
   return result.when(
     success: (faqs) => faqs,
     failure: (failure) => throw failure,

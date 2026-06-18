@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 
-
 class ProductWhyShopSection extends StatelessWidget {
   const ProductWhyShopSection({super.key});
 
@@ -29,17 +28,20 @@ class ProductWhyShopSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 14.h),
-          _buildItem(context,
+          _buildItem(
+            context,
             'assets/images/why_delivery.svg',
             'Express Delivery',
             'Delivered to your doorstep from nearby dark stores.',
           ),
-          _buildItem(context,
+          _buildItem(
+            context,
             'assets/images/why_price.svg',
             'Best Prices & Offers',
             'Direct deals from manufacturers — lowest prices guaranteed.',
           ),
-          _buildItem(context,
+          _buildItem(
+            context,
             'assets/images/why_assortment.svg',
             'Wide Assortment',
             '5000+ products across all major categories.',
@@ -50,7 +52,8 @@ class ProductWhyShopSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(BuildContext context, String svgAsset, String title, String subtitle,
+  Widget _buildItem(
+      BuildContext context, String svgAsset, String title, String subtitle,
       {bool isLast = false}) {
     return Padding(
       padding: EdgeInsets.only(bottom: isLast ? 0 : 14.h),

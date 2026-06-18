@@ -39,7 +39,6 @@ class ProductGrid extends StatelessWidget {
 
     return GridView.builder(
       padding: padding ?? EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 80.h),
-
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: mainAxisSpacing ?? 6.h,

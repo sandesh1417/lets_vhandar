@@ -50,7 +50,8 @@ class LocationSearchService {
 
     final key = _apiKey;
     if (key.isEmpty) {
-      debugPrint('Places search: GOOGLE_MAPS_API_KEY is empty (.env not loaded?)');
+      debugPrint(
+          'Places search: GOOGLE_MAPS_API_KEY is empty (.env not loaded?)');
       return [];
     }
 

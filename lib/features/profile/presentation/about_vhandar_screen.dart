@@ -5,6 +5,7 @@ import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/accoun
 import 'package:lets_vhandar/features/dashboard/presentation/tabs/widgets/account_section.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class AboutVhandarScreen extends StatelessWidget {
   const AboutVhandarScreen({super.key});
@@ -19,7 +20,9 @@ class AboutVhandarScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       appBar: const CustomScreenHeader(title: 'About Vhandar'),
       body: SingleChildScrollView(
@@ -76,8 +79,7 @@ class AboutVhandarScreen extends StatelessWidget {
                 AccountMenuItem(
                   icon: Icons.privacy_tip_outlined,
                   title: 'Privacy Policy',
-                  onTap: () =>
-                      _open('https://www.vhandar.com/privacy-policy'),
+                  onTap: () => _open('https://www.vhandar.com/privacy-policy'),
                 ),
                 AccountMenuItem(
                   icon: Icons.gavel_outlined,
@@ -87,15 +89,13 @@ class AboutVhandarScreen extends StatelessWidget {
                 AccountMenuItem(
                   icon: Icons.assignment_return_outlined,
                   title: 'Return Policy',
-                  onTap: () =>
-                      _open('https://www.vhandar.com/return-policy'),
+                  onTap: () => _open('https://www.vhandar.com/return-policy'),
                 ),
                 AccountMenuItem(
                   icon: Icons.local_shipping_outlined,
                   title: 'Shipping Policy',
                   showDivider: false,
-                  onTap: () =>
-                      _open('https://www.vhandar.com/shipping-policy'),
+                  onTap: () => _open('https://www.vhandar.com/shipping-policy'),
                 ),
               ],
             ),

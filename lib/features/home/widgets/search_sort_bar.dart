@@ -14,7 +14,7 @@ class SearchSortBar extends ConsumerWidget {
     final vc = context.vColors;
     final searchState = ref.watch(searchProvider);
     final currentSort = searchState.selectedSort;
-    
+
     const sortLabels = {
       'relevance': 'Relevance',
       'price_low_high': 'Price (Low to High)',
@@ -33,7 +33,8 @@ class SearchSortBar extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('Sort By', style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted)),
+          Text('Sort By',
+              style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted)),
           SizedBox(width: 6.w),
           InkWell(
             onTap: () => _showSortModal(context, ref),
@@ -55,7 +56,8 @@ class SearchSortBar extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(width: 4.w),
-                  Icon(Icons.keyboard_arrow_down, size: 14.sp, color: AppColor.primary),
+                  Icon(Icons.keyboard_arrow_down,
+                      size: 14.sp, color: AppColor.primary),
                 ],
               ),
             ),
@@ -70,95 +72,105 @@ class SearchSortBar extends ConsumerWidget {
 }
 
 void showSearchSortModal(BuildContext context, WidgetRef ref) {
-    final options = [
-      {'val': 'relevance', 'label': 'Relevance'},
-      {'val': 'price_low_high', 'label': 'Price (Low to High)'},
-      {'val': 'price_high_low', 'label': 'Price (High to Low)'},
-      {'val': 'discount_high_low', 'label': 'Discount (High to Low)'},
-      // {'val': 'discount_low_high', 'label': 'Discount (Low to High)'},
-      // {'val': 'name_a_z', 'label': 'Name (A to Z)'},
-    ];
+  final options = [
+    {'val': 'relevance', 'label': 'Relevance'},
+    {'val': 'price_low_high', 'label': 'Price (Low to High)'},
+    {'val': 'price_high_low', 'label': 'Price (High to Low)'},
+    {'val': 'discount_high_low', 'label': 'Discount (High to Low)'},
+    // {'val': 'discount_low_high', 'label': 'Discount (Low to High)'},
+    // {'val': 'name_a_z', 'label': 'Name (A to Z)'},
+  ];
 
-    showAppSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      ),
-      builder: (context) {
-        final vc = context.vColors;
-        return SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              decoration: BoxDecoration(
-                color: vc.surface,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-              ),
-              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      margin: EdgeInsets.only(bottom: 20.h),
-                      decoration: BoxDecoration(
-                        color: vc.onSurfaceMuted.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(2.r),
-                      ),
+  showAppSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+    ),
+    builder: (context) {
+      final vc = context.vColors;
+      return SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              color: vc.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            ),
+            padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.w,
+                    height: 4.h,
+                    margin: EdgeInsets.only(bottom: 20.h),
+                    decoration: BoxDecoration(
+                      color: vc.onSurfaceMuted.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2.r),
                     ),
                   ),
-                  Text(
-                    'Sort By',
-                    style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-                  ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final currentSort = ref.watch(searchProvider).selectedSort;
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: options.length,
-                        separatorBuilder: (_, __) => const Divider(),
-                        itemBuilder: (context, index) {
-                          final opt = options[index];
-                          final isSelected = currentSort == opt['val'];
-                          return Material(
-                            color: Colors.transparent,
-                            child: ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(
-                                opt['label']!,
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? AppColor.primary : vc.onSurface,
-                                ),
+                ),
+                Text(
+                  'Sort By',
+                  style:
+                      TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final currentSort = ref.watch(searchProvider).selectedSort;
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: options.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (context, index) {
+                        final opt = options[index];
+                        final isSelected = currentSort == opt['val'];
+                        return Material(
+                          color: Colors.transparent,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              opt['label']!,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColor.primary
+                                    : vc.onSurface,
                               ),
-                              trailing: isSelected
-                                  ? Icon(Icons.check_circle, color: AppColor.primary)
-                                  : Icon(Icons.radio_button_unchecked, color: vc.onSurfaceMuted),
-                              onTap: () {
-                                ref.read(searchProvider.notifier).setSort(opt['val']!);
-                                Future.delayed(const Duration(milliseconds: 300), () {
-                                  if (context.mounted) Navigator.pop(context);
-                                });
-                              },
                             ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  SizedBox(height: 10.h),
-                ],
-              ),
+                            trailing: isSelected
+                                ? Icon(Icons.check_circle,
+                                    color: AppColor.primary)
+                                : Icon(Icons.radio_button_unchecked,
+                                    color: vc.onSurfaceMuted),
+                            onTap: () {
+                              ref
+                                  .read(searchProvider.notifier)
+                                  .setSort(opt['val']!);
+                              Future.delayed(const Duration(milliseconds: 300),
+                                  () {
+                                if (context.mounted) Navigator.pop(context);
+                              });
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                SizedBox(height: 10.h),
+              ],
             ),
           ),
-        );
-      },
-    );
+        ),
+      );
+    },
+  );
 }

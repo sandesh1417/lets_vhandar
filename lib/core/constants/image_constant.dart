@@ -8,7 +8,8 @@ class KImageConstant {
   static String pointsBadge = 'assets/images/points_badge.svg';
   static String userProfile = 'assets/icons/user_profile.svg';
   static String businessProfile = 'assets/icons/business_profile.svg';
-  static String deliveryInformation = 'assets/icons/vhandar_delivery_information.svg';
+  static String deliveryInformation =
+      'assets/icons/vhandar_delivery_information.svg';
   static String otpScreen = 'assets/images/otp_screen.svg';
   static String forgetPassword = 'assets/icons/forget-password.svg';
   static String couponCode = 'assets/images/coupon_code.svg';

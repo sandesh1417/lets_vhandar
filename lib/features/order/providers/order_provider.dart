@@ -49,8 +49,11 @@ class OrderState {
     }
     final query = searchQuery!.trim().toLowerCase();
     return orders.where((order) {
-      final matchesOrderId = order.orderId?.toLowerCase().contains(query) ?? false;
-      final matchesProduct = order.products?.any((prod) => prod.name?.toLowerCase().contains(query) ?? false) ?? false;
+      final matchesOrderId =
+          order.orderId?.toLowerCase().contains(query) ?? false;
+      final matchesProduct = order.products?.any(
+              (prod) => prod.name?.toLowerCase().contains(query) ?? false) ??
+          false;
       return matchesOrderId || matchesProduct;
     }).toList();
   }
@@ -83,7 +86,8 @@ class OrderState {
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
       totalOrders: totalOrders ?? this.totalOrders,
-      paymentStatus: clearFilters ? null : (paymentStatus ?? this.paymentStatus),
+      paymentStatus:
+          clearFilters ? null : (paymentStatus ?? this.paymentStatus),
       status: clearFilters ? null : (status ?? this.status),
       startDate: clearFilters ? null : (startDate ?? this.startDate),
       endDate: clearFilters ? null : (endDate ?? this.endDate),
@@ -123,7 +127,8 @@ class OrderNotifier extends StateNotifier<OrderState> {
         clearFilters: clearFilters,
       );
     } else {
-      state = state.copyWith(isLoadingMore: true, clearError: true, loadMoreFailed: false);
+      state = state.copyWith(
+          isLoadingMore: true, clearError: true, loadMoreFailed: false);
     }
 
     final activePaymentStatus = page == 1 ? paymentStatus : state.paymentStatus;
@@ -144,7 +149,8 @@ class OrderNotifier extends StateNotifier<OrderState> {
       case Success(value: final response):
         final newOrders = response.data?.data ?? [];
         final total = response.data?.pagination?.total?.toInt() ?? 0;
-        final totalPages = (total / AppConstants.orderPageLimit).ceil().clamp(1, 9999);
+        final totalPages =
+            (total / AppConstants.orderPageLimit).ceil().clamp(1, 9999);
         state = state.copyWith(
           isLoading: false,
           isLoadingMore: false,

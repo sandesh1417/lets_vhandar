@@ -30,7 +30,7 @@ class ProductBrandSection extends ConsumerWidget {
                 child: Row(
                   children: [
                     // Minimized Brand Logo
-               ClipRRect(
+                    ClipRRect(
                       borderRadius: BorderRadius.circular(8.r),
                       child: Container(
                         width: 42.w,

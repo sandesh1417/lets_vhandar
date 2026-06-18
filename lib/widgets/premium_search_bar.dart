@@ -309,8 +309,7 @@ class _AnimatedSearchHintState extends State<_AnimatedSearchHint>
                           child: Text(nextKeyword, style: keywordStyle),
                         ),
                       ),
-                    if (!isAnimating)
-                      Text(keyword, style: keywordStyle),
+                    if (!isAnimating) Text(keyword, style: keywordStyle),
                   ],
                 );
               },

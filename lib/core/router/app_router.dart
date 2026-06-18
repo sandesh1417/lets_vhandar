@@ -223,7 +223,8 @@ class LVGoRouter {
             child: ProductDetailScreen(product: product),
             transitionDuration: const Duration(milliseconds: 350),
             reverseTransitionDuration: const Duration(milliseconds: 280),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: CurvedAnimation(
                   parent: animation,
@@ -506,7 +507,9 @@ class _RouterErrorPage extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                kDebugMode ? (error?.toString() ?? '') : 'Something went wrong.',
+                kDebugMode
+                    ? (error?.toString() ?? '')
+                    : 'Something went wrong.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13.sp, color: Colors.grey),
               ),

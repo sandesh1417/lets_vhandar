@@ -32,7 +32,8 @@ class ProductRepository {
   }
 
   Future<Result<List<ProductData>, Failure>> getProductsByCategory(
-      String categoryId, {int limit = 20}) async {
+      String categoryId,
+      {int limit = 20}) async {
     try {
       final response = await _apiClient.get(
         ApiUrl.products,

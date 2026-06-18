@@ -124,7 +124,8 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                                   ),
                                   decoration: InputDecoration(
                                     hintText: brandAsync.maybeWhen(
-                                      data: (b) => 'Search in ${b.name ?? 'brand'}...',
+                                      data: (b) =>
+                                          'Search in ${b.name ?? 'brand'}...',
                                       orElse: () => 'Search products...',
                                     ),
                                     hintStyle: TextStyle(
@@ -253,92 +254,94 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
           // ── Body ─────────────────────────────────────────────────
           Expanded(
             child: ref.watch(appLayoutProvider)
-          ? Row(
-              children: [
-                // Brands Sidebar
-                Container(
-                  width: 76.w,
-                  color: context.vColors.surface,
-                  child: brandsAsync.when(
-                    data: (brands) {
-                      return ListView.builder(
-                        itemCount: brands.length,
-                        itemBuilder: (context, index) {
-                          final brand = brands[index];
-                          final isSelected = _currentBrandSlug == brand.slug;
-                          return _buildSidebarItem(
-                            brand.name ?? '',
-                            brand.slug!,
-                            isSelected,
-                            brand.images?.isNotEmpty == true
-                                ? brand.images!.first.url
-                                : null,
-                          );
-                        },
-                      );
-                    },
-                    loading: () => const BrandSidebarShimmer(),
-                    error: (err, _) =>
-                        Center(child: Icon(Icons.error_outline, size: 24.sp)),
-                  ),
-                ),
-                // Product Grid Area
-                Expanded(
-                  child: Container(
+                ? Row(
+                    children: [
+                      // Brands Sidebar
+                      Container(
+                        width: 76.w,
+                        color: context.vColors.surface,
+                        child: brandsAsync.when(
+                          data: (brands) {
+                            return ListView.builder(
+                              itemCount: brands.length,
+                              itemBuilder: (context, index) {
+                                final brand = brands[index];
+                                final isSelected =
+                                    _currentBrandSlug == brand.slug;
+                                return _buildSidebarItem(
+                                  brand.name ?? '',
+                                  brand.slug!,
+                                  isSelected,
+                                  brand.images?.isNotEmpty == true
+                                      ? brand.images!.first.url
+                                      : null,
+                                );
+                              },
+                            );
+                          },
+                          loading: () => const BrandSidebarShimmer(),
+                          error: (err, _) => Center(
+                              child: Icon(Icons.error_outline, size: 24.sp)),
+                        ),
+                      ),
+                      // Product Grid Area
+                      Expanded(
+                        child: Container(
+                          color: context.vColors.scaffoldBg,
+                          child: productsAsync.when(
+                            data: (products) {
+                              if (products.isEmpty) {
+                                return const _NoProductsSuggestion();
+                              }
+                              return ProductGrid(
+                                products: products,
+                                padding:
+                                    EdgeInsets.fromLTRB(5.w, 6.h, 5.w, 40.h),
+                                mainAxisSpacing: 6.h,
+                                crossAxisSpacing: 6.w,
+                              );
+                            },
+                            loading: () => BrandProductGridShimmer(
+                              padding: EdgeInsets.fromLTRB(5.w, 6.h, 5.w, 40.h),
+                              mainAxisSpacing: 6.h,
+                              crossAxisSpacing: 6.w,
+                            ),
+                            error: (_, __) => const ErrorStateWidget(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(
                     color: context.vColors.scaffoldBg,
                     child: productsAsync.when(
                       data: (products) {
                         if (products.isEmpty) {
-                          return const _NoProductsSuggestion();
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.inventory_2_outlined,
+                                    size: 48.sp, color: Colors.grey),
+                                SizedBox(height: 12.h),
+                                Text('No products found',
+                                    style: TextStyle(
+                                        color: AppColor.textMuted,
+                                        fontSize: 14.sp)),
+                              ],
+                            ),
+                          );
                         }
-                        return ProductGrid(
-                          products: products,
-                          padding: EdgeInsets.fromLTRB(5.w, 6.h, 5.w, 40.h),
-                          mainAxisSpacing: 6.h,
-                          crossAxisSpacing: 6.w,
-                        );
+                        return ProductGrid(products: products);
                       },
-                      loading: () => BrandProductGridShimmer(
-                        padding: EdgeInsets.fromLTRB(5.w, 6.h, 5.w, 40.h),
-                        mainAxisSpacing: 6.h,
-                        crossAxisSpacing: 6.w,
+                      loading: () => const BrandProductGridShimmer(),
+                      error: (_, __) => ErrorStateWidget(
+                        onRetry: () => ref.invalidate(
+                          filteredBrandProductsProvider(_currentBrandSlug),
+                        ),
                       ),
-                      error: (_, __) => const ErrorStateWidget(),
                     ),
                   ),
-                ),
-              ],
-            )
-          : Container(
-              color: context.vColors.scaffoldBg,
-              child: productsAsync.when(
-                data: (products) {
-                  if (products.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 48.sp, color: Colors.grey),
-                          SizedBox(height: 12.h),
-                          Text('No products found',
-                              style: TextStyle(
-                                  color: AppColor.textMuted,
-                                  fontSize: 14.sp)),
-                        ],
-                      ),
-                    );
-                  }
-                  return ProductGrid(products: products);
-                },
-                loading: () => const BrandProductGridShimmer(),
-                error: (_, __) => ErrorStateWidget(
-                  onRetry: () => ref.invalidate(
-                    filteredBrandProductsProvider(_currentBrandSlug),
-                  ),
-                ),
-              ),
-            ),
           ),
         ],
       ),
@@ -346,9 +349,11 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
   }
 
   void _showBrandInfoSheet(BrandData brand) {
-    final productsAsync = ref.read(filteredBrandProductsProvider(_currentBrandSlug));
+    final productsAsync =
+        ref.read(filteredBrandProductsProvider(_currentBrandSlug));
     final productCount = productsAsync.valueOrNull?.length ?? 0;
-    final imageUrl = brand.images?.firstOrNull?.url ?? brand.images?.firstOrNull?.path;
+    final imageUrl =
+        brand.images?.firstOrNull?.url ?? brand.images?.firstOrNull?.path;
     final rawDesc = brand.description ?? '';
     final description = rawDesc
         .replaceAll(RegExp(r'<[^>]*>'), '')
@@ -370,8 +375,8 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
             color: vc.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           ),
-          padding: EdgeInsets.fromLTRB(20.w, 0, 20.w,
-              20.h + MediaQuery.of(ctx).padding.bottom),
+          padding: EdgeInsets.fromLTRB(
+              20.w, 0, 20.w, 20.h + MediaQuery.of(ctx).padding.bottom),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -600,7 +605,9 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
               style: TextStyle(
                 fontSize: 9.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColor.primary : context.vColors.onSurfaceMuted,
+                color: isSelected
+                    ? AppColor.primary
+                    : context.vColors.onSurfaceMuted,
               ),
             ),
           ],
@@ -682,4 +689,3 @@ class _NoProductsSuggestion extends StatelessWidget {
     );
   }
 }
-

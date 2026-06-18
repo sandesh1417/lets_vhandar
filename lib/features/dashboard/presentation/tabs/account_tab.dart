@@ -26,6 +26,7 @@ import 'widgets/account_section.dart';
 import 'widgets/account_support_card.dart';
 import 'widgets/account_v4b_card.dart';
 import 'widgets/account_version_footer.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class AccountTab extends ConsumerStatefulWidget {
   const AccountTab({super.key});
@@ -72,7 +73,9 @@ class _AccountTabState extends ConsumerState<AccountTab> {
       return const AccountGuestView(appVersion: _appVersion);
     }
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(

@@ -133,15 +133,15 @@ class OrderProductItem extends StatelessWidget {
                         padding: EdgeInsets.symmetric(
                             horizontal: 8.w, vertical: 4.h),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2E7D32).withValues(alpha: 0.08),
+                          color:
+                              const Color(0xFF2E7D32).withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.local_offer_rounded,
-                                size: 10.sp,
-                                color: const Color(0xFF2E7D32)),
+                                size: 10.sp, color: const Color(0xFF2E7D32)),
                             SizedBox(width: 3.w),
                             Text(
                               'Saved Rs.${_discountAmount.toInt()}',

@@ -34,141 +34,142 @@ class CartItemWidget extends ConsumerWidget {
       ),
       behavior: HitTestBehavior.opaque,
       child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // ── Product Image ──────────────────────────────
-          Stack(
-            children: [
-              Container(
-                width: 72.w,
-                height: 72.h,
-                decoration: BoxDecoration(
-                  color: context.isDark ? vc.surfaceVariant : Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: vc.divider),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: CustomImageViewer(
-                    path: product.images?.isNotEmpty == true
-                        ? product.images!.first.url
-                        : null,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(width: 14.w),
-
-          // ── Details ───────────────────────────────────
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // ── Product Image ──────────────────────────────
+            Stack(
               children: [
-                Text(
-                  product.name ?? '',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: vc.onSurface,
-                    height: 1.3,
+                Container(
+                  width: 72.w,
+                  height: 72.h,
+                  decoration: BoxDecoration(
+                    color: context.isDark ? vc.surfaceVariant : Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: vc.divider),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  '${product.unitValue?.toInt() ?? 1} ${product.unit ?? ''}',
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    color: vc.onSurfaceMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Row(
-                  children: [
-                    Text(
-                      'Rs. ${displayPrice.toInt()}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: vc.onSurface,
-                      ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: CustomImageViewer(
+                      path: product.images?.isNotEmpty == true
+                          ? product.images!.first.url
+                          : null,
+                      fit: BoxFit.contain,
                     ),
-                    if (hasDiscount) ...[
-                      SizedBox(width: 6.w),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(width: 14.w),
+
+            // ── Details ───────────────────────────────────
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name ?? '',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: vc.onSurface,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    '${product.unitValue?.toInt() ?? 1} ${product.unit ?? ''}',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: vc.onSurfaceMuted,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Row(
+                    children: [
                       Text(
-                        'Rs. ${product.pricePerUnit?.toInt()}',
+                        'Rs. ${displayPrice.toInt()}',
                         style: TextStyle(
-                          fontSize: 11.sp,
-                          color: vc.onSurfaceMuted,
-                          decorationColor: vc.onSurfaceMuted,
-                          decoration: TextDecoration.lineThrough,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: vc.onSurface,
                         ),
                       ),
+                      if (hasDiscount) ...[
+                        SizedBox(width: 6.w),
+                        Text(
+                          'Rs. ${product.pricePerUnit?.toInt()}',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: vc.onSurfaceMuted,
+                            decorationColor: vc.onSurfaceMuted,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          SizedBox(width: 10.w),
+            SizedBox(width: 10.w),
 
-          // ── Quantity Stepper ──────────────────────────
-          Container(
-            height: 34.h,
-            decoration: BoxDecoration(
-              color: AppColor.primary,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _StepBtn(
-                  icon:
-                      item.quantity == 1 ? Icons.delete_outline : Icons.remove,
-                  onTap: () => ref
-                      .read(cartProvider.notifier)
-                      .updateQuantity(product.id!, item.quantity - 1),
-                ),
-                SizedBox(
-                  width: 28.w,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 180),
-                    transitionBuilder: (child, anim) => ScaleTransition(
-                      scale: anim,
-                      child: child,
-                    ),
-                    child: Text(
-                      '${item.quantity}',
-                      key: ValueKey(item.quantity),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13.sp,
+            // ── Quantity Stepper ──────────────────────────
+            Container(
+              height: 34.h,
+              decoration: BoxDecoration(
+                color: AppColor.primary,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _StepBtn(
+                    icon: item.quantity == 1
+                        ? Icons.delete_outline
+                        : Icons.remove,
+                    onTap: () => ref
+                        .read(cartProvider.notifier)
+                        .updateQuantity(product.id!, item.quantity - 1),
+                  ),
+                  SizedBox(
+                    width: 28.w,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      transitionBuilder: (child, anim) => ScaleTransition(
+                        scale: anim,
+                        child: child,
+                      ),
+                      child: Text(
+                        '${item.quantity}',
+                        key: ValueKey(item.quantity),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.sp,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                _StepBtn(
-                  icon: Icons.add,
-                  onTap: () => ref
-                      .read(cartProvider.notifier)
-                      .updateQuantity(product.id!, item.quantity + 1),
-                ),
-              ],
+                  _StepBtn(
+                    icon: Icons.add,
+                    onTap: () => ref
+                        .read(cartProvider.notifier)
+                        .updateQuantity(product.id!, item.quantity + 1),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }

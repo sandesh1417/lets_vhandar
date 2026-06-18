@@ -4,7 +4,8 @@ class TimeSlotResponse {
 
   TimeSlotResponse({this.data, this.status});
 
-  factory TimeSlotResponse.fromMap(Map<String, dynamic> json) => TimeSlotResponse(
+  factory TimeSlotResponse.fromMap(Map<String, dynamic> json) =>
+      TimeSlotResponse(
         data: json["data"] == null ? null : TimeSlotData.fromMap(json["data"]),
         status: json["status"],
       );

@@ -54,81 +54,81 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
       duration: const Duration(milliseconds: 280),
       curve: Curves.elasticOut,
       child: GestureDetector(
-      key: _badgeKey,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        widget.onTap();
-      },
-      child: Container(
-        margin: EdgeInsets.only(bottom: 6.h),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(50.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-              decoration: BoxDecoration(
-                color: AppColor.secondary.withValues(alpha: 0.72),
-                borderRadius: BorderRadius.circular(50.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.4),
-                  width: 1,
+        key: _badgeKey,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          widget.onTap();
+        },
+        child: Container(
+          margin: EdgeInsets.only(bottom: 6.h),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: AppColor.secondary.withValues(alpha: 0.72),
+                  borderRadius: BorderRadius.circular(50.r),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColor.secondary.withValues(alpha: 0.22),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.secondary.withValues(alpha: 0.22),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _StackedImages(imageUrls: previewImages),
-                  SizedBox(width: 10.w),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'View cart',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF4A2E00),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _StackedImages(imageUrls: previewImages),
+                    SizedBox(width: 10.w),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'View cart',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF4A2E00),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '$itemCount ${itemCount == 1 ? 'Item' : 'Items'}',
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6B4400),
+                        Text(
+                          '$itemCount ${itemCount == 1 ? 'Item' : 'Items'}',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF6B4400),
+                          ),
                         ),
+                      ],
+                    ),
+                    SizedBox(width: 10.w),
+                    Container(
+                      width: 32.w,
+                      height: 32.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
                       ),
-                    ],
-                  ),
-                  SizedBox(width: 10.w),
-                  Container(
-                    width: 32.w,
-                    height: 32.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      shape: BoxShape.circle,
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        color: const Color(0xFF4A2E00),
+                        size: 20.sp,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.chevron_right_rounded,
-                      color: const Color(0xFF4A2E00),
-                      size: 20.sp,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

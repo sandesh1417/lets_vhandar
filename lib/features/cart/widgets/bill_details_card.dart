@@ -72,7 +72,8 @@ class BillDetailsCard extends ConsumerWidget {
         finalDeliveryCharge: totalPrice >= 1000 ? 0 : 100,
         isFreeDelivery: totalPrice >= 1000,
         handlingCharge: 0,
-        grandTotal: totalPrice + (totalPrice >= 1000 ? 0 : 100) - couponDiscount,
+        grandTotal:
+            totalPrice + (totalPrice >= 1000 ? 0 : 100) - couponDiscount,
         deliveryThreshold: 1000,
         couponDiscount: couponDiscount,
       ),
@@ -443,8 +444,8 @@ void _showChargeInfoDialog(BuildContext context,
             child: const SizedBox.expand(),
           ),
           Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r)),
             backgroundColor: vc.surface,
             child: Padding(
               padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 0),

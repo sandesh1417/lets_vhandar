@@ -24,7 +24,8 @@ class SearchHistoryNotifier extends Notifier<List<String>> {
   Future<void> add(String query) async {
     final q = query.trim();
     if (q.length < 2) return;
-    final updated = [q, ...state.where((e) => e != q)].take(_kMaxHistory).toList();
+    final updated =
+        [q, ...state.where((e) => e != q)].take(_kMaxHistory).toList();
     state = updated;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(_kHistoryKey, updated);

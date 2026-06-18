@@ -16,7 +16,10 @@ class ProductDetailsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rows = <Map<String, String>>[
-      {'label': 'Unit', 'value': '${product.unitValue?.toInt()} ${product.unit}'},
+      {
+        'label': 'Unit',
+        'value': '${product.unitValue?.toInt()} ${product.unit}'
+      },
       if (product.status?.isNotEmpty == true)
         {'label': 'Type', 'value': product.status!},
       if (product.keyFeatures?.isNotEmpty == true)
@@ -52,11 +55,9 @@ class ProductDetailsTable extends StatelessWidget {
           final row = entry.value;
           return Column(
             children: [
-              if (i != 0)
-                Divider(height: 1, thickness: 1, color: vc.divider),
+              if (i != 0) Divider(height: 1, thickness: 1, color: vc.divider),
               Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.w, vertical: 11.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 11.h),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

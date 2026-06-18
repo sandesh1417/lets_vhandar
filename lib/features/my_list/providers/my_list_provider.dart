@@ -40,8 +40,7 @@ class MyListNotifier extends StateNotifier<MyListState> {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _repo.fetchLists();
     result.when(
-      success: (lists) =>
-          state = MyListState(lists: lists),
+      success: (lists) => state = MyListState(lists: lists),
       failure: (f) =>
           state = state.copyWith(isLoading: false, error: f.message),
     );

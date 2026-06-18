@@ -65,7 +65,10 @@ class CategoryData {
   factory CategoryData.fromMap(Map<String, dynamic> json) => CategoryData(
         id: json["_id"],
         name: json["name"],
-        description: json["description"] ?? json["desc"] ?? json["details"] ?? json["shortDescription"],
+        description: json["description"] ??
+            json["desc"] ??
+            json["details"] ??
+            json["shortDescription"],
         showAtHomepage: json["showAtHomepage"],
         subCategories: json["subCategories"] == null
             ? []

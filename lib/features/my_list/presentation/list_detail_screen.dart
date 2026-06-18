@@ -13,6 +13,7 @@ import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_circular_loader.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class ListDetailScreen extends ConsumerWidget {
   final String listId;
@@ -31,7 +32,9 @@ class ListDetailScreen extends ConsumerWidget {
 
     final statusBarH = MediaQuery.of(context).padding.top;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       body: Column(
         children: [
@@ -152,8 +155,7 @@ class ListDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBottomBar(
-      BuildContext context, WidgetRef ref, SavedList list) {
+  Widget _buildBottomBar(BuildContext context, WidgetRef ref, SavedList list) {
     final vc = context.vColors;
     return Container(
       padding: EdgeInsets.fromLTRB(
@@ -260,8 +262,7 @@ class _ProductTile extends StatelessWidget {
                   SizedBox(height: 3.h),
                   Text(
                     product.unit!,
-                    style: TextStyle(
-                        fontSize: 11.sp, color: vc.onSurfaceMuted),
+                    style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted),
                   ),
                 ],
                 if (product.price != null) ...[
@@ -421,8 +422,7 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                         autofocus: true,
                         onChanged: (v) =>
                             ref.read(searchProvider.notifier).search(v),
-                        style: TextStyle(
-                            fontSize: 14.sp, color: vc.onSurface),
+                        style: TextStyle(fontSize: 14.sp, color: vc.onSurface),
                         decoration: InputDecoration(
                           hintText: 'Search products...',
                           hintStyle: TextStyle(
@@ -464,8 +464,7 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                                     ? Icons.search_rounded
                                     : Icons.search_off_rounded,
                                 size: 40.sp,
-                                color: vc.onSurfaceMuted
-                                    .withValues(alpha: 0.4),
+                                color: vc.onSurfaceMuted.withValues(alpha: 0.4),
                               ),
                               SizedBox(height: 12.h),
                               Text(
@@ -574,8 +573,7 @@ class _SearchResultTile extends ConsumerWidget {
                   SizedBox(height: 2.h),
                   Text(
                     product.unit!,
-                    style: TextStyle(
-                        fontSize: 11.sp, color: vc.onSurfaceMuted),
+                    style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted),
                   ),
                 ],
               ],
@@ -603,13 +601,14 @@ class _SearchResultTile extends ConsumerWidget {
                         .read(myListProvider.notifier)
                         .addProduct(listId, saved);
                     if (!wasAdded && context.mounted) {
-                      CustomSnackbar.info(context, message: '${product.name ?? 'Item'} is already in this list');
+                      CustomSnackbar.info(context,
+                          message:
+                              '${product.name ?? 'Item'} is already in this list');
                     }
                   },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding:
-                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               decoration: BoxDecoration(
                 color: isAdded ? AppColor.primary : Colors.transparent,
                 borderRadius: BorderRadius.circular(10.r),

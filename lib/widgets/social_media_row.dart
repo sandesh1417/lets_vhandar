@@ -10,12 +10,13 @@ class SocialMediaRow extends StatelessWidget {
   static const _bg = Color(0xFF064D34);
 
   static const _socials = [
-    _Social('Facebook',  'https://www.facebook.com/letsvhandar',   _kFacebook),
-    _Social('Instagram', 'https://www.instagram.com/letsvhandar',  _kInstagram),
-    _Social('X',         'https://www.x.com/letsvhandar',          _kX),
-    _Social('TikTok',    'https://www.tiktok.com/@letsvhandar',    _kTikTok),
-    _Social('YouTube',   'https://www.youtube.com/@letsvhandar',   _kYoutube),
-    _Social('LinkedIn',  'https://www.linkedin.com/company/letsvhandar', _kLinkedIn),
+    _Social('Facebook', 'https://www.facebook.com/letsvhandar', _kFacebook),
+    _Social('Instagram', 'https://www.instagram.com/letsvhandar', _kInstagram),
+    _Social('X', 'https://www.x.com/letsvhandar', _kX),
+    _Social('TikTok', 'https://www.tiktok.com/@letsvhandar', _kTikTok),
+    _Social('YouTube', 'https://www.youtube.com/@letsvhandar', _kYoutube),
+    _Social(
+        'LinkedIn', 'https://www.linkedin.com/company/letsvhandar', _kLinkedIn),
   ];
 
   Future<void> _open(BuildContext context, _Social s) async {

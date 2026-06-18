@@ -21,8 +21,7 @@ class CartItem {
 
   double get totalPrice => product.actualPrice * quantity;
 
-  double get businessTotalPrice =>
-      product.businessActualPrice * quantity;
+  double get businessTotalPrice => product.businessActualPrice * quantity;
 
   double priceFor(bool isBusiness) =>
       isBusiness ? businessTotalPrice : totalPrice;

@@ -47,9 +47,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
 
   Future<void> _checkPermission() async {
     final status = await Permission.camera.status;
-    final granted = status.isGranted
-        ? true
-        : (await Permission.camera.request()).isGranted;
+    final granted =
+        status.isGranted ? true : (await Permission.camera.request()).isGranted;
     setState(() {
       _hasPermission = granted;
       _isPermissionChecked = true;
@@ -255,7 +254,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                   setState(() => _isManualEntry = true);
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(50.r),
@@ -271,13 +271,19 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.keyboard_alt_outlined,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
                           size: 14.sp),
                       SizedBox(width: 6.w),
                       Text(
                         'Type your barcode',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.75),
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Inter',
@@ -322,7 +328,10 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   top: BorderSide(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.2),
                       width: 1),
                 ),
               ),
@@ -363,18 +372,23 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                 Text(
                                   "we'd love to hear what you think!  ",
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
                                     fontSize: 12.sp,
                                     fontFamily: 'Inter',
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () => context.pushNamed(
-                                      LVRoute.feedbackScreen.route),
+                                  onTap: () => context
+                                      .pushNamed(LVRoute.feedbackScreen.route),
                                   child: Text(
                                     'Give feedback',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                       fontSize: 12.sp,
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w600,
@@ -405,7 +419,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.camera_alt_outlined, color: Colors.white54, size: 64.sp),
+              Icon(Icons.camera_alt_outlined,
+                  color: Colors.white54, size: 64.sp),
               SizedBox(height: 16.h),
               Text(
                 'Camera permission required\nto scan barcodes',
@@ -439,9 +454,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? cs.surface : const Color(0xFFF4F6F9);
     final cardColor = cs.surface;
-    final inputFill = isDark
-        ? cs.surfaceContainerHighest
-        : const Color(0xFFF4F6F9);
+    final inputFill =
+        isDark ? cs.surfaceContainerHighest : const Color(0xFFF4F6F9);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -504,7 +518,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                             borderRadius: BorderRadius.circular(16.r),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
+                                color: Colors.black
+                                    .withValues(alpha: isDark ? 0.25 : 0.06),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -554,7 +569,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                             borderRadius: BorderRadius.circular(16.r),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
+                                color: Colors.black
+                                    .withValues(alpha: isDark ? 0.25 : 0.06),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -612,7 +628,8 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 16.w, vertical: 16.h),
                                   suffixIcon: Icon(Icons.dialpad_rounded,
-                                      color: cs.onSurface.withValues(alpha: 0.4),
+                                      color:
+                                          cs.onSurface.withValues(alpha: 0.4),
                                       size: 20.sp),
                                 ),
                               ),
@@ -732,10 +749,10 @@ class _OverlayPainter extends CustomPainter {
       ..strokeWidth = crossW
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
-    canvas.drawLine(Offset(cx - crossLen, cy), Offset(cx + crossLen, cy),
-        crossPaint);
-    canvas.drawLine(Offset(cx, cy - crossLen), Offset(cx, cy + crossLen),
-        crossPaint);
+    canvas.drawLine(
+        Offset(cx - crossLen, cy), Offset(cx + crossLen, cy), crossPaint);
+    canvas.drawLine(
+        Offset(cx, cy - crossLen), Offset(cx, cy + crossLen), crossPaint);
     // Center dot
     canvas.drawCircle(
       Offset(cx, cy),
@@ -756,31 +773,36 @@ class _ScanningTipsSheet extends StatelessWidget {
   static const _tips = [
     _Tip(
       title: 'Fill the frame',
-      body: 'Get close and fill the camera view with the barcode, but not so close that it\'s blurry.',
+      body:
+          'Get close and fill the camera view with the barcode, but not so close that it\'s blurry.',
       image: 'assets/images/Fill the frame.svg',
       imageLeft: true,
     ),
     _Tip(
       title: 'Hold Still',
-      body: 'Quick movements make the scanner lose track. Stay still on a code long enough for it to register.',
+      body:
+          'Quick movements make the scanner lose track. Stay still on a code long enough for it to register.',
       image: 'assets/images/Hold Still.svg',
       imageLeft: false,
     ),
     _Tip(
       title: 'Lots of light',
-      body: 'Well lit areas provide better contrast for the scanner. Use the flash if you\'re in a dark area.',
+      body:
+          'Well lit areas provide better contrast for the scanner. Use the flash if you\'re in a dark area.',
       image: 'assets/images/Lots of light.svg',
       imageLeft: true,
     ),
     _Tip(
       title: 'Find the right code',
-      body: 'The scanner supports barcodes and QR codes. Use your hands to block codes you aren\'t ready to read.',
+      body:
+          'The scanner supports barcodes and QR codes. Use your hands to block codes you aren\'t ready to read.',
       image: 'assets/images/Find the right code.svg',
       imageLeft: false,
     ),
     _Tip(
       title: 'Can\'t find an item?',
-      body: 'If you\'re in the store, you can scan the shelf tag to find the item online.',
+      body:
+          'If you\'re in the store, you can scan the shelf tag to find the item online.',
       image: 'assets/images/Cant FInd an iteam.svg',
       imageLeft: true,
     ),

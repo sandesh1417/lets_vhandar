@@ -44,7 +44,9 @@ class AccountProfileHeader extends StatelessWidget {
     final isBusiness = user?.isBusiness == true;
     final businessDetail = user?.businessDetail as Map<String, dynamic>?;
     final displayName = isBusiness
-        ? (businessDetail?['businessName'] as String? ?? user?.name ?? 'Business')
+        ? (businessDetail?['businessName'] as String? ??
+            user?.name ??
+            'Business')
         : (user?.name ?? 'User Name');
     final displayPhone = user?.phoneNumber ?? 'Phone Number';
     final category = businessDetail?['businessCategory'] as String?;
@@ -105,17 +107,22 @@ class AccountProfileHeader extends StatelessWidget {
                     ),
                     if (email != null && email.isNotEmpty) ...[
                       SizedBox(height: 3.h),
-                      _IconInfoRow(icon: Icons.email_outlined, text: email, vc: vc),
+                      _IconInfoRow(
+                          icon: Icons.email_outlined, text: email, vc: vc),
                     ],
-                    if (!isBusiness && birthDate != null && birthDate.isNotEmpty) ...[
+                    if (!isBusiness &&
+                        birthDate != null &&
+                        birthDate.isNotEmpty) ...[
                       SizedBox(height: 3.h),
-                      _IconInfoRow(icon: Icons.cake_outlined, text: birthDate, vc: vc),
+                      _IconInfoRow(
+                          icon: Icons.cake_outlined, text: birthDate, vc: vc),
                     ],
                     if (isBusiness) ...[
                       if (category != null && category.isNotEmpty) ...[
                         SizedBox(height: 5.h),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 3.h),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFFF3CD),
                             borderRadius: BorderRadius.circular(20.r),
@@ -134,7 +141,9 @@ class AccountProfileHeader extends StatelessWidget {
                           (vat != null && vat.isNotEmpty)) ...[
                         SizedBox(height: 4.h),
                         Text(
-                          pan != null && pan.isNotEmpty ? 'PAN: $pan' : 'VAT: $vat',
+                          pan != null && pan.isNotEmpty
+                              ? 'PAN: $pan'
+                              : 'VAT: $vat',
                           style: TextStyle(
                             fontSize: 11.sp,
                             color: vc.onSurfaceMuted,

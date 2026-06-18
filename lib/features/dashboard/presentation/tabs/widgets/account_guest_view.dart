@@ -18,6 +18,7 @@ import 'account_section.dart';
 import 'account_support_card.dart';
 import 'account_v4b_card.dart';
 import 'account_version_footer.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class AccountGuestView extends ConsumerWidget {
   final String appVersion;
@@ -28,7 +29,9 @@ class AccountGuestView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       body: SingleChildScrollView(
         child: Column(
@@ -208,8 +211,7 @@ class AccountGuestView extends ConsumerWidget {
                   title: 'More about Vhandar',
                   subtitle: 'Explore Vhandar policies and more',
                   showDivider: false,
-                  onTap: () =>
-                      context.push(LVRoute.aboutVhandarScreen.route),
+                  onTap: () => context.push(LVRoute.aboutVhandarScreen.route),
                 ),
               ],
             ),

@@ -55,8 +55,8 @@ class HomeOfflineBody extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColor.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(50.r),
-              border: Border.all(
-                  color: AppColor.primary.withValues(alpha: 0.2)),
+              border:
+                  Border.all(color: AppColor.primary.withValues(alpha: 0.2)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

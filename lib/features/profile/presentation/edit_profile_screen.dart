@@ -14,6 +14,7 @@ import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 const _kBusinessCategories = [
   'Restaurant',
@@ -200,7 +201,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final isBusiness = loginState.user?.isBusiness == true;
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: false,
       appBar: CustomScreenHeader(

@@ -18,8 +18,8 @@ class CartFlyAnimator {
     if (badgeCtx == null) return;
     final badgeBox = badgeCtx.findRenderObject() as RenderBox?;
     if (badgeBox == null) return;
-    final endOffset = badgeBox
-        .localToGlobal(Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
+    final endOffset = badgeBox.localToGlobal(
+        Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
 
     late OverlayEntry entry;
     entry = OverlayEntry(
@@ -38,8 +38,8 @@ class CartFlyAnimator {
     if (badgeCtx == null) return;
     final badgeBox = badgeCtx.findRenderObject() as RenderBox?;
     if (badgeBox == null) return;
-    final origin = badgeBox
-        .localToGlobal(Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
+    final origin = badgeBox.localToGlobal(
+        Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
 
     late OverlayEntry entry;
     entry = OverlayEntry(
@@ -124,11 +124,11 @@ class _FlyingCartImageState extends State<_FlyingCartImage>
         final end = widget.endOffset;
 
         // x: easeInOut — slight side drift
-        final dx = start.dx + (end.dx - start.dx) *
-            Curves.easeInOut.transform(t);
+        final dx =
+            start.dx + (end.dx - start.dx) * Curves.easeInOut.transform(t);
         // y: gravity — accelerates toward cart
-        final dy = start.dy + (end.dy - start.dy) *
-            Curves.easeInCubic.transform(t);
+        final dy =
+            start.dy + (end.dy - start.dy) * Curves.easeInCubic.transform(t);
 
         final s = _scale.value;
         return Positioned(

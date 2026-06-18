@@ -21,8 +21,18 @@ const _vatNo = '621233397';
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
 String _monthName(int m) => const [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ][m - 1];
 
 String _fmtDate(DateTime d) {
@@ -96,8 +106,7 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                           color: _green)),
                 pw.SizedBox(height: 4),
                 pw.Text(_companyName,
-                    style: const pw.TextStyle(
-                        fontSize: 9, color: _mutedText)),
+                    style: const pw.TextStyle(fontSize: 9, color: _mutedText)),
               ],
             ),
             pw.Spacer(),
@@ -130,17 +139,15 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
             pw.TableRow(
               decoration: const pw.BoxDecoration(color: _lightBg),
               children: [
-                _infoCell('#${order.orderId ?? '—'}', 'Invoice No', bold: true, color: _green),
+                _infoCell('#${order.orderId ?? '—'}', 'Invoice No',
+                    bold: true, color: _green),
                 _infoCell(date, 'Invoice Date'),
-                _infoCell(
-                    _capitalize(order.paymentStatus ?? 'Pending'),
+                _infoCell(_capitalize(order.paymentStatus ?? 'Pending'),
                     'Payment Status',
                     color: _amber),
                 _infoCell(
-                    'Rs.${_fmtNum(order.totalPayableAmount)}',
-                    'Total Amount',
-                    bold: true,
-                    color: _green),
+                    'Rs.${_fmtNum(order.totalPayableAmount)}', 'Total Amount',
+                    bold: true, color: _green),
               ],
             ),
           ],
@@ -157,8 +164,8 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text('BILL TO',
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                   pw.SizedBox(height: 3),
                   pw.Text(customerName,
                       style: pw.TextStyle(
@@ -167,12 +174,12 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                           color: _darkText)),
                   pw.SizedBox(height: 2),
                   pw.Text(customerAddr,
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                   pw.SizedBox(height: 2),
                   pw.Text(customerPhone,
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                 ],
               ),
             ),
@@ -182,8 +189,8 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text('SHIPPING TO',
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                   pw.SizedBox(height: 3),
                   pw.Text(customerName,
                       style: pw.TextStyle(
@@ -192,12 +199,12 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                           color: _darkText)),
                   pw.SizedBox(height: 2),
                   pw.Text(customerAddr,
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                   pw.SizedBox(height: 2),
                   pw.Text(customerPhone,
-                      style: const pw.TextStyle(
-                          fontSize: 9, color: _mutedText)),
+                      style:
+                          const pw.TextStyle(fontSize: 9, color: _mutedText)),
                 ],
               ),
             ),
@@ -265,15 +272,14 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
               width: 260,
               child: pw.Column(
                 children: [
-                  _summaryRow('Sub Total',
-                      'Rs. ${_fmtNum(order.totalAmount)}',
+                  _summaryRow('Sub Total', 'Rs. ${_fmtNum(order.totalAmount)}',
                       bold: true),
                   _summaryDivider(),
                   _summaryRow('Estimated Tax (VAT)',
                       'Rs.${_fmtNum(order.totalVatAmount)}'),
                   _summaryDivider(),
-                  _summaryRow('Item Discounts',
-                      'Rs. ${_fmtNum(order.totalDiscount)}',
+                  _summaryRow(
+                      'Item Discounts', 'Rs. ${_fmtNum(order.totalDiscount)}',
                       valueColor: (order.totalDiscount ?? 0) > 0
                           ? const PdfColor.fromInt(0xFF2E7D32)
                           : null),
@@ -294,16 +300,14 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                       borderRadius: pw.BorderRadius.circular(4),
                     ),
                     child: pw.Row(
-                      mainAxisAlignment:
-                          pw.MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Text('Total Amount',
                             style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 fontSize: 11,
                                 color: _green)),
-                        pw.Text(
-                            'Rs.${_fmtNum(order.totalPayableAmount)}',
+                        pw.Text('Rs.${_fmtNum(order.totalPayableAmount)}',
                             style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 fontSize: 12,
@@ -331,15 +335,13 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text('PAYMENT DETAILS',
-                  style: const pw.TextStyle(
-                      fontSize: 9, color: _mutedText)),
+                  style: const pw.TextStyle(fontSize: 9, color: _mutedText)),
               pw.SizedBox(height: 4),
               pw.RichText(
                 text: pw.TextSpan(children: [
                   const pw.TextSpan(
                       text: 'Payment Method: ',
-                      style: pw.TextStyle(
-                          fontSize: 10, color: _darkText)),
+                      style: pw.TextStyle(fontSize: 10, color: _darkText)),
                   pw.TextSpan(
                       text: order.paymentMethod ?? '—',
                       style: pw.TextStyle(
@@ -354,8 +356,7 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
                   text: pw.TextSpan(children: [
                     const pw.TextSpan(
                         text: 'Payment Status: ',
-                        style: pw.TextStyle(
-                            fontSize: 10, color: _darkText)),
+                        style: pw.TextStyle(fontSize: 10, color: _darkText)),
                     pw.TextSpan(
                         text: _capitalize(order.paymentStatus!),
                         style: pw.TextStyle(
@@ -378,9 +379,7 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
           child: pw.Text(
             'Thank you for shopping with Vhandar!',
             style: pw.TextStyle(
-                fontSize: 10,
-                fontWeight: pw.FontWeight.bold,
-                color: _green),
+                fontSize: 10, fontWeight: pw.FontWeight.bold, color: _green),
           ),
         ),
         pw.SizedBox(height: 2),
@@ -399,8 +398,7 @@ Future<Uint8List> buildReceiptPdf(OrderData order) async {
 
 // ── Widget helpers ────────────────────────────────────────────────────────────
 
-pw.Widget _companyInfoRow(String label, String value) =>
-    pw.Padding(
+pw.Widget _companyInfoRow(String label, String value) => pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 2),
       child: pw.RichText(
         text: pw.TextSpan(children: [
@@ -418,7 +416,7 @@ pw.Widget _companyInfoRow(String label, String value) =>
     );
 
 pw.Widget _infoCell(String value, String subtitle,
-    {bool bold = false, PdfColor? color}) =>
+        {bool bold = false, PdfColor? color}) =>
     pw.Padding(
       padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: pw.Column(
@@ -427,8 +425,7 @@ pw.Widget _infoCell(String value, String subtitle,
           pw.Text(value,
               style: pw.TextStyle(
                   fontSize: 11,
-                  fontWeight:
-                      bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+                  fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
                   color: color ?? _darkText)),
           pw.SizedBox(height: 2),
           pw.Text(subtitle,
@@ -447,7 +444,7 @@ pw.Widget _th(String text) => pw.Padding(
     );
 
 pw.Widget _td(String text,
-    {bool center = false, bool right = false, bool bold = false}) =>
+        {bool center = false, bool right = false, bool bold = false}) =>
     pw.Padding(
       padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       child: pw.Text(text,
@@ -458,27 +455,24 @@ pw.Widget _td(String text,
                   : pw.TextAlign.left,
           style: pw.TextStyle(
               fontSize: 9,
-              fontWeight:
-                  bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+              fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
               color: _darkText)),
     );
 
 pw.Widget _summaryRow(String label, String value,
-    {bool bold = false, PdfColor? valueColor}) =>
+        {bool bold = false, PdfColor? valueColor}) =>
     pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
         pw.Text(label,
             style: pw.TextStyle(
                 fontSize: 10,
-                fontWeight:
-                    bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+                fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
                 color: bold ? _darkText : _mutedText)),
         pw.Text(value,
             style: pw.TextStyle(
                 fontSize: 10,
-                fontWeight:
-                    bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+                fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
                 color: valueColor ?? (bold ? _darkText : _mutedText))),
       ],
     );

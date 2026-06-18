@@ -50,9 +50,8 @@ class AddressTypeChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected
-                    ? AppColor.secondary
-                    : context.vColors.onSurface,
+                color:
+                    selected ? AppColor.secondary : context.vColors.onSurface,
               ),
             ),
           ],

@@ -43,8 +43,7 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
         onSuccess?.call();
         break;
       case Error(failure: final failure):
-        CustomSnackbar.error(context,
-            message: failure.message);
+        CustomSnackbar.error(context, message: failure.message);
         state = state.copyWith(
           isLoading: false,
           errorMessage: failure.message,

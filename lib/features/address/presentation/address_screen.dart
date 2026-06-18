@@ -137,11 +137,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                       address: address,
                       onEdit: () {
                         if (user?.id == null) return;
-                        _openAddSheet(context, user!.id!,
-                            existing: address);
+                        _openAddSheet(context, user!.id!, existing: address);
                       },
-                      onDelete: () =>
-                          _showDeleteConfirmation(context, address),
+                      onDelete: () => _showDeleteConfirmation(context, address),
                     );
                   },
                 ),
@@ -171,8 +169,8 @@ class _AddAddressButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w,
-          12.h + MediaQuery.of(context).padding.bottom),
+      padding: EdgeInsets.fromLTRB(
+          16.w, 12.h, 16.w, 12.h + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: context.vColors.surface,
         boxShadow: [
@@ -367,8 +365,7 @@ class _AddressCard extends StatelessWidget {
         runSpacing: 4.h,
         children: details
             .map((d) => Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                   decoration: BoxDecoration(
                     color: vc.scaffoldBg,
                     borderRadius: BorderRadius.circular(6.r),

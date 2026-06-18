@@ -92,8 +92,8 @@ class _OfflineScreen extends StatelessWidget {
 
                 // Retry hint pill
                 Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 18.w, vertical: 10.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
                   decoration: BoxDecoration(
                     color: AppColor.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(50.r),

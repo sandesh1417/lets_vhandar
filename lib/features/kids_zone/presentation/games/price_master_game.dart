@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -120,7 +119,8 @@ class _PriceMasterGameState extends ConsumerState<PriceMasterGame> {
       color = Colors.green.shade700;
     } else if (difference <= 15) {
       points = 80;
-      feedback = '🎉 AMAZING! Almost exact! Actual: Rs.${product.actualPrice}. +80 PTS';
+      feedback =
+          '🎉 AMAZING! Almost exact! Actual: Rs.${product.actualPrice}. +80 PTS';
       color = Colors.green;
     } else if (difference <= 35) {
       points = 50;

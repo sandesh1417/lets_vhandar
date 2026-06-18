@@ -8,6 +8,7 @@ import 'package:lets_vhandar/features/profile/providers/family_members_provider.
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class FamilyMembersScreen extends ConsumerStatefulWidget {
   const FamilyMembersScreen({super.key});
@@ -33,7 +34,9 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
     final pending = state.pendingRequests;
     final hasAny = members.isNotEmpty || pending.isNotEmpty;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomScreenHeader(title: 'Family Members'),
       body: state.isLoadingData
@@ -46,14 +49,12 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                   if (!hasAny) ...[
                     _HeroBanner(),
                     SizedBox(height: 24.h),
-                    _EmptyBenefitsCard(
-                        onAdd: () => _showAddSheet(context)),
+                    _EmptyBenefitsCard(onAdd: () => _showAddSheet(context)),
                   ] else ...[
                     _CompactHero(),
                     SizedBox(height: 20.h),
                     if (pending.isNotEmpty) ...[
-                      _SectionLabel(
-                          label: 'Requests', badge: pending.length),
+                      _SectionLabel(label: 'Requests', badge: pending.length),
                       SizedBox(height: 8.h),
                       ...pending.map((r) => _ReceivedRequestTile(
                             request: r,
@@ -76,8 +77,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                           )),
                       SizedBox(height: 16.h),
                     ],
-                    _AddMemberButton(
-                        onTap: () => _showAddSheet(context)),
+                    _AddMemberButton(onTap: () => _showAddSheet(context)),
                   ],
                 ],
               ),
@@ -294,8 +294,7 @@ class _SectionLabel extends StatelessWidget {
         if (badge != null && badge! > 0) ...[
           SizedBox(width: 6.w),
           Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
+            padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
             decoration: BoxDecoration(
               color: Colors.orange.shade400,
               borderRadius: BorderRadius.circular(20.r),
@@ -395,8 +394,7 @@ class _ReceivedRequestTile extends StatelessWidget {
               ),
               if (relation.isNotEmpty)
                 Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                   decoration: BoxDecoration(
                     color: Colors.orange.shade50,
                     borderRadius: BorderRadius.circular(20.r),
@@ -420,8 +418,7 @@ class _ReceivedRequestTile extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onReject,
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                        color: context.vColors.inputBorder),
+                    side: BorderSide(color: context.vColors.inputBorder),
                     padding: EdgeInsets.symmetric(vertical: 9.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r),
@@ -526,8 +523,7 @@ class _MemberTile extends StatelessWidget {
           ),
           if (relation.isNotEmpty)
             Container(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
               decoration: BoxDecoration(
                 color: accepted
                     ? AppColor.primary.withValues(alpha: 0.08)
@@ -540,9 +536,7 @@ class _MemberTile extends StatelessWidget {
                   fontSize: 10.sp,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
-                  color: accepted
-                      ? AppColor.primary
-                      : Colors.orange.shade700,
+                  color: accepted ? AppColor.primary : Colors.orange.shade700,
                 ),
               ),
             ),
@@ -702,8 +696,7 @@ class _AcceptRequestSheetState extends ConsumerState<_AcceptRequestSheet> {
   @override
   Widget build(BuildContext context) {
     final vc = context.vColors;
-    final isActioning =
-        ref.watch(familyMembersProvider).isActioning;
+    final isActioning = ref.watch(familyMembersProvider).isActioning;
 
     return Padding(
       padding:
@@ -971,8 +964,7 @@ class _RelationPicker extends StatelessWidget {
           onTap: () => onChanged(rel),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            padding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: isSelected
                   ? AppColor.primary
@@ -990,9 +982,7 @@ class _RelationPicker extends StatelessWidget {
                 fontSize: 12.sp,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? Colors.white
-                    : AppColor.primary,
+                color: isSelected ? Colors.white : AppColor.primary,
               ),
             ),
           ),
@@ -1033,8 +1023,7 @@ class _PhoneField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(color: AppColor.primary, width: 1.5),
         ),
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 12.w, vertical: 13.h),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 13.h),
       ),
     );
   }

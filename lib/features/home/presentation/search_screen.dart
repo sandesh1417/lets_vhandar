@@ -158,7 +158,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     if (state.error != null) {
       return ErrorStateWidget(
-        onRetry: () => ref.read(searchProvider.notifier).search(_searchController.text),
+        onRetry: () =>
+            ref.read(searchProvider.notifier).search(_searchController.text),
       );
     }
 
@@ -353,7 +354,8 @@ class _EmptyState extends ConsumerWidget {
                 ),
                 const Spacer(),
                 GestureDetector(
-                  onTap: () => context.push(LVRoute.featuredProductsScreen.route),
+                  onTap: () =>
+                      context.push(LVRoute.featuredProductsScreen.route),
                   child: Text(
                     'See all',
                     style: TextStyle(
@@ -398,8 +400,8 @@ class _EmptyState extends ConsumerWidget {
                     return ProductItemCard(
                       key: ValueKey(product.id),
                       product: product,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 4.w, vertical: 4.h),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                       width: double.infinity,
                       onTap: () => context.pushNamed(
                         LVRoute.productDetailScreen.route,

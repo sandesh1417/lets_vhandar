@@ -33,7 +33,8 @@ class CategorySortBar extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('Sort By', style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted)),
+          Text('Sort By',
+              style: TextStyle(fontSize: 11.sp, color: vc.onSurfaceMuted)),
           SizedBox(width: 6.w),
           InkWell(
             onTap: () => _showSortModal(context, ref),
@@ -55,7 +56,8 @@ class CategorySortBar extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(width: 4.w),
-                  Icon(Icons.keyboard_arrow_down, size: 14.sp, color: AppColor.primary),
+                  Icon(Icons.keyboard_arrow_down,
+                      size: 14.sp, color: AppColor.primary),
                 ],
               ),
             ),
@@ -113,12 +115,16 @@ class CategorySortBar extends ConsumerWidget {
                   ),
                   Text(
                     'Sort By',
-                    style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: vc.onSurface),
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: vc.onSurface),
                   ),
                   Consumer(
                     builder: (context, ref, child) {
                       final vc = context.vColors;
-                      final currentSort = ref.watch(selectedSortProvider(categorySlug));
+                      final currentSort =
+                          ref.watch(selectedSortProvider(categorySlug));
                       return ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -135,16 +141,26 @@ class CategorySortBar extends ConsumerWidget {
                                 opt['label']!,
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? AppColor.primary : vc.onSurface,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? AppColor.primary
+                                      : vc.onSurface,
                                 ),
                               ),
                               trailing: isSelected
-                                  ? Icon(Icons.check_circle, color: AppColor.primary)
-                                  : Icon(Icons.radio_button_unchecked, color: vc.onSurfaceMuted),
+                                  ? Icon(Icons.check_circle,
+                                      color: AppColor.primary)
+                                  : Icon(Icons.radio_button_unchecked,
+                                      color: vc.onSurfaceMuted),
                               onTap: () {
-                                ref.read(selectedSortProvider(categorySlug).notifier).state = opt['val'];
-                                Future.delayed(const Duration(milliseconds: 300), () {
+                                ref
+                                    .read(selectedSortProvider(categorySlug)
+                                        .notifier)
+                                    .state = opt['val'];
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
                                   if (context.mounted) Navigator.pop(context);
                                 });
                               },

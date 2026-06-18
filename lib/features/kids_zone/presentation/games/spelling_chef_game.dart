@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -140,7 +139,8 @@ class _SpellingChefGameState extends ConsumerState<SpellingChefGame> {
     final currentWord = _gameWords[_currentIndex];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8E1), // Playful warm honey child theme
+      backgroundColor:
+          const Color(0xFFFFF8E1), // Playful warm honey child theme
       appBar: AppBar(
         title: const Text('Spelling Chef 👨‍🍳'),
         centerTitle: true,

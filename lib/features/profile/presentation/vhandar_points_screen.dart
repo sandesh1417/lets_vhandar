@@ -67,164 +67,163 @@ class _PointsCard extends StatelessWidget {
             ),
             // ── Card face ───────────────────────────────────────────
             Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFD000), Color(0xFFFFA800)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(18.r),
-          ),
-          child: Stack(
-            children: [
-              // Decorative circles
-              Positioned(
-                right: -30,
-                top: -30,
-                child: Container(
-                  width: 140.w,
-                  height: 140.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.12),
-                  ),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFD000), Color(0xFFFFA800)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.circular(18.r),
               ),
-              Positioned(
-                right: 40,
-                top: -60,
-                child: Container(
-                  width: 140.w,
-                  height: 140.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.08),
-                  ),
-                ),
-              ),
-
-              // Card content
-              Padding(
-                padding: EdgeInsets.all(22.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top row: logo + badge
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SvgPicture.asset(
-                          KImageConstant.vhandarPoints,
-                          height: 20.h,
-                          colorFilter: const ColorFilter.mode(
-                              _dark, BlendMode.srcIn),
-                        ),
-                        SvgPicture.asset(
-                          KImageConstant.pointsBadge,
-                          width: 38.w,
-                          height: 38.w,
-                        ),
-                      ],
-                    ),
-
-                    const Spacer(),
-
-                    // Points number
-                    Text(
-                      '$points',
-                      style: TextStyle(
-                        fontSize: 44.sp,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w900,
-                        color: _dark,
-                        height: 1,
+              child: Stack(
+                children: [
+                  // Decorative circles
+                  Positioned(
+                    right: -30,
+                    top: -30,
+                    child: Container(
+                      width: 140.w,
+                      height: 140.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.12),
                       ),
                     ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      'POINTS',
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        color: _dark.withValues(alpha: 0.55),
-                        letterSpacing: 2,
+                  ),
+                  Positioned(
+                    right: 40,
+                    top: -60,
+                    child: Container(
+                      width: 140.w,
+                      height: 140.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.08),
                       ),
                     ),
+                  ),
 
-                    SizedBox(height: 16.h),
-
-                    // Bottom row: name + worth
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                  // Card content
+                  Padding(
+                    padding: EdgeInsets.all(22.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        // Top row: logo + badge
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'CARD HOLDER',
-                              style: TextStyle(
-                                fontSize: 8.sp,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w600,
-                                color: _dark.withValues(alpha: 0.5),
-                                letterSpacing: 1.5,
-                              ),
+                            SvgPicture.asset(
+                              KImageConstant.vhandarPoints,
+                              height: 20.h,
+                              colorFilter: const ColorFilter.mode(
+                                  _dark, BlendMode.srcIn),
                             ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              (userName ?? 'Vhandar User').toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                color: _dark,
-                                letterSpacing: 0.5,
-                              ),
+                            SvgPicture.asset(
+                              KImageConstant.pointsBadge,
+                              width: 38.w,
+                              height: 38.w,
                             ),
                           ],
                         ),
-                        Column(
+
+                        const Spacer(),
+
+                        // Points number
+                        Text(
+                          '$points',
+                          style: TextStyle(
+                            fontSize: 44.sp,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w900,
+                            color: _dark,
+                            height: 1,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          'POINTS',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            color: _dark.withValues(alpha: 0.55),
+                            letterSpacing: 2,
+                          ),
+                        ),
+
+                        SizedBox(height: 16.h),
+
+                        // Bottom row: name + worth
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              'WORTH',
-                              style: TextStyle(
-                                fontSize: 8.sp,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w600,
-                                color: _dark.withValues(alpha: 0.5),
-                                letterSpacing: 1.5,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'CARD HOLDER',
+                                  style: TextStyle(
+                                    fontSize: 8.sp,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w600,
+                                    color: _dark.withValues(alpha: 0.5),
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  (userName ?? 'Vhandar User').toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w700,
+                                    color: _dark,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              'Rs. ${(points * 0.1).toStringAsFixed(0)}',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                color: _dark,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'WORTH',
+                                  style: TextStyle(
+                                    fontSize: 8.sp,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w600,
+                                    color: _dark.withValues(alpha: 0.5),
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  'Rs. ${(points * 0.1).toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w700,
+                                    color: _dark,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-          ],       // outer Stack children
-        ),         // outer Stack
+            ),
+          ], // outer Stack children
+        ), // outer Stack
       ),
     );
   }
 }
-
 
 class _HowToEarnSection extends StatelessWidget {
   @override

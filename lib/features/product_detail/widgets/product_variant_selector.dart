@@ -62,15 +62,20 @@ class ProductVariantSelector extends ConsumerWidget {
                         final isSelected = v.id == selected.id;
                         final isOutOfStock = v.isOutOfStock;
 
-                        final hasB2B = isBusiness && (v.businessPricePerUnit ?? 0) > 0;
-                        final sellingPrice = hasB2B ? v.businessActualPrice : v.actualPrice;
+                        final hasB2B =
+                            isBusiness && (v.businessPricePerUnit ?? 0) > 0;
+                        final sellingPrice =
+                            hasB2B ? v.businessActualPrice : v.actualPrice;
                         final mrp = hasB2B
                             ? (v.businessPricePerUnit ?? 0)
                             : (v.pricePerUnit ?? 0);
                         final hasMrp = mrp > 0 && sellingPrice < mrp;
-                        final savings = hasMrp ? (mrp - sellingPrice).toInt() : 0;
+                        final savings =
+                            hasMrp ? (mrp - sellingPrice).toInt() : 0;
                         final cartCount = v.id != null
-                            ? ref.read(cartProvider.notifier).getCartItemCount(v.id!)
+                            ? ref
+                                .read(cartProvider.notifier)
+                                .getCartItemCount(v.id!)
                             : 0;
 
                         return Padding(
@@ -78,153 +83,173 @@ class ProductVariantSelector extends ConsumerWidget {
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
-                        GestureDetector(
-                          onTap: isOutOfStock ? null : () => onVariantChanged(v),
-                          child: Opacity(
-                            opacity: isOutOfStock ? 0.45 : 1.0,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              width: 100.w,
-                              height: 92.h,
-                              margin: EdgeInsets.only(right: 2.w),
-                              padding: EdgeInsets.all(10.w),
-                              decoration: BoxDecoration(
-                                color: isOutOfStock
-                                    ? context.vColors.surfaceVariant
-                                    : isSelected
-                                        ? AppColor.primary.withValues(alpha: 0.07)
-                                        : context.vColors.surface,
-                                border: Border.all(
-                                  color: isOutOfStock
-                                      ? context.vColors.divider
-                                      : isSelected
-                                          ? AppColor.primary
-                                          : context.vColors.divider,
-                                  width: isSelected && !isOutOfStock ? 1.8 : 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12.r),
-                                boxShadow: isSelected && !isOutOfStock
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColor.primary.withValues(alpha: 0.1),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ]
-                                    : [],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Unit label at top
-                                  Text(
-                                    '${v.unitValue?.toInt() ?? ''} ${v.unit ?? ''}',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: isSelected && !isOutOfStock
-                                          ? AppColor.primary
-                                          : context.vColors.onSurface,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-
-                                  // Price section at bottom
-                                  if (isOutOfStock)
-                                    Text(
-                                      'Out of Stock',
-                                      style: TextStyle(
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.red.shade400,
+                              GestureDetector(
+                                onTap: isOutOfStock
+                                    ? null
+                                    : () => onVariantChanged(v),
+                                child: Opacity(
+                                  opacity: isOutOfStock ? 0.45 : 1.0,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    width: 100.w,
+                                    height: 92.h,
+                                    margin: EdgeInsets.only(right: 2.w),
+                                    padding: EdgeInsets.all(10.w),
+                                    decoration: BoxDecoration(
+                                      color: isOutOfStock
+                                          ? context.vColors.surfaceVariant
+                                          : isSelected
+                                              ? AppColor.primary
+                                                  .withValues(alpha: 0.07)
+                                              : context.vColors.surface,
+                                      border: Border.all(
+                                        color: isOutOfStock
+                                            ? context.vColors.divider
+                                            : isSelected
+                                                ? AppColor.primary
+                                                : context.vColors.divider,
+                                        width: isSelected && !isOutOfStock
+                                            ? 1.8
+                                            : 1,
                                       ),
-                                    )
-                                  else
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      boxShadow: isSelected && !isOutOfStock
+                                          ? [
+                                              BoxShadow(
+                                                color: AppColor.primary
+                                                    .withValues(alpha: 0.1),
+                                                blurRadius: 6,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ]
+                                          : [],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
+                                        // Unit label at top
                                         Text(
-                                          'Rs.${sellingPrice.toInt()}',
+                                          '${v.unitValue?.toInt() ?? ''} ${v.unit ?? ''}',
                                           style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w800,
-                                            color: context.vColors.onSurface,
-                                            height: 1.1,
+                                            fontSize: 11.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: isSelected && !isOutOfStock
+                                                ? AppColor.primary
+                                                : context.vColors.onSurface,
                                           ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        if (hasMrp) ...[
-                                          SizedBox(height: 2.h),
+
+                                        // Price section at bottom
+                                        if (isOutOfStock)
                                           Text(
-                                            'MRP ${mrp.toInt()}',
+                                            'Out of Stock',
                                             style: TextStyle(
-                                              fontSize: 9.sp,
-                                              color: context.vColors.onSurfaceMuted,
-                                              decoration: TextDecoration.lineThrough,
-                                              decorationColor: context.vColors.onSurfaceMuted,
+                                              fontSize: 10.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.red.shade400,
                                             ),
-                                          ),
-                                          SizedBox(height: 3.h),
-                                          // SAVE badge inside the box
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 5.w, vertical: 2.h),
-                                            decoration: BoxDecoration(
-                                              gradient: const LinearGradient(
-                                                colors: [
-                                                  Color(0xFFE53935),
-                                                  Color(0xFFFF7043),
-                                                ],
-                                                begin: Alignment.centerLeft,
-                                                end: Alignment.centerRight,
+                                          )
+                                        else
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                'Rs.${sellingPrice.toInt()}',
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w800,
+                                                  color:
+                                                      context.vColors.onSurface,
+                                                  height: 1.1,
+                                                ),
                                               ),
-                                              borderRadius: BorderRadius.circular(4.r),
-                                            ),
-                                            child: Text(
-                                              'SAVE Rs $savings',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 8.sp,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
+                                              if (hasMrp) ...[
+                                                SizedBox(height: 2.h),
+                                                Text(
+                                                  'MRP ${mrp.toInt()}',
+                                                  style: TextStyle(
+                                                    fontSize: 9.sp,
+                                                    color: context
+                                                        .vColors.onSurfaceMuted,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                    decorationColor: context
+                                                        .vColors.onSurfaceMuted,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 3.h),
+                                                // SAVE badge inside the box
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 5.w,
+                                                      vertical: 2.h),
+                                                  decoration: BoxDecoration(
+                                                    gradient:
+                                                        const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFFE53935),
+                                                        Color(0xFFFF7043),
+                                                      ],
+                                                      begin:
+                                                          Alignment.centerLeft,
+                                                      end:
+                                                          Alignment.centerRight,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4.r),
+                                                  ),
+                                                  child: Text(
+                                                    'SAVE Rs $savings',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 8.sp,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
                                           ),
-                                        ],
                                       ],
                                     ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Yellow cart count badge
-                        if (cartCount > 0)
-                          Positioned(
-                            top: -10.h,
-                            right: -4.w,
-                            child: Container(
-                              width: 20.w,
-                              height: 20.w,
-                              decoration: BoxDecoration(
-                                color: AppColor.secondary,
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '$cartCount',
-                                style: TextStyle(
-                                  color: const Color(0xFF3D2000),
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w900,
+                                  ),
                                 ),
                               ),
-                            ),
+                              // Yellow cart count badge
+                              if (cartCount > 0)
+                                Positioned(
+                                  top: -10.h,
+                                  right: -4.w,
+                                  child: Container(
+                                    width: 20.w,
+                                    height: 20.w,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.secondary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '$cartCount',
+                                      style: TextStyle(
+                                        color: const Color(0xFF3D2000),
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
-                  );
+                        );
                       }).toList(),
                     ),
                   ),

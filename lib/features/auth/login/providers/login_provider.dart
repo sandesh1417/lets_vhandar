@@ -133,7 +133,8 @@ class LoginNotifier extends StateNotifier<LoginState> {
           state = state.copyWith(isLoading: false);
         }
         if (context.mounted) {
-          CustomSnackbar.success(context, message: 'Profile updated successfully');
+          CustomSnackbar.success(context,
+              message: 'Profile updated successfully');
         }
         return true;
       case Error(failure: final failure):

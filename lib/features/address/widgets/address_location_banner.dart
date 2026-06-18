@@ -33,9 +33,7 @@ class AddressLocationBanner extends StatelessWidget {
                 : vc.surfaceVariant,
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
-              color: hasError
-                  ? Colors.red.withValues(alpha: 0.3)
-                  : vc.divider,
+              color: hasError ? Colors.red.withValues(alpha: 0.3) : vc.divider,
             ),
           ),
           child: Row(
@@ -74,9 +72,7 @@ class AddressLocationBanner extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w500,
-                          color: hasError
-                              ? Colors.red.shade400
-                              : vc.onSurface,
+                          color: hasError ? Colors.red.shade400 : vc.onSurface,
                         ),
                       ),
               ),

@@ -58,7 +58,8 @@ class AccountOrdersCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 8.w),
-          Icon(Icons.chevron_right_rounded, color: vc.onSurfaceMuted, size: 20.sp),
+          Icon(Icons.chevron_right_rounded,
+              color: vc.onSurfaceMuted, size: 20.sp),
         ],
       ),
     );

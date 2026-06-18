@@ -530,13 +530,15 @@ class _SortItOutGameState extends ConsumerState<SortItOutGame>
                                 decoration: BoxDecoration(
                                   color: isHovering
                                       ? bin.color == Colors.greenAccent
-                                          ? Colors.greenAccent.withValues(alpha: 0.35)
+                                          ? Colors.greenAccent
+                                              .withValues(alpha: 0.35)
                                           : bin.color == Colors.redAccent
                                               ? Colors.redAccent
                                                   .withValues(alpha: 0.35)
-                                              : Colors.white.withValues(alpha: 0.2)
-                                      : bin.color.withValues(alpha: 
-                                          bin.color == Colors.white24
+                                              : Colors.white
+                                                  .withValues(alpha: 0.2)
+                                      : bin.color.withValues(
+                                          alpha: bin.color == Colors.white24
                                               ? 0.12
                                               : 0.3),
                                   borderRadius: BorderRadius.circular(16),

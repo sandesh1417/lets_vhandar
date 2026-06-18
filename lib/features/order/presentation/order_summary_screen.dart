@@ -7,6 +7,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/order/domain/models/order_model.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 // ── Date range filter ─────────────────────────────────────────────────────────
 enum _DR { all, today, yesterday, week, month, custom }
@@ -331,7 +332,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     final dowCounts = _ordersByDow;
     final topProducts = _topProducts;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       body: CustomScrollView(
         slivers: [

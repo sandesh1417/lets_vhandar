@@ -19,7 +19,8 @@ class HomeSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final vc = context.vColors;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w).copyWith(bottom: 12.h, top: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w)
+          .copyWith(bottom: 12.h, top: 4.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -29,7 +30,10 @@ class HomeSectionTitle extends StatelessWidget {
             height: 22.h,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColor.primary, AppColor.primary.withValues(alpha: 0.4)],
+                colors: [
+                  AppColor.primary,
+                  AppColor.primary.withValues(alpha: 0.4)
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),

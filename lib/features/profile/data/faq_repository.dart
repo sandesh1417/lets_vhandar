@@ -12,10 +12,10 @@ class FAQData {
   FAQData({this.id, this.question, this.answer});
 
   factory FAQData.fromMap(Map<String, dynamic> json) => FAQData(
-    id: json["_id"],
-    question: json["question"],
-    answer: json["answer"],
-  );
+        id: json["_id"],
+        question: json["question"],
+        answer: json["answer"],
+      );
 }
 
 class FAQRepository {

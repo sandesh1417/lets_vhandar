@@ -83,8 +83,7 @@ class _HorizontalTabItem extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_HorizontalTabItem> createState() =>
-      _HorizontalTabItemState();
+  ConsumerState<_HorizontalTabItem> createState() => _HorizontalTabItemState();
 }
 
 class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
@@ -133,8 +132,7 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
           child: Container(
             decoration: BoxDecoration(
               color: vc.surface,
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(24.r)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
             ),
             padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
             child: Column(
@@ -198,9 +196,7 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
                   Text(
                     desc,
                     style: TextStyle(
-                        fontSize: 13.sp,
-                        color: vc.onSurfaceMuted,
-                        height: 1.6),
+                        fontSize: 13.sp, color: vc.onSurfaceMuted, height: 1.6),
                     textAlign: TextAlign.center,
                   ),
                 ] else ...[
@@ -250,8 +246,7 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
               color: widget.isSelected ? vc.surface : Colors.transparent,
               borderRadius: BorderRadius.circular(8.r),
               border: widget.isSelected
-                  ? Border.all(
-                      color: AppColor.primary.withValues(alpha: 0.3))
+                  ? Border.all(color: AppColor.primary.withValues(alpha: 0.3))
                   : null,
             ),
             child: Column(
@@ -297,9 +292,8 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 10.sp,
-                    fontWeight: widget.isSelected
-                        ? FontWeight.bold
-                        : FontWeight.w500,
+                    fontWeight:
+                        widget.isSelected ? FontWeight.bold : FontWeight.w500,
                     color: widget.isSelected
                         ? AppColor.primary
                         : vc.onSurfaceMuted,

@@ -60,13 +60,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 radius: 10.r,
                 borderRadius: BorderRadius.circular(100),
                 onTap: () {
-                    HapticFeedback.lightImpact();
-                    if (backBtnFx != null) {
-                      backBtnFx!();
-                    } else {
-                      context.pop();
-                    }
-                  },
+                  HapticFeedback.lightImpact();
+                  if (backBtnFx != null) {
+                    backBtnFx!();
+                  } else {
+                    context.pop();
+                  }
+                },
                 child: Padding(
                   padding: EdgeInsets.only(left: 10.w),
                   child: Icon(

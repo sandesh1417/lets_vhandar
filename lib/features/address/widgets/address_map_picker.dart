@@ -121,9 +121,7 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
                         width: 20.sp,
                         height: 20.sp,
                         child: CustomCircularLoader(
-                            size: 16,
-                            strokeWidth: 2,
-                            color: AppColor.primary),
+                            size: 16, strokeWidth: 2, color: AppColor.primary),
                       )
                     : Icon(Icons.search_rounded,
                         color: AppColor.primary, size: 20.sp),
@@ -186,7 +184,8 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
                   },
                   myLocationButtonEnabled: false,
                   zoomControlsEnabled: true,
-                  gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
+                  gestureRecognizers: const <Factory<
+                      OneSequenceGestureRecognizer>>{
                     Factory<OneSequenceGestureRecognizer>(
                       EagerGestureRecognizer.new,
                     ),
@@ -232,8 +231,7 @@ class _AddressMapPickerState extends State<AddressMapPicker> {
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(Icons.location_on_rounded,
-                                          color: AppColor.primary,
-                                          size: 16.sp),
+                                          color: AppColor.primary, size: 16.sp),
                                     ),
                                     SizedBox(width: 12.w),
                                     Expanded(

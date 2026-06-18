@@ -27,7 +27,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
             .toList();
       }
     } catch (e, st) {
-      dev.log('Cart load failed — resetting', error: e, stackTrace: st, name: 'CartNotifier');
+      dev.log('Cart load failed — resetting',
+          error: e, stackTrace: st, name: 'CartNotifier');
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(AppConstants.cartStorageKey);
     }
@@ -41,7 +42,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         jsonEncode(state.map(_cartItemToMap).toList()),
       );
     } catch (e, st) {
-      dev.log('Cart save failed', error: e, stackTrace: st, name: 'CartNotifier');
+      dev.log('Cart save failed',
+          error: e, stackTrace: st, name: 'CartNotifier');
     }
   }
 
@@ -75,7 +77,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
       final newQty = (existing.quantity + quantity).clamp(1, maxQty);
       stateList[index] = existing.copyWith(quantity: newQty);
     } else {
-      stateList.add(CartItem(product: product, quantity: quantity.clamp(1, maxQty)));
+      stateList
+          .add(CartItem(product: product, quantity: quantity.clamp(1, maxQty)));
     }
     state = stateList;
     _save();

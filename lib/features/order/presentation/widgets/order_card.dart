@@ -22,11 +22,15 @@ const _stepIcons = [
 
 int _statusIndex(String? s) {
   switch (s?.toLowerCase()) {
-    case 'processing': return 1;
+    case 'processing':
+      return 1;
     case 'shipped':
-    case 'shipping':   return 2;
-    case 'delivered':  return 3;
-    default:           return 0;
+    case 'shipping':
+      return 2;
+    case 'delivered':
+      return 3;
+    default:
+      return 0;
   }
 }
 
@@ -121,7 +125,8 @@ class OrderCard extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (order.products != null && order.products!.isNotEmpty)
+                        if (order.products != null &&
+                            order.products!.isNotEmpty)
                           SizedBox(
                             height: 32.h,
                             child: Row(
@@ -155,10 +160,10 @@ class OrderCard extends ConsumerWidget {
                                                 fit: BoxFit.cover,
                                                 errorWidget: (_, __, ___) =>
                                                     Icon(
-                                                      Icons.shopping_bag_outlined,
-                                                      size: 16,
-                                                      color: vc.onSurfaceMuted,
-                                                    ),
+                                                  Icons.shopping_bag_outlined,
+                                                  size: 16,
+                                                  color: vc.onSurfaceMuted,
+                                                ),
                                               )
                                             : Icon(
                                                 Icons.shopping_bag_outlined,
@@ -226,8 +231,7 @@ class OrderCard extends ConsumerWidget {
                 borderRadius:
                     BorderRadius.vertical(bottom: Radius.circular(16.r)),
               ),
-              padding:
-                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -252,8 +256,18 @@ class OrderCard extends ConsumerWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
     final ampm = date.hour >= 12 ? 'PM' : 'AM';
@@ -317,8 +331,7 @@ class _MiniStepper extends StatelessWidget {
                 ),
                 child: done
                     ? Icon(Icons.check_rounded,
-                        size: 11.sp,
-                        color: vc.onSurface.withValues(alpha: 0.5))
+                        size: 11.sp, color: vc.onSurface.withValues(alpha: 0.5))
                     : Icon(_stepIcons[stepIndex],
                         size: 13.sp,
                         color: active
@@ -387,8 +400,16 @@ class _CancelledRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = status?.toLowerCase();
     final (label, color, icon) = switch (s) {
-      'returned' => ('Order Returned', Colors.purple.shade600, Icons.assignment_return_rounded),
-      'refunded' => ('Order Refunded', const Color(0xFF00695C), Icons.currency_exchange_rounded),
+      'returned' => (
+          'Order Returned',
+          Colors.purple.shade600,
+          Icons.assignment_return_rounded
+        ),
+      'refunded' => (
+          'Order Refunded',
+          const Color(0xFF00695C),
+          Icons.currency_exchange_rounded
+        ),
       _ => ('Order Cancelled', Colors.red.shade600, Icons.cancel_rounded),
     };
 

@@ -28,7 +28,8 @@ final brandBySlugProvider =
       throw failure;
   }
 });
-final brandByIdProvider = FutureProvider.family<BrandData?, String>((ref, id) async {
+final brandByIdProvider =
+    FutureProvider.family<BrandData?, String>((ref, id) async {
   if (id.isEmpty) return null;
   final brands = await ref.watch(brandProvider.future);
   try {

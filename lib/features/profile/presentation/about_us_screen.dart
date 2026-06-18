@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/social_media_row.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -26,7 +27,9 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       appBar: const CustomScreenHeader(title: 'About'),
       body: SingleChildScrollView(

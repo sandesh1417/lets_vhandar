@@ -106,7 +106,6 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
             right: 16.w,
             child: const _VegNonVegTag(isVegetarian: true),
           ),
-
       ],
     );
   }
@@ -205,7 +204,8 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.45),
                     borderRadius: BorderRadius.circular(20.r),
@@ -296,7 +296,8 @@ class _VegNonVegTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isVegetarian ? const Color(0xFF008B58) : const Color(0xFFE53935);
+    final color =
+        isVegetarian ? const Color(0xFF008B58) : const Color(0xFFE53935);
     return Container(
       padding: EdgeInsets.all(3.w),
       decoration: BoxDecoration(

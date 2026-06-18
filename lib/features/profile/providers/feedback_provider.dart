@@ -62,6 +62,7 @@ class FeedbackNotifier extends StateNotifier<FeedbackState> {
   }
 }
 
-final feedbackProvider = StateNotifierProvider<FeedbackNotifier, FeedbackState>((ref) {
+final feedbackProvider =
+    StateNotifierProvider<FeedbackNotifier, FeedbackState>((ref) {
   return FeedbackNotifier(ref.watch(feedbackRepositoryProvider));
 });

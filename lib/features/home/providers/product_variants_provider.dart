@@ -143,10 +143,9 @@ Future<List<ProductData>> _resolveFamily(
       // Ensure every product from the original group is represented.
       for (final p in group) {
         if (!family.any((f) => f.id == p.id)) {
-          family.add(
-              (p.parentId == null && p.id != parentId)
-                  ? p.copyWith(parentId: parentId)
-                  : p);
+          family.add((p.parentId == null && p.id != parentId)
+              ? p.copyWith(parentId: parentId)
+              : p);
         }
       }
     },
@@ -155,5 +154,3 @@ Future<List<ProductData>> _resolveFamily(
 
   return family;
 }
-
-

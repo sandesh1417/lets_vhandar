@@ -21,9 +21,11 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 // Fetches live product data for all past order products and returns only in-stock ones
-final reorderLiveProductsProvider = FutureProvider<List<ProductData>>((ref) async {
+final reorderLiveProductsProvider =
+    FutureProvider<List<ProductData>>((ref) async {
   final orders = ref.watch(orderProvider).orders;
   final repository = locator<ProductRepository>();
 
@@ -37,9 +39,9 @@ final reorderLiveProductsProvider = FutureProvider<List<ProductData>>((ref) asyn
   if (uniqueIds.isEmpty) return [];
 
   // Per-request 8-second timeout so one slow endpoint can't hang the whole page
-  final futures = uniqueIds.map((id) => repository
-      .getProductById(id)
-      .timeout(const Duration(seconds: 8), onTimeout: () => const Error(NetworkFailure('timeout'))));
+  final futures = uniqueIds.map((id) => repository.getProductById(id).timeout(
+      const Duration(seconds: 8),
+      onTimeout: () => const Error(NetworkFailure('timeout'))));
   final results = await Future.wait(futures, eagerError: false);
 
   final inStock = <ProductData>[];
@@ -127,7 +129,9 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
         );
 
     if (isOffline) {
-      return Scaffold(
+      return CustomScaffoldWrapper(
+        isScrollable: false,
+        bottomSafeArea: false,
         backgroundColor: context.vColors.scaffoldBg,
         appBar: AppBar(
           backgroundColor: AppColor.primary,
@@ -275,21 +279,21 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
         builder: (context, query, _) {
           if (orderState.isLoading) return _buildShimmer();
           return ref.watch(reorderLiveProductsProvider).when(
-            data: (products) {
-              final filtered = _filterProducts(products, query);
-              return AppRefreshIndicator(
-                onRefresh: _onRefresh,
-                child: filtered.isEmpty
-                    ? _buildEmptyState()
-                    : _buildGrid(filtered, bottomPad),
+                data: (products) {
+                  final filtered = _filterProducts(products, query);
+                  return AppRefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: filtered.isEmpty
+                        ? _buildEmptyState()
+                        : _buildGrid(filtered, bottomPad),
+                  );
+                },
+                loading: () => _buildShimmer(),
+                error: (_, __) => AppRefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: _buildEmptyState(),
+                ),
               );
-            },
-            loading: () => _buildShimmer(),
-            error: (_, __) => AppRefreshIndicator(
-              onRefresh: _onRefresh,
-              child: _buildEmptyState(),
-            ),
-          );
         },
       ),
     );

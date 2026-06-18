@@ -13,6 +13,7 @@ import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class MyListsScreen extends ConsumerWidget {
   const MyListsScreen({super.key});
@@ -23,7 +24,9 @@ class MyListsScreen extends ConsumerWidget {
     final vc = context.vColors;
     final statusBarH = MediaQuery.of(context).padding.top;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: vc.scaffoldBg,
       body: Column(
         children: [
@@ -111,7 +114,8 @@ class MyListsScreen extends ConsumerWidget {
                           )
                         : ListView.builder(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
+                            padding:
+                                EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 120.h),
                             itemCount: state.lists.length,
                             itemBuilder: (context, i) => _ListCard(
                               list: state.lists[i],
@@ -122,8 +126,8 @@ class MyListsScreen extends ConsumerWidget {
                               ),
                               onDelete: () =>
                                   _confirmDelete(context, ref, state.lists[i]),
-                              onRename: () =>
-                                  _showRenameSheet(context, ref, state.lists[i]),
+                              onRename: () => _showRenameSheet(
+                                  context, ref, state.lists[i]),
                             ),
                           ),
                   ),
@@ -253,7 +257,8 @@ class MyListsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.vColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
         title: Text(
           'Delete List',
           style: TextStyle(
@@ -591,7 +596,6 @@ class _NewListSheetState extends State<_NewListSheet> {
             ),
           ),
           SizedBox(height: 24.h),
-
           Row(
             children: [
               Container(
@@ -628,7 +632,6 @@ class _NewListSheetState extends State<_NewListSheet> {
             ],
           ),
           SizedBox(height: 20.h),
-
           TextField(
             controller: _controller,
             autofocus: true,
@@ -670,13 +673,13 @@ class _NewListSheetState extends State<_NewListSheet> {
             onChanged: (_) => setState(() {}),
           ),
           SizedBox(height: 20.h),
-
           SizedBox(
             width: double.infinity,
             height: 52.h,
             child: CustomElevatedButton(
-              onPressed:
-                  (_controller.text.trim().isEmpty || _isLoading) ? null : _submit,
+              onPressed: (_controller.text.trim().isEmpty || _isLoading)
+                  ? null
+                  : _submit,
               backgroundColor: AppColor.primary,
               foregroundColor: Colors.white,
               isLoading: _isLoading,

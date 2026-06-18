@@ -60,17 +60,20 @@ class DeliveryPartnerSafetyCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.h),
-                  _buildSafetyPoint(context,
+                  _buildSafetyPoint(
+                    context,
                     'assets/icons/vhandar_speed.svg',
                     'Delivery partners ride safely at an average speed of 15kmph per delivery',
                   ),
                   SizedBox(height: 8.h),
-                  _buildSafetyPoint(context,
+                  _buildSafetyPoint(
+                    context,
                     'assets/icons/vhandar_clock.svg',
                     'No penalties for late deliveries & no incentives for on-time deliveries',
                   ),
                   SizedBox(height: 8.h),
-                  _buildSafetyPoint(context,
+                  _buildSafetyPoint(
+                    context,
                     'assets/icons/vhandar_announce.svg',
                     'Delivery partners are not informed about promised delivery time',
                   ),

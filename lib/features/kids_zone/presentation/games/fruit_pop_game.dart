@@ -79,8 +79,16 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
   final Random _random = Random();
 
   final List<String> _fruitEmojis = [
-    '🍎', '🍊', '🍋', '🍇', '🍓',
-    '🫐', '🥝', '🍑', '🍒', '🍉',
+    '🍎',
+    '🍊',
+    '🍋',
+    '🍇',
+    '🍓',
+    '🫐',
+    '🥝',
+    '🍑',
+    '🍒',
+    '🍉',
   ];
 
   @override
@@ -142,9 +150,11 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
         }
 
         // Escaped fruits cost lives
-        final escaped = _fruits.where(
-          (f) => f.y < -80 && !f.isPopped && !f.isRotten,
-        ).length;
+        final escaped = _fruits
+            .where(
+              (f) => f.y < -80 && !f.isPopped && !f.isRotten,
+            )
+            .length;
         if (escaped > 0) {
           _lives = max(0, _lives - escaped);
           _missedThisLevel += escaped;
@@ -264,7 +274,11 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+                colors: [
+                  Color(0xFF1A1A2E),
+                  Color(0xFF16213E),
+                  Color(0xFF0F3460)
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -281,7 +295,8 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               top: starY,
               child: Opacity(
                 opacity: 0.3 + _random.nextDouble() * 0.4,
-                child: Text('✦', style: TextStyle(fontSize: starSize, color: Colors.white)),
+                child: Text('✦',
+                    style: TextStyle(fontSize: starSize, color: Colors.white)),
               ),
             );
           }),
@@ -292,7 +307,8 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                 top: fruit.y,
                 child: GestureDetector(
                   onTap: () => _onTapFruit(fruit),
-                  child: Text(fruit.emoji, style: TextStyle(fontSize: fruit.size)),
+                  child:
+                      Text(fruit.emoji, style: TextStyle(fontSize: fruit.size)),
                 ),
               )),
 
@@ -317,11 +333,17 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               right: 12,
               child: Row(
                 children: [
-                  Expanded(child: _buildHudItem(Icons.timer_outlined, '${_timeLeft}s', Colors.white)),
+                  Expanded(
+                      child: _buildHudItem(
+                          Icons.timer_outlined, '${_timeLeft}s', Colors.white)),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildHudItem(Icons.stars_rounded, '$_score', Colors.amberAccent)),
+                  Expanded(
+                      child: _buildHudItem(
+                          Icons.stars_rounded, '$_score', Colors.amberAccent)),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildHudItem(Icons.whatshot, 'x$_combo', Colors.deepOrangeAccent)),
+                  Expanded(
+                      child: _buildHudItem(
+                          Icons.whatshot, 'x$_combo', Colors.deepOrangeAccent)),
                 ],
               ),
             ),
@@ -409,7 +431,8 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                       color: Colors.black26,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22),
+                    child: const Icon(Icons.arrow_back_rounded,
+                        color: Colors.white, size: 22),
                   ),
                   onPressed: () {
                     HapticFeedback.lightImpact();
@@ -545,7 +568,8 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
               ),
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(12),
@@ -553,7 +577,8 @@ class _FruitPopGameState extends ConsumerState<FruitPopGame>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.monetization_on, color: Colors.orange, size: 24),
+                    const Icon(Icons.monetization_on,
+                        color: Colors.orange, size: 24),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(

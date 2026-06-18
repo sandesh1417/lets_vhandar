@@ -67,7 +67,8 @@ class CategoryRepository {
     }
   }
 
-  Future<Result<SubCategoryData?, Failure>> getSubCategoryBySlug(String slug) async {
+  Future<Result<SubCategoryData?, Failure>> getSubCategoryBySlug(
+      String slug) async {
     final result = await _apiClient.get(ApiUrl.subCategoryByName(slug));
 
     switch (result) {

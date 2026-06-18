@@ -56,7 +56,11 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
 
   final List<Map<String, dynamic>> _healthyFood = [
     {'label': '🍎', 'isHealthy': true, 'color': Colors.red},
-    {'label': ' Broccoli', 'isHealthy': true, 'color': Colors.green}, // Wait, let's keep it simple emoji
+    {
+      'label': ' Broccoli',
+      'isHealthy': true,
+      'color': Colors.green
+    }, // Wait, let's keep it simple emoji
     {'label': '🥦', 'isHealthy': true, 'color': Colors.green},
     {'label': '🥛', 'isHealthy': true, 'color': Colors.blue},
     {'label': '🍌', 'isHealthy': true, 'color': Colors.yellow},
@@ -210,7 +214,10 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.lightBlue.shade100, const Color(0xFFE8F5E9)],
+                      colors: [
+                        Colors.lightBlue.shade100,
+                        const Color(0xFFE8F5E9)
+                      ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -253,7 +260,8 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(color: Colors.green.shade300, width: 2.w),
+                        border: Border.all(
+                            color: Colors.green.shade300, width: 2.w),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
@@ -276,7 +284,8 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(color: Colors.red.shade200, width: 2.w),
+                        border:
+                            Border.all(color: Colors.red.shade200, width: 2.w),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
@@ -288,7 +297,9 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                         children: List.generate(3, (index) {
                           return Icon(
                             Icons.favorite,
-                            color: index < _lives ? Colors.red : Colors.grey.shade400,
+                            color: index < _lives
+                                ? Colors.red
+                                : Colors.grey.shade400,
                             size: 20.sp,
                           );
                         }),
@@ -347,7 +358,8 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                         end: Alignment.bottomCenter,
                       ),
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: const Color(0xFFD7CCC8), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFFD7CCC8), width: 2),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.2),
@@ -516,11 +528,14 @@ class _HealthyCatcherGameState extends ConsumerState<HealthyCatcherGame> {
                           ),
                         ),
                         SizedBox(height: 16.h),
-                        _buildInstructionRow('🍎 🥦 🥛', 'Catch healthy items for +15 points.'),
+                        _buildInstructionRow(
+                            '🍎 🥦 🥛', 'Catch healthy items for +15 points.'),
                         SizedBox(height: 12.h),
-                        _buildInstructionRow('🥤 🍩 🍭', 'Avoid unhealthy items (-10 points, lose 1 life).'),
+                        _buildInstructionRow('🥤 🍩 🍭',
+                            'Avoid unhealthy items (-10 points, lose 1 life).'),
                         SizedBox(height: 12.h),
-                        _buildInstructionRow('👈 Swipe 👉', 'Drag your finger anywhere to slide the basket left & right.'),
+                        _buildInstructionRow('👈 Swipe 👉',
+                            'Drag your finger anywhere to slide the basket left & right.'),
                         SizedBox(height: 24.h),
                         CustomElevatedButton(
                           onPressed: _startGame,

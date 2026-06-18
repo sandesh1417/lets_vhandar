@@ -20,6 +20,7 @@ import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 import 'presentation/order_summary_screen.dart';
 import 'presentation/widgets/order_card.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
   const OrderScreen({super.key});
@@ -241,8 +242,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               if (picked != null) setSheet(() => sheetDateRange = picked);
             }
 
-            Widget filterChip(
-                String label, bool selected, VoidCallback onTap) {
+            Widget filterChip(String label, bool selected, VoidCallback onTap) {
               return GestureDetector(
                 onTap: onTap,
                 child: AnimatedContainer(
@@ -250,12 +250,12 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   padding:
                       EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
                   decoration: BoxDecoration(
-                    color: selected ? AppColor.primary : context.vColors.surface,
+                    color:
+                        selected ? AppColor.primary : context.vColors.surface,
                     borderRadius: BorderRadius.circular(24.r),
                     border: Border.all(
-                      color: selected
-                          ? AppColor.primary
-                          : context.vColors.divider,
+                      color:
+                          selected ? AppColor.primary : context.vColors.divider,
                     ),
                   ),
                   child: Text(
@@ -264,7 +264,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Inter',
-                      color: selected ? Colors.white : context.vColors.onSurface,
+                      color:
+                          selected ? Colors.white : context.vColors.onSurface,
                     ),
                   ),
                 ),
@@ -274,8 +275,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             return Container(
               decoration: BoxDecoration(
                 color: context.vColors.surface,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20.r)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
               ),
               padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 28.h),
               child: Column(
@@ -355,8 +355,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         'Returned'
                       ])
                         filterChip(s, sheetStatus == s, () {
-                          setSheet(() => sheetStatus =
-                              sheetStatus == s ? null : s);
+                          setSheet(
+                              () => sheetStatus = sheetStatus == s ? null : s);
                         }),
                     ],
                   ),
@@ -379,8 +379,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     children: [
                       for (final p in ['Paid', 'Pending', 'Due'])
                         filterChip(p, sheetPayment == p, () {
-                          setSheet(() => sheetPayment =
-                              sheetPayment == p ? null : p);
+                          setSheet(() =>
+                              sheetPayment = sheetPayment == p ? null : p);
                         }),
                     ],
                   ),
@@ -490,7 +490,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         );
 
     if (isOffline) {
-      return Scaffold(
+      return CustomScaffoldWrapper(
+        isScrollable: false,
+        bottomSafeArea: false,
         backgroundColor: context.vColors.scaffoldBg,
         appBar: AppBar(
           backgroundColor: AppColor.primary,
@@ -648,8 +650,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   onTap: () {
                     if (!state.isLoading && state.orders.isNotEmpty) {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) =>
-                            OrderSummaryScreen(state: state),
+                        builder: (_) => OrderSummaryScreen(state: state),
                       ));
                     }
                   },
@@ -719,7 +720,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                           padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w,
                               MediaQuery.of(context).padding.bottom + 150.h),
                           itemCount: filteredOrders.length +
-                              (state.isLoadingMore || state.loadMoreFailed ? 1 : 0),
+                              (state.isLoadingMore || state.loadMoreFailed
+                                  ? 1
+                                  : 0),
                           itemBuilder: (context, index) {
                             if (index < filteredOrders.length) {
                               return OrderCard(order: filteredOrders[index]);
@@ -730,21 +733,28 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 child: Center(
                                   child: TextButton.icon(
                                     onPressed: () {
-                                      final userId = ref.read(loginProvider).user?.id;
+                                      final userId =
+                                          ref.read(loginProvider).user?.id;
                                       if (userId != null) {
-                                        ref.read(orderProvider.notifier).loadOrders(
-                                          userId,
-                                          page: state.currentPage + 1,
-                                          status: _selectedStatus,
-                                          paymentStatus: _selectedPaymentStatus,
-                                          startDate: _startDateStr,
-                                          endDate: _endDateStr,
-                                        );
+                                        ref
+                                            .read(orderProvider.notifier)
+                                            .loadOrders(
+                                              userId,
+                                              page: state.currentPage + 1,
+                                              status: _selectedStatus,
+                                              paymentStatus:
+                                                  _selectedPaymentStatus,
+                                              startDate: _startDateStr,
+                                              endDate: _endDateStr,
+                                            );
                                       }
                                     },
-                                    icon: Icon(Icons.refresh_rounded, size: 18.sp),
-                                    label: Text('Retry', style: TextStyle(fontSize: 13.sp)),
-                                    style: TextButton.styleFrom(foregroundColor: AppColor.primary),
+                                    icon: Icon(Icons.refresh_rounded,
+                                        size: 18.sp),
+                                    label: Text('Retry',
+                                        style: TextStyle(fontSize: 13.sp)),
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: AppColor.primary),
                                   ),
                                 ),
                               );
@@ -752,7 +762,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                             return const OrderListShimmer(itemCount: 2);
                           },
                         ),
-                      ),
+            ),
           ),
         ],
       ),

@@ -13,7 +13,8 @@ final forgetPasswordProvider =
 class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
   final AuthRepositoryImpl _authRepository;
 
-  ForgetPasswordNotifier(this._authRepository) : super(const ForgetPasswordState());
+  ForgetPasswordNotifier(this._authRepository)
+      : super(const ForgetPasswordState());
 
   Future<void> sendOtp(
     BuildContext context, {
@@ -23,7 +24,8 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final result = await _authRepository.sendOtpForgetPassword(phoneNumber, phoneCode);
+    final result =
+        await _authRepository.sendOtpForgetPassword(phoneNumber, phoneCode);
 
     result.when(
       success: (data) {
@@ -33,7 +35,8 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
           phoneNumber: phoneNumber,
           phoneCode: phoneCode,
         );
-        CustomSnackbar.success(context, message: data.message ?? 'OTP successfully sent');
+        CustomSnackbar.success(context,
+            message: data.message ?? 'OTP successfully sent');
         onSuccess?.call();
       },
       failure: (failure) {
@@ -64,7 +67,8 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
     result.when(
       success: (data) {
         state = state.copyWith(isLoading: false);
-        CustomSnackbar.success(context, message: data.message ?? 'OTP Verified');
+        CustomSnackbar.success(context,
+            message: data.message ?? 'OTP Verified');
         onSuccess?.call();
       },
       failure: (failure) {
@@ -102,7 +106,8 @@ class ForgetPasswordNotifier extends StateNotifier<ForgetPasswordState> {
           isLoading: false,
           isResetSuccessful: true,
         );
-        CustomSnackbar.success(context, message: data.message ?? 'Password reset successfully');
+        CustomSnackbar.success(context,
+            message: data.message ?? 'Password reset successfully');
         onSuccess?.call();
       },
       failure: (failure) {

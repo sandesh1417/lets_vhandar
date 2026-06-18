@@ -43,7 +43,8 @@ class CategoryProductGrid extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(8.w, 8.w, 8.w, 110.h),
               ),
               error: (_, __) => ErrorStateWidget(
-                onRetry: () => ref.invalidate(filteredProductsProvider(categorySlug)),
+                onRetry: () =>
+                    ref.invalidate(filteredProductsProvider(categorySlug)),
               ),
             ),
           ),
@@ -97,8 +98,8 @@ class CategoryProductGrid extends ConsumerWidget {
                     showProductSuggestionSheet(context);
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.w, vertical: 12.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFCC00),
                       borderRadius: BorderRadius.circular(10.r),

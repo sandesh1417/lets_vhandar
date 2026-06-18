@@ -184,7 +184,8 @@ class _GroceryMatcherGameState extends ConsumerState<GroceryMatcherGame> {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         decoration: BoxDecoration(
-                          color: isFaceUp ? Colors.white : Colors.purple.shade400,
+                          color:
+                              isFaceUp ? Colors.white : Colors.purple.shade400,
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
                             color: isFaceUp

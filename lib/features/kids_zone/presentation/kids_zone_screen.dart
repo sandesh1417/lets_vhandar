@@ -23,7 +23,7 @@ class KidsZoneScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final kidsState = ref.watch(kidsZoneProvider);
-    
+
     // Level progress setup: 300 coins per level
     final level = 1 + (kidsState.coins ~/ 300);
     final progress = (kidsState.coins % 300) / 300;
@@ -100,7 +100,8 @@ class KidsZoneScreen extends ConsumerWidget {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 6.h),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.25),
                           borderRadius: BorderRadius.circular(12.r),
@@ -144,7 +145,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.white24,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.white),
                       minHeight: 8.h,
                     ),
                   ),
@@ -187,7 +189,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     onPlay: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const HealthyCatcherGame()),
+                        MaterialPageRoute(
+                            builder: (_) => const HealthyCatcherGame()),
                       );
                     },
                   ),
@@ -201,7 +204,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     onPlay: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const PriceMasterGame()),
+                        MaterialPageRoute(
+                            builder: (_) => const PriceMasterGame()),
                       );
                     },
                   ),
@@ -215,7 +219,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     onPlay: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const GroceryMatcherGame()),
+                        MaterialPageRoute(
+                            builder: (_) => const GroceryMatcherGame()),
                       );
                     },
                   ),
@@ -229,7 +234,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     onPlay: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SpellingChefGame()),
+                        MaterialPageRoute(
+                            builder: (_) => const SpellingChefGame()),
                       );
                     },
                   ),
@@ -257,7 +263,8 @@ class KidsZoneScreen extends ConsumerWidget {
                     onPlay: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SortItOutGame()),
+                        MaterialPageRoute(
+                            builder: (_) => const SortItOutGame()),
                       );
                     },
                   ),
@@ -306,7 +313,8 @@ class KidsZoneScreen extends ConsumerWidget {
               context,
               ref,
               title: 'Free Fresh Red Apple 🍎',
-              desc: 'Add a free organic apple to your parent\'s delivery basket.',
+              desc:
+                  'Add a free organic apple to your parent\'s delivery basket.',
               cost: 400,
               couponCode: 'FREEKIDSAPPLE',
               userCoins: kidsState.coins,
@@ -316,7 +324,8 @@ class KidsZoneScreen extends ConsumerWidget {
               context,
               ref,
               title: 'Free Cream Chocolate Bar 🍫',
-              desc: 'Add a sweet chocolate treat to your parent\'s order for free.',
+              desc:
+                  'Add a sweet chocolate treat to your parent\'s order for free.',
               cost: 600,
               couponCode: 'FREEKIDSCHOCO',
               userCoins: kidsState.coins,
@@ -387,7 +396,8 @@ class KidsZoneScreen extends ConsumerWidget {
                       child: Icon(icon, color: Colors.white, size: 20.sp),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8.r),

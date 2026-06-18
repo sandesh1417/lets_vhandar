@@ -10,6 +10,7 @@ import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/profile/providers/feedback_provider.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class FeedbackScreen extends ConsumerStatefulWidget {
   const FeedbackScreen({super.key});
@@ -33,7 +34,14 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
     'Other',
   ];
 
-  static const _labels = ['', 'Very poor', 'Poor', 'Fair', 'Good', 'Excellent!'];
+  static const _labels = [
+    '',
+    'Very poor',
+    'Poor',
+    'Fair',
+    'Good',
+    'Excellent!'
+  ];
 
   @override
   void initState() {
@@ -74,7 +82,8 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
 
     ref.listen(feedbackProvider, (_, next) {
       if (next.isSuccess) {
-        CustomSnackbar.success(context, message: 'Thank you for your feedback!');
+        CustomSnackbar.success(context,
+            message: 'Thank you for your feedback!');
         context.pop();
         ref.read(feedbackProvider.notifier).reset();
       }
@@ -83,131 +92,134 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
       }
     });
 
-    return Scaffold(
-        backgroundColor: vc.surface,
-        appBar: AppBar(
-          backgroundColor: AppColor.primary,
-          elevation: 2,
-          shadowColor: Colors.black.withValues(alpha: 0.12),
-          scrolledUnderElevation: 0,
-          surfaceTintColor: Colors.transparent,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-            statusBarBrightness: Brightness.dark,
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
+      backgroundColor: vc.surface,
+      appBar: AppBar(
+        backgroundColor: AppColor.primary,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              size: 20, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          'Feedback',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.sp,
+            fontFamily: 'Inter',
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(
-            'Feedback',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20.sp,
-              fontFamily: 'Inter',
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 12.h),
+          child: SizedBox(
+            width: double.infinity,
+            height: 50.h,
+            child: CustomElevatedButton(
+              onPressed: state.isLoading ? null : _submit,
+              isLoading: state.isLoading,
+              backgroundColor: AppColor.primary,
+              foregroundColor: Colors.white,
+              loaderSize: 24.w,
+              loaderColor: AppColor.primary,
+              text: 'Submit Feedback',
             ),
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 12.h),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: CustomElevatedButton(
-                onPressed: state.isLoading ? null : _submit,
-                isLoading: state.isLoading,
-                backgroundColor: AppColor.primary,
-                foregroundColor: Colors.white,
-                loaderSize: 24.w,
-                loaderColor: AppColor.primary,
-                text: 'Submit Feedback',
-              ),
-            ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── White top section ──────────────────────────────────
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
-                child: Column(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/feedback.svg',
-                      width: 110.w,
-                      height: 110.w,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── White top section ──────────────────────────────────
+            Padding(
+              padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/feedback.svg',
+                    width: 110.w,
+                    height: 110.w,
+                  ),
+                  SizedBox(height: 20.h),
+                  Text(
+                    'Your feedback matters!\nHelp us improve the Vhandar app',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w900,
+                      color: vc.onSurface,
+                      height: 1.35,
                     ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      'Your feedback matters!\nHelp us improve the Vhandar app',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w900,
-                        color: vc.onSurface,
-                        height: 1.35,
-                      ),
-                    ),
-                    SizedBox(height: 28.h),
-                    _StarRow(
-                      rating: _rating,
-                      onRate: (r) => setState(() {
-                        _rating = r;
-                        _selectedCategories.clear();
-                      }),
-                    ),
-                    SizedBox(height: 10.h),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: Text(
-                        _rating == 0
-                            ? '(1 = Very poor, 5 = Excellent!)'
-                            : _labels[_rating],
-                        key: ValueKey(_rating),
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: vc.onSurfaceMuted,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ── Gray expandable panel ──────────────────────────────
-              if (_rating > 0)
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 260),
-                  curve: Curves.easeOut,
-                  child: _FeedbackPanel(
+                  ),
+                  SizedBox(height: 28.h),
+                  _StarRow(
                     rating: _rating,
-                    starIndex: _rating,
-                    totalStars: 5,
-                    categories: _categories,
-                    selectedCategories: _selectedCategories,
-                    descriptionController: _descriptionController,
-                    charCount: _charCount,
-                    onCategoryTap: (cat) => setState(() {
-                      if (_selectedCategories.contains(cat)) {
-                        _selectedCategories.remove(cat);
-                      } else {
-                        _selectedCategories.add(cat);
-                      }
+                    onRate: (r) => setState(() {
+                      _rating = r;
+                      _selectedCategories.clear();
                     }),
                   ),
-                ),
+                  SizedBox(height: 10.h),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      _rating == 0
+                          ? '(1 = Very poor, 5 = Excellent!)'
+                          : _labels[_rating],
+                      key: ValueKey(_rating),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: vc.onSurfaceMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-              SizedBox(height: 20.h),
-            ],
-          ),
+            // ── Gray expandable panel ──────────────────────────────
+            if (_rating > 0)
+              AnimatedSize(
+                duration: const Duration(milliseconds: 260),
+                curve: Curves.easeOut,
+                child: _FeedbackPanel(
+                  rating: _rating,
+                  starIndex: _rating,
+                  totalStars: 5,
+                  categories: _categories,
+                  selectedCategories: _selectedCategories,
+                  descriptionController: _descriptionController,
+                  charCount: _charCount,
+                  onCategoryTap: (cat) => setState(() {
+                    if (_selectedCategories.contains(cat)) {
+                      _selectedCategories.remove(cat);
+                    } else {
+                      _selectedCategories.add(cat);
+                    }
+                  }),
+                ),
+              ),
+
+            SizedBox(height: 20.h),
+          ],
         ),
-      );
+      ),
+    );
   }
 }
 
@@ -362,7 +374,10 @@ class _FeedbackPanel extends StatelessWidget {
                   controller: descriptionController,
                   maxLines: 5,
                   maxLength: 300,
-                  buildCounter: (_, {required currentLength, required isFocused, maxLength}) =>
+                  buildCounter: (_,
+                          {required currentLength,
+                          required isFocused,
+                          maxLength}) =>
                       null,
                   style: TextStyle(
                     fontSize: 14.sp,

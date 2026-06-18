@@ -8,6 +8,7 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -27,7 +28,9 @@ class HelpSupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vc = context.vColors;
 
-    return Scaffold(
+    return CustomScaffoldWrapper(
+      isScrollable: false,
+      bottomSafeArea: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomScreenHeader(title: 'Help & Support'),
       body: SingleChildScrollView(

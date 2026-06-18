@@ -32,8 +32,11 @@ class ProductAddToCartBar extends ConsumerWidget {
       return v > 0 ? v : 99;
     }();
     final hasB2BPrice = isBusiness && (product.businessPricePerUnit ?? 0) > 0;
-    final displayPrice = hasB2BPrice ? product.businessActualPrice : product.actualPrice;
-    final mrp = hasB2BPrice ? (product.businessPricePerUnit ?? 0) : (product.pricePerUnit ?? 0);
+    final displayPrice =
+        hasB2BPrice ? product.businessActualPrice : product.actualPrice;
+    final mrp = hasB2BPrice
+        ? (product.businessPricePerUnit ?? 0)
+        : (product.pricePerUnit ?? 0);
     final showMrp = !isOutOfStock && mrp > 0 && displayPrice < mrp;
     final savedAmount = showMrp ? (mrp - displayPrice).toInt() : 0;
 
@@ -49,7 +52,8 @@ class ProductAddToCartBar extends ConsumerWidget {
             color: vc.surface.withValues(alpha: 0.85),
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
             border: Border(
-              top: BorderSide(color: vc.divider.withValues(alpha: 0.6), width: 1),
+              top: BorderSide(
+                  color: vc.divider.withValues(alpha: 0.6), width: 1),
             ),
             boxShadow: [
               BoxShadow(
@@ -102,7 +106,8 @@ class ProductAddToCartBar extends ConsumerWidget {
                           padding: EdgeInsets.symmetric(
                               horizontal: 7.w, vertical: 3.h),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2E7D32).withValues(alpha: 0.12),
+                            color:
+                                const Color(0xFF2E7D32).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6.r),
                           ),
                           child: Text(
@@ -143,12 +148,15 @@ class ProductAddToCartBar extends ConsumerWidget {
                           ? GestureDetector(
                               onTap: () {
                                 final loginState = ref.read(loginProvider);
-                                if (loginState.isGuest || !loginState.isLoggedIn) {
+                                if (loginState.isGuest ||
+                                    !loginState.isLoggedIn) {
                                   context.go(LVRoute.loginScreen.route);
                                   return;
                                 }
                                 HapticFeedback.mediumImpact();
-                                ref.read(cartProvider.notifier).addToCart(product);
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .addToCart(product);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -163,7 +171,8 @@ class ProductAddToCartBar extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(12.r),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColor.primary.withValues(alpha: 0.2),
+                                      color: AppColor.primary
+                                          .withValues(alpha: 0.2),
                                       blurRadius: 8,
                                       offset: const Offset(0, 3),
                                     ),
@@ -186,18 +195,21 @@ class ProductAddToCartBar extends ConsumerWidget {
                                 color: context.vColors.surfaceVariant,
                                 borderRadius: BorderRadius.circular(12.r),
                                 border: Border.all(
-                                  color: AppColor.primary.withValues(alpha: 0.25),
+                                  color:
+                                      AppColor.primary.withValues(alpha: 0.25),
                                   width: 1.w,
                                 ),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   _StepButton(
                                     icon: Icons.remove,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
-                                        .updateQuantity(product.id!, cartCount - 1),
+                                        .updateQuantity(
+                                            product.id!, cartCount - 1),
                                   ),
                                   Text(
                                     '$cartCount',
@@ -213,7 +225,8 @@ class ProductAddToCartBar extends ConsumerWidget {
                                     disabled: cartCount >= maxQty,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
-                                        .updateQuantity(product.id!, cartCount + 1),
+                                        .updateQuantity(
+                                            product.id!, cartCount + 1),
                                   ),
                                 ],
                               ),

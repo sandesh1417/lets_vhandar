@@ -4,8 +4,7 @@ import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/home/data/repositories/general_settings_repository.dart';
 import 'package:lets_vhandar/features/home/domain/models/general_settings_model.dart';
 
-final generalSettingsProvider =
-    FutureProvider<GeneralSettings?>((ref) async {
+final generalSettingsProvider = FutureProvider<GeneralSettings?>((ref) async {
   final repository = locator<GeneralSettingsRepository>();
   final result = await repository.getGeneralSettings();
 
@@ -16,4 +15,3 @@ final generalSettingsProvider =
       throw failure;
   }
 });
-

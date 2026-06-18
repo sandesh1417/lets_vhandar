@@ -56,7 +56,8 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
                 GestureDetector(
                   onTap: () => context.pop(),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                     child: const Icon(
                       Icons.arrow_back_ios_new_rounded,
                       color: Colors.white,
@@ -91,7 +92,8 @@ class _BrandScreenState extends ConsumerState<BrandScreen> {
                     ref.invalidate(brandProvider);
                   },
                   child: GridView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     physics: const AlwaysScrollableScrollPhysics(
                       parent: BouncingScrollPhysics(),
                     ),

@@ -66,8 +66,7 @@ class FamilyMembersState {
       loadError: clearLoadError ? null : (loadError ?? this.loadError),
       isSearching: isSearching ?? this.isSearching,
       foundUser: clearFoundUser ? null : (foundUser ?? this.foundUser),
-      searchError:
-          clearSearchError ? null : (searchError ?? this.searchError),
+      searchError: clearSearchError ? null : (searchError ?? this.searchError),
       selectedRelation: selectedRelation ?? this.selectedRelation,
       isSending: isSending ?? this.isSending,
       isActioning: isActioning ?? this.isActioning,

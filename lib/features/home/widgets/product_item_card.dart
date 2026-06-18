@@ -65,8 +65,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
               ),
               decoration: BoxDecoration(
                 color: vc.scaffoldBg,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(24.r)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -136,12 +135,14 @@ class ProductItemCard extends ConsumerStatefulWidget {
                           }
                           return ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.52,
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * 0.52,
                             ),
                             child: ListView.separated(
                               shrinkWrap: true,
                               itemCount: variants.length,
-                              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(height: 12.h),
                               itemBuilder: (context, index) {
                                 final v = variants[index];
                                 final isOutOfStock = v.isOutOfStock;
@@ -151,7 +152,8 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                 final hasDiscount = v.discount != null &&
                                     (v.discount?.value ?? 0) > 0;
                                 final savings = hasDiscount
-                                    ? v.pricePerUnit!.toInt() - v.actualPrice.toInt()
+                                    ? v.pricePerUnit!.toInt() -
+                                        v.actualPrice.toInt()
                                     : 0;
                                 return GestureDetector(
                                   onTap: () {
@@ -172,7 +174,8 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                             color: context.isDark
                                                 ? vc.surfaceVariant
                                                 : Colors.white,
-                                            borderRadius: BorderRadius.circular(16.r),
+                                            borderRadius:
+                                                BorderRadius.circular(16.r),
                                             border: Border.all(
                                               color: context.isDark
                                                   ? vc.divider
@@ -182,13 +185,19 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                           ),
                                           child: Row(
                                             children: [
-                                              if (v.images?.isNotEmpty == true) ...[
+                                              if (v.images?.isNotEmpty ==
+                                                  true) ...[
                                                 ClipRRect(
-                                                  borderRadius: BorderRadius.circular(12.r),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.r),
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      border: Border.all(color: vc.divider),
-                                                      borderRadius: BorderRadius.circular(12.r),
+                                                      border: Border.all(
+                                                          color: vc.divider),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.r),
                                                     ),
                                                     child: CustomImageViewer(
                                                       path: v.images!.first.url,
@@ -202,13 +211,15 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                               ],
                                               Expanded(
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       '${v.unitValue?.toInt()} ${v.unit}',
                                                       style: TextStyle(
                                                         fontSize: 16.sp,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         color: vc.onSurface,
                                                       ),
                                                     ),
@@ -217,30 +228,43 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                       Text('Out of Stock',
                                                           style: TextStyle(
                                                             fontSize: 13.sp,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Colors.red.shade500,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Colors
+                                                                .red.shade500,
                                                           ))
                                                     else
                                                       Row(
-                                                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                                                        textBaseline: TextBaseline.alphabetic,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .baseline,
+                                                        textBaseline:
+                                                            TextBaseline
+                                                                .alphabetic,
                                                         children: [
                                                           Text(
                                                             'Rs ${displayPrice.toInt()}',
                                                             style: TextStyle(
                                                               fontSize: 16.sp,
-                                                              fontWeight: FontWeight.w900,
-                                                              color: vc.onSurface,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w900,
+                                                              color:
+                                                                  vc.onSurface,
                                                             ),
                                                           ),
                                                           if (hasDiscount) ...[
-                                                            SizedBox(width: 8.w),
+                                                            SizedBox(
+                                                                width: 8.w),
                                                             Text(
                                                               'MRP ${v.pricePerUnit?.toInt()}',
                                                               style: TextStyle(
                                                                 fontSize: 12.sp,
-                                                                color: vc.onSurfaceMuted,
-                                                                decoration: TextDecoration.lineThrough,
+                                                                color: vc
+                                                                    .onSurfaceMuted,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .lineThrough,
                                                               ),
                                                             ),
                                                           ],
@@ -259,24 +283,41 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                             top: 0,
                                             left: 0,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10.w,
+                                                  vertical: 4.h),
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                  colors: [Color(0xFFE53935), Color(0xFFFF7043)],
+                                                  colors: [
+                                                    Color(0xFFE53935),
+                                                    Color(0xFFFF7043)
+                                                  ],
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.bottomRight,
                                                 ),
                                                 borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(16.r),
-                                                  bottomRight: Radius.circular(12.r),
+                                                  topLeft:
+                                                      Radius.circular(16.r),
+                                                  bottomRight:
+                                                      Radius.circular(12.r),
                                                 ),
                                               ),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Text('SAVE', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w900)),
+                                                  Text('SAVE',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 8.sp,
+                                                          fontWeight:
+                                                              FontWeight.w900)),
                                                   SizedBox(width: 4.w),
-                                                  Text('Rs $savings', style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w900)),
+                                                  Text('Rs $savings',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 10.sp,
+                                                          fontWeight:
+                                                              FontWeight.w900)),
                                                 ],
                                               ),
                                             ),
@@ -289,12 +330,13 @@ class ProductItemCard extends ConsumerStatefulWidget {
                             ),
                           );
                         },
-                          loading: () => const _VariantListShimmer(),
-                          error: (e, s) => Center(
-                            child: Text('Failed to load variants',
-                                style: TextStyle(fontSize: 14.sp, color: Colors.red)),
-                          ),
+                        loading: () => const _VariantListShimmer(),
+                        error: (e, s) => Center(
+                          child: Text('Failed to load variants',
+                              style: TextStyle(
+                                  fontSize: 14.sp, color: Colors.red)),
                         ),
+                      ),
                 ],
               ),
             );
@@ -366,22 +408,19 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
     final isOutOfStock = product.isOutOfStock;
 
     // ── Price selection based on user type ──────────────────────────
-    final hasB2BPrice = isBusiness &&
-        (product.businessPricePerUnit ?? 0) > 0;
+    final hasB2BPrice = isBusiness && (product.businessPricePerUnit ?? 0) > 0;
 
     // Selling price shown to the user
     final displayPrice = hasB2BPrice
-        ? product.businessActualPrice   // B2B: MRP - B2B discount
-        : product.actualPrice;          // Retail: pricePerUnit - discount
+        ? product.businessActualPrice // B2B: MRP - B2B discount
+        : product.actualPrice; // Retail: pricePerUnit - discount
 
     // MRP to show strikethrough (B2B uses businessPricePerUnit as their MRP)
     final mrp = hasB2BPrice
         ? (product.businessPricePerUnit ?? 0)
         : (product.pricePerUnit ?? 0);
 
-    final showMrp = !isOutOfStock &&
-        mrp > 0 &&
-        displayPrice < mrp;
+    final showMrp = !isOutOfStock && mrp > 0 && displayPrice < mrp;
 
     final vc = context.vColors;
 
@@ -415,7 +454,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   height: 105.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                    color:
+                        context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6.r),
                       topRight: Radius.circular(6.r),
@@ -512,8 +552,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   color: Colors.white,
                                   fontSize: 8.sp,
                                   fontWeight: FontWeight.bold)),
-                          Text(
-                              'Rs ${(mrp - displayPrice).toInt()}',
+                          Text('Rs ${(mrp - displayPrice).toInt()}',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.sp,
@@ -603,8 +642,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                           )),
                                     ),
                                     Icon(Icons.keyboard_arrow_down,
-                                        size: 14.sp,
-                                        color: vc.onSurfaceMuted),
+                                        size: 14.sp, color: vc.onSurfaceMuted),
                                   ],
                                 ),
                               ),
@@ -673,7 +711,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                               return GestureDetector(
                                 onTap: () {
                                   final loginState = ref.read(loginProvider);
-                                  if (loginState.isGuest || !loginState.isLoggedIn) {
+                                  if (loginState.isGuest ||
+                                      !loginState.isLoggedIn) {
                                     context.go(LVRoute.loginScreen.route);
                                     return;
                                   }
@@ -795,7 +834,8 @@ class _VariantCartButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(cartProvider);
-    final cartCount = ref.read(cartProvider.notifier).getCartItemCount(product.id!);
+    final cartCount =
+        ref.read(cartProvider.notifier).getCartItemCount(product.id!);
     final btnHeight = 34.h;
 
     if (cartCount == 0) {
@@ -831,7 +871,9 @@ class _VariantCartButton extends ConsumerWidget {
             GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
-                ref.read(cartProvider.notifier).updateQuantity(product.id!, cartCount - 1);
+                ref
+                    .read(cartProvider.notifier)
+                    .updateQuantity(product.id!, cartCount - 1);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -839,11 +881,17 @@ class _VariantCartButton extends ConsumerWidget {
                 child: Icon(Icons.remove, color: Colors.white, size: 14.sp),
               ),
             ),
-            Text('$cartCount', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp)),
+            Text('$cartCount',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13.sp)),
             GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
-                ref.read(cartProvider.notifier).updateQuantity(product.id!, cartCount + 1);
+                ref
+                    .read(cartProvider.notifier)
+                    .updateQuantity(product.id!, cartCount + 1);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),

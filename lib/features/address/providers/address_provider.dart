@@ -105,10 +105,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
         await loadAddresses(userId);
         // Auto-select the newly saved address
         final matches = state.addresses.where(
-          (a) =>
-              a.lat == lat &&
-              a.long == long &&
-              a.description == description,
+          (a) => a.lat == lat && a.long == long && a.description == description,
         );
         if (matches.isNotEmpty) selectAddress(matches.first);
         return true;
@@ -158,6 +155,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
         return false;
     }
   }
+
   Future<bool> deleteAddress({
     required String userId,
     required String addressId,

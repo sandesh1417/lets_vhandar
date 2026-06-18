@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/features/profile/data/product_suggestion_repository.dart';
 
-final productSuggestionRepositoryProvider = Provider((ref) => ProductSuggestionRepository());
+final productSuggestionRepositoryProvider =
+    Provider((ref) => ProductSuggestionRepository());
 
 class ProductSuggestionState {
   final bool isLoading;
@@ -58,6 +59,9 @@ class ProductSuggestionNotifier extends StateNotifier<ProductSuggestionState> {
   }
 }
 
-final productSuggestionProvider = StateNotifierProvider<ProductSuggestionNotifier, ProductSuggestionState>((ref) {
-  return ProductSuggestionNotifier(ref.watch(productSuggestionRepositoryProvider));
+final productSuggestionProvider =
+    StateNotifierProvider<ProductSuggestionNotifier, ProductSuggestionState>(
+        (ref) {
+  return ProductSuggestionNotifier(
+      ref.watch(productSuggestionRepositoryProvider));
 });

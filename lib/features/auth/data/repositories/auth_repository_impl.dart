@@ -303,12 +303,12 @@ class AuthRepositoryImpl {
             return const Success(null);
           }
           // Direct user object: { data: { _id: ..., name: ... } }
-          if (payload is Map<String, dynamic> &&
-              payload.containsKey('_id')) {
+          if (payload is Map<String, dynamic> && payload.containsKey('_id')) {
             return Success(payload);
           }
           // Array: { data: [user] }
-          if (payload is List && payload.isNotEmpty &&
+          if (payload is List &&
+              payload.isNotEmpty &&
               payload.first is Map<String, dynamic>) {
             return Success(Map<String, dynamic>.from(payload.first));
           }
@@ -342,8 +342,7 @@ class AuthRepositoryImpl {
   Future<Result<List<Map<String, dynamic>>, Failure>> getFamilyMembers(
       String userId) async {
     try {
-      final result =
-          await _apiClient.get(ApiUrl.familyMembersForUser(userId));
+      final result = await _apiClient.get(ApiUrl.familyMembersForUser(userId));
       switch (result) {
         case Success(value: final data):
           return Success(_extractList(data['data']));
@@ -360,8 +359,7 @@ class AuthRepositoryImpl {
   Future<Result<List<Map<String, dynamic>>, Failure>> getPendingFamilyRequests(
       String userId) async {
     try {
-      final result =
-          await _apiClient.get(ApiUrl.familyMemberRequests(userId));
+      final result = await _apiClient.get(ApiUrl.familyMemberRequests(userId));
       switch (result) {
         case Success(value: final data):
           return Success(_extractList(data['data']));

@@ -23,7 +23,7 @@ class BrandCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-        Container(
+          Container(
             height: 75.h,
             width: 75.w,
             decoration: BoxDecoration(
@@ -42,7 +42,7 @@ class BrandCard extends StatelessWidget {
               ),
             ),
             child: ClipRRect(
-            child: ClipRRect(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(10.r),
                 child: CustomImageViewer(
                   path: imageUrl,

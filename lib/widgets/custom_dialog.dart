@@ -66,7 +66,8 @@ class CustomDialog {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (dialogContext) {
-        final vc = Theme.of(dialogContext).extension<VhandarColors>() ?? VhandarColors.light;
+        final vc = Theme.of(dialogContext).extension<VhandarColors>() ??
+            VhandarColors.light;
         return Dialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),

@@ -18,7 +18,8 @@ class AppConstants {
   static const int searchDebounceMs = 500;
 
   // CDN
-  static const String cdnBaseUrl = 'https://vhandar.sgp1.digitaloceanspaces.com';
+  static const String cdnBaseUrl =
+      'https://vhandar.sgp1.digitaloceanspaces.com';
 
   // Storage keys
   static const String cartStorageKey = 'vhandar_cart';
