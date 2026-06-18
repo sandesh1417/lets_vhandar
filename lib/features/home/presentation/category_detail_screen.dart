@@ -17,6 +17,7 @@ import 'category_detail/widgets/category_product_grid.dart';
 import 'category_detail/widgets/category_sort_bar.dart';
 import 'category_detail/widgets/sub_category_sidebar.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
+import 'package:lets_vhandar/widgets/app_refresh_indicator.dart';
 
 class CategoryDetailScreen extends ConsumerStatefulWidget {
   final String categorySlug;
@@ -538,55 +539,66 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           ),
           // ── Body ─────────────────────────────────────────────────
           Expanded(
-            child: isVertical
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SubCategorySidebar(categorySlug: widget.categorySlug),
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Container(
-                              color: context.vColors.scaffoldBg,
-                              child: CategoryProductGrid(
-                                categorySlug: widget.categorySlug,
-                              ),
-                            ),
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 16.h,
-                              child: Center(
-                                child: CartFloatingBadge(
-                                  onTap: () =>
-                                      context.push(LVRoute.cartScreen.route),
+            child: AppRefreshIndicator(
+              topOffset: 12.h,
+              onRefresh: () async {
+                ref.invalidate(categoryProductsProvider(widget.categorySlug));
+                ref.invalidate(categoryBySlugProvider(widget.categorySlug));
+                ref.invalidate(subCategoriesProvider(widget.categorySlug));
+                await ref
+                    .read(categoryProductsProvider(widget.categorySlug).future);
+              },
+              child: isVertical
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SubCategorySidebar(categorySlug: widget.categorySlug),
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Container(
+                                color: context.vColors.scaffoldBg,
+                                child: CategoryProductGrid(
+                                  categorySlug: widget.categorySlug,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : Stack(
-                    children: [
-                      Container(
-                        color: context.vColors.scaffoldBg,
-                        child: CategoryProductGrid(
-                            categorySlug: widget.categorySlug),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 16.h,
-                        child: Center(
-                          child: CartFloatingBadge(
-                            onTap: () => context.push(LVRoute.cartScreen.route),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 16.h,
+                                child: Center(
+                                  child: CartFloatingBadge(
+                                    onTap: () =>
+                                        context.push(LVRoute.cartScreen.route),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        Container(
+                          color: context.vColors.scaffoldBg,
+                          child: CategoryProductGrid(
+                              categorySlug: widget.categorySlug),
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 16.h,
+                          child: Center(
+                            child: CartFloatingBadge(
+                              onTap: () =>
+                                  context.push(LVRoute.cartScreen.route),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
           ),
         ],
       ),

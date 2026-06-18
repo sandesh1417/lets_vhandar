@@ -86,7 +86,7 @@ class _HomeBannerSliderState extends ConsumerState<HomeBannerSlider>
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: AspectRatio(
-            aspectRatio: 16 / 8,
+            aspectRatio: 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16.r),
               child: NotificationListener<ScrollNotification>(
