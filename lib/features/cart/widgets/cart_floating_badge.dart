@@ -17,17 +17,49 @@ class CartFloatingBadge extends ConsumerStatefulWidget {
   ConsumerState<CartFloatingBadge> createState() => _CartFloatingBadgeState();
 }
 
-class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
+class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge>
+    with SingleTickerProviderStateMixin {
   final _badgeKey = GlobalKey();
+
+  late final AnimationController _bounceCtrl;
+  late final Animation<double> _bounce;
 
   @override
   void initState() {
     super.initState();
     CartFlyAnimator.registerBadgeKey(_badgeKey);
+
+    // "Catch" bounce: a subtle, minimal nudge to ~1.07× then a smooth settle.
+    _bounceCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+    _bounce = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 1.07)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 40,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.07, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 60,
+      ),
+    ]).animate(_bounceCtrl);
+
+    // Bounce exactly when a flying image lands in the cart.
+    CartFlyAnimator.landedTick.addListener(_playBounce);
+  }
+
+  void _playBounce() {
+    if (!mounted) return;
+    _bounceCtrl.forward(from: 0);
   }
 
   @override
   void dispose() {
+    CartFlyAnimator.landedTick.removeListener(_playBounce);
+    _bounceCtrl.dispose();
     CartFlyAnimator.unregisterBadgeKey(_badgeKey);
     super.dispose();
   }
@@ -49,10 +81,8 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge> {
         .whereType<String>()
         .toList();
 
-    return AnimatedScale(
-      scale: 1.0,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.elasticOut,
+    return ScaleTransition(
+      scale: _bounce,
       child: GestureDetector(
         key: _badgeKey,
         onTap: () {

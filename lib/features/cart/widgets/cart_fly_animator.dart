@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 
 class CartFlyAnimator {
@@ -13,21 +14,61 @@ class CartFlyAnimator {
   static GlobalKey? get _activeKey =>
       _badgeKeys.isNotEmpty ? _badgeKeys.last : null;
 
-  static void fly(BuildContext context, String? imageUrl, Offset startOffset) {
-    final badgeCtx = _activeKey?.currentContext;
-    if (badgeCtx == null) return;
-    final badgeBox = badgeCtx.findRenderObject() as RenderBox?;
-    if (badgeBox == null) return;
-    final endOffset = badgeBox.localToGlobal(
-        Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
+  /// Ticks once every time a flying product image reaches the cart badge.
+  /// The badge listens to this to play its "catch" bounce in perfect sync
+  /// with the landing (rather than the instant the cart count changes).
+  static final ValueNotifier<int> landedTick = ValueNotifier<int>(0);
 
+  static void _notifyLanded() => landedTick.value++;
+
+  static void fly(BuildContext context, String? imageUrl, Offset startOffset) {
+    final end = _resolveBadgeCenter();
+    if (end != null) {
+      _insertFly(context, imageUrl, startOffset, end);
+      return;
+    }
+
+    // First item: the cart badge isn't on screen yet (it only appears once the
+    // cart is non-empty). Wait a beat for it to mount after addToCart, then
+    // fly to it — falling back to a default landing spot near where the cart
+    // pill appears if it still isn't ready.
+    Future.delayed(const Duration(milliseconds: 60), () {
+      if (!context.mounted) return;
+      final target = _resolveBadgeCenter() ?? _fallbackTarget(context);
+      _insertFly(context, imageUrl, startOffset, target);
+    });
+  }
+
+  /// Global centre of the active cart badge, or null if it isn't mounted.
+  static Offset? _resolveBadgeCenter() {
+    final badgeBox =
+        _activeKey?.currentContext?.findRenderObject() as RenderBox?;
+    if (badgeBox == null || !badgeBox.attached) return null;
+    return badgeBox.localToGlobal(
+        Offset(badgeBox.size.width / 2, badgeBox.size.height / 2));
+  }
+
+  /// Where to fly when no badge exists yet — roughly where the cart pill
+  /// materialises (bottom-centre, above the nav area).
+  static Offset _fallbackTarget(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    return Offset(size.width / 2, size.height - 90);
+  }
+
+  static void _insertFly(BuildContext context, String? imageUrl,
+      Offset startOffset, Offset endOffset) {
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => _FlyingCartImage(
         imageUrl: imageUrl,
         startOffset: startOffset,
         endOffset: endOffset,
-        onComplete: () => entry.remove(),
+        onComplete: () {
+          entry.remove();
+          // The image just reached the cart — buzz + bounce the badge.
+          AppHaptics.light();
+          _notifyLanded();
+        },
       ),
     );
     Overlay.of(context).insert(entry);
@@ -77,30 +118,63 @@ class _FlyingCartImageState extends State<_FlyingCartImage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
 
-  // Scale: full size for first 45%, then shrinks into cart
+  // Eased progress along the curved path (smooth ease-in, ease-out).
+  late final Animation<double> _t;
+  // Scale: holds full briefly, then eases down into the cart.
   late final Animation<double> _scale;
-  // Slight rotation as it falls
+  // Gentle spin as it travels.
   late final Animation<double> _rotation;
+  // Quick fade-in at launch and fade-out as it merges into the cart.
+  late final Animation<double> _opacity;
+
+  // Control point of the quadratic bezier (raises the arc above the line
+  // between start and end so the image swoops gracefully instead of dropping).
+  late final Offset _control;
 
   @override
   void initState() {
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 650),
     );
 
+    final start = widget.startOffset;
+    final end = widget.endOffset;
+    _control = Offset(
+      (start.dx + end.dx) / 2,
+      min(start.dy, end.dy) - 120, // lift the arc upward
+    );
+
+    _t = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOutCubic);
+
     _scale = TweenSequence<double>([
-      TweenSequenceItem(tween: ConstantTween(1.0), weight: 45),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 20),
       TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeInQuart)),
-        weight: 55,
+        tween: Tween(begin: 1.0, end: 0.38)
+            .chain(CurveTween(curve: Curves.easeInOutCubic)),
+        weight: 80,
       ),
     ]).animate(_ctrl);
 
-    _rotation = Tween<double>(begin: 0.0, end: 0.25)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeIn));
+    _rotation = Tween<double>(begin: 0.0, end: 0.35)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+
+    _opacity = TweenSequence<double>([
+      // Fade in fast at launch.
+      TweenSequenceItem(
+        tween: Tween(begin: 0.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 12,
+      ),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 70),
+      // Fade out as it lands in the cart.
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 18,
+      ),
+    ]).animate(_ctrl);
 
     _ctrl.forward().then((_) {
       if (mounted) widget.onComplete();
@@ -113,49 +187,49 @@ class _FlyingCartImageState extends State<_FlyingCartImage>
     super.dispose();
   }
 
+  // Quadratic bezier: (1-t)^2·P0 + 2(1-t)t·P1 + t^2·P2
+  Offset _bezier(double t) {
+    final u = 1 - t;
+    final start = widget.startOffset;
+    return start * (u * u) + _control * (2 * u * t) + widget.endOffset * (t * t);
+  }
+
   @override
   Widget build(BuildContext context) {
     const double size = 50;
     return AnimatedBuilder(
       animation: _ctrl,
       builder: (_, __) {
-        final t = _ctrl.value;
-        final start = widget.startOffset;
-        final end = widget.endOffset;
-
-        // x: easeInOut — slight side drift
-        final dx =
-            start.dx + (end.dx - start.dx) * Curves.easeInOut.transform(t);
-        // y: gravity — accelerates toward cart
-        final dy =
-            start.dy + (end.dy - start.dy) * Curves.easeInCubic.transform(t);
-
+        final pos = _bezier(_t.value);
         final s = _scale.value;
         return Positioned(
-          left: dx - (size * s) / 2,
-          top: dy - (size * s) / 2,
+          left: pos.dx - (size * s) / 2,
+          top: pos.dy - (size * s) / 2,
           child: IgnorePointer(
-            child: Transform.rotate(
-              angle: _rotation.value,
-              child: Transform.scale(
-                scale: s,
-                child: Container(
-                  width: size,
-                  height: size,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: CustomImageViewer(
-                        path: widget.imageUrl, fit: BoxFit.cover),
+            child: Opacity(
+              opacity: _opacity.value.clamp(0.0, 1.0),
+              child: Transform.rotate(
+                angle: _rotation.value,
+                child: Transform.scale(
+                  scale: s,
+                  child: Container(
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: CustomImageViewer(
+                          path: widget.imageUrl, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
               ),

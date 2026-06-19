@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
@@ -726,7 +727,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     _showVariantBottomSheet();
                                     return;
                                   }
-                                  HapticFeedback.mediumImpact();
+                                  AppHaptics.addToCart();
                                   CartFlyAnimator.fly(
                                     context,
                                     product.images?.isNotEmpty == true
@@ -852,7 +853,7 @@ class _VariantCartButton extends ConsumerWidget {
                   message: 'Please login to add items to cart');
               return;
             }
-            HapticFeedback.mediumImpact();
+            AppHaptics.addToCart();
             ref.read(cartProvider.notifier).addToCart(product);
           },
           backgroundColor: context.vColors.surface,
