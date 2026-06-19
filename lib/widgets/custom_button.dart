@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +5,7 @@ import 'package:lets_vhandar/widgets/loader.dart';
 
 import '../core/constants/app_style.dart';
 import '../core/constants/color_constant.dart';
+import 'shimmer_button_effect.dart';
 
 class CustomCardBtn extends StatelessWidget {
   final void Function()? onPress;
@@ -149,6 +149,22 @@ class CustomElevatedButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final TextStyle? textStyle;
 
+  /// Runs the idle diagonal shimmer sweep when the button is interactive.
+  /// Set `false` to opt a specific button out of the effect.
+  final bool enableShimmer;
+
+  /// Idle sweep timing — how long one light sweep takes to cross the button.
+  /// Lower = faster. Defaults to [kShimmerSweepDuration].
+  final Duration shimmerSweepDuration;
+
+  /// Idle sweep timing — the pause between two sweeps.
+  /// Lower = the shimmer repeats more often. Defaults to [kShimmerPauseDuration].
+  final Duration shimmerPauseDuration;
+
+  /// Loading sweep timing — speed of the continuous shimmer while [isLoading].
+  /// Lower = faster, busier "processing" feel. Defaults to [kLoadingShimmerDuration].
+  final Duration loadingShimmerDuration;
+
   const CustomElevatedButton({
     super.key,
     required this.onPressed,
@@ -171,61 +187,137 @@ class CustomElevatedButton extends StatelessWidget {
     this.height,
     this.padding,
     this.textStyle,
+    this.enableShimmer = true,
+    this.shimmerSweepDuration = kShimmerSweepDuration,
+    this.shimmerPauseDuration = kShimmerPauseDuration,
+    this.loadingShimmerDuration = kLoadingShimmerDuration,
   }) : assert(
             text != null || child != null, 'Provide either `text` or `child`');
 
   @override
   Widget build(BuildContext context) {
+    // TEMP / DEBUG: force every button into the loading state so the loading
+    // shimmer can be reviewed everywhere. Remove this line (or set it back to
+    // `this.isLoading`) before shipping.
+    // final bool isLoading = true; // this.isLoading;
+
     final bgColor = backgroundColor ?? AppColor.primary;
     final fgColor = foregroundColor ?? AppColor.white;
+    final radius = BorderRadius.circular(borderRadius.r);
+    final effectivePadding =
+        padding ?? EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w);
 
-    final Widget content = isLoading
-        ? Center(
-            child: CupertinoActivityIndicator(
-              color: loaderColor ?? fgColor,
-              radius: loaderSize != null ? loaderSize! / 2 : 10,
+    final bool disabled = !isEnabled || isLoading;
+
+    // The label/icon — identical content to before. While loading it is kept
+    // (transparent) in the tree so the button preserves its exact dimensions.
+    final Widget label = Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: iconSize ?? 18.sp, color: fgColor),
+          SizedBox(width: iconSpacing.w),
+        ],
+        child ??
+            Text(
+              text!,
+              style: textStyle ??
+                  KTextStyle.roboto16white7W.copyWith(color: fgColor),
             ),
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: iconSize ?? 18.sp, color: fgColor),
-                SizedBox(width: iconSpacing.w),
-              ],
-              child ??
-                  Text(
-                    text!,
-                    style: textStyle ??
-                        KTextStyle.roboto16white7W.copyWith(color: fgColor),
-                  ),
-            ],
-          );
+      ],
+    );
 
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ElevatedButton(
-        onPressed: isEnabled && !isLoading ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          // While loading the button is disabled, so keep (almost) the real
-          // color — only a 10% dim. A genuinely disabled button fades more.
-          disabledBackgroundColor: disabledBackgroundColor ??
-              (isLoading
-                  ? bgColor.withValues(alpha: 0.9)
-                  : bgColor.withValues(alpha: 0.4)),
-          foregroundColor: fgColor,
-          elevation: elevation,
-          padding:
-              padding ?? EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius.r),
-            side: side ?? BorderSide.none,
+    // Background, shape, elevation, splash and tap handling — unchanged. The
+    // visible content is layered on top via the Stack, so this button's own
+    // padding is zeroed here and re-applied to the content sizer below; the
+    // resulting overall size is identical to the original.
+    final Widget background = ElevatedButton(
+      onPressed: disabled ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        // While loading the button is disabled, so keep (almost) the real
+        // color — only a 10% dim. A genuinely disabled button fades more.
+        disabledBackgroundColor: disabledBackgroundColor ??
+            (isLoading
+                ? bgColor.withValues(alpha: 0.9)
+                : bgColor.withValues(alpha: 0.4)),
+        foregroundColor: fgColor,
+        elevation: elevation,
+        padding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: side ?? BorderSide.none,
+        ),
+      ),
+      child: const SizedBox.shrink(),
+    );
+
+    final bool showIdleShimmer = enableShimmer && isEnabled && !isLoading;
+
+    final Widget stack = Stack(
+      alignment: Alignment.center,
+      children: [
+        // Invisible sizer that reproduces ElevatedButton's default minimum
+        // (64×48 padded tap target) which the Positioned.fill background no
+        // longer contributes. Outer SizedBox width/height still override it.
+        const SizedBox(width: 64, height: 48),
+
+        // Bottom: background + shape + ink. Fills the content-defined size.
+        Positioned.fill(child: background),
+
+        // Middle: loading skeleton shimmer (covers the full button surface).
+        if (isLoading)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ClipRRect(
+                borderRadius: radius,
+                child: LoadingShimmerContent(
+                  baseColor: bgColor,
+                  spinnerColor: loaderColor ?? fgColor,
+                  spinnerRadius: loaderSize != null ? loaderSize! / 2 : null,
+                  sweepDuration: loadingShimmerDuration,
+                ),
+              ),
+            ),
+          ),
+
+        // Middle: idle attention sweep — above the background, below the label,
+        // clipped strictly to the button's border radius.
+        if (showIdleShimmer)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ClipRRect(
+                borderRadius: radius,
+                child: ShimmerSweepOverlay(
+                  sweepDuration: shimmerSweepDuration,
+                  pauseDuration: shimmerPauseDuration,
+                ),
+              ),
+            ),
+          ),
+
+        // Top + size source: the label. Non-positioned, so it defines the
+        // Stack's intrinsic size (label + padding) exactly as before. Hidden
+        // while loading but still measured to hold the button's dimensions.
+        IgnorePointer(
+          child: Opacity(
+            opacity: isLoading ? 0.0 : 1.0,
+            child: Padding(
+              padding: effectivePadding,
+              child: label,
+            ),
           ),
         ),
-        child: content,
+      ],
+    );
+
+    return PressScale(
+      enabled: !disabled,
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: stack,
       ),
     );
   }
