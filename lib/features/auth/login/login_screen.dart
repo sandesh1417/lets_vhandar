@@ -81,16 +81,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ref.read(loginProvider.notifier).enterGuestMode(context),
             child: Container(
               margin: EdgeInsets.only(right: 8.w),
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
               decoration: BoxDecoration(
                 color: AppColor.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
-                'Skip Login',
+                'Skip ',
                 style: TextStyle(
                   color: AppColor.primary,
-                  fontSize: 12.sp,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),

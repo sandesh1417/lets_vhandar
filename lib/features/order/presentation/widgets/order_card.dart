@@ -82,7 +82,7 @@ class OrderCard extends ConsumerWidget {
           children: [
             // ── Header ─────────────────────────────────────────────
             Padding(
-              padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 12.h),
+              padding: EdgeInsets.fromLTRB(14.w, 6.h, 14.w, 4.h),
               child: Row(
                 children: [
                   Expanded(
@@ -97,7 +97,7 @@ class OrderCard extends ConsumerWidget {
                             color: vc.onSurface,
                           ),
                         ),
-                        SizedBox(height: 2.h),
+                        SizedBox(height: 1.h),
                         Text(
                           formattedDate,
                           style: TextStyle(
@@ -114,11 +114,9 @@ class OrderCard extends ConsumerWidget {
               ),
             ),
 
-            Divider(height: 1, thickness: 0.5, color: vc.divider),
-
             // ── Products + amount ──────────────────────────────────
             Padding(
-              padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 12.h),
+              padding: EdgeInsets.fromLTRB(14.w, 4.h, 14.w, 4.h),
               child: Row(
                 children: [
                   Expanded(
@@ -177,7 +175,7 @@ class OrderCard extends ConsumerWidget {
                               ),
                             ),
                           ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 4.h),
                         Text(
                           '$itemCount item${itemCount != 1 ? 's' : ''}  •  ${order.paymentMethod ?? 'N/A'}',
                           style: TextStyle(
@@ -214,8 +212,6 @@ class OrderCard extends ConsumerWidget {
               ),
             ),
 
-            Divider(height: 1, thickness: 0.5, color: vc.divider),
-
             // ── Mini stepper / status banner ────────────────────────
             if (cancelled)
               _CancelledRow(status: order.status)
@@ -231,7 +227,7 @@ class OrderCard extends ConsumerWidget {
                 borderRadius:
                     BorderRadius.vertical(bottom: Radius.circular(16.r)),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -286,7 +282,7 @@ class _MiniStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
+      padding: EdgeInsets.fromLTRB(14.w, 4.h, 14.w, 6.h),
       child: Row(
         children: List.generate(_stepLabels.length * 2 - 1, (i) {
           if (i.isOdd) {
@@ -338,17 +334,23 @@ class _MiniStepper extends StatelessWidget {
                             ? Colors.white
                             : vc.onSurface.withValues(alpha: 0.3)),
               ),
-              SizedBox(height: 4.h),
-              Text(
-                _stepLabels[stepIndex],
-                style: TextStyle(
-                  fontSize: 8.5.sp,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                  color: active
-                      ? AppColor.primary
-                      : done
-                          ? vc.onSurface.withValues(alpha: 0.45)
-                          : vc.onSurface.withValues(alpha: 0.3),
+              SizedBox(height: 3.h),
+              SizedBox(
+                width: 64.w,
+                child: Text(
+                  _stepLabels[stepIndex],
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 8.5.sp,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                    color: active
+                        ? AppColor.primary
+                        : done
+                            ? vc.onSurface.withValues(alpha: 0.45)
+                            : vc.onSurface.withValues(alpha: 0.3),
+                  ),
                 ),
               ),
             ],
@@ -366,7 +368,7 @@ class _DeliveredRow extends StatelessWidget {
   Widget build(BuildContext context) {
     const color = Color(0xFF2E7D32);
     return Padding(
-      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 12.h),
+      padding: EdgeInsets.fromLTRB(14.w, 4.h, 14.w, 6.h),
       child: Row(
         children: [
           Container(
@@ -378,12 +380,14 @@ class _DeliveredRow extends StatelessWidget {
             child: Icon(Icons.check_rounded, color: color, size: 14.sp),
           ),
           SizedBox(width: 8.w),
-          Text(
-            'Order Delivered Successfully',
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              color: color,
+          Expanded(
+            child: Text(
+              'Order Delivered Successfully',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -414,17 +418,19 @@ class _CancelledRow extends StatelessWidget {
     };
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 12.h),
+      padding: EdgeInsets.fromLTRB(14.w, 4.h, 14.w, 6.h),
       child: Row(
         children: [
           Icon(icon, color: color, size: 16.sp),
           SizedBox(width: 8.w),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              color: color,
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
           ),
         ],
