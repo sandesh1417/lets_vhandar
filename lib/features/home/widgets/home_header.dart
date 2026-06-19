@@ -10,7 +10,7 @@ import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/address/widgets/address_selector_sheet.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
-import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/core/utils/guest_redirect.dart';
 import 'package:lets_vhandar/widgets/premium_search_bar.dart';
 
 class HomeHeader extends ConsumerWidget {
@@ -271,7 +271,7 @@ class _AddressPill extends ConsumerWidget {
         if (userId.isNotEmpty) {
           showAddressSelectorSheet(context, userId: userId);
         } else {
-          CustomSnackbar.info(context,
+          redirectGuestToLogin(context,
               message: 'Please login to manage addresses');
         }
       },

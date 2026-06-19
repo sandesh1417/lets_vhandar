@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/utils/guest_redirect.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
@@ -713,7 +714,9 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   final loginState = ref.read(loginProvider);
                                   if (loginState.isGuest ||
                                       !loginState.isLoggedIn) {
-                                    context.go(LVRoute.loginScreen.route);
+                                    redirectGuestToLogin(context,
+                                        message:
+                                            'Please login to add items to cart');
                                     return;
                                   }
                                   // Open variant popup for variant products
@@ -845,7 +848,8 @@ class _VariantCartButton extends ConsumerWidget {
           onPressed: () {
             final loginState = ref.read(loginProvider);
             if (loginState.isGuest || !loginState.isLoggedIn) {
-              context.go(LVRoute.loginScreen.route);
+              redirectGuestToLogin(context,
+                  message: 'Please login to add items to cart');
               return;
             }
             HapticFeedback.mediumImpact();
