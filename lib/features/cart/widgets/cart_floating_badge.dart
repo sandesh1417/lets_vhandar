@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/scroll_activity.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
@@ -81,16 +82,33 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge>
         .whereType<String>()
         .toList();
 
-    return ScaleTransition(
-      scale: _bounce,
-      child: GestureDetector(
-        key: _badgeKey,
-        onTap: () {
-          HapticFeedback.lightImpact();
-          widget.onTap();
-        },
-        child: Container(
-          margin: EdgeInsets.only(bottom: 6.h),
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppScrollActivity.isScrolling,
+      builder: (context, scrolling, child) {
+        // While scrolling: shrink AND drop the now-unwanted bottom gap so the
+        // pill tucks down out of the way. Anchor the shrink to the bottom so it
+        // collapses downward rather than floating in place.
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: scrolling ? 0 : 6.h),
+          child: AnimatedScale(
+            scale: scrolling ? 0.72 : 1.0,
+            duration: const Duration(milliseconds: 240),
+            curve: scrolling ? Curves.easeOut : Curves.easeOutBack,
+            alignment: Alignment.bottomCenter,
+            child: child,
+          ),
+        );
+      },
+      child: ScaleTransition(
+        scale: _bounce,
+        child: GestureDetector(
+          key: _badgeKey,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            widget.onTap();
+          },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(50.r),
             child: BackdropFilter(

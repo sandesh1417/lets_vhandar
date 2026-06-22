@@ -6,6 +6,7 @@ import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
 import 'package:lets_vhandar/core/theme/app_theme.dart';
+import 'package:lets_vhandar/core/utils/scroll_activity.dart';
 import 'package:lets_vhandar/core/widgets/update_sheet.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 
@@ -32,10 +33,21 @@ class MyApp extends ConsumerWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeMode,
             builder: (context, child) {
+              final content = child ?? const SizedBox.shrink();
+              // Track scroll activity app-wide so the cart pill (and anything
+              // else) can shrink while scrolling. Notifications bubble up here
+              // from every route's scroll views.
+              final tracked = NotificationListener<ScrollNotification>(
+                onNotification: (_) {
+                  AppScrollActivity.notify();
+                  return false; // don't consume — let others still receive it
+                },
+                child: content,
+              );
               if (UpdateService.instance.updateType == UpdateType.forced) {
-                return ForceUpdateGate(child: child ?? const SizedBox.shrink());
+                return ForceUpdateGate(child: tracked);
               }
-              return child ?? const SizedBox.shrink();
+              return tracked;
             },
           ),
         );
