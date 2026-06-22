@@ -131,7 +131,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               // header is 136.h tall (+ status bar) with a 16.h gap before the
               // banner; subtract the pill height so it rests right above it.
               // topOffset: 152.h + MediaQuery.of(context).padding.top - 66,
-              topOffset: 152.h + MediaQuery.of(context).padding.top - 20,
+              topOffset: 152.h + MediaQuery.of(context).padding.top + 20.h,
               child: CustomScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(
