@@ -1,26 +1,24 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
-import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/utils/app_haptics.dart';
 
 // ---------------------------------------------------------------------------
-// AppRefreshIndicator — branded pull-to-refresh for VHANDAR.
+// AppRefreshFruitsIndicator — grocery-themed pull-to-refresh for VHANDAR.
 //
 // Drop-in replacement: same constructor (child / onRefresh / color).
 //
-// The Vhandar logo mark sits in a floating badge: it reveals as the user pulls
-// (a progress ring fills around it), then gently "breathes" while a comet ring
-// spins during the refresh. On-brand and premium.
+// A woven basket fills with produce as the user pulls; once refreshing, the
+// fruit juggles in a bouncing wave above the basket. Everything is vector-
+// drawn (CustomPainter) so it stays crisp and consistent across devices.
 //
 // Mechanism: a native RefreshIndicator (made invisible) provides the pull
 // gesture + onRefresh callback, while a NotificationListener tracks the pull
 // offset to drive our custom overlay.
 // ---------------------------------------------------------------------------
 
-class AppRefreshIndicator extends StatefulWidget {
+class AppRefreshFruitsIndicator extends StatefulWidget {
   final Widget child;
   final Future<void> Function() onRefresh;
   final Color? color;
@@ -30,7 +28,7 @@ class AppRefreshIndicator extends StatefulWidget {
   /// to float it lower — e.g. just above a banner.
   final double? topOffset;
 
-  const AppRefreshIndicator({
+  const AppRefreshFruitsIndicator({
     super.key,
     required this.child,
     required this.onRefresh,
@@ -39,10 +37,11 @@ class AppRefreshIndicator extends StatefulWidget {
   });
 
   @override
-  State<AppRefreshIndicator> createState() => _AppRefreshIndicatorState();
+  State<AppRefreshFruitsIndicator> createState() =>
+      _AppRefreshFruitsIndicatorState();
 }
 
-class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
+class _AppRefreshFruitsIndicatorState extends State<AppRefreshFruitsIndicator>
     with SingleTickerProviderStateMixin {
   // How far the user has pulled (0–1, clamped).
   double _pull = 0.0;
@@ -141,7 +140,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
               left: 0,
               right: 0,
               child: Center(
-                child: _LogoPill(
+                child: _BasketPill(
                   primaryColor: primaryColor,
                   refreshing: _refreshing,
                   pull: _pull,
@@ -157,15 +156,15 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
 }
 
 // ---------------------------------------------------------------------------
-// _LogoPill — floating badge with the Vhandar logo mark + progress ring.
+// _BasketPill — the floating capsule containing the basket animation + label.
 // ---------------------------------------------------------------------------
-class _LogoPill extends StatelessWidget {
+class _BasketPill extends StatelessWidget {
   final Color primaryColor;
   final bool refreshing;
   final double pull;
   final AnimationController loop;
 
-  const _LogoPill({
+  const _BasketPill({
     required this.primaryColor,
     required this.refreshing,
     required this.pull,
@@ -183,54 +182,46 @@ class _LogoPill extends StatelessWidget {
         height: 60,
         child: AnimatedBuilder(
           animation: loop,
-          builder: (_, __) {
-            // Logo: grows in with the pull, then gently "breathes" (subtle
-            // scale pulse) while refreshing so it feels alive.
-            final breathe = 0.5 + 0.5 * sin(loop.value * 2 * pi); // 0..1
-            final logoScale =
-                refreshing ? 0.88 + 0.12 * breathe : (0.55 + 0.45 * pull);
-            final logoOpacity = refreshing ? 1.0 : pull.clamp(0.0, 1.0);
-
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                // Progress ring: fills with the pull, then spins while refreshing.
-                CustomPaint(
-                  size: const Size(60, 60),
-                  painter: _RingPainter(
-                    color: primaryColor,
+          builder: (_, __) => Stack(
+            alignment: Alignment.center,
+            children: [
+              // Progress ring: fills with the pull, then spins while refreshing.
+              CustomPaint(
+                size: const Size(60, 60),
+                painter: _RingPainter(
+                  color: primaryColor,
+                  t: loop.value,
+                  pull: pull,
+                  refreshing: refreshing,
+                ),
+              ),
+              // White badge holding the basket animation.
+              Container(
+                width: 48,
+                height: 48,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withValues(alpha: 0.20),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: CustomPaint(
+                  painter: _BasketPainter(
+                    accent: primaryColor,
                     t: loop.value,
                     pull: pull,
                     refreshing: refreshing,
                   ),
                 ),
-                // White badge holding the Vhandar logo mark.
-                Container(
-                  width: 48,
-                  height: 48,
-                  padding: const EdgeInsets.all(11),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.20),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Opacity(
-                    opacity: logoOpacity,
-                    child: Transform.scale(
-                      scale: logoScale,
-                      child: SvgPicture.asset(KImageConstant.vandharIcon),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -334,4 +325,135 @@ class _RingPainter extends CustomPainter {
       old.pull != pull ||
       old.refreshing != refreshing ||
       old.color != color;
+}
+
+// ---------------------------------------------------------------------------
+// _BasketPainter — woven basket + three pieces of produce.
+//   • While pulling: fruit reveals/grows inside the basket one by one.
+//   • While refreshing: fruit bounces in a staggered wave above the rim.
+// ---------------------------------------------------------------------------
+class _BasketPainter extends CustomPainter {
+  final Color accent;
+  final double t; // bounce loop 0–1
+  final double pull; // 0–1
+  final bool refreshing;
+
+  _BasketPainter({
+    required this.accent,
+    required this.t,
+    required this.pull,
+    required this.refreshing,
+  });
+
+  // Warm wicker tone for the basket, plus three produce colours.
+  static const Color _wicker = Color(0xFFC68B59);
+  static const Color _leaf = Color(0xFF4CAF50);
+  static const List<Color> _fruitColors = [
+    Color(0xFFE74C3C), // tomato / apple
+    Color(0xFFF39C12), // orange
+    Color(0xFF7CB342), // green apple
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final topY = size.height - 15; // basket rim
+    final botY = size.height - 3; // basket base
+    const topHalf = 16.0;
+    const botHalf = 10.0;
+
+    // Slight vertical jiggle of the whole basket while refreshing.
+    final jiggle = refreshing ? sin(t * 2 * pi) * 1.0 : 0.0;
+
+    // ── Produce ─────────────────────────────────────────────────────────
+    // Drawn before the basket front so items appear to sit inside it.
+    final xs = [cx - 11, cx, cx + 11];
+    final rest = topY - 6 + jiggle; // resting fruit-centre height
+    for (int i = 0; i < 3; i++) {
+      double yc, scale, opacity;
+      if (refreshing) {
+        final phase = (t + i / 3.0) % 1.0;
+        yc = rest - sin(phase * pi) * 11.0; // bounce up
+        scale = 1.0;
+        opacity = 1.0;
+      } else {
+        final revealed = (pull * 3 - i).clamp(0.0, 1.0);
+        if (revealed <= 0) continue;
+        yc = rest - revealed * 2.0; // nudge up as it settles in
+        scale = 0.45 + 0.55 * revealed;
+        opacity = revealed;
+      }
+      _drawFruit(
+          canvas, Offset(xs[i], yc), 5.0 * scale, _fruitColors[i], opacity);
+    }
+
+    // ── Basket ──────────────────────────────────────────────────────────
+    final stroke = Paint()
+      ..color = _wicker
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final ty = topY + jiggle;
+    final by = botY + jiggle;
+
+    // Body (trapezoid).
+    final body = Path()
+      ..moveTo(cx - topHalf, ty)
+      ..lineTo(cx - botHalf, by)
+      ..lineTo(cx + botHalf, by)
+      ..lineTo(cx + topHalf, ty);
+    canvas.drawPath(body, stroke);
+
+    // Woven detail: a horizontal band + a few verticals.
+    stroke.strokeWidth = 1.3;
+    final midY = (ty + by) / 2;
+    const midHalf = (topHalf + botHalf) / 2 - 1;
+    canvas.drawLine(
+        Offset(cx - midHalf, midY), Offset(cx + midHalf, midY), stroke);
+    for (final f in [-0.5, 0.0, 0.5]) {
+      canvas.drawLine(
+        Offset(cx + f * topHalf, ty + 1),
+        Offset(cx + f * botHalf, by - 1),
+        stroke,
+      );
+    }
+    stroke.strokeWidth = 2.4;
+
+    // Rim (ellipse) drawn last so it caps the body + items.
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(cx, ty), width: topHalf * 2, height: 5),
+      stroke,
+    );
+  }
+
+  void _drawFruit(
+      Canvas canvas, Offset c, double r, Color color, double opacity) {
+    if (opacity <= 0 || r <= 0) return;
+    final body = Paint()..color = color.withValues(alpha: opacity);
+    canvas.drawCircle(c, r, body);
+
+    // Leaf at the top-right.
+    canvas.save();
+    canvas.translate(c.dx + r * 0.35, c.dy - r * 0.95);
+    canvas.rotate(-0.6);
+    final leaf = Paint()..color = _leaf.withValues(alpha: opacity);
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset.zero, width: r * 1.0, height: r * 0.5),
+      leaf,
+    );
+    canvas.restore();
+
+    // Glossy highlight.
+    final hl = Paint()..color = Colors.white.withValues(alpha: 0.55 * opacity);
+    canvas.drawCircle(Offset(c.dx - r * 0.3, c.dy - r * 0.32), r * 0.26, hl);
+  }
+
+  @override
+  bool shouldRepaint(_BasketPainter old) =>
+      old.t != t ||
+      old.pull != pull ||
+      old.refreshing != refreshing ||
+      old.accent != accent;
 }
