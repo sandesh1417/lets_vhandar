@@ -731,21 +731,25 @@ class _SelectPaymentMethodScreenState
       ref.read(cartProvider.notifier).clearCart();
       ref.read(appliedCouponProvider.notifier).removeCoupon();
 
-      // Branded celebration: checkmark + confetti + status stepper.
-      await Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute<void>(
-          builder: (sheetCtx) => OrderSuccessScreen(
-            onContinue: () => Navigator.of(sheetCtx).pop(),
-          ),
-        ),
-      );
-
-      if (!context.mounted) return;
-
-      // Fix blank page: mark orders tab as visited before switching to it
+      // Switch the underlying screen straight to the dashboard's orders tab
+      // FIRST, then cover it with the celebration as an overlay. This way the
+      // emptied cart / payment screens are never revealed — dismissing the
+      // celebration drops you directly onto the dashboard.
+      final overlay = Navigator.of(context, rootNavigator: true).overlay;
       ref.read(visitedTabsProvider.notifier).update((s) => {...s, 2});
       ref.read(dashboardIndexProvider.notifier).state = 2;
       context.go(LVRoute.dashboardScreen.route);
+
+      if (overlay != null) {
+        late OverlayEntry entry;
+        entry = OverlayEntry(
+          // Branded celebration: checkmark + confetti + status stepper.
+          builder: (_) => OrderSuccessScreen(
+            onContinue: () => entry.remove(),
+          ),
+        );
+        overlay.insert(entry);
+      }
     } else {
       final error = ref.read(orderProvider).error;
       CustomSnackbar.error(context, message: error ?? 'Failed to place order');
