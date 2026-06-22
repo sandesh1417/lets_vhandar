@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_floating_badge.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -52,6 +53,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
+    // Subtle tick acknowledging the product opened (navigation = light).
+    AppHaptics.light();
     _currentProduct = widget.product;
     _scrollController = ScrollController();
     _scrollController

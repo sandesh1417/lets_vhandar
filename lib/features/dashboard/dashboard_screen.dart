@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/widgets/update_sheet.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/providers/connectivity_provider.dart';
@@ -178,7 +179,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           currentIndex: currentIndex,
           scrollProgress: _navCtrl,
           onTap: (index) {
-            HapticFeedback.lightImpact();
+            // Light selection tick on tab switch (reliable direct vibration).
+            AppHaptics.light();
             _goToTab(index);
           },
         ),

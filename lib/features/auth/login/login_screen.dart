@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
@@ -242,6 +243,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _phoneController.text,
                                   _passwordController.text,
                                 );
+                          } else {
+                            AppHaptics.error();
                           }
                         },
                         text: 'Continue',

@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
@@ -115,6 +116,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
               onSuccess: () => context.go(LVRoute.loginScreen.route),
             );
       }
+    } else {
+      AppHaptics.error();
     }
   }
 

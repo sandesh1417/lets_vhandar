@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
@@ -85,6 +86,7 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }
 
   void removeFromCart(String productId) {
+    AppHaptics.light(); // tactile confirmation an item left the cart
     state = state.where((item) => item.product.id != productId).toList();
     _save();
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/utils/scroll_activity.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
@@ -105,7 +105,7 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge>
         child: GestureDetector(
           key: _badgeKey,
           onTap: () {
-            HapticFeedback.lightImpact();
+            AppHaptics.light();
             widget.onTap();
           },
           child: Container(

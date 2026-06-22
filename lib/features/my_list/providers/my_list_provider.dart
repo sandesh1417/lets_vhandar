@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/core/constants/r_session.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/utils/result.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/features/my_list/data/my_list_repository.dart';
@@ -95,6 +96,7 @@ class MyListNotifier extends StateNotifier<MyListState> {
     final result = await _repo.addProduct(listId, product.id);
     switch (result) {
       case Success():
+        AppHaptics.light(); // tactile confirmation the item was saved
         state = state.copyWith(
           lists: state.lists.map((l) {
             if (l.id != listId) return l;

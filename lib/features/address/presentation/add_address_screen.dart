@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/home/providers/warehouse_provider.dart';
@@ -164,6 +165,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   }
 
   void _showLocationNotServiceablePopup() {
+    AppHaptics.error(); // location rejected — distinct error double-pulse
     final vc = context.vColors;
     final bottomPad = MediaQuery.of(context).padding.bottom;
     showAppSheet(
@@ -354,7 +356,10 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
       return;
     }
     if (_locationError != null) return;
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      AppHaptics.error();
+      return;
+    }
 
     setState(() => _isSaving = true);
 

@@ -8,6 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
@@ -322,6 +323,7 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
     if (_locationError != null) return;
 
     if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+      AppHaptics.error();
       return;
     }
 

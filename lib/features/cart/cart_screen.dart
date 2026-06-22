@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/api/dio_client.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
@@ -724,6 +725,8 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                                     CustomSnackbar.success(context,
                                         message:
                                             'Coupon "$code" applied successfully! Saved Rs. ${ref.read(appliedCouponProvider)?.discountAmount.toInt() ?? 100} 🎉');
+                                  } else {
+                                    AppHaptics.error(); // invalid coupon code
                                   }
                                 },
                           isLoading: _isValidating,

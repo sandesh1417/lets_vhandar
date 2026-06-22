@@ -62,13 +62,37 @@ class AppHaptics {
     await fallback();
   }
 
-  /// A light tick — taps, toggles, selection.
-  static Future<void> light() => _buzz(25, 110, HapticFeedback.selectionClick);
+  // ── Intensities ──────────────────────────────────────────────────────────
+  // Durations are tuned to be actually perceptible on real devices (sub-30ms
+  // buzzes are easy to miss). light < medium < heavy.
 
-  /// A medium confirmation — the add-to-cart "thunk".
-  static Future<void> addToCart() =>
-      _buzz(55, 180, HapticFeedback.mediumImpact);
+  /// A light tick — navigation, tab switch, selection, toggles.
+  static Future<void> light() => _buzz(35, 150, HapticFeedback.selectionClick);
 
-  /// A stronger success buzz — order placed, etc.
-  static Future<void> success() => _buzz(80, 255, HapticFeedback.heavyImpact);
+  /// A medium confirmation — committed actions (add to cart, apply coupon).
+  static Future<void> medium() => _buzz(55, 190, HapticFeedback.mediumImpact);
+
+  /// A strong buzz — celebratory endpoints (order placed).
+  static Future<void> heavy() => _buzz(80, 255, HapticFeedback.heavyImpact);
+
+  /// A distinct "error" double-pulse — reads as negative/rejected, unlike the
+  /// single buzzes above. Use on submit-time failures (form validation, a
+  /// rejected action) — NOT on per-keystroke inline validation, or it spams.
+  static Future<void> error() async {
+    await _ensureCaps();
+    if (_hasVibrator) {
+      try {
+        // [wait, buzz, gap, buzz] — two quick pulses.
+        await Vibration.vibrate(pattern: const [0, 35, 90, 55]);
+        return;
+      } catch (e) {
+        if (kDebugMode) debugPrint('[AppHaptics] error pattern failed: $e');
+      }
+    }
+    await HapticFeedback.heavyImpact();
+  }
+
+  // ── Semantic aliases (read better at call sites) ─────────────────────────
+  static Future<void> addToCart() => medium();
+  static Future<void> success() => heavy();
 }

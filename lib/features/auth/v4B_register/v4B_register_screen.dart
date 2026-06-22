@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
@@ -136,6 +137,7 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     if (_selectedCategory == null) setState(() => _showCategoryError = true);
     if (_locationAddress == null) setState(() => _showLocationError = true);
     if (!formValid || _selectedCategory == null || _locationAddress == null) {
+      AppHaptics.error();
       return;
     }
 

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 
 // ---------------------------------------------------------------------------
 // AppRefreshIndicator — grocery-themed pull-to-refresh for VHANDAR.
@@ -66,6 +67,8 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
   }
 
   Future<void> _handleRefresh() async {
+    // "Caught it" tick the moment the pull commits to a refresh.
+    AppHaptics.light();
     setState(() => _refreshing = true);
     _loop.repeat();
     try {

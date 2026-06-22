@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 
 class CustomSnackbar {
   static OverlayEntry? _current;
@@ -47,6 +48,9 @@ class CustomSnackbar {
   static void error(BuildContext context,
       {required String message,
       Duration duration = const Duration(milliseconds: 3000)}) {
+    // Every error message app-wide gets the distinct error double-pulse — this
+    // is the single funnel for checkout/coupon/out-of-stock/API failures.
+    AppHaptics.error();
     _show(context,
         message: message, type: _SnackType.error, duration: duration);
   }
