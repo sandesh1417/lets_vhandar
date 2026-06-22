@@ -225,10 +225,21 @@ class _NavTuning {
   static const double fillAlphaExp = 0.34; // expanded (at top)
   static const double fillAlphaCmp = 0.42; // compact (scrolled)
 
-  // Backdrop blur. HIGHER = frostier wash; LOWER = colours/text behind sharper
-  // and more recognisable.
+  // Real-time backdrop blur is the single heaviest thing the bar does: it
+  // re-rasterises the scrolling page behind it EVERY frame, which stutters on
+  // old devices. Off by default — the bar instead uses a more opaque fill
+  // ([solidFillAlpha*]) and still reads as glass via the gradient + rim +
+  // shadow. Flip to true to restore the see-through frost on capable devices.
+  static const bool useBlur = false;
+
+  // Backdrop blur (only used when [useBlur] is true). HIGHER = frostier.
   static const double blurExp = 22;
   static const double blurCmp = 30;
+
+  // Fill opacity used when NOT blurring. Higher so the page behind doesn't
+  // bleed through sharply without the frosted wash to soften it.
+  static const double solidFillAlphaExp = 0.88;
+  static const double solidFillAlphaCmp = 0.93;
 
   // Glossy top "shine": extra opacity at the TOP edge so the bar catches light.
   // HIGHER = brighter, shinier top.
@@ -426,11 +437,37 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
           final height = lp(_NavTuning.heightExp, _NavTuning.heightCmp).h;
           final radius = lp(_NavTuning.radiusExp, _NavTuning.radiusCmp).r;
           final blur = lp(_NavTuning.blurExp, _NavTuning.blurCmp);
-          final fillAlpha =
-              lp(_NavTuning.fillAlphaExp, _NavTuning.fillAlphaCmp);
+          final fillAlpha = _NavTuning.useBlur
+              ? lp(_NavTuning.fillAlphaExp, _NavTuning.fillAlphaCmp)
+              : lp(_NavTuning.solidFillAlphaExp, _NavTuning.solidFillAlphaCmp);
           final topAlpha = (fillAlpha + _NavTuning.sheenBoost).clamp(0.0, 1.0);
           final shadowAlpha =
               lp(_NavTuning.shadowOpacityExp, _NavTuning.shadowOpacityCmp);
+
+          // The translucent inner pill (gradient sheen + rim). Wrapped in a
+          // real-time BackdropFilter only when [useBlur] is on.
+          final Widget barInner = Container(
+            height: height,
+            padding: EdgeInsets.symmetric(horizontal: _NavTuning.innerPadH.w),
+            decoration: BoxDecoration(
+              // Glossy top→bottom sheen over the translucent base.
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  baseFill.withValues(alpha: topAlpha),
+                  baseFill.withValues(alpha: fillAlpha),
+                ],
+                stops: const [0.0, 0.7],
+              ),
+              borderRadius: BorderRadius.circular(radius),
+              border: Border.all(color: rimColor, width: _NavTuning.rimWidth),
+            ),
+            child: Row(
+              children: List.generate(
+                  _labels.length, (i) => _item(context, i, p, radius)),
+            ),
+          );
 
           return Padding(
             padding: EdgeInsets.fromLTRB(
@@ -452,33 +489,12 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
               child: RepaintBoundary(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(radius),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                    child: Container(
-                      height: height,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: _NavTuning.innerPadH.w),
-                      decoration: BoxDecoration(
-                        // Glossy top→bottom sheen over the translucent base.
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            baseFill.withValues(alpha: topAlpha),
-                            baseFill.withValues(alpha: fillAlpha),
-                          ],
-                          stops: const [0.0, 0.7],
-                        ),
-                        borderRadius: BorderRadius.circular(radius),
-                        border: Border.all(
-                            color: rimColor, width: _NavTuning.rimWidth),
-                      ),
-                      child: Row(
-                        children: List.generate(_labels.length,
-                            (i) => _item(context, i, p, radius)),
-                      ),
-                    ),
-                  ),
+                  child: _NavTuning.useBlur
+                      ? BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                          child: barInner,
+                        )
+                      : barInner,
                 ),
               ),
             ),

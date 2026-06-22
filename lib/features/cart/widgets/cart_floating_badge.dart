@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,71 +108,69 @@ class _CartFloatingBadgeState extends ConsumerState<CartFloatingBadge>
             HapticFeedback.lightImpact();
             widget.onTap();
           },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50.r),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppColor.secondary.withValues(alpha: 0.72),
-                  borderRadius: BorderRadius.circular(50.r),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.secondary.withValues(alpha: 0.22),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _StackedImages(imageUrls: previewImages),
-                    SizedBox(width: 10.w),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'View cart',
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF4A2E00),
-                          ),
-                        ),
-                        Text(
-                          '$itemCount ${itemCount == 1 ? 'Item' : 'Items'}',
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF6B4400),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 10.w),
-                    Container(
-                      width: 32.w,
-                      height: 32.w,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.chevron_right_rounded,
-                        color: const Color(0xFF4A2E00),
-                        size: 20.sp,
-                      ),
-                    ),
-                  ],
-                ),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              // Solid translucent fill (no real-time BackdropFilter) — a
+              // backdrop blur here re-rasterises the scrolling content every
+              // frame and stutters on old devices. The 96% fill reads the
+              // same at a glance.
+              color: AppColor.secondary.withValues(alpha: 0.96),
+              borderRadius: BorderRadius.circular(50.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.4),
+                width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColor.secondary.withValues(alpha: 0.22),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _StackedImages(imageUrls: previewImages),
+                SizedBox(width: 10.w),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'View cart',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF4A2E00),
+                      ),
+                    ),
+                    Text(
+                      '$itemCount ${itemCount == 1 ? 'Item' : 'Items'}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF6B4400),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 10.w),
+                Container(
+                  width: 32.w,
+                  height: 32.w,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.chevron_right_rounded,
+                    color: const Color(0xFF4A2E00),
+                    size: 20.sp,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
