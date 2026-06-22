@@ -381,8 +381,11 @@ class LVGoRouter {
       GoRoute(
         path: LVRoute.selectPaymentMethodScreen.route,
         name: LVRoute.selectPaymentMethodScreen.route,
-        builder: (BuildContext context, GoRouterState state) =>
-            const SelectPaymentMethodScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _slideFadePage(
+          state: state,
+          child: const SelectPaymentMethodScreen(),
+        ),
       ),
       GoRoute(
         path: LVRoute.kidsZoneScreen.route,

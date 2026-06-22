@@ -56,6 +56,7 @@ class FeaturedProductsScreen extends ConsumerWidget {
                       key: ValueKey(product.id),
                       product: product,
                       width: double.infinity,
+                      enableHero: true,
                       onTap: () => context.pushNamed(
                         LVRoute.productDetailScreen.route,
                         extra: product,

@@ -25,6 +25,12 @@ class ProductItemCard extends ConsumerStatefulWidget {
   final EdgeInsetsGeometry? margin;
   final bool hideVariantPicker;
 
+  /// When true, the product image becomes a [Hero] (tag derived from the
+  /// product id) so it morphs into the detail screen. Only enable this where
+  /// each product appears once on the screen, otherwise Flutter throws on
+  /// duplicate Hero tags.
+  final bool enableHero;
+
   const ProductItemCard({
     super.key,
     required this.product,
@@ -32,7 +38,13 @@ class ProductItemCard extends ConsumerStatefulWidget {
     this.width,
     this.margin,
     this.hideVariantPicker = false,
+    this.enableHero = false,
   });
+
+  /// Shared Hero tag for a product image across card ↔ detail. Must match the
+  /// tag used by [ProductImageSlider] on the detail screen.
+  static String heroTagFor(ProductData product) =>
+      'product-img-${product.id}';
 
   static double get preferredHeight => 226.h;
 
@@ -376,11 +388,15 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
   Widget _buildImageArea(ProductData product) {
     final images = product.images ?? [];
     if (images.length <= 1) {
-      return CustomImageViewer(
+      final img = CustomImageViewer(
         path: images.isNotEmpty ? images.first.url : null,
         borderRadius: 0.r,
         fit: BoxFit.contain,
       );
+      // Opt-in Hero morph into the product detail screen.
+      return widget.enableHero
+          ? Hero(tag: ProductItemCard.heroTagFor(product), child: img)
+          : img;
     }
     return PageView.builder(
       controller: _imagePageController,

@@ -270,7 +270,7 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 loaderSize: 22,
                 backgroundColor: AppColor.primary,
                 foregroundColor: Colors.white,
-                text: widget.isEditing ? 'Update Address' : 'Save AddressX',
+                text: widget.isEditing ? 'Update Address' : 'Save Address',
               ),
             ),
             SizedBox(height: 20.h),

@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/utils/utils.dart';
 import 'package:lets_vhandar/features/home/providers/category_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart' show CustomShimmer;
+import 'package:lets_vhandar/widgets/pressable.dart';
+import 'package:lets_vhandar/widgets/staggered_entrance.dart';
 
 // Rotating pastel palette for card backgrounds
 const _cardColors = [
@@ -61,7 +63,9 @@ class HomeCategoriesGrid extends ConsumerWidget {
                   ? category.images!.first.url
                   : null;
 
-              return GestureDetector(
+              return StaggeredEntrance(
+                index: index,
+                child: Pressable(
                 onTap: () =>
                     navigateToSlug(context, category.slug, isBrand: false),
                 child: Container(
@@ -111,6 +115,7 @@ class HomeCategoriesGrid extends ConsumerWidget {
                       ),
                     ],
                   ),
+                ),
                 ),
               );
             },

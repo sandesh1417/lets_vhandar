@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
+import 'package:lets_vhandar/widgets/pressable.dart';
 
 class CategoryCard extends StatelessWidget {
   final String name;
@@ -17,7 +18,7 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Column(
         children: [

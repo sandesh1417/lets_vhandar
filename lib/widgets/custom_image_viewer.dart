@@ -69,6 +69,10 @@ class CustomImageViewer extends StatelessWidget {
         height: height,
         width: width,
         fit: fit,
+        // Gentle cross-fade so images never "snap" in over the shimmer.
+        fadeInDuration: const Duration(milliseconds: 280),
+        fadeOutDuration: const Duration(milliseconds: 120),
+        placeholderFadeInDuration: const Duration(milliseconds: 150),
         placeholder: (context, url) => _buildLoadingWidget(),
         errorWidget: (context, url, error) =>
             errorWidget ?? _buildErrorWidget(),

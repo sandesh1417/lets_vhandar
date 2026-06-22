@@ -15,6 +15,7 @@ import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
+import 'package:lets_vhandar/features/order/presentation/order_success_screen.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
@@ -609,68 +610,6 @@ class _SelectPaymentMethodScreenState
     );
   }
 
-  Future<void> _showOrderSuccessDialog(BuildContext context) async {
-    final vc = context.vColors;
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: vc.surface,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 24.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Success icon
-              Container(
-                width: 72.w,
-                height: 72.w,
-                decoration: BoxDecoration(
-                  color: AppColor.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.check_circle_rounded,
-                    color: AppColor.primary, size: 40.sp),
-              ),
-              SizedBox(height: 18.h),
-              Text(
-                'Order Placed!',
-                style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w800,
-                  color: vc.onSurface,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'Your order has been placed successfully.\nWe\'ll deliver it to you soon!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: vc.onSurfaceMuted,
-                  height: 1.5,
-                ),
-              ),
-              SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: CustomElevatedButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  backgroundColor: AppColor.primary,
-                  foregroundColor: Colors.white,
-                  text: 'View My Orders',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _placeOrder(BuildContext context) async {
     final loginState = ref.read(loginProvider);
     final isBusiness = loginState.user?.isBusiness ?? false;
@@ -792,8 +731,14 @@ class _SelectPaymentMethodScreenState
       ref.read(cartProvider.notifier).clearCart();
       ref.read(appliedCouponProvider.notifier).removeCoupon();
 
-      // Show success dialog
-      await _showOrderSuccessDialog(context);
+      // Branded celebration: checkmark + confetti + status stepper.
+      await Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<void>(
+          builder: (sheetCtx) => OrderSuccessScreen(
+            onContinue: () => Navigator.of(sheetCtx).pop(),
+          ),
+        ),
+      );
 
       if (!context.mounted) return;
 

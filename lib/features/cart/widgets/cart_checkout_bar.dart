@@ -8,6 +8,7 @@ import 'package:lets_vhandar/features/address/providers/address_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
+import 'package:lets_vhandar/widgets/animated_counter.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   final double totalPrice;
@@ -57,8 +58,9 @@ class CartCheckoutBar extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Rs. ${finalPrice.toInt()}',
+                  AnimatedCounter(
+                    value: finalPrice,
+                    prefix: 'Rs. ',
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
