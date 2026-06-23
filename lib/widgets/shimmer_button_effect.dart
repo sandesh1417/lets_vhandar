@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_vhandar/widgets/loader.dart';
 
 /// Reusable button animation effects.
 ///
@@ -223,11 +223,9 @@ class _LoadingShimmerContentState extends State<LoadingShimmerContent>
             );
           },
         ),
-        Center(
-          child: CupertinoActivityIndicator(
-            color: widget.spinnerColor,
-            radius: widget.spinnerRadius ?? 10,
-          ),
+        CircularLoader(
+          color: widget.spinnerColor,
+          // size: (widget.spinnerRadius ?? 12) * 2,
         ),
       ],
     );

@@ -274,7 +274,9 @@ class CustomElevatedButton extends StatelessWidget {
                 borderRadius: radius,
                 child: LoadingShimmerContent(
                   baseColor: bgColor,
-                  spinnerColor: loaderColor ?? fgColor,
+                  // Loader is white by default (reads on the coloured button);
+                  // pass `loaderColor` to override.
+                  spinnerColor: loaderColor ?? AppColor.white,
                   spinnerRadius: loaderSize != null ? loaderSize! / 2 : null,
                   sweepDuration: loadingShimmerDuration,
                 ),
