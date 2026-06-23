@@ -89,6 +89,13 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
   bool _onScrollNotification(ScrollNotification n) {
     if (_refreshing) return false;
 
+    // Notifications from nested scrollables (banner carousels, horizontal
+    // product rows, …) bubble through this listener too, picking up an
+    // extra depth as they pass the outer scroll view. Without this guard
+    // their own at-rest/overscroll metrics get misread as a vertical pull,
+    // popping the refresh badge while the user is just scrolling normally.
+    if (n.depth != 0) return false;
+
     if (n is ScrollUpdateNotification && n.metrics.extentBefore == 0) {
       final drag = -(n.scrollDelta ?? 0);
       if (drag > 0) {

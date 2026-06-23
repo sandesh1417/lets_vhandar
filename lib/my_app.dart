@@ -38,8 +38,17 @@ class MyApp extends ConsumerWidget {
               // else) can shrink while scrolling. Notifications bubble up here
               // from every route's scroll views.
               final tracked = NotificationListener<ScrollNotification>(
-                onNotification: (_) {
-                  AppScrollActivity.notify();
+                onNotification: (notification) {
+                  // Only the page's own (outermost, vertical) scroll view
+                  // should drive this — nested horizontal carousels/lists
+                  // (banner slider, product rows, …) bubble notifications
+                  // through here too, with extra depth, and would otherwise
+                  // make the cart pill shrink/expand on every banner swipe
+                  // or autoplay tick even though the page itself is still.
+                  if (notification.depth == 0 &&
+                      notification.metrics.axis == Axis.vertical) {
+                    AppScrollActivity.notify();
+                  }
                   return false; // don't consume — let others still receive it
                 },
                 child: content,
