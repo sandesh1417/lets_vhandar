@@ -152,8 +152,13 @@ class LVGoRouter {
       ),
       GoRoute(
         path: LVRoute.loginScreen.route,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
-            _slideFadePage(state: state, child: const LoginScreen()),
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return _slideFadePage(
+            state: state,
+            child: LoginScreen(fromCheckout: extra?['fromCheckout'] == true),
+          );
+        },
       ),
       // GoRoute(
       //   path: LVRoute.oTPScreen.route,

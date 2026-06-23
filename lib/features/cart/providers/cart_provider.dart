@@ -7,7 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/domain/models/cart_item_model.dart';
+import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
+import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
   CartNotifier() : super([]) {
@@ -168,3 +170,64 @@ final totalCartPriceProvider = Provider<double>((ref) {
 
 final cartAddressErrorProvider = StateProvider<bool>((ref) => false);
 final selectedDeliverySlotProvider = StateProvider<String?>((ref) => null);
+
+/// The amount actually payable for the cart: items + delivery + handling -
+/// coupon. Single source of truth so the bill breakdown, the checkout bar,
+/// and order placement can never show three different totals.
+class CartBillSummary {
+  final double itemsTotal;
+  final double deliveryCharge; // before the free-delivery waiver
+  final double finalDeliveryCharge; // after the waiver
+  final double handlingCharge;
+  final double couponDiscount;
+  final double deliveryThreshold;
+  final bool isFreeDelivery;
+  final double grandTotal;
+
+  const CartBillSummary({
+    required this.itemsTotal,
+    required this.deliveryCharge,
+    required this.finalDeliveryCharge,
+    required this.handlingCharge,
+    required this.couponDiscount,
+    required this.deliveryThreshold,
+    required this.isFreeDelivery,
+    required this.grandTotal,
+  });
+}
+
+final cartBillSummaryProvider = Provider<CartBillSummary>((ref) {
+  final itemsTotal = ref.watch(totalCartPriceProvider);
+  final isBusiness = ref.watch(isBusinessUserProvider);
+  final couponDiscount = ref.watch(appliedCouponProvider)?.discountAmount ?? 0;
+
+  // Match the fallback used while settings are loading/unavailable.
+  double deliveryCharge = 100;
+  double handlingCharge = 0;
+  double deliveryThreshold = 1000;
+  ref.watch(generalSettingsProvider).whenData((settings) {
+    deliveryCharge = (isBusiness
+            ? settings?.businessDeliveryCharge?.toDouble()
+            : settings?.deliveryCharge?.toDouble()) ??
+        deliveryCharge;
+    handlingCharge = settings?.handlingCharge?.toDouble() ?? handlingCharge;
+    deliveryThreshold =
+        settings?.deliveryThreshold?.toDouble() ?? deliveryThreshold;
+  });
+
+  final isFreeDelivery = itemsTotal >= deliveryThreshold;
+  final finalDeliveryCharge = isFreeDelivery ? 0.0 : deliveryCharge;
+  final grandTotal =
+      itemsTotal + finalDeliveryCharge + handlingCharge - couponDiscount;
+
+  return CartBillSummary(
+    itemsTotal: itemsTotal,
+    deliveryCharge: deliveryCharge,
+    finalDeliveryCharge: finalDeliveryCharge,
+    handlingCharge: handlingCharge,
+    couponDiscount: couponDiscount,
+    deliveryThreshold: deliveryThreshold,
+    isFreeDelivery: isFreeDelivery,
+    grandTotal: grandTotal,
+  );
+});

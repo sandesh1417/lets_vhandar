@@ -6,9 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
-import 'package:lets_vhandar/core/utils/guest_redirect.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -43,8 +41,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
 
   /// Shared Hero tag for a product image across card ↔ detail. Must match the
   /// tag used by [ProductImageSlider] on the detail screen.
-  static String heroTagFor(ProductData product) =>
-      'product-img-${product.id}';
+  static String heroTagFor(ProductData product) => 'product-img-${product.id}';
 
   static double get preferredHeight => 226.h;
 
@@ -728,14 +725,8 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                             if (cartCount == 0) {
                               return GestureDetector(
                                 onTap: () {
-                                  final loginState = ref.read(loginProvider);
-                                  if (loginState.isGuest ||
-                                      !loginState.isLoggedIn) {
-                                    redirectGuestToLogin(context,
-                                        message:
-                                            'Please login to add items to cart');
-                                    return;
-                                  }
+                                  // Guests can add to cart; login is only
+                                  // required at checkout.
                                   // Open variant popup for variant products
                                   if (widget.product.hasVariant == true ||
                                       widget.product.parentId != null) {
@@ -863,12 +854,7 @@ class _VariantCartButton extends ConsumerWidget {
         height: btnHeight,
         child: CustomElevatedButton(
           onPressed: () {
-            final loginState = ref.read(loginProvider);
-            if (loginState.isGuest || !loginState.isLoggedIn) {
-              redirectGuestToLogin(context,
-                  message: 'Please login to add items to cart');
-              return;
-            }
+            // Guests can add to cart; login is only required at checkout.
             AppHaptics.addToCart();
             ref.read(cartProvider.notifier).addToCart(product);
           },

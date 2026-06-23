@@ -114,7 +114,18 @@ class CartScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: AppRefreshIndicator(
-                    onRefresh: () async => ref.invalidate(addressProvider),
+                    onRefresh: () async {
+                      // Re-fetch in place rather than invalidating: invalidate
+                      // recreates the provider with empty state, which wiped
+                      // out the already-selected delivery address (and briefly
+                      // showed the "select address" error) on every pull.
+                      final userId = ref.read(loginProvider).user?.id;
+                      if (userId != null) {
+                        await ref
+                            .read(addressProvider.notifier)
+                            .loadAddresses(userId);
+                      }
+                    },
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
@@ -268,7 +279,6 @@ class _CartStickyBottom extends ConsumerWidget {
     final selectedAddress =
         ref.watch(addressProvider.select((s) => s.selected));
     final addressError = ref.watch(cartAddressErrorProvider);
-    final totalPrice = ref.watch(totalCartPriceProvider);
 
     return Container(
       padding: EdgeInsets.only(top: 12.r),
@@ -328,7 +338,7 @@ class _CartStickyBottom extends ConsumerWidget {
               },
             ),
           ],
-          CartCheckoutBar(totalPrice: totalPrice),
+          const CartCheckoutBar(),
           SizedBox(height: 8.h),
         ],
       ),

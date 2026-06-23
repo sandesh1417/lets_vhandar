@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
-import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
+import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
-import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class BillDetailsCard extends ConsumerWidget {
@@ -24,58 +23,28 @@ class BillDetailsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(generalSettingsProvider);
-    final userState = ref.watch(loginProvider);
-    final isBusiness = userState.user?.isBusiness ?? false;
-    final appliedCoupon = ref.watch(appliedCouponProvider);
-    final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
+    final billSummary = ref.watch(cartBillSummaryProvider);
 
     final double savings = totalMrp - totalPrice;
     final bool hasSavings = savings > 0;
 
-    return settingsAsync.when(
-      data: (settings) {
-        final double standardDeliveryCharge =
-            settings?.deliveryCharge?.toDouble() ?? 0;
-        final double businessDeliveryCharge =
-            settings?.businessDeliveryCharge?.toDouble() ?? 0;
-        final double deliveryCharge =
-            isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
-
-        final double deliveryThreshold =
-            settings?.deliveryThreshold?.toDouble() ?? 0;
-        final double handlingCharge = settings?.handlingCharge?.toDouble() ?? 0;
-
-        final bool isFreeDelivery = totalPrice >= deliveryThreshold;
-        final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
-        final double grandTotal =
-            totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
-
-        return _buildCard(
-          context,
-          savings: savings,
-          hasSavings: hasSavings,
-          deliveryCharge: deliveryCharge,
-          finalDeliveryCharge: finalDeliveryCharge,
-          isFreeDelivery: isFreeDelivery,
-          handlingCharge: handlingCharge,
-          grandTotal: grandTotal,
-          deliveryThreshold: deliveryThreshold,
-          couponDiscount: couponDiscount,
-        );
-      },
+    // Only the loading state needs special handling here — the shimmer.
+    // Numbers (including the loading/error fallback) come from the shared
+    // cartBillSummaryProvider so this card, the checkout bar, and order
+    // placement always agree on the total.
+    return settingsAsync.maybeWhen(
       loading: () => const BillDetailsShimmer(),
-      error: (_, __) => _buildCard(
+      orElse: () => _buildCard(
         context,
         savings: savings,
         hasSavings: hasSavings,
-        deliveryCharge: 100,
-        finalDeliveryCharge: totalPrice >= 1000 ? 0 : 100,
-        isFreeDelivery: totalPrice >= 1000,
-        handlingCharge: 0,
-        grandTotal:
-            totalPrice + (totalPrice >= 1000 ? 0 : 100) - couponDiscount,
-        deliveryThreshold: 1000,
-        couponDiscount: couponDiscount,
+        deliveryCharge: billSummary.deliveryCharge,
+        finalDeliveryCharge: billSummary.finalDeliveryCharge,
+        isFreeDelivery: billSummary.isFreeDelivery,
+        handlingCharge: billSummary.handlingCharge,
+        grandTotal: billSummary.grandTotal,
+        deliveryThreshold: billSummary.deliveryThreshold,
+        couponDiscount: billSummary.couponDiscount,
       ),
     );
   }

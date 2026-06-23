@@ -25,7 +25,15 @@ class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier(this._authRepository, this._ref) : super(const LoginState());
 
   Future<void> login(
-      BuildContext context, String phoneNumber, String password) async {
+    BuildContext context,
+    String phoneNumber,
+    String password, {
+    // True when login was triggered mid-flow (e.g. from the cart checkout
+    // bar) rather than as the app's entry point. In that case we pop back
+    // to whatever pushed the login screen so that flow can resume, instead
+    // of resetting the stack to the dashboard.
+    bool popOnSuccess = false,
+  }) async {
     state = state.copyWithChange(isLoading: true, clearError: true);
 
     final result = await _authRepository.login(phoneNumber, password);
@@ -49,8 +57,11 @@ class LoginNotifier extends StateNotifier<LoginState> {
         );
         if (!context.mounted) return;
         CustomSnackbar.success(context, message: "Login Successful");
-        // Navigate using GoRouter
-        context.go(LVRoute.dashboardScreen.route);
+        if (popOnSuccess && context.canPop()) {
+          context.pop(true);
+        } else {
+          context.go(LVRoute.dashboardScreen.route);
+        }
         break;
       case Error(failure: final failure):
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
@@ -61,11 +72,15 @@ class LoginNotifier extends StateNotifier<LoginState> {
     }
   }
 
-  Future<void> enterGuestMode(BuildContext context) async {
+  Future<void> enterGuestMode(BuildContext context,
+      {bool popOnSuccess = false}) async {
     await SessionPreferences().setGuestMode(isGuest: true);
     Rsession.isGuest = true;
     state = state.copyWith(isGuest: true, isLoggedIn: false);
-    if (context.mounted) {
+    if (!context.mounted) return;
+    if (popOnSuccess && context.canPop()) {
+      context.pop(false);
+    } else {
       context.go(LVRoute.dashboardScreen.route);
     }
   }
@@ -106,8 +121,14 @@ class LoginNotifier extends StateNotifier<LoginState> {
   Future<void> logout() async {
     await SessionPreferences().clearSession();
     Rsession.token = null;
-    Rsession.isGuest = false;
-    state = const LoginState();
+    // clearSession() also wipes the guest flag, which would leave the user
+    // fully unauthenticated — the router then bounces any non-public route
+    // (dashboard, cart, …) straight to the login screen. Drop back into
+    // guest mode instead so browsing still works after logging out; login
+    // is only required again at checkout.
+    Rsession.isGuest = true;
+    await SessionPreferences().setGuestMode(isGuest: true);
+    state = const LoginState(isGuest: true);
     // Clear user-scoped state so the next session starts clean. Done after the
     // login state is cleared so address-watching widgets (e.g. the home header)
     // don't re-fetch the old user's addresses.

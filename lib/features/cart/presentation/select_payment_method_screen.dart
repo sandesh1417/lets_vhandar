@@ -13,7 +13,6 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/coupon_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/bill_details_card.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
-import 'package:lets_vhandar/features/home/providers/general_settings_provider.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
 import 'package:lets_vhandar/features/order/presentation/order_success_screen.dart';
 import 'package:lets_vhandar/features/order/providers/order_provider.dart';
@@ -683,29 +682,8 @@ class _SelectPaymentMethodScreenState
           };
 
     final totalPrice = ref.read(totalCartPriceProvider);
-    final settingsAsync = ref.read(generalSettingsProvider);
     final appliedCoupon = ref.read(appliedCouponProvider);
-    final double couponDiscount = appliedCoupon?.discountAmount ?? 0;
-
-    double standardDeliveryCharge = 0;
-    double businessDeliveryCharge = 0;
-    double deliveryThreshold = 0;
-    double handlingCharge = 0;
-
-    settingsAsync.whenData((settings) {
-      standardDeliveryCharge = settings?.deliveryCharge?.toDouble() ?? 0;
-      businessDeliveryCharge =
-          settings?.businessDeliveryCharge?.toDouble() ?? 0;
-      deliveryThreshold = settings?.deliveryThreshold?.toDouble() ?? 0;
-      handlingCharge = settings?.handlingCharge?.toDouble() ?? 0;
-    });
-
-    final double deliveryCharge =
-        isBusiness ? businessDeliveryCharge : standardDeliveryCharge;
-    final bool isFreeDelivery = totalPrice >= deliveryThreshold;
-    final double finalDeliveryCharge = isFreeDelivery ? 0 : deliveryCharge;
-    final double grandTotal =
-        totalPrice + finalDeliveryCharge + handlingCharge - couponDiscount;
+    final billSummary = ref.read(cartBillSummaryProvider);
 
     final vatAmount = double.parse((totalPrice * 0.13).toStringAsFixed(2));
 
@@ -715,13 +693,13 @@ class _SelectPaymentMethodScreenState
           totalAmount: totalPrice,
           totalDiscount: 0,
           totalVatAmount: vatAmount,
-          totalPayableAmount: grandTotal,
-          handlingCharge: handlingCharge,
-          deliveryCharge: finalDeliveryCharge,
+          totalPayableAmount: billSummary.grandTotal,
+          handlingCharge: billSummary.handlingCharge,
+          deliveryCharge: billSummary.finalDeliveryCharge,
           cartId: userId,
           location: location,
           appliedCouponCode: appliedCoupon?.code ?? '',
-          couponDiscount: couponDiscount,
+          couponDiscount: billSummary.couponDiscount,
           deliveryTimeSlot: isBusiness ? selectedSlot : null,
         );
 

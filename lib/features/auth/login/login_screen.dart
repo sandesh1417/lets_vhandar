@@ -18,7 +18,11 @@ import 'package:lets_vhandar/widgets/tff.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  // True when reached mid-flow (e.g. the cart checkout bar) so that a
+  // successful login resumes that flow instead of resetting to the dashboard.
+  final bool fromCheckout;
+
+  const LoginScreen({super.key, this.fromCheckout = false});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -78,8 +82,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
-            onTap: () =>
-                ref.read(loginProvider.notifier).enterGuestMode(context),
+            onTap: () => ref.read(loginProvider.notifier).enterGuestMode(
+                  context,
+                  popOnSuccess: widget.fromCheckout,
+                ),
             child: Container(
               margin: EdgeInsets.only(right: 8.w),
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
@@ -242,6 +248,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   context,
                                   _phoneController.text,
                                   _passwordController.text,
+                                  popOnSuccess: widget.fromCheckout,
                                 );
                           } else {
                             AppHaptics.error();
