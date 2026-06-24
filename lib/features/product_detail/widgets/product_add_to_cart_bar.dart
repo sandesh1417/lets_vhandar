@@ -40,6 +40,13 @@ class ProductAddToCartBar extends ConsumerWidget {
 
     final vc = context.vColors;
 
+    // surfaceVariant is light in light mode (green text reads fine) but dark
+    // in dark mode — green-on-near-black is poor contrast, so the stepper's
+    // text/icons switch to white there, same rule as the brand buttons.
+    final stepperBg = vc.surfaceVariant;
+    final stepperFg =
+        stepperBg.computeLuminance() > 0.6 ? AppColor.primary : Colors.white;
+
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       child: BackdropFilter(
@@ -186,7 +193,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                             )
                           : Container(
                               decoration: BoxDecoration(
-                                color: context.vColors.surfaceVariant,
+                                color: stepperBg,
                                 borderRadius: BorderRadius.circular(12.r),
                                 border: Border.all(
                                   color:
@@ -200,6 +207,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                 children: [
                                   _StepButton(
                                     icon: Icons.remove,
+                                    color: stepperFg,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
                                         .updateQuantity(
@@ -209,13 +217,14 @@ class ProductAddToCartBar extends ConsumerWidget {
                                     '$cartCount',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: AppColor.primary,
+                                      color: stepperFg,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   _StepButton(
                                     icon: Icons.add,
+                                    color: stepperFg,
                                     disabled: cartCount >= maxQty,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
@@ -239,11 +248,13 @@ class _StepButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool disabled;
+  final Color? color;
 
   const _StepButton({
     required this.icon,
     required this.onTap,
     this.disabled = false,
+    this.color,
   });
 
   @override
@@ -261,7 +272,7 @@ class _StepButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         child: Icon(
           icon,
-          color: disabled ? Colors.grey.shade400 : AppColor.primary,
+          color: disabled ? Colors.grey.shade400 : (color ?? AppColor.primary),
           size: 16.sp,
         ),
       ),
