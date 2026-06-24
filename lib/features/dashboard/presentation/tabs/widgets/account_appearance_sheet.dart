@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/providers/theme_provider.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
 void showAppearanceSheet(BuildContext context, WidgetRef ref) {
@@ -40,6 +41,7 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
   }
 
   void _pick(ThemeMode mode) {
+    AppHaptics.light();
     setState(() => _selected = mode);
     widget.ref.read(themeModeProvider.notifier).setMode(mode);
     Future.delayed(const Duration(milliseconds: 180), () {

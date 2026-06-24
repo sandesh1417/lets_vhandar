@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/time_slot_model.dart';
 import 'package:lets_vhandar/features/home/providers/time_slot_provider.dart';
@@ -234,6 +235,7 @@ class _SlotPickerSheet extends StatelessWidget {
             final isSelected = slot.id == currentId;
             return InkWell(
               onTap: () {
+                AppHaptics.light();
                 onSelected(slot);
                 Navigator.pop(context);
               },

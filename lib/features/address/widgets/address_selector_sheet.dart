@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/address/domain/models/address_model.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/features/address/providers/address_provider.dart';
@@ -247,6 +248,7 @@ class _AddressSelectorSheetState extends ConsumerState<AddressSelectorSheet> {
                             isSelected: state.selected?.id == addr.id,
                             svgAsset: _svgForType(addr.addressType),
                             onTap: () {
+                              AppHaptics.light();
                               ref
                                   .read(addressProvider.notifier)
                                   .selectAddress(addr);

@@ -358,6 +358,7 @@ class _PriceMasterGameState extends ConsumerState<PriceMasterGame> {
                     backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
                     text: _hasGuessed ? 'Next Item ➡️' : 'Submit Guess 🎯',
+                    enableHaptic: false,
                   ),
                 ),
               ] else ...[
@@ -437,6 +438,7 @@ class _PriceMasterGameState extends ConsumerState<PriceMasterGame> {
                         backgroundColor: Colors.blue.shade700,
                         foregroundColor: Colors.white,
                         text: 'Play Again 🔄',
+                        enableHaptic: false,
                       ),
                     ],
                   ),

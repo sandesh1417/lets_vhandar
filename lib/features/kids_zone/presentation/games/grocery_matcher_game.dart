@@ -289,6 +289,7 @@ class _GroceryMatcherGameState extends ConsumerState<GroceryMatcherGame> {
                           backgroundColor: Colors.purple.shade700,
                           foregroundColor: Colors.white,
                           text: 'Play Again 🔄',
+                          enableHaptic: false,
                         ),
                       ],
                     ),

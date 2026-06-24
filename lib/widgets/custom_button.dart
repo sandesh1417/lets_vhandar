@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/widgets/loader.dart';
 
 import '../core/constants/app_style.dart';
@@ -161,6 +162,11 @@ class CustomElevatedButton extends StatelessWidget {
   /// Lower = the shimmer repeats more often. Defaults to [kShimmerPauseDuration].
   final Duration shimmerPauseDuration;
 
+  /// Fires a light tap haptic on press. Turn off for buttons that already
+  /// drive their own haptic pattern (e.g. kids-zone games, or call sites
+  /// that fire a distinct success/error pulse before this would).
+  final bool enableHaptic;
+
   /// Loading sweep timing — speed of the continuous shimmer while [isLoading].
   /// Lower = faster, busier "processing" feel. Defaults to [kLoadingShimmerDuration].
   final Duration loadingShimmerDuration;
@@ -191,6 +197,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.shimmerSweepDuration = kShimmerSweepDuration,
     this.shimmerPauseDuration = kShimmerPauseDuration,
     this.loadingShimmerDuration = kLoadingShimmerDuration,
+    this.enableHaptic = true,
   }) : assert(
             text != null || child != null, 'Provide either `text` or `child`');
 
@@ -233,7 +240,14 @@ class CustomElevatedButton extends StatelessWidget {
     // padding is zeroed here and re-applied to the content sizer below; the
     // resulting overall size is identical to the original.
     final Widget background = ElevatedButton(
-      onPressed: disabled ? null : onPressed,
+      onPressed: disabled
+          ? null
+          : (enableHaptic
+              ? () {
+                  AppHaptics.light();
+                  onPressed?.call();
+                }
+              : onPressed),
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         // While loading the button is disabled, so keep (almost) the real

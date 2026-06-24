@@ -861,6 +861,7 @@ class _VariantCartButton extends ConsumerWidget {
           backgroundColor: context.vColors.surface,
           side: BorderSide(color: AppColor.primary),
           text: 'ADD',
+          enableHaptic: false, // addToCart() above is the deliberate buzz
         ),
       );
     }
