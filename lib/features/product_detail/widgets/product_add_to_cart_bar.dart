@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 
@@ -251,7 +252,8 @@ class _StepButton extends StatelessWidget {
       onTap: disabled
           ? null
           : () {
-              HapticFeedback.selectionClick();
+              AppHaptics.light();
+
               onTap();
             },
       behavior: HitTestBehavior.opaque,

@@ -64,7 +64,6 @@ class GuestLoginWall extends StatelessWidget {
               width: double.infinity,
               height: 50.h,
               backgroundColor: AppColor.secondary,
-              foregroundColor: const Color(0xFF1A1A1A),
               onPressed: () => context.go(LVRoute.loginScreen.route),
               text: 'Login / Sign Up',
             ),

@@ -775,7 +775,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        HapticFeedback.lightImpact();
+                                        AppHaptics.light();
                                         CartFlyAnimator.blast(
                                           context,
                                           product.images?.isNotEmpty == true
@@ -805,7 +805,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        HapticFeedback.lightImpact();
+                                        AppHaptics.light();
                                         ref
                                             .read(cartProvider.notifier)
                                             .updateQuantity(
@@ -878,7 +878,7 @@ class _VariantCartButton extends ConsumerWidget {
           children: [
             GestureDetector(
               onTap: () {
-                HapticFeedback.lightImpact();
+                AppHaptics.light();
                 ref
                     .read(cartProvider.notifier)
                     .updateQuantity(product.id!, cartCount - 1);
@@ -896,7 +896,7 @@ class _VariantCartButton extends ConsumerWidget {
                     fontSize: 13.sp)),
             GestureDetector(
               onTap: () {
-                HapticFeedback.lightImpact();
+                AppHaptics.light();
                 ref
                     .read(cartProvider.notifier)
                     .updateQuantity(product.id!, cartCount + 1);

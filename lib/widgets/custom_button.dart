@@ -123,11 +123,11 @@ class CustomBackButton extends StatelessWidget {
 
 /// Single source of truth for the app's elevated button.
 ///
-/// Defaults to [AppColor.primary] / white text, but every visual aspect
-/// (background, foreground/text color, border radius, padding, size,
-/// elevation, loader) can be overridden per call site. Pass
-/// `backgroundColor: AppColor.secondary` (and a matching [foregroundColor])
-/// to get the secondary variant instead of adding a separate widget.
+/// Defaults to [AppColor.primary] / white text. Text color auto-picks a
+/// brand-correct value from [backgroundColor] (see [_defaultForeground]) —
+/// pass `backgroundColor: AppColor.secondary` for the secondary variant
+/// without needing to also specify [foregroundColor]; only pass it for a
+/// genuinely one-off color that the default rule shouldn't apply to.
 class CustomElevatedButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String? text;
@@ -201,6 +201,17 @@ class CustomElevatedButton extends StatelessWidget {
   }) : assert(
             text != null || child != null, 'Provide either `text` or `child`');
 
+  /// Brand-consistent text color for a given button background, used
+  /// whenever a call site doesn't pass an explicit [foregroundColor]. Keeps
+  /// every button's text legible/on-brand without each screen having to
+  /// remember the right pairing (secondary orange needs dark text, not the
+  /// white that was scattered across a few screens with poor contrast).
+  static Color _defaultForeground(Color bg) {
+    if (bg == AppColor.secondary) return const Color(0xFF392500);
+    if (bg.computeLuminance() > 0.6) return AppColor.primary;
+    return AppColor.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     // TEMP / DEBUG: force every button into the loading state so the loading
@@ -209,7 +220,7 @@ class CustomElevatedButton extends StatelessWidget {
     // final bool isLoading = true; // this.isLoading;
 
     final bgColor = backgroundColor ?? AppColor.primary;
-    final fgColor = foregroundColor ?? AppColor.white;
+    final fgColor = foregroundColor ?? _defaultForeground(bgColor);
     final radius = BorderRadius.circular(borderRadius.r);
     final effectivePadding =
         padding ?? EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w);

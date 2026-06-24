@@ -674,7 +674,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                             },
                       isLoading: _isProcessing,
                       backgroundColor: AppColor.secondary,
-                      foregroundColor: Colors.white,
                       loaderSize: 22,
                       text: 'Search',
                     ),
@@ -884,7 +883,6 @@ class _ScanningTipsSheet extends StatelessWidget {
                   child: CustomElevatedButton(
                     onPressed: () => context.pop(),
                     backgroundColor: AppColor.secondary,
-                    foregroundColor: Colors.white,
                     text: 'Dismiss',
                   ),
                 ),

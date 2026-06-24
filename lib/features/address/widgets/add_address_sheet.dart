@@ -529,7 +529,6 @@ class _AddAddressSheetState extends ConsumerState<AddAddressSheet> {
                             setState(() => _isLocationConfirmed = true);
                           },
                           backgroundColor: AppColor.secondary,
-                          foregroundColor: Colors.white,
                           icon: Icons.check_circle_rounded,
                           iconSize: 18.sp,
                           text: 'Confirm Location',

@@ -231,7 +231,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: double.infinity,
                         height: 52.h,
                         backgroundColor: AppColor.secondary,
-                        foregroundColor: const Color(0xFF1A1A1A),
                         onPressed: () async {
                           setState(() => _submitted = true);
                           if (_formKey.currentState?.validate() ?? false) {

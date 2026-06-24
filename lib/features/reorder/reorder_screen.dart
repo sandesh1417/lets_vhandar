@@ -228,7 +228,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                   child: CustomElevatedButton(
                     onPressed: () => context.go(LVRoute.loginScreen.route),
                     backgroundColor: AppColor.secondary,
-                    foregroundColor: const Color(0xFF1A1A1A),
                     text: 'Login',
                   ),
                 ),
