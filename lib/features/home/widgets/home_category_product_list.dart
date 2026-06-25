@@ -73,8 +73,13 @@ class _CategorySection extends ConsumerWidget {
                       product: product,
                       enableHero: heroClaims.claim(product.id),
                       onTap: () {
-                        context.push(LVRoute.productDetailScreen.route,
-                            extra: product);
+                        context.push(
+                          LVRoute.productDetailScreen.route,
+                          extra: ProductDetailNavArgs(
+                            products: visible,
+                            initialIndex: index,
+                          ),
+                        );
                       },
                     ),
                   );

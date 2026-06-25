@@ -255,7 +255,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ref.read(searchHistoryProvider.notifier).add(state.query);
                     context.pushNamed(
                       LVRoute.productDetailScreen.route,
-                      extra: product,
+                      extra: ProductDetailNavArgs(
+                        products: state.sortedResults,
+                        initialIndex: index,
+                      ),
                     );
                   },
                 );
@@ -413,7 +416,10 @@ class _EmptyState extends ConsumerWidget {
                       enableHero: true,
                       onTap: () => context.pushNamed(
                         LVRoute.productDetailScreen.route,
-                        extra: product,
+                        extra: ProductDetailNavArgs(
+                          products: visible,
+                          initialIndex: index,
+                        ),
                       ),
                     );
                   },

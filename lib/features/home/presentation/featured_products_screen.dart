@@ -59,7 +59,10 @@ class FeaturedProductsScreen extends ConsumerWidget {
                       enableHero: true,
                       onTap: () => context.pushNamed(
                         LVRoute.productDetailScreen.route,
-                        extra: product,
+                        extra: ProductDetailNavArgs(
+                          products: visible,
+                          initialIndex: index,
+                        ),
                       ),
                     ),
                   );

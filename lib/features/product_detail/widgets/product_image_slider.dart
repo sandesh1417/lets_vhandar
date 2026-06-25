@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
@@ -11,7 +13,18 @@ class ProductImageSlider extends StatefulWidget {
   final ProductData product;
   final String? heroTag;
 
-  const ProductImageSlider({super.key, required this.product, this.heroTag});
+  // Auto-advances through the product's photos on a timer when there's more
+  // than one. Pass false for slider instances that shouldn't be quietly
+  // animating in the background (e.g. a peeking, not-yet-focused page in an
+  // outer product-to-product slider).
+  final bool autoPlay;
+
+  const ProductImageSlider({
+    super.key,
+    required this.product,
+    this.heroTag,
+    this.autoPlay = true,
+  });
 
   @override
   State<ProductImageSlider> createState() => _ProductImageSliderState();
@@ -20,9 +33,57 @@ class ProductImageSlider extends StatefulWidget {
 class _ProductImageSliderState extends State<ProductImageSlider> {
   int _currentPage = 0;
   final PageController _pageController = PageController();
+  Timer? _autoPlayTimer;
+
+  static const _autoPlayInterval = Duration(seconds: 4);
+  static const _autoPlayResumeDelay = Duration(seconds: 5);
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleAutoPlay();
+  }
+
+  @override
+  void didUpdateWidget(ProductImageSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.autoPlay != oldWidget.autoPlay) {
+      widget.autoPlay ? _scheduleAutoPlay() : _cancelAutoPlay();
+    }
+  }
+
+  void _cancelAutoPlay() {
+    _autoPlayTimer?.cancel();
+    _autoPlayTimer = null;
+  }
+
+  void _scheduleAutoPlay() {
+    _cancelAutoPlay();
+    final images = widget.product.images ?? [];
+    if (!widget.autoPlay || images.length <= 1) return;
+    _autoPlayTimer = Timer.periodic(_autoPlayInterval, (_) {
+      if (!mounted || !_pageController.hasClients) return;
+      final count = widget.product.images?.length ?? 0;
+      if (count <= 1) return;
+      _pageController.animateToPage(
+        (_currentPage + 1) % count,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  // A manual swipe shouldn't fight the auto-play — pause it, then resume
+  // (as a fresh periodic cycle, not mid-interval) after a breather.
+  void _pauseAutoPlayThenResume() {
+    if (!widget.autoPlay) return;
+    _cancelAutoPlay();
+    _autoPlayTimer = Timer(_autoPlayResumeDelay, _scheduleAutoPlay);
+  }
 
   @override
   void dispose() {
+    _cancelAutoPlay();
     _pageController.dispose();
     super.dispose();
   }
@@ -95,16 +156,28 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
                 // (which is a bare full-bleed image), you get a visible
                 // "jump" right as it lands — padding here was exactly that
                 // mismatch.
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: images.isEmpty ? 1 : images.length,
-                  onPageChanged: (i) => setState(() => _currentPage = i),
-                  itemBuilder: (context, index) {
-                    return CustomImageViewer(
-                      path: images.isNotEmpty ? images[index].url : null,
-                      fit: BoxFit.contain,
-                    );
+                child: NotificationListener<ScrollNotification>(
+                  // Only a real finger-drag should pause auto-play —
+                  // dragDetails is null for the programmatic animateToPage
+                  // calls auto-play itself makes, so it can't self-pause.
+                  onNotification: (n) {
+                    if (n is ScrollStartNotification &&
+                        n.dragDetails != null) {
+                      _pauseAutoPlayThenResume();
+                    }
+                    return false;
                   },
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: images.isEmpty ? 1 : images.length,
+                    onPageChanged: (i) => setState(() => _currentPage = i),
+                    itemBuilder: (context, index) {
+                      return CustomImageViewer(
+                        path: images.isNotEmpty ? images[index].url : null,
+                        fit: BoxFit.contain,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

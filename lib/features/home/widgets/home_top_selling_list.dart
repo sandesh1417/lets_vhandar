@@ -39,7 +39,10 @@ class HomeFeaturedProductsList extends ConsumerWidget {
                   onTap: () {
                     context.pushNamed(
                       LVRoute.productDetailScreen.route,
-                      extra: product,
+                      extra: ProductDetailNavArgs(
+                        products: visible,
+                        initialIndex: index,
+                      ),
                     );
                   },
                 ),

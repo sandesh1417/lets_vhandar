@@ -61,7 +61,10 @@ class ProductGrid extends StatelessWidget {
             onTap: () {
               context.pushNamed(
                 LVRoute.productDetailScreen.route,
-                extra: product,
+                extra: ProductDetailNavArgs(
+                  products: products,
+                  initialIndex: index,
+                ),
               );
             },
           ),

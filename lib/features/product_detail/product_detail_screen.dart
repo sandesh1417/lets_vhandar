@@ -35,16 +35,133 @@ const double _kCardHMargin = 12; // horizontal margin  (use .w in build)
 const double _kCardVGap = 6; // gap between cards  (use .h in build)
 const double _kCardRadius = 12; // BorderRadius value  (use .r in build)
 
-class ProductDetailScreen extends ConsumerStatefulWidget {
-  final ProductData product;
-  const ProductDetailScreen({super.key, required this.product});
+/// Horizontal slider across a list of products, e.g. opened from a grid or
+/// "Similar Products" row — swipe left/right to browse sequentially through
+/// the same list without going back. Each page is a full, independent
+/// [_ProductDetailPage] (own scroll position, own AppBar fade, own
+/// add-to-cart bar), so nothing needs to be shared/synced across pages.
+/// [PageView.builder] only ever builds the current page + its immediate
+/// neighbours, so this stays cheap even for long lists on low-end devices.
+class ProductDetailScreen extends StatefulWidget {
+  final List<ProductData> products;
+  final int initialIndex;
+
+  const ProductDetailScreen({
+    super.key,
+    required this.products,
+    this.initialIndex = 0,
+  });
 
   @override
-  ConsumerState<ProductDetailScreen> createState() =>
-      _ProductDetailScreenState();
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  late final PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex.clamp(0, widget.products.length - 1);
+    // A real, visible peek of the next/previous product at each edge — but
+    // the active card itself only gives up a bit of width for it, not a
+    // dramatic chunk.
+    _pageController =
+        PageController(initialPage: _currentIndex, viewportFraction: 0.92);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Distance (in pages) of [index] from whatever's currently centred —
+  // 0 for the active card, growing toward 1 for fully-offscreen neighbours.
+  // Reads _pageController.page directly inside AnimatedBuilder below instead
+  // of via setState, so only the Transform/Opacity wrapper rebuilds per
+  // frame — the heavy page content underneath (passed as `child`) doesn't.
+  double _pageDelta(int index) {
+    final page = _pageController.hasClients
+        ? (_pageController.page ?? _currentIndex.toDouble())
+        : _currentIndex.toDouble();
+    return (page - index).abs().clamp(0.0, 1.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.products.length <= 1) {
+      return _ProductDetailPage(product: widget.products[0]);
+    }
+    final topInset = MediaQuery.of(context).padding.top;
+    return Container(
+      // Translucent, not flat black — the route is opaque: false (see
+      // app_router.dart), so whatever screen this was opened from is still
+      // painted underneath and shows through this scrim, like a bottom
+      // sheet's dimmed backdrop. The cards themselves are still fully
+      // opaque, so only the margins/peek gaps actually reveal it.
+      color: Colors.black.withValues(alpha: 0.55),
+      child: PageView.builder(
+        controller: _pageController,
+        itemCount: widget.products.length,
+        physics: const BouncingScrollPhysics(),
+        onPageChanged: (i) => setState(() => _currentIndex = i),
+        itemBuilder: (context, index) {
+          return Padding(
+            // Minimal side margin — the card should fill nearly the full
+            // screen width; viewportFraction above is what reserves the
+            // thin peek strip, this is just a hairline gap between cards.
+            padding: EdgeInsets.fromLTRB(0.w, topInset + 6.h, 0.w, 10.h),
+            child: AnimatedBuilder(
+              animation: _pageController,
+              builder: (context, child) {
+                final delta = _pageDelta(index);
+                final scale = 1 - (delta * 0.05);
+                final opacity = 1 - (delta * 0.25);
+                return Transform.scale(
+                  scale: scale,
+                  child: Opacity(opacity: opacity, child: child),
+                );
+              },
+              // RepaintBoundary + PhysicalModel built once per page, not per
+              // frame — only the Transform/Opacity above re-runs as the
+              // controller's page value changes.
+              child: RepaintBoundary(
+                child: PhysicalModel(
+                  color: Colors.transparent,
+                  elevation: 14,
+                  shadowColor: Colors.black.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(16.r),
+                  clipBehavior: Clip.antiAlias,
+                  child: _ProductDetailPage(
+                    product: widget.products[index],
+                    isActive: index == _currentIndex,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ProductDetailPage extends ConsumerStatefulWidget {
+  final ProductData product;
+  // Whether this is the centred (focused) page in the outer products
+  // slider. Gates the image carousel's auto-play below — peeking neighbour
+  // pages shouldn't be quietly auto-advancing their images in the
+  // background while the user's looking at a different product.
+  final bool isActive;
+  const _ProductDetailPage({required this.product, this.isActive = true});
+
+  @override
+  ConsumerState<_ProductDetailPage> createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
   late ProductData _currentProduct;
   bool _detailsExpanded = false;
   final ValueNotifier<double> _scrollOffset = ValueNotifier<double>(0.0);
@@ -62,7 +179,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   @override
-  void didUpdateWidget(ProductDetailScreen oldWidget) {
+  void didUpdateWidget(_ProductDetailPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.product.id != oldWidget.product.id) {
       _currentProduct = widget.product;
@@ -273,6 +390,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       child: ProductImageSlider(
                         product: product,
                         heroTag: 'product-img-${widget.product.id}',
+                        autoPlay: widget.isActive,
                       ),
                     ),
                   ),
@@ -557,9 +675,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         final p = filtered[index];
                                         return ProductItemCard(
                                           product: p,
+                                          enableHero: true,
                                           onTap: () => context.pushNamed(
                                             LVRoute.productDetailScreen.route,
-                                            extra: p,
+                                            extra: ProductDetailNavArgs(
+                                              products: filtered,
+                                              initialIndex: index,
+                                            ),
                                           ),
                                         );
                                       },

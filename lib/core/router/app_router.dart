@@ -72,6 +72,21 @@ CustomTransitionPage<void> _slideFadePage({
   );
 }
 
+/// Pass this as `extra` when pushing [LVRoute.productDetailScreen] from a
+/// list/grid so the detail screen can offer a horizontal "swipe to the next
+/// product" slider through the same list. Passing a bare [ProductData]
+/// (the old call shape) still works — it's treated as a single-item list,
+/// so the slider just doesn't show.
+class ProductDetailNavArgs {
+  final List<ProductData> products;
+  final int initialIndex;
+
+  const ProductDetailNavArgs({
+    required this.products,
+    this.initialIndex = 0,
+  });
+}
+
 enum LVRoute {
   splashScreen,
   loginScreen,
@@ -222,10 +237,27 @@ class LVGoRouter {
         path: LVRoute.productDetailScreen.route,
         name: LVRoute.productDetailScreen.route,
         pageBuilder: (BuildContext context, GoRouterState state) {
-          final product = state.extra as ProductData;
+          final extra = state.extra;
+          final List<ProductData> products;
+          final int initialIndex;
+          if (extra is ProductDetailNavArgs) {
+            products = extra.products;
+            initialIndex = extra.initialIndex;
+          } else {
+            products = [extra as ProductData];
+            initialIndex = 0;
+          }
           return CustomTransitionPage(
             key: state.pageKey,
-            child: ProductDetailScreen(product: product),
+            child: ProductDetailScreen(
+              products: products,
+              initialIndex: initialIndex,
+            ),
+            // Not opaque — the screen this was opened from stays painted
+            // underneath, so the translucent backdrop around the card
+            // (see ProductDetailScreen) actually shows it through, instead
+            // of just a flat colour.
+            opaque: false,
             transitionDuration: const Duration(milliseconds: 350),
             reverseTransitionDuration: const Duration(milliseconds: 280),
             transitionsBuilder:

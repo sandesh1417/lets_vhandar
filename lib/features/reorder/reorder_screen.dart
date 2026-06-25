@@ -325,7 +325,7 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
             enableHero: true,
             onTap: () => context.push(
               LVRoute.productDetailScreen.route,
-              extra: product,
+              extra: ProductDetailNavArgs(products: products, initialIndex: i),
             ),
           ),
         );
