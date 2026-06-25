@@ -16,6 +16,22 @@ import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 
+/// Some screens (the home screen's "Featured Products" row + per-category
+/// rows) show more than one product list at once, and the same product can
+/// legitimately appear in two of them simultaneously. Hero throws if two
+/// Heroes share a tag at the same time, so only the *first* card to render a
+/// given product per screen is allowed to claim the Hero — create one
+/// instance per screen build and pass it to every product list on that
+/// screen, which uses it to compute each card's `enableHero`.
+class HeroClaimRegistry {
+  final Set<String> _claimed = {};
+
+  /// Returns true the first time [productId] is claimed, false every time
+  /// after (or if [productId] is null).
+  bool claim(String? productId) =>
+      productId != null && _claimed.add(productId);
+}
+
 class ProductItemCard extends ConsumerStatefulWidget {
   final ProductData product;
   final VoidCallback? onTap;
@@ -390,12 +406,18 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
         borderRadius: 0.r,
         fit: BoxFit.contain,
       );
-      // Opt-in Hero morph into the product detail screen.
+      // Opt-in Hero morph into the product detail screen. The detail screen's
+      // Hero supplies its own flightShuttleBuilder, so what's wrapped here
+      // doesn't need to match it pixel-for-pixel.
       return widget.enableHero
-          ? Hero(tag: ProductItemCard.heroTagFor(product), child: img)
+          ? Hero(
+              tag: ProductItemCard.heroTagFor(product),
+              transitionOnUserGestures: true,
+              child: img,
+            )
           : img;
     }
-    return PageView.builder(
+    final pages = PageView.builder(
       controller: _imagePageController,
       itemCount: images.length,
       onPageChanged: (i) => setState(() => _imagePage = i),
@@ -405,6 +427,18 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
         fit: BoxFit.contain,
       ),
     );
+    // Multi-image products previously never got a Hero at all (this branch
+    // was skipped entirely), so most real products — which usually have more
+    // than one photo — never showed the fly-into-detail animation. The
+    // detail screen's flightShuttleBuilder renders the actual flight, so
+    // what this PageView looks like mid-flight doesn't matter.
+    return widget.enableHero
+        ? Hero(
+            tag: ProductItemCard.heroTagFor(product),
+            transitionOnUserGestures: true,
+            child: pages,
+          )
+        : pages;
   }
 
   void _showVariantBottomSheet() {

@@ -246,6 +246,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   product: product,
                   margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                   width: double.infinity,
+                  // Safe — this grid only renders once the query is
+                  // non-empty, and the only other ProductItemCard grid on
+                  // this screen (trending suggestions) only renders when the
+                  // query IS empty, so the two never coexist in the tree.
+                  enableHero: true,
                   onTap: () {
                     ref.read(searchHistoryProvider.notifier).add(state.query);
                     context.pushNamed(
@@ -403,6 +408,9 @@ class _EmptyState extends ConsumerWidget {
                       margin:
                           EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                       width: double.infinity,
+                      // See the other ProductItemCard grid above — only one
+                      // of the two is ever in the tree at a time.
+                      enableHero: true,
                       onTap: () => context.pushNamed(
                         LVRoute.productDetailScreen.route,
                         extra: product,

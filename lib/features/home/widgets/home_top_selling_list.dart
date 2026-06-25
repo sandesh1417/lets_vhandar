@@ -9,7 +9,9 @@ import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class HomeFeaturedProductsList extends ConsumerWidget {
-  const HomeFeaturedProductsList({super.key});
+  final HeroClaimRegistry heroClaims;
+
+  const HomeFeaturedProductsList({super.key, required this.heroClaims});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,6 +35,7 @@ class HomeFeaturedProductsList extends ConsumerWidget {
               return RepaintBoundary(
                 child: ProductItemCard(
                   product: product,
+                  enableHero: heroClaims.claim(product.id),
                   onTap: () {
                     context.pushNamed(
                       LVRoute.productDetailScreen.route,

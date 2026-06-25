@@ -23,6 +23,7 @@ import 'package:lets_vhandar/features/home/widgets/home_offline_body.dart';
 import 'package:lets_vhandar/features/home/widgets/home_section_title.dart';
 import 'package:lets_vhandar/features/home/widgets/home_suggest_card.dart';
 import 'package:lets_vhandar/features/home/widgets/home_top_selling_list.dart';
+import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -97,6 +98,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           data: (online) => !online,
           orElse: () => false,
         );
+    // Fresh per build — lets every product list on this screen safely
+    // enable the fly-into-detail Hero even though the same product can show
+    // up in more than one of them at once (see HeroClaimRegistry).
+    final heroClaims = HeroClaimRegistry();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
@@ -160,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             onSeeAll: () => context
                                 .push(LVRoute.featuredProductsScreen.route),
                           ),
-                          const HomeFeaturedProductsList(),
+                          HomeFeaturedProductsList(heroClaims: heroClaims),
                           SizedBox(height: 16.h),
                           HomeSectionTitle(
                             title: 'Shop by Category',
@@ -179,8 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           // ignore: prefer_const_constructors
                           HomeCategoriesGrid(),
                           SizedBox(height: 16.h),
-                          // ignore: prefer_const_constructors
-                          HomeCategoryProductList(),
+                          HomeCategoryProductList(heroClaims: heroClaims),
                           SizedBox(height: 16.h),
                           HomeSectionTitle(
                             title: 'Featured Brands',

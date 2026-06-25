@@ -11,7 +11,9 @@ import 'package:lets_vhandar/features/home/widgets/product_item_card.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 
 class HomeCategoryProductList extends ConsumerWidget {
-  const HomeCategoryProductList({super.key});
+  final HeroClaimRegistry heroClaims;
+
+  const HomeCategoryProductList({super.key, required this.heroClaims});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +23,7 @@ class HomeCategoryProductList extends ConsumerWidget {
       data: (categories) {
         return Column(
           children: categories.map((category) {
-            return _CategorySection(category: category);
+            return _CategorySection(category: category, heroClaims: heroClaims);
           }).toList(),
         );
       },
@@ -33,8 +35,9 @@ class HomeCategoryProductList extends ConsumerWidget {
 
 class _CategorySection extends ConsumerWidget {
   final CategoryData category;
+  final HeroClaimRegistry heroClaims;
 
-  const _CategorySection({required this.category});
+  const _CategorySection({required this.category, required this.heroClaims});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,12 +67,14 @@ class _CategorySection extends ConsumerWidget {
                 physics: const BouncingScrollPhysics(),
                 itemCount: visible.length,
                 itemBuilder: (context, index) {
+                  final product = visible[index];
                   return RepaintBoundary(
                     child: ProductItemCard(
-                      product: visible[index],
+                      product: product,
+                      enableHero: heroClaims.claim(product.id),
                       onTap: () {
                         context.push(LVRoute.productDetailScreen.route,
-                            extra: visible[index]);
+                            extra: product);
                       },
                     ),
                   );

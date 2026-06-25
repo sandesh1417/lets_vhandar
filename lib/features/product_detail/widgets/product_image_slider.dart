@@ -55,21 +55,57 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
           onTap: _openFullScreen,
           child: Hero(
             tag: widget.heroTag ?? 'product-img-${widget.product.id}',
-            child: Container(
-              color: context.vColors.surface,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: images.isEmpty ? 1 : images.length,
-                onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(24.w, 48.h, 24.w, 16.h),
-                    child: CustomImageViewer(
+            transitionOnUserGestures: true,
+            // Flies a plain image instead of this slider's real content
+            // (PageView + padding). Reusing CustomImageViewer (not a fresh
+            // CachedNetworkImage) is the important bit — it's the exact same
+            // widget + cache manager + cache key the card and this slider
+            // already used to display this URL, so Flutter's image cache
+            // resolves it synchronously from what's already decoded in
+            // memory. A different cache key here would force a fresh
+            // decode right as the flight starts, which is exactly the
+            // stutter we're trying to avoid.
+            flightShuttleBuilder: (
+              flightContext,
+              animation,
+              flightDirection,
+              fromHeroContext,
+              toHeroContext,
+            ) {
+              final url = images.isNotEmpty ? images.first.url : null;
+              return RepaintBoundary(
+                // Same surface-colored backdrop as the landed state below —
+                // without it, BoxFit.contain's letterbox gaps show whatever
+                // is behind the flight (the fading page underneath) and
+                // then snap to a solid color the instant it lands.
+                child: Container(
+                  color: context.vColors.surface,
+                  child: CustomImageViewer(path: url, fit: BoxFit.contain),
+                ),
+              );
+            },
+            child: RepaintBoundary(
+              child: Container(
+                color: context.vColors.surface,
+                // No padding here — the card's image also fills its box
+                // edge-to-edge with the same BoxFit.contain. Hero only
+                // animates the outer rect smoothly; the instant the flight
+                // ends, whatever's actually laid out inside snaps into view.
+                // If that inner layout doesn't match the flight shuttle
+                // (which is a bare full-bleed image), you get a visible
+                // "jump" right as it lands — padding here was exactly that
+                // mismatch.
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: images.isEmpty ? 1 : images.length,
+                  onPageChanged: (i) => setState(() => _currentPage = i),
+                  itemBuilder: (context, index) {
+                    return CustomImageViewer(
                       path: images.isNotEmpty ? images[index].url : null,
                       fit: BoxFit.contain,
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

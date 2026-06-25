@@ -146,14 +146,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               elevation: curved * 2,
               shadowColor: Colors.black.withValues(alpha: 0.06),
               automaticallyImplyLeading: false,
-              leading: Center(
-                child: _GlassButton(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  isGlass: ratio < 0.5,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    context.pop();
-                  },
+              // Nudged toward the bottom of the toolbar (not dead-center) so
+              // it sits lower, clear of the status bar — now that the hero
+              // image is full-bleed behind it, a button glued to the very
+              // top edge made the Hero flight read as a boxy resize instead
+              // of a photo sliding into place.
+              leading: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 6.h),
+                  child: _GlassButton(
+                    icon: Icons.keyboard_arrow_down_rounded,
+                    isGlass: ratio < 0.5,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.pop();
+                    },
+                  ),
                 ),
               ),
               titleSpacing: 0,
@@ -204,9 +213,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
               ),
               actions: [
-                Center(
+                Align(
+                  alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 12.w),
+                    padding: EdgeInsets.only(right: 12.w, bottom: 6.h),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -240,15 +250,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             physics: const BouncingScrollPhysics(),
             slivers: [
               // ── Image Slider ───────────────────────────────────────────────
+              // Parallax: as the user scrolls, the image shifts up slightly
+              // faster than the page itself, giving it depth. Reuses the
+              // existing _scrollOffset ValueNotifier (already fed by
+              // _scrollController for the AppBar fade above) — no extra
+              // listener/controller, no setState, no Scaffold rebuild. The
+              // RepaintBoundary keeps that per-frame repaint isolated to just
+              // this image layer.
               SliverAppBar(
                 automaticallyImplyLeading: false,
                 expandedHeight: 320.h,
                 pinned: false,
                 backgroundColor: vc.scaffoldBg,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: ProductImageSlider(
-                    product: product,
-                    heroTag: 'product-img-${widget.product.id}',
+                  background: RepaintBoundary(
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: _scrollOffset,
+                      builder: (_, offset, child) => Transform.translate(
+                        offset: Offset(0, -(offset * 0.35).clamp(0.0, 80.0)),
+                        child: child,
+                      ),
+                      child: ProductImageSlider(
+                        product: product,
+                        heroTag: 'product-img-${widget.product.id}',
+                      ),
+                    ),
                   ),
                 ),
               ),

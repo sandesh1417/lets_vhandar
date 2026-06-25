@@ -321,6 +321,8 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
             product: product,
             width: double.infinity,
             margin: EdgeInsets.zero,
+            // Safe — this is the only product grid on the reorder screen.
+            enableHero: true,
             onTap: () => context.push(
               LVRoute.productDetailScreen.route,
               extra: product,

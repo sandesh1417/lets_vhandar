@@ -54,6 +54,10 @@ class ProductGrid extends StatelessWidget {
             product: product,
             margin: EdgeInsets.zero,
             width: double.infinity,
+            // Safe here — every screen using ProductGrid only ever has this
+            // one product list in the tree at a time, so no product can
+            // appear twice (which would throw on a duplicate Hero tag).
+            enableHero: true,
             onTap: () {
               context.pushNamed(
                 LVRoute.productDetailScreen.route,
