@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
@@ -35,7 +36,7 @@ class AccountTab extends ConsumerStatefulWidget {
 }
 
 class _AccountTabState extends ConsumerState<AccountTab> {
-  static const String _appVersion = '1.0.0';
+  String get _appVersion => AppInfo.version;
   static const String _shareText =
       'Shop fresh groceries and daily essentials with Vhandar: https://www.vhandar.com';
   static const int _accountTabIndex = 4;
@@ -69,7 +70,7 @@ class _AccountTabState extends ConsumerState<AccountTab> {
     });
 
     if (loginState.isGuest || !loginState.isLoggedIn) {
-      return const AccountGuestView(appVersion: _appVersion);
+      return AccountGuestView(appVersion: _appVersion);
     }
 
     return CustomScaffoldWrapper(
@@ -322,7 +323,7 @@ class _AccountTabState extends ConsumerState<AccountTab> {
             SizedBox(height: 16.h),
             const AccountSupportCard(),
             SizedBox(height: 22.h),
-            const AccountVersionFooter(version: _appVersion),
+            AccountVersionFooter(version: _appVersion),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 16.h),
           ],
         ),

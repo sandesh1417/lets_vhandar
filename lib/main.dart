@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/core/services/notification_service.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
+import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/firebase_options.dart';
 import 'package:lets_vhandar/my_app.dart';
@@ -32,6 +33,7 @@ void main() async {
   ]);
   setUpDependenciesInjection();
 
+  await AppInfo.initialize();
   await NotificationService.instance.initialize();
   await UpdateService.instance.initialize();
 

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/local/shared_preferences_services.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
+import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:path_parsing/path_parsing.dart';
@@ -297,7 +298,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        '1.0.0',
+                        'v${AppInfo.version}',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 11.sp,

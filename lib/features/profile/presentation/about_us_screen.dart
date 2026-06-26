@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/widgets/custom_screen_header.dart';
 import 'package:lets_vhandar/widgets/social_media_row.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,7 +12,7 @@ import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
 
-  static const String _appVersion = '1.0.0';
+  String get _appVersion => AppInfo.version;
   static const String _playStoreUrl =
       'https://play.google.com/store/apps/details?id=vhandar.com';
 
