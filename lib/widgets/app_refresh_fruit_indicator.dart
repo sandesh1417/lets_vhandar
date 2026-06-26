@@ -88,14 +88,27 @@ class _AppRefreshFruitsIndicatorState extends State<AppRefreshFruitsIndicator>
   bool _onScrollNotification(ScrollNotification n) {
     if (_refreshing) return false;
 
-    if (n is ScrollUpdateNotification && n.metrics.extentBefore == 0) {
+    // Notifications from nested scrollables (carousels, horizontal rows, …)
+    // bubble through this listener too. Without this guard their metrics get
+    // misread as a vertical pull, popping the badge while the user scrolls.
+    if (n.depth != 0) return false;
+
+    // Only count frames from an active finger drag. Without this, a fast
+    // scroll-down from the top still fires a frame or two at extentBefore == 0
+    // while the fling settles (dragDetails == null), nudging _pull above 0
+    // and flashing the badge even though no pull gesture occurred.
+    if (n is ScrollUpdateNotification &&
+        n.dragDetails != null &&
+        n.metrics.extentBefore == 0) {
       final drag = -(n.scrollDelta ?? 0);
       if (drag > 0) {
         setState(() {
           _pull = (_pull + drag / _triggerDistance).clamp(0.0, 1.0);
         });
       }
-    } else if (n is OverscrollNotification && n.overscroll < 0) {
+    } else if (n is OverscrollNotification &&
+        n.dragDetails != null &&
+        n.overscroll < 0) {
       setState(() {
         _pull = (_pull + (-n.overscroll) / _triggerDistance).clamp(0.0, 1.0);
       });
