@@ -450,6 +450,8 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                   child: _GlassButton(
                     icon: Icons.keyboard_arrow_down_rounded,
                     isGlass: ratio < 0.5,
+                    size: 42,
+                    iconSize: 26,
                     onTap: () {
                       HapticFeedback.lightImpact();
                       context.pop();
@@ -819,8 +821,7 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                           final seenIds = <String>{};
                           final filtered = products
                               .where((p) =>
-                                  p.id != product.id &&
-                                  seenIds.add(p.id ?? ''))
+                                  p.id != product.id && seenIds.add(p.id ?? ''))
                               .toList();
                           if (filtered.isEmpty) {
                             return const SliverToBoxAdapter(
@@ -1070,12 +1071,18 @@ class _GlassButton extends StatelessWidget {
   final String? svgAsset;
   final VoidCallback onTap;
   final bool isGlass;
+  // Defaults are the original (smaller) action-button size; the leading button
+  // opts into a larger size.
+  final double size;
+  final double iconSize;
 
   const _GlassButton({
     this.icon,
     this.svgAsset,
     required this.onTap,
     this.isGlass = true,
+    this.size = 38,
+    this.iconSize = 20,
   }) : assert(icon != null || svgAsset != null);
 
   @override
@@ -1087,8 +1094,8 @@ class _GlassButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 38.w,
-        height: 38.w,
+        width: size.w,
+        height: size.w,
         decoration: BoxDecoration(
           color: isGlass
               ? (isDark
@@ -1101,11 +1108,11 @@ class _GlassButton extends StatelessWidget {
           child: svgAsset != null
               ? SvgPicture.asset(
                   svgAsset!,
-                  width: 20.sp,
-                  height: 20.sp,
+                  width: iconSize.sp,
+                  height: iconSize.sp,
                   colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
                 )
-              : Icon(icon, color: iconColor, size: 20.sp),
+              : Icon(icon, color: iconColor, size: iconSize.sp),
         ),
       ),
     );
