@@ -13,6 +13,15 @@ class ProductImageSlider extends StatefulWidget {
   final ProductData product;
   final String? heroTag;
 
+  // Only the centred page of an outer product-to-product pager should own a
+  // Hero. The pager pre-builds the peeking neighbour pages too, and each
+  // neighbour's image carries its own product-id Hero tag — the very same tags
+  // still live on the screen we came from (the other cards in the list). With
+  // every neighbour wrapped in a Hero, a single tap flew the tapped image AND
+  // each visible neighbour at once. Gating the Hero on "is this the focused
+  // page" means exactly one image flies in and back out.
+  final bool enableHero;
+
   // Auto-advances through the product's photos on a timer when there's more
   // than one. Pass false for slider instances that shouldn't be quietly
   // animating in the background (e.g. a peeking, not-yet-focused page in an
@@ -40,6 +49,7 @@ class ProductImageSlider extends StatefulWidget {
     super.key,
     required this.product,
     this.heroTag,
+    this.enableHero = true,
     this.autoPlay = true,
     this.isFullscreen = false,
     this.onRequestCollapse,
@@ -162,6 +172,51 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
     );
   }
 
+  // Wraps the landed image content in a Hero — but ONLY for the focused page
+  // (widget.enableHero). A peeking neighbour page returns its content as-is so
+  // its product-id Hero tag can't get matched and flown alongside the tapped
+  // one. The flight itself renders a single plain image (not this PageView), so
+  // exactly one photo glides in, smoothly, with no neighbours tagging along.
+  Widget _wrapHero({
+    required BuildContext context,
+    required List<ProductImage> images,
+    required Widget child,
+  }) {
+    if (!widget.enableHero) return child;
+    return Hero(
+      tag: widget.heroTag ?? 'product-img-${widget.product.id}',
+      transitionOnUserGestures: true,
+      // Flies a plain image instead of this slider's real content
+      // (PageView + padding). Reusing CustomImageViewer (not a fresh
+      // CachedNetworkImage) is the important bit — it's the exact same widget +
+      // cache manager + cache key the card and this slider already used to
+      // display this URL, so Flutter's image cache resolves it synchronously
+      // from what's already decoded in memory. A different cache key here would
+      // force a fresh decode right as the flight starts, which is exactly the
+      // stutter we're trying to avoid.
+      flightShuttleBuilder: (
+        flightContext,
+        animation,
+        flightDirection,
+        fromHeroContext,
+        toHeroContext,
+      ) {
+        final url = images.isNotEmpty ? images.first.url : null;
+        return RepaintBoundary(
+          // Same surface-colored backdrop as the landed state — without it,
+          // BoxFit.contain's letterbox gaps show whatever is behind the flight
+          // (the fading page underneath) and then snap to a solid color the
+          // instant it lands.
+          child: Container(
+            color: context.vColors.surface,
+            child: CustomImageViewer(path: url, fit: BoxFit.contain),
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final images = widget.product.images ?? [];
@@ -178,48 +233,20 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
           // White background + tappable image slider
           GestureDetector(
             onTap: _openFullScreen,
-            child: Hero(
-              tag: widget.heroTag ?? 'product-img-${widget.product.id}',
-              transitionOnUserGestures: true,
-              // Flies a plain image instead of this slider's real content
-              // (PageView + padding). Reusing CustomImageViewer (not a fresh
-              // CachedNetworkImage) is the important bit — it's the exact same
-              // widget + cache manager + cache key the card and this slider
-              // already used to display this URL, so Flutter's image cache
-              // resolves it synchronously from what's already decoded in
-              // memory. A different cache key here would force a fresh
-              // decode right as the flight starts, which is exactly the
-              // stutter we're trying to avoid.
-              flightShuttleBuilder: (
-                flightContext,
-                animation,
-                flightDirection,
-                fromHeroContext,
-                toHeroContext,
-              ) {
-                final url = images.isNotEmpty ? images.first.url : null;
-                return RepaintBoundary(
-                  // Same surface-colored backdrop as the landed state below —
-                  // without it, BoxFit.contain's letterbox gaps show whatever
-                  // is behind the flight (the fading page underneath) and
-                  // then snap to a solid color the instant it lands.
-                  child: Container(
-                    color: context.vColors.surface,
-                    child: CustomImageViewer(path: url, fit: BoxFit.contain),
-                  ),
-                );
-              },
+            child: _wrapHero(
+              context: context,
+              images: images,
+              // No padding here — the card's image also fills its box
+              // edge-to-edge with the same BoxFit.contain. Hero only
+              // animates the outer rect smoothly; the instant the flight
+              // ends, whatever's actually laid out inside snaps into view.
+              // If that inner layout doesn't match the flight shuttle
+              // (which is a bare full-bleed image), you get a visible
+              // "jump" right as it lands — padding here was exactly that
+              // mismatch.
               child: RepaintBoundary(
                 child: Container(
                   color: context.vColors.surface,
-                  // No padding here — the card's image also fills its box
-                  // edge-to-edge with the same BoxFit.contain. Hero only
-                  // animates the outer rect smoothly; the instant the flight
-                  // ends, whatever's actually laid out inside snaps into view.
-                  // If that inner layout doesn't match the flight shuttle
-                  // (which is a bare full-bleed image), you get a visible
-                  // "jump" right as it lands — padding here was exactly that
-                  // mismatch.
                   child: _interceptFullscreenSwipe(
                     images: images,
                     child: NotificationListener<ScrollNotification>(

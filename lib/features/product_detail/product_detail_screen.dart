@@ -573,6 +573,10 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                         builder: (context, fs, _) => ProductImageSlider(
                           product: product,
                           heroTag: 'product-img-${widget.product.id}',
+                          // Only the centred page owns the Hero, so a single
+                          // image flies in/out — peeking neighbour pages don't
+                          // drag their own (tag-matched) images along.
+                          enableHero: widget.isActive,
                           autoPlay: widget.isActive,
                           isFullscreen: fs,
                           imageGestureActive: widget.imageGestureActive,
