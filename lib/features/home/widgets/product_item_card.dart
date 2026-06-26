@@ -28,8 +28,7 @@ class HeroClaimRegistry {
 
   /// Returns true the first time [productId] is claimed, false every time
   /// after (or if [productId] is null).
-  bool claim(String? productId) =>
-      productId != null && _claimed.add(productId);
+  bool claim(String? productId) => productId != null && _claimed.add(productId);
 }
 
 class ProductItemCard extends ConsumerStatefulWidget {
@@ -784,13 +783,17 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 12.w, vertical: 6.h),
                                   decoration: BoxDecoration(
-                                    border: Border.all(color: AppColor.primary),
-                                    borderRadius: BorderRadius.circular(6.r),
+                                    gradient: const LinearGradient(
+                                      colors: AppColor.primaryGradient,
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Text(
                                     'ADD',
                                     style: TextStyle(
-                                      color: AppColor.primary,
+                                      color: Colors.white,
                                       fontSize: 11.sp,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -801,8 +804,12 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                               return Container(
                                 height: 30.h,
                                 decoration: BoxDecoration(
-                                  color: AppColor.primary,
-                                  borderRadius: BorderRadius.circular(4.r),
+                                  gradient: const LinearGradient(
+                                    colors: AppColor.primaryGradient,
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,

@@ -124,7 +124,11 @@ class CartItemWidget extends ConsumerWidget {
             Container(
               height: 34.h,
               decoration: BoxDecoration(
-                color: AppColor.primary,
+                gradient: const LinearGradient(
+                  colors: AppColor.primaryGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: Row(

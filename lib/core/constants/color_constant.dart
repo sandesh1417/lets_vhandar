@@ -4,6 +4,12 @@ class AppColor {
   static Color primary = const Color(0xFF0A754E);
   static Color secondary = const Color(0xFFF5B237);
 
+  // Brand green gradient for cart buttons/steppers — a brighter green up top
+  // fading into a deeper green, giving the controls a glossy, lively look.
+  static const Color gradientStart = Color(0xFF16A86A);
+  static const Color gradientEnd = Color(0xFF065C3C);
+  static const List<Color> primaryGradient = [gradientStart, gradientEnd];
+
   static Color white = const Color(0xFFFFFFFF);
   static Color black = Colors.black;
   static Color hintText = const Color(0xFF8C9A95);

@@ -40,13 +40,6 @@ class ProductAddToCartBar extends ConsumerWidget {
 
     final vc = context.vColors;
 
-    // surfaceVariant is light in light mode (green text reads fine) but dark
-    // in dark mode — green-on-near-black is poor contrast, so the stepper's
-    // text/icons switch to white there, same rule as the brand buttons.
-    final stepperBg = vc.surfaceVariant;
-    final stepperFg =
-        stepperBg.computeLuminance() > 0.6 ? AppColor.primary : Colors.white;
-
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
       child: BackdropFilter(
@@ -163,15 +156,12 @@ class ProductAddToCartBar extends ConsumerWidget {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      AppColor.primary,
-                                      AppColor.primary.withValues(alpha: 0.85),
-                                    ],
+                                  gradient: const LinearGradient(
+                                    colors: AppColor.primaryGradient,
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  borderRadius: BorderRadius.circular(11.r),
+                                  borderRadius: BorderRadius.circular(8.r),
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppColor.primary
@@ -195,13 +185,20 @@ class ProductAddToCartBar extends ConsumerWidget {
                             )
                           : Container(
                               decoration: BoxDecoration(
-                                color: stepperBg,
-                                borderRadius: BorderRadius.circular(11.r),
-                                border: Border.all(
-                                  color:
-                                      AppColor.primary.withValues(alpha: 0.25),
-                                  width: 1.w,
+                                gradient: const LinearGradient(
+                                  colors: AppColor.primaryGradient,
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                borderRadius: BorderRadius.circular(8.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        AppColor.primary.withValues(alpha: 0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
                               child: Row(
                                 mainAxisAlignment:
@@ -213,7 +210,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                 children: [
                                   _StepButton(
                                     icon: Icons.remove,
-                                    color: stepperFg,
+                                    color: Colors.white,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
                                         .updateQuantity(
@@ -230,7 +227,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                       '$cartCount',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: stepperFg,
+                                        color: Colors.white,
                                         fontSize: 13.sp,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -238,7 +235,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                   ),
                                   _StepButton(
                                     icon: Icons.add,
-                                    color: stepperFg,
+                                    color: Colors.white,
                                     disabled: cartCount >= maxQty,
                                     onTap: () => ref
                                         .read(cartProvider.notifier)
@@ -287,7 +284,9 @@ class _StepButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Icon(
           icon,
-          color: disabled ? Colors.grey.shade400 : (color ?? AppColor.primary),
+          color: disabled
+              ? Colors.white.withValues(alpha: 0.5)
+              : (color ?? AppColor.primary),
           size: 16.sp,
         ),
       ),
