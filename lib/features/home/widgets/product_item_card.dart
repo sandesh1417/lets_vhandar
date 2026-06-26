@@ -11,7 +11,6 @@ import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:lets_vhandar/features/home/providers/product_variants_provider.dart';
-import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 import 'package:lets_vhandar/widgets/custom_shimmer.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
@@ -888,68 +887,82 @@ class _VariantCartButton extends ConsumerWidget {
     ref.watch(cartProvider);
     final cartCount =
         ref.read(cartProvider.notifier).getCartItemCount(product.id!);
-    final btnHeight = 34.h;
 
     if (cartCount == 0) {
-      return SizedBox(
-        height: btnHeight,
-        child: CustomElevatedButton(
-          onPressed: () {
-            // Guests can add to cart; login is only required at checkout.
-            AppHaptics.addToCart();
-            ref.read(cartProvider.notifier).addToCart(product);
-          },
-          backgroundColor: context.vColors.surface,
-          side: BorderSide(color: AppColor.primary),
-          text: 'ADD',
-          enableHaptic: false, // addToCart() above is the deliberate buzz
+      // Same compact gradient pill used on the product card / detail bar — it
+      // sizes to its content, so it never overflows the variant row.
+      return GestureDetector(
+        onTap: () {
+          // Guests can add to cart; login is only required at checkout.
+          AppHaptics.addToCart();
+          ref.read(cartProvider.notifier).addToCart(product);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: AppColor.primaryGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Text(
+            'ADD',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ),
       );
     }
 
-    return SizedBox(
-      height: btnHeight,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColor.primary,
-          borderRadius: BorderRadius.circular(8.r),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColor.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () {
-                AppHaptics.light();
-                ref
-                    .read(cartProvider.notifier)
-                    .updateQuantity(product.id!, cartCount - 1);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                color: Colors.transparent,
-                child: Icon(Icons.remove, color: Colors.white, size: 14.sp),
-              ),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () {
+              AppHaptics.light();
+              ref
+                  .read(cartProvider.notifier)
+                  .updateQuantity(product.id!, cartCount - 1);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+              color: Colors.transparent,
+              child: Icon(Icons.remove, color: Colors.white, size: 16.sp),
             ),
-            Text('$cartCount',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13.sp)),
-            GestureDetector(
-              onTap: () {
-                AppHaptics.light();
-                ref
-                    .read(cartProvider.notifier)
-                    .updateQuantity(product.id!, cartCount + 1);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                color: Colors.transparent,
-                child: Icon(Icons.add, color: Colors.white, size: 14.sp),
-              ),
+          ),
+          Text('$cartCount',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13.sp)),
+          GestureDetector(
+            onTap: () {
+              AppHaptics.light();
+              ref
+                  .read(cartProvider.notifier)
+                  .updateQuantity(product.id!, cartCount + 1);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+              color: Colors.transparent,
+              child: Icon(Icons.add, color: Colors.white, size: 16.sp),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
