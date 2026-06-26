@@ -813,8 +813,14 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                           similarProductsProvider(product.categoryIds!.first))
                       .when(
                         data: (products) {
+                          // Exclude the current product, and de-dupe by id so
+                          // the same product can never appear twice (a repeated
+                          // id would mean two Heroes with the same tag).
+                          final seenIds = <String>{};
                           final filtered = products
-                              .where((p) => p.id != product.id)
+                              .where((p) =>
+                                  p.id != product.id &&
+                                  seenIds.add(p.id ?? ''))
                               .toList();
                           if (filtered.isEmpty) {
                             return const SliverToBoxAdapter(
@@ -868,8 +874,14 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                                         itemBuilder: (context, index) {
                                           final p = filtered[index];
                                           return ProductItemCard(
+                                            // Only the focused page may host
+                                            // Heroes. Peeking neighbour pages
+                                            // share the same category, so their
+                                            // Similar lists hold the same ids —
+                                            // letting them all be Heroes put
+                                            // duplicate tags in one route.
                                             product: p,
-                                            enableHero: true,
+                                            enableHero: widget.isActive,
                                             onTap: () => context.pushNamed(
                                               LVRoute.productDetailScreen.route,
                                               extra: ProductDetailNavArgs(
