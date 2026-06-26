@@ -48,14 +48,16 @@ class ProductAddToCartBar extends ConsumerWidget {
         stepperBg.computeLuminance() > 0.6 ? AppColor.primary : Colors.white;
 
     return ClipRRect(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 20.h),
+          // Tighter on every side — target ~64-72px total including the
+          // safe-area inset below, down from the previous ~90px+.
+          padding: EdgeInsets.fromLTRB(14.w, 8.h, 14.w, 10.h),
           decoration: BoxDecoration(
             color: vc.surface.withValues(alpha: 0.85),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
             border: Border(
               top: BorderSide(
                   color: vc.divider.withValues(alpha: 0.6), width: 1),
@@ -81,7 +83,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                       Text(
                         'Rs. ${displayPrice.toInt()}',
                         style: TextStyle(
-                          fontSize: 18.sp,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: vc.onSurface,
                         ),
@@ -91,38 +93,38 @@ class ProductAddToCartBar extends ConsumerWidget {
                         Text(
                           'Out of Stock',
                           style: TextStyle(
-                            fontSize: 11.sp,
+                            fontSize: 10.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.red.shade500,
                           ),
                         ),
                       ] else if (showMrp) ...[
                         SizedBox(height: 2.h),
-                        Text(
-                          'MRP Rs.${mrp.toInt()}',
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: vc.onSurfaceMuted,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 7.w, vertical: 3.h),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF2E7D32).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                          child: Text(
-                            'You save Rs.$savedAmount',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF2E7D32),
+                        // MRP + savings inline (not stacked) — saves a full
+                        // line of height versus before.
+                        Row(
+                          children: [
+                            Text(
+                              'MRP Rs.${mrp.toInt()}',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: vc.onSurfaceMuted,
+                                decoration: TextDecoration.lineThrough,
+                              ),
                             ),
-                          ),
+                            SizedBox(width: 6.w),
+                            Flexible(
+                              child: Text(
+                                'You save Rs.$savedAmount',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF2E7D32),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ],
@@ -131,20 +133,20 @@ class ProductAddToCartBar extends ConsumerWidget {
 
                 // Add / Stepper / Out of stock
                 SizedBox(
-                  width: 140.w,
-                  height: 44.h,
+                  width: 132.w,
+                  height: 44.h, // tap target floor — don't shrink below this
                   child: isOutOfStock
                       ? Container(
                           decoration: BoxDecoration(
                             color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12.r),
+                            borderRadius: BorderRadius.circular(11.r),
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             'Out of Stock',
                             style: TextStyle(
                               color: Colors.grey.shade500,
-                              fontSize: 13.sp,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -169,7 +171,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderRadius: BorderRadius.circular(11.r),
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppColor.primary
@@ -184,7 +186,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                   'Add to Cart',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14.sp,
+                                    fontSize: 13.sp,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.3,
                                   ),
@@ -194,7 +196,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                           : Container(
                               decoration: BoxDecoration(
                                 color: stepperBg,
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(11.r),
                                 border: Border.all(
                                   color:
                                       AppColor.primary.withValues(alpha: 0.25),
@@ -204,6 +206,10 @@ class ProductAddToCartBar extends ConsumerWidget {
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
+                                // Stretch so each _StepButton's tap target is
+                                // the full 44.h height, not just the icon's
+                                // own tight padding box.
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _StepButton(
                                     icon: Icons.remove,
@@ -213,13 +219,21 @@ class ProductAddToCartBar extends ConsumerWidget {
                                         .updateQuantity(
                                             product.id!, cartCount - 1),
                                   ),
-                                  Text(
-                                    '$cartCount',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: stepperFg,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.bold,
+                                  // Center, not bare Text: the Row uses
+                                  // crossAxisAlignment.stretch (so each button's
+                                  // tap target is full height), which also
+                                  // stretches this Text's box — and Text doesn't
+                                  // vertically center its glyphs, so the count
+                                  // would otherwise stick to the top edge.
+                                  Center(
+                                    child: Text(
+                                      '$cartCount',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: stepperFg,
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                   _StepButton(
@@ -269,7 +283,8 @@ class _StepButton extends StatelessWidget {
             },
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        alignment: Alignment.center,
         child: Icon(
           icon,
           color: disabled ? Colors.grey.shade400 : (color ?? AppColor.primary),

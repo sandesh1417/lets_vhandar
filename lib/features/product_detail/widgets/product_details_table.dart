@@ -40,11 +40,11 @@ class ProductDetailsTable extends StatelessWidget {
       children: [
         if (!hideHeader)
           Padding(
-            padding: EdgeInsets.only(bottom: 12.h),
+            padding: EdgeInsets.only(bottom: 10.h),
             child: Text(
               'Product Details',
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w700,
                 color: vc.onSurface,
               ),
@@ -57,7 +57,7 @@ class ProductDetailsTable extends StatelessWidget {
             children: [
               if (i != 0) Divider(height: 1, thickness: 1, color: vc.divider),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 11.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -66,7 +66,7 @@ class ProductDetailsTable extends StatelessWidget {
                       child: Text(
                         row['label']!,
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 10.5.sp,
                           fontWeight: FontWeight.w500,
                           color: vc.onSurfaceMuted,
                         ),
@@ -76,7 +76,7 @@ class ProductDetailsTable extends StatelessWidget {
                       child: Text(
                         row['value']!,
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 10.5.sp,
                           fontWeight: FontWeight.w600,
                           color: vc.onSurface,
                           height: 1.4,

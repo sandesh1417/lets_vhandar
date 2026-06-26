@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show lerpDouble;
 
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,6 +36,14 @@ const double _kCardHMargin = 12; // horizontal margin  (use .w in build)
 const double _kCardVGap = 6; // gap between cards  (use .h in build)
 const double _kCardRadius = 12; // BorderRadius value  (use .r in build)
 
+// Product pager viewport: just under 1.0 so a thin sliver of the neighbouring
+// product cards peeks in at the sides — a hint that the list is swipeable. The
+// active card is widened back out with an OverflowBox in the item builder so
+// this peek does NOT shrink the selected card. The side budget (screen minus
+// card width) is split into a small gap between cards plus the peek; this
+// fraction is tuned so the slot sits a few px wider than the card → that gap.
+const double _kPeekFraction = 0.93;
+
 /// Horizontal slider across a list of products, e.g. opened from a grid or
 /// "Similar Products" row — swipe left/right to browse sequentially through
 /// the same list without going back. Each page is a full, independent
@@ -60,33 +69,60 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late final PageController _pageController;
   late int _currentIndex;
 
+  // True for the whole duration a finger is touching a product's image
+  // (set by ProductImageSlider, deep below). While true, this outer
+  // product-to-product pager goes inert, so it can never win the gesture
+  // arena against the image's own horizontal handling (gallery swipe / the
+  // two-stage fullscreen-collapse swipe) — without this, three nested
+  // horizontal draggables (this pager, the gallery PageView, and the
+  // collapse interceptor) would race unpredictably for the same drag.
+  final ValueNotifier<bool> _imageGestureActive = ValueNotifier(false);
+
+  // 0 = the active product is a rounded card floating over the home screen
+  // (margins + scrim); 1 = it has maximized to fill the entire screen edge
+  // to edge (image fully fullscreen). Driven by the *active* page's scroll
+  // offset (see _ProductDetailPage), so scrolling down maximizes and
+  // scrolling back to the top minimizes — never per-frame setState on this
+  // whole widget, just this notifier feeding the card-chrome wrapper below.
+  final ValueNotifier<double> _maximize = ValueNotifier(0.0);
+
+  // Coarse "is the active page maximized to fullscreen" flag, derived from
+  // _maximize crossing a threshold. Flips rarely (not per frame), so widgets
+  // that only care about the on/off state — the outer pager's physics and the
+  // horizontal-swipe-to-minimize gesture — can listen to this without
+  // rebuilding every scroll frame.
+  final ValueNotifier<bool> _fullscreen = ValueNotifier(false);
+
+  void _syncFullscreen() {
+    final fs = _maximize.value >= 0.9;
+    if (fs != _fullscreen.value) _fullscreen.value = fs;
+  }
+
   @override
   void initState() {
     super.initState();
+    _maximize.addListener(_syncFullscreen);
     _currentIndex = widget.initialIndex.clamp(0, widget.products.length - 1);
-    // A real, visible peek of the next/previous product at each edge — but
-    // the active card itself only gives up a bit of width for it, not a
-    // dramatic chunk.
-    _pageController =
-        PageController(initialPage: _currentIndex, viewportFraction: 0.92);
+    // viewportFraction < 1 reserves thin side strips so the neighbour cards
+    // peek at rest (a swipe hint). On its own that would shrink every page, so
+    // the active card is widened back out with an OverflowBox in the item
+    // builder — to its normal card width at rest, and all the way to the full
+    // screen width (edge-to-edge) as it maximizes, while the peeking
+    // neighbours fade away.
+    _pageController = PageController(
+      initialPage: _currentIndex,
+      viewportFraction: _kPeekFraction,
+    );
   }
 
   @override
   void dispose() {
+    _maximize.removeListener(_syncFullscreen);
     _pageController.dispose();
+    _imageGestureActive.dispose();
+    _maximize.dispose();
+    _fullscreen.dispose();
     super.dispose();
-  }
-
-  // Distance (in pages) of [index] from whatever's currently centred —
-  // 0 for the active card, growing toward 1 for fully-offscreen neighbours.
-  // Reads _pageController.page directly inside AnimatedBuilder below instead
-  // of via setState, so only the Transform/Opacity wrapper rebuilds per
-  // frame — the heavy page content underneath (passed as `child`) doesn't.
-  double _pageDelta(int index) {
-    final page = _pageController.hasClients
-        ? (_pageController.page ?? _currentIndex.toDouble())
-        : _currentIndex.toDouble();
-    return (page - index).abs().clamp(0.0, 1.0);
   }
 
   @override
@@ -95,55 +131,131 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return _ProductDetailPage(product: widget.products[0]);
     }
     final topInset = MediaQuery.of(context).padding.top;
-    return Container(
-      // Translucent, not flat black — the route is opaque: false (see
-      // app_router.dart), so whatever screen this was opened from is still
-      // painted underneath and shows through this scrim, like a bottom
-      // sheet's dimmed backdrop. The cards themselves are still fully
-      // opaque, so only the margins/peek gaps actually reveal it.
-      color: Colors.black.withValues(alpha: 0.55),
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: widget.products.length,
-        physics: const BouncingScrollPhysics(),
-        onPageChanged: (i) => setState(() => _currentIndex = i),
-        itemBuilder: (context, index) {
-          return Padding(
-            // Minimal side margin — the card should fill nearly the full
-            // screen width; viewportFraction above is what reserves the
-            // thin peek strip, this is just a hairline gap between cards.
-            padding: EdgeInsets.fromLTRB(0.w, topInset + 6.h, 0.w, 10.h),
-            child: AnimatedBuilder(
-              animation: _pageController,
-              builder: (context, child) {
-                final delta = _pageDelta(index);
-                final scale = 1 - (delta * 0.05);
-                final opacity = 1 - (delta * 0.25);
-                return Transform.scale(
-                  scale: scale,
-                  child: Opacity(opacity: opacity, child: child),
-                );
-              },
-              // RepaintBoundary + PhysicalModel built once per page, not per
-              // frame — only the Transform/Opacity above re-runs as the
-              // controller's page value changes.
-              child: RepaintBoundary(
-                child: PhysicalModel(
-                  color: Colors.transparent,
-                  elevation: 14,
-                  shadowColor: Colors.black.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(16.r),
-                  clipBehavior: Clip.antiAlias,
-                  child: _ProductDetailPage(
-                    product: widget.products[index],
-                    isActive: index == _currentIndex,
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    return Stack(
+      children: [
+        // ── Scrim ──────────────────────────────────────────────────────────
+        // The route is opaque: false (see app_router.dart), so whatever
+        // screen this was opened from is still painted underneath. At rest
+        // this translucent scrim dims it behind the floating card; as the
+        // card maximizes to fullscreen the scrim fades fully out (by then
+        // the page covers it anyway). Its own ValueListenableBuilder so only
+        // this thin layer repaints per scroll frame.
+        Positioned.fill(
+          child: ValueListenableBuilder<double>(
+            valueListenable: _maximize,
+            builder: (_, m, __) => ColoredBox(
+              color: Colors.black.withValues(alpha: lerpDouble(0.55, 0.0, m)!),
+            ),
+          ),
+        ),
+
+        // ── Product pager ──────────────────────────────────────────────────
+        // Rebuilt only when a finger lands on / leaves an image, or when the
+        // active page crosses into/out of fullscreen — not per scroll frame —
+        // so the PageController and its built pages are preserved. The pager
+        // goes inert in BOTH cases: during an image touch (so the gallery /
+        // collapse swipe owns the gesture) and while fullscreen (so a
+        // horizontal swipe minimizes back to the card instead of paging to
+        // another product).
+        ListenableBuilder(
+          listenable: Listenable.merge([_imageGestureActive, _fullscreen]),
+          builder: (context, _) => PageView.builder(
+            controller: _pageController,
+            itemCount: widget.products.length,
+            physics: (_imageGestureActive.value || _fullscreen.value)
+                ? const NeverScrollableScrollPhysics()
+                : const BouncingScrollPhysics(),
+            onPageChanged: (i) => setState(() => _currentIndex = i),
+            itemBuilder: (context, index) {
+              // The page itself is built ONCE (passed as `child`); only the
+              // card-chrome wrapper below re-runs per maximize frame.
+              return ValueListenableBuilder<double>(
+                valueListenable: _maximize,
+                builder: (context, maximize, child) {
+                  // Only the centred page maximizes; off-screen neighbours
+                  // stay as cards and only peek in at the edges.
+                  final isCurrent = index == _currentIndex;
+                  final m = isCurrent ? maximize : 0.0;
+                  // Top margin floats the card 6.h below the status bar; the
+                  // bottom margin floats it the same 6.h ABOVE the system
+                  // navigation (bottomInset = 3-button bar or gesture home
+                  // indicator). Keying the bottom off bottomInset — not the
+                  // unrelated top inset — keeps the gap visually even on both
+                  // gesture-nav and 3-button-nav devices. The page's own bottom
+                  // safe-area padding is stripped (removeBottom below) so the
+                  // add-to-cart bar sits flush at the card's bottom edge; this
+                  // margin is the real gap that shows the background behind. At
+                  // fullscreen the bottom settles to just the inset so the bar
+                  // still clears the navigation.
+                  final tPad = lerpDouble(topInset + 6.h, 0.0, m)!;
+                  final bPad = lerpDouble(bottomInset + 6.h, bottomInset, m)!;
+                  final radius = lerpDouble(16.r, 0.0, m)!;
+                  // The viewport is _kPeekFraction wide, which would otherwise
+                  // shrink the card. Force the card to a fixed card-view width
+                  // (screen minus a 16.w margin each side) with an OverflowBox.
+                  // That margin space is split between a small gap to the
+                  // neighbour card and the neighbour's peek. As it maximizes the
+                  // width grows to the full screen (edge-to-edge).
+                  final screenW = MediaQuery.sizeOf(context).width;
+                  final cardW = lerpDouble(screenW - 32.w, screenW, m)!;
+                  Widget card = Padding(
+                    padding: EdgeInsets.only(top: tPad, bottom: bPad),
+                    child: OverflowBox(
+                      minWidth: cardW,
+                      maxWidth: cardW,
+                      alignment: Alignment.center,
+                      child: PhysicalModel(
+                        color: Colors.transparent,
+                        // Shadow eases out as it fills the screen — a fullscreen
+                        // page has nothing to cast a shadow onto.
+                        elevation: lerpDouble(14.0, 0.0, m)!,
+                        shadowColor: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(radius),
+                        // antiAliasWithSaveLayer (not plain antiAlias) so the
+                        // rounded clip also applies to the add-to-cart bar's
+                        // BackdropFilter — a composited layer that plain
+                        // antiAlias leaves square. This rounds the card's BOTTOM
+                        // corners in card view; they flatten to square as
+                        // `radius` lerps to 0 at fullscreen. At rest the
+                        // RepaintBoundary child caches the result, so the
+                        // saveLayer only re-runs mid-transition.
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: child,
+                      ),
+                    ),
+                  );
+                  if (!isCurrent) {
+                    // Neighbours peek at rest to hint the list is swipeable,
+                    // then fade out as the centred card maximizes — so no
+                    // neighbour edges are ever visible in fullscreen.
+                    final opacity = (1.0 - maximize).clamp(0.0, 1.0);
+                    if (opacity <= 0.0) return const SizedBox.shrink();
+                    card = Opacity(opacity: opacity, child: card);
+                  }
+                  return card;
+                },
+                // Strip the bottom safe-area inset so the add-to-cart bar's
+                // own SafeArea adds no padding — the bottom gap is owned by the
+                // card margin (bPad) above instead. Built once, with the page.
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeBottom: true,
+                  child: RepaintBoundary(
+                    child: _ProductDetailPage(
+                      product: widget.products[index],
+                      isActive: index == _currentIndex,
+                      imageGestureActive: _imageGestureActive,
+                      maximizeProgress: _maximize,
+                      fullscreen: _fullscreen,
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -155,7 +267,26 @@ class _ProductDetailPage extends ConsumerStatefulWidget {
   // pages shouldn't be quietly auto-advancing their images in the
   // background while the user's looking at a different product.
   final bool isActive;
-  const _ProductDetailPage({required this.product, this.isActive = true});
+  // Flips true while a finger is touching this page's image — see the doc
+  // on _ProductDetailScreenState._imageGestureActive.
+  final ValueNotifier<bool>? imageGestureActive;
+  // This page reports its scroll progress (0 = top → 1 = scrolled past the
+  // maximize distance) here, but only while it's the active page, so the
+  // outer card chrome can maximize/minimize in sync. See
+  // _ProductDetailScreenState._maximize.
+  final ValueNotifier<double>? maximizeProgress;
+  // Coarse on/off "this page is maximized to fullscreen" flag, owned by the
+  // outer screen. Drives two things on this page: the image carousel's
+  // two-stage collapse swipe (isFullscreen) and the page-level horizontal
+  // swipe-to-minimize gesture. Null for the single-product path (no maximize).
+  final ValueNotifier<bool>? fullscreen;
+  const _ProductDetailPage({
+    required this.product,
+    this.isActive = true,
+    this.imageGestureActive,
+    this.maximizeProgress,
+    this.fullscreen,
+  });
 
   @override
   ConsumerState<_ProductDetailPage> createState() => _ProductDetailPageState();
@@ -166,6 +297,11 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
   bool _detailsExpanded = false;
   final ValueNotifier<double> _scrollOffset = ValueNotifier<double>(0.0);
   late ScrollController _scrollController;
+  // Resolved fullscreen flag: the outer screen's notifier when supplied,
+  // otherwise a private always-false one (single-product path) so the rest of
+  // the build can listen unconditionally. Only dispose the one we created.
+  late final ValueNotifier<bool> _fs;
+  bool _ownsFs = false;
 
   @override
   void initState() {
@@ -174,8 +310,29 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
     AppHaptics.light();
     _currentProduct = widget.product;
     _scrollController = ScrollController();
-    _scrollController
-        .addListener(() => _scrollOffset.value = _scrollController.offset);
+    _scrollController.addListener(_onScroll);
+    if (widget.fullscreen != null) {
+      _fs = widget.fullscreen!;
+    } else {
+      _fs = ValueNotifier<bool>(false);
+      _ownsFs = true;
+    }
+  }
+
+  // How far you have to scroll to fully maximize the card to fullscreen.
+  // Roughly in sync with the image header going edge-to-edge, so the two
+  // read as one motion rather than two separate animations.
+  double get _maximizeDistance => 120.h;
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    _scrollOffset.value = offset;
+    // Only the active page owns the shared maximize progress — neighbours
+    // must not fight it (their scroll offsets are independent).
+    if (widget.isActive) {
+      widget.maximizeProgress?.value =
+          (offset / _maximizeDistance).clamp(0.0, 1.0);
+    }
   }
 
   @override
@@ -184,13 +341,31 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
     if (widget.product.id != oldWidget.product.id) {
       _currentProduct = widget.product;
     }
+    // On becoming the active page (e.g. after a horizontal swipe settles),
+    // sync the shared maximize progress to this page's own scroll position
+    // so the card chrome matches immediately instead of lagging a frame.
+    if (widget.isActive && !oldWidget.isActive) {
+      final offset =
+          _scrollController.hasClients ? _scrollController.offset : 0.0;
+      widget.maximizeProgress?.value =
+          (offset / _maximizeDistance).clamp(0.0, 1.0);
+    }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     _scrollOffset.dispose();
+    if (_ownsFs) _fs.dispose();
     super.dispose();
+  }
+
+  void _minimizeToCard() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOut,
+    );
   }
 
   void _shareProduct() {
@@ -309,7 +484,7 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                               product.name ?? '',
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13.sp,
+                                  fontSize: 12.sp,
                                   fontWeight: FontWeight.w600),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -319,7 +494,7 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                               'Rs. ${price.toInt()}',
                               style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.85),
-                                  fontSize: 11.sp,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -362,271 +537,354 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
 
       body: Stack(
         children: [
-          CustomScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // ── Image Slider ───────────────────────────────────────────────
-              // Parallax: as the user scrolls, the image shifts up slightly
-              // faster than the page itself, giving it depth. Reuses the
-              // existing _scrollOffset ValueNotifier (already fed by
-              // _scrollController for the AppBar fade above) — no extra
-              // listener/controller, no setState, no Scaffold rebuild. The
-              // RepaintBoundary keeps that per-frame repaint isolated to just
-              // this image layer.
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                expandedHeight: 320.h,
-                pinned: false,
-                backgroundColor: vc.scaffoldBg,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: RepaintBoundary(
-                    child: ValueListenableBuilder<double>(
-                      valueListenable: _scrollOffset,
-                      builder: (_, offset, child) => Transform.translate(
-                        offset: Offset(0, -(offset * 0.35).clamp(0.0, 80.0)),
-                        child: child,
-                      ),
-                      child: ProductImageSlider(
-                        product: product,
-                        heroTag: 'product-img-${widget.product.id}',
-                        autoPlay: widget.isActive,
+          // While maximized to fullscreen, a horizontal swipe ANYWHERE on the
+          // page minimizes back to the card (the outer pager is held inert
+          // meanwhile, so it can't change product). In card view the detector
+          // is disabled (null callback), so a horizontal swipe pages between
+          // products as usual. _fs flips only at the threshold, so this
+          // rebuilds rarely, not per scroll frame.
+          ValueListenableBuilder<bool>(
+            valueListenable: _fs,
+            builder: (context, fs, child) => GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragStart: fs ? (_) => _minimizeToCard() : null,
+              child: child,
+            ),
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // ── Image Slider ───────────────────────────────────────────────
+                // A PLAIN scrolling sliver — NOT pinned. The photo scrolls up
+                // and off with the rest of the page content; it isn't fixed in
+                // place. The card → fullscreen look (side margins, rounded
+                // corners, shadow) is applied by the OUTER product-card chrome
+                // around the whole page, so this just fills the page width. When
+                // maximized, a horizontal swipe ON the image minimizes back to
+                // the card via the slider's own two-stage intercept
+                // (isFullscreen + onRequestCollapse). RepaintBoundary keeps the
+                // carousel's repaints off the rest of the list.
+                SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: SizedBox(
+                      height: 320.h,
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: _fs,
+                        builder: (context, fs, _) => ProductImageSlider(
+                          product: product,
+                          heroTag: 'product-img-${widget.product.id}',
+                          autoPlay: widget.isActive,
+                          isFullscreen: fs,
+                          imageGestureActive: widget.imageGestureActive,
+                          onRequestCollapse: _minimizeToCard,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+                SliverToBoxAdapter(child: SizedBox(height: 10.h)),
 
-              // ══════════════════════════════════════════════════════════════
-              // TICKET CARD
-              // • Shadow lives on the outer Container's BoxDecoration
-              // • NO ClipRRect here — ClipRRect eats the box-shadow AND clips
-              //   the _TicketCutoutDivider semicircle notches
-              // • Children that must be clipped (e.g. ProductVariantSelector)
-              //   should do their own internal clipping
-              // • Bottom radius: BorderRadius.circular gives all 4 corners
-              // ══════════════════════════════════════════════════════════════
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: cardMargin,
-                  decoration: _cardDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ── Name & Price ───────────────────────────────────────
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name ?? 'Product Name',
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w800,
-                                color: vc.onSurface,
-                                height: 1.3,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              '${product.unitValue?.toInt()} ${product.unit}',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: vc.onSurfaceMuted,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 12.h),
-
-                            // Price row
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'Rs. ${price.toInt()}',
-                                  style: TextStyle(
-                                    fontSize: 22.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: vc.onSurface,
-                                  ),
-                                ),
-                                if (hasDiscount) ...[
-                                  SizedBox(width: 8.w),
-                                  Padding(
-                                    padding: EdgeInsets.only(bottom: 2.h),
-                                    child: Text(
-                                      'MRP Rs.${mrp.toInt()}',
-                                      style: TextStyle(
-                                        fontSize: 13.sp,
-                                        color: vc.onSurfaceMuted,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: TextDecoration.lineThrough,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.w, vertical: 4.h),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.primary
-                                          .withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(6.r),
-                                    ),
-                                    child: Text(
-                                      'Save Rs.${(mrp - price).toInt()}',
-                                      style: TextStyle(
-                                        color: AppColor.primary,
-                                        fontSize: 11.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            SizedBox(height: 4.h),
-                            if (isOOS)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 3.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.shade50,
-                                  borderRadius: BorderRadius.circular(6.r),
-                                  border:
-                                      Border.all(color: Colors.red.shade200),
-                                ),
-                                child: Text(
-                                  'Out of Stock',
-                                  style: TextStyle(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.red.shade600,
-                                  ),
-                                ),
-                              )
-                            else
-                              Text(
-                                'Inclusive of all taxes',
-                                style: TextStyle(
-                                  fontSize: 9.sp,
-                                  color: vc.onSurfaceMuted,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
-                      // ── Variant Selector ───────────────────────────────────
-                      ProductVariantSelector(
-                        baseProduct: widget.product,
-                        selected: _currentProduct,
-                        onVariantChanged: (v) =>
-                            setState(() => _currentProduct = v),
-                      ),
-
-                      // ── Brand + Ticket Cutout ──────────────────────────────
-                      if (product.brandId != null) ...[
-                        _TicketCutoutDivider(
-                          bgColor: vc.scaffoldBg,
-                          surfaceColor: vc.surface,
-                        ),
-                        ProductBrandSection(brandId: product.brandId!),
-                      ],
-
-                      // Just enough clearance so content never touches the
-                      // rounded bottom corners of the card.
-                      SizedBox(height: 10.h),
-                    ],
-                  ),
-                ),
-              ),
-
-              // ══════════════════════════════════════════════════════════════
-              // PRODUCT DETAILS — own rounded card, outside ticket
-              // ══════════════════════════════════════════════════════════════
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: cardMargin,
-                  decoration: _cardDecoration(context),
-                  // ClipRRect safe here — no cutout notches, shadow is on parent
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(_kCardRadius.r),
+                // ══════════════════════════════════════════════════════════════
+                // TICKET CARD
+                // • Shadow lives on the outer Container's BoxDecoration
+                // • NO ClipRRect here — ClipRRect eats the box-shadow AND clips
+                //   the _TicketCutoutDivider semicircle notches
+                // • Children that must be clipped (e.g. ProductVariantSelector)
+                //   should do their own internal clipping
+                // • Bottom radius: BorderRadius.circular gives all 4 corners
+                // ══════════════════════════════════════════════════════════════
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: cardMargin,
+                    decoration: _cardDecoration(context),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => setState(
-                              () => _detailsExpanded = !_detailsExpanded),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 14.h),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Product Details',
+                        // ── Name & Price ───────────────────────────────────────
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.name ?? 'Product Name',
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w800,
+                                  color: vc.onSurface,
+                                  height: 1.3,
+                                ),
+                              ),
+                              SizedBox(height: 3.h),
+                              Text(
+                                '${product.unitValue?.toInt()} ${product.unit}',
+                                style: TextStyle(
+                                  fontSize: 11.5.sp,
+                                  color: vc.onSurfaceMuted,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+
+                              // Price row
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'Rs. ${price.toInt()}',
                                     style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w700,
+                                      fontSize: 19.sp,
+                                      fontWeight: FontWeight.bold,
                                       color: vc.onSurface,
                                     ),
                                   ),
-                                ),
-                                AnimatedRotation(
-                                  turns: _detailsExpanded ? 0.5 : 0,
-                                  duration: const Duration(milliseconds: 250),
-                                  child: Icon(
-                                    Icons.keyboard_arrow_down_rounded,
+                                  if (hasDiscount) ...[
+                                    SizedBox(width: 8.w),
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 2.h),
+                                      child: Text(
+                                        'MRP Rs.${mrp.toInt()}',
+                                        style: TextStyle(
+                                          fontSize: 11.5.sp,
+                                          color: vc.onSurfaceMuted,
+                                          fontWeight: FontWeight.w500,
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8.w, vertical: 4.h),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.primary
+                                            .withValues(alpha: 0.12),
+                                        borderRadius:
+                                            BorderRadius.circular(6.r),
+                                      ),
+                                      child: Text(
+                                        'Save Rs.${(mrp - price).toInt()}',
+                                        style: TextStyle(
+                                          color: AppColor.primary,
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              SizedBox(height: 4.h),
+                              if (isOOS)
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w, vertical: 3.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.shade50,
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    border:
+                                        Border.all(color: Colors.red.shade200),
+                                  ),
+                                  child: Text(
+                                    'Out of Stock',
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red.shade600,
+                                    ),
+                                  ),
+                                )
+                              else
+                                Text(
+                                  'Inclusive of all taxes',
+                                  style: TextStyle(
+                                    fontSize: 8.sp,
                                     color: vc.onSurfaceMuted,
-                                    size: 20.sp,
+                                    fontStyle: FontStyle.italic,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        AnimatedCrossFade(
-                          duration: const Duration(milliseconds: 250),
-                          crossFadeState: _detailsExpanded
-                              ? CrossFadeState.showFirst
-                              : CrossFadeState.showSecond,
-                          firstChild: Column(
-                            children: [
-                              Divider(
-                                  height: 1, thickness: 1, color: vc.divider),
-                              ProductDetailsTable(
-                                  product: product, hideHeader: true),
-                              SizedBox(height: 8.h),
                             ],
                           ),
-                          secondChild: const SizedBox(width: double.infinity),
                         ),
+
+                        // ── Variant Selector ───────────────────────────────────
+                        ProductVariantSelector(
+                          baseProduct: widget.product,
+                          selected: _currentProduct,
+                          onVariantChanged: (v) =>
+                              setState(() => _currentProduct = v),
+                        ),
+
+                        // ── Brand + Ticket Cutout ──────────────────────────────
+                        if (product.brandId != null) ...[
+                          _TicketCutoutDivider(
+                            bgColor: vc.scaffoldBg,
+                            surfaceColor: vc.surface,
+                          ),
+                          ProductBrandSection(brandId: product.brandId!),
+                        ],
+
+                        // Just enough clearance so content never touches the
+                        // rounded bottom corners of the card.
+                        SizedBox(height: 10.h),
                       ],
                     ),
                   ),
                 ),
-              ),
 
-              // ══════════════════════════════════════════════════════════════
-              // SIMILAR PRODUCTS — own rounded card
-              // ══════════════════════════════════════════════════════════════
-              if (product.categoryIds?.isNotEmpty == true)
-                ref
-                    .watch(similarProductsProvider(product.categoryIds!.first))
-                    .when(
-                      data: (products) {
-                        final filtered =
-                            products.where((p) => p.id != product.id).toList();
-                        if (filtered.isEmpty) {
-                          return const SliverToBoxAdapter(
-                              child: SizedBox.shrink());
-                        }
-                        return SliverToBoxAdapter(
+                // ══════════════════════════════════════════════════════════════
+                // PRODUCT DETAILS — own rounded card, outside ticket
+                // ══════════════════════════════════════════════════════════════
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: cardMargin,
+                    decoration: _cardDecoration(context),
+                    // ClipRRect safe here — no cutout notches, shadow is on parent
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(_kCardRadius.r),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => setState(
+                                () => _detailsExpanded = !_detailsExpanded),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 12.h),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Product Details',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: vc.onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                  AnimatedRotation(
+                                    turns: _detailsExpanded ? 0.5 : 0,
+                                    duration: const Duration(milliseconds: 250),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: vc.onSurfaceMuted,
+                                      size: 20.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          AnimatedCrossFade(
+                            duration: const Duration(milliseconds: 250),
+                            crossFadeState: _detailsExpanded
+                                ? CrossFadeState.showFirst
+                                : CrossFadeState.showSecond,
+                            firstChild: Column(
+                              children: [
+                                Divider(
+                                    height: 1, thickness: 1, color: vc.divider),
+                                ProductDetailsTable(
+                                    product: product, hideHeader: true),
+                                SizedBox(height: 8.h),
+                              ],
+                            ),
+                            secondChild: const SizedBox(width: double.infinity),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ══════════════════════════════════════════════════════════════
+                // SIMILAR PRODUCTS — own rounded card
+                // ══════════════════════════════════════════════════════════════
+                if (product.categoryIds?.isNotEmpty == true)
+                  ref
+                      .watch(
+                          similarProductsProvider(product.categoryIds!.first))
+                      .when(
+                        data: (products) {
+                          final filtered = products
+                              .where((p) => p.id != product.id)
+                              .toList();
+                          if (filtered.isEmpty) {
+                            return const SliverToBoxAdapter(
+                                child: SizedBox.shrink());
+                          }
+                          return SliverToBoxAdapter(
+                            child: Container(
+                              margin: cardMargin,
+                              decoration: _cardDecoration(context),
+                              child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.circular(_kCardRadius.r),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 16.h),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 3.w,
+                                            height: 16.h,
+                                            decoration: BoxDecoration(
+                                              color: AppColor.primary,
+                                              borderRadius:
+                                                  BorderRadius.circular(2.r),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          Text(
+                                            'Similar Products',
+                                            style: TextStyle(
+                                              fontSize: 13.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: vc.onSurface,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 12.h),
+                                    SizedBox(
+                                      height: ProductItemCard.preferredHeight,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.w),
+                                        itemCount: filtered.length,
+                                        itemBuilder: (context, index) {
+                                          final p = filtered[index];
+                                          return ProductItemCard(
+                                            product: p,
+                                            enableHero: true,
+                                            onTap: () => context.pushNamed(
+                                              LVRoute.productDetailScreen.route,
+                                              extra: ProductDetailNavArgs(
+                                                products: filtered,
+                                                initialIndex: index,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        loading: () => SliverToBoxAdapter(
                           child: Container(
                             margin: cardMargin,
                             decoration: _cardDecoration(context),
@@ -642,100 +900,34 @@ class _ProductDetailPageState extends ConsumerState<_ProductDetailPage> {
                                         EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Row(
                                       children: [
-                                        Container(
-                                          width: 3.w,
-                                          height: 16.h,
-                                          decoration: BoxDecoration(
-                                            color: AppColor.primary,
-                                            borderRadius:
-                                                BorderRadius.circular(2.r),
-                                          ),
-                                        ),
+                                        const CustomShimmer.rectangular(
+                                            width: 3, height: 16),
                                         SizedBox(width: 8.w),
-                                        Text(
-                                          'Similar Products',
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            fontWeight: FontWeight.w700,
-                                            color: vc.onSurface,
-                                          ),
-                                        ),
+                                        const CustomShimmer.rectangular(
+                                            width: 120, height: 14),
                                       ],
                                     ),
                                   ),
                                   SizedBox(height: 12.h),
-                                  SizedBox(
-                                    height: ProductItemCard.preferredHeight,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.w),
-                                      itemCount: filtered.length,
-                                      itemBuilder: (context, index) {
-                                        final p = filtered[index];
-                                        return ProductItemCard(
-                                          product: p,
-                                          enableHero: true,
-                                          onTap: () => context.pushNamed(
-                                            LVRoute.productDetailScreen.route,
-                                            extra: ProductDetailNavArgs(
-                                              products: filtered,
-                                              initialIndex: index,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                  const ProductHorizontalListShimmer(
+                                      itemCount: 4),
                                   SizedBox(height: 16.h),
                                 ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                      loading: () => SliverToBoxAdapter(
-                        child: Container(
-                          margin: cardMargin,
-                          decoration: _cardDecoration(context),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(_kCardRadius.r),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 16.h),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
-                                  child: Row(
-                                    children: [
-                                      const CustomShimmer.rectangular(
-                                          width: 3, height: 16),
-                                      SizedBox(width: 8.w),
-                                      const CustomShimmer.rectangular(
-                                          width: 120, height: 14),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 12.h),
-                                const ProductHorizontalListShimmer(
-                                    itemCount: 4),
-                                SizedBox(height: 16.h),
-                              ],
-                            ),
-                          ),
                         ),
-                      ),
-                      error: (e, s) =>
-                          const SliverToBoxAdapter(child: SizedBox.shrink()),
-                    )
-              else
-                const SliverToBoxAdapter(child: SizedBox.shrink()),
+                        error: (e, s) =>
+                            const SliverToBoxAdapter(child: SizedBox.shrink()),
+                      )
+                else
+                  const SliverToBoxAdapter(child: SizedBox.shrink()),
 
-              SliverToBoxAdapter(
-                child: SizedBox(height: totalItems > 0 ? 120.h : 24.h),
-              ),
-            ],
+                SliverToBoxAdapter(
+                  child: SizedBox(height: totalItems > 0 ? 120.h : 24.h),
+                ),
+              ],
+            ),
           ),
 
           // ── Floating View Cart badge — always in tree, reacts instantly ──
