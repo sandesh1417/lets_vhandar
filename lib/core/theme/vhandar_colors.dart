@@ -64,20 +64,20 @@ class VhandarColors extends ThemeExtension<VhandarColors> {
   // Premium LAYERED dark palette. The whole point is visible separation between
   // tiers — each surface step is distinctly lighter than the one below it, so
   // depth comes from lightness (elevation-by-lightness), not drop shadows:
-  //   scaffoldBg #0E1013  →  surface #181B1F  →  surfaceElevated #1F2329
-  //   →  surfaceVariant/input #22272D.
-  // Background is a cool near-black (never pure #000), text is off-white (never
+  //   scaffoldBg #1A1D21  →  surface #25292E  →  surfaceElevated #2D3239
+  //   →  surfaceVariant/input #2F353C.
+  // Background is a soft charcoal (never pure #000), text is off-white (never
   // pure #FFF), and hairlines are kept very subtle.
   static const dark = VhandarColors(
     // L1 — cards, product tiles (clearly above the scaffold).
-    surface: Color(0xFF181B1F),
+    surface: Color(0xFF25292E),
     // L3 — fields, chips, quantity steppers, selected states (the lightest
     // resting surface; "surfaceInput" in the spec).
-    surfaceVariant: Color(0xFF22272D),
+    surfaceVariant: Color(0xFF2F353C),
     // L2 — bottom sheets, modals, raised footers.
-    surfaceElevated: Color(0xFF1F2329),
-    // L0 — darkest base, cool neutral, NOT pure black.
-    scaffoldBg: Color(0xFF0E1013),
+    surfaceElevated: Color(0xFF2D3239),
+    // L0 — darkest base, soft charcoal, NOT pure black.
+    scaffoldBg: Color(0xFF1A1D21),
     // Off-white primary text (high emphasis).
     onSurface: Color(0xFFF2F4F6),
     // Muted secondary — subtitles, weight, delivery time.
@@ -87,16 +87,16 @@ class VhandarColors extends ThemeExtension<VhandarColors> {
     // Struck-through MRP.
     strikethrough: Color(0xFF7E858E),
     // Subtle hairline.
-    divider: Color(0xFF2A2F36),
+    divider: Color(0xFF3A4048),
 
-    navBarBg: Color(0xE01F2329),
+    navBarBg: Color(0xE02D3239),
     navBarBorder: Color(0x14FFFFFF),
 
-    inputFill: Color(0xFF22272D),
-    inputBorder: Color(0xFF2A2F36),
+    inputFill: Color(0xFF2F353C),
+    inputBorder: Color(0xFF3A4048),
     inputBorderFocused: Color(0xFF43B85C),
-    shimmerBase: Color(0xFF1F2329),
-    shimmerHighlight: Color(0xFF2A2F36),
+    shimmerBase: Color(0xFF2D3239),
+    shimmerHighlight: Color(0xFF3A4048),
   );
 
   @override
