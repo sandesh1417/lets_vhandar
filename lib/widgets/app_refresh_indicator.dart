@@ -96,14 +96,17 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
     // popping the refresh badge while the user is just scrolling normally.
     if (n.depth != 0) return false;
 
-    // Only count frames from an active finger drag. Without this, a plain
-    // fast scroll-down from the top still reports a frame or two at
-    // extentBefore == 0 while the fling settles (dragDetails == null), which
-    // nudged `_pull` above 0 and flashed the badge even though no one
-    // pulled anything — same fix Flutter's own RefreshIndicator uses.
+    // Count this drag as a pull ONLY once the content is actually pulled PAST
+    // the top edge (true overscroll: pixels < minScrollExtent), not merely
+    // resting at it. Swiping down to scroll back to the top is the same finger
+    // motion as a pull, so the old `extentBefore == 0` test fired the moment you
+    // reached the top while still swiping down — flashing the badge for no
+    // reason. On bouncing physics (iOS) a real pull goes negative and arrives
+    // here; on clamping physics (Android) it arrives as an OverscrollNotification
+    // below. `dragDetails != null` keeps ballistic bounce-backs (no finger) out.
     if (n is ScrollUpdateNotification &&
         n.dragDetails != null &&
-        n.metrics.extentBefore == 0) {
+        n.metrics.pixels < n.metrics.minScrollExtent) {
       final drag = -(n.scrollDelta ?? 0);
       if (drag > 0) {
         setState(() {
