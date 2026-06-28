@@ -92,7 +92,11 @@ class SimilarProductsSection extends ConsumerWidget {
                             final p = filtered[index];
                             return ProductItemCard(
                               product: p,
-                              enableHero: isActive,
+                              // Disable Hero here so that ONLY the tapped product
+                              // from the previous screen animates to the main image.
+                              // Otherwise, matching similar products will also fly
+                              // across the screen at the same time.
+                              enableHero: false,
                               onTap: () => context.pushNamed(
                                 LVRoute.productDetailScreen.route,
                                 extra: ProductDetailNavArgs(
