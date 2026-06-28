@@ -153,9 +153,9 @@ class BillDetailsCard extends ConsumerWidget {
                           Text('Rs. ${totalMrp.toInt()}',
                               style: TextStyle(
                                   fontSize: 12.sp,
-                                  color: vc.onSurfaceMuted,
+                                  color: vc.strikethrough,
                                   decoration: TextDecoration.lineThrough,
-                                  decorationColor: vc.onSurfaceMuted)),
+                                  decorationColor: vc.strikethrough)),
                         Text('Rs. ${totalPrice.toInt()}',
                             style: TextStyle(
                                 fontSize: 13.sp, fontWeight: FontWeight.bold)),

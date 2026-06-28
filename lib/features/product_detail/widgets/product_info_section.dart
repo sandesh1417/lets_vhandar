@@ -91,7 +91,7 @@ class ProductInfoSection extends StatelessWidget {
                             'MRP Rs.${mrp.toInt()}',
                             style: TextStyle(
                               fontSize: 11.5.sp,
-                              color: vc.onSurfaceMuted,
+                              color: vc.strikethrough,
                               fontWeight: FontWeight.w500,
                               decoration: TextDecoration.lineThrough,
                             ),

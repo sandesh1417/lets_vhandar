@@ -177,11 +177,11 @@ class ProductVariantSelector extends ConsumerWidget {
                                                   style: TextStyle(
                                                     fontSize: 9.sp,
                                                     color: context
-                                                        .vColors.onSurfaceMuted,
+                                                        .vColors.strikethrough,
                                                     decoration: TextDecoration
                                                         .lineThrough,
                                                     decorationColor: context
-                                                        .vColors.onSurfaceMuted,
+                                                        .vColors.strikethrough,
                                                   ),
                                                 ),
                                                 SizedBox(height: 3.h),

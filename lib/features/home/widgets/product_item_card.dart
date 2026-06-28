@@ -286,7 +286,7 @@ class ProductItemCard extends ConsumerStatefulWidget {
                                                               style: TextStyle(
                                                                 fontSize: 12.sp,
                                                                 color: vc
-                                                                    .onSurfaceMuted,
+                                                                    .strikethrough,
                                                                 decoration:
                                                                     TextDecoration
                                                                         .lineThrough,
@@ -501,8 +501,9 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                   height: 105.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color:
-                        context.isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                    // Dark surface behind transparent product PNGs (no white
+                    // flash); white in light mode.
+                    color: context.isDark ? vc.surfaceVariant : Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6.r),
                       topRight: Radius.circular(6.r),
@@ -721,10 +722,10 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                             Text('MRP ${mrp.toInt()}',
                                 style: TextStyle(
                                     fontSize: 9.sp,
-                                    color: vc.onSurfaceMuted,
+                                    color: vc.strikethrough,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
-                                    decorationColor: vc.onSurfaceMuted,
+                                    decorationColor: vc.strikethrough,
                                     decorationThickness: 2.0)),
                         ],
                       ),

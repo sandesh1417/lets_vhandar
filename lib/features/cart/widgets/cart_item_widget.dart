@@ -106,8 +106,8 @@ class CartItemWidget extends ConsumerWidget {
                           'Rs. ${product.pricePerUnit?.toInt()}',
                           style: TextStyle(
                             fontSize: 11.sp,
-                            color: vc.onSurfaceMuted,
-                            decorationColor: vc.onSurfaceMuted,
+                            color: vc.strikethrough,
+                            decorationColor: vc.strikethrough,
                             decoration: TextDecoration.lineThrough,
                           ),
                         ),

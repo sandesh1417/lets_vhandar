@@ -101,7 +101,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                               'MRP Rs.${mrp.toInt()}',
                               style: TextStyle(
                                 fontSize: 10.sp,
-                                color: vc.onSurfaceMuted,
+                                color: vc.strikethrough,
                                 decoration: TextDecoration.lineThrough,
                               ),
                             ),

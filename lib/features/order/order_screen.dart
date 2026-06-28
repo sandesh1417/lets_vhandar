@@ -184,7 +184,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                 ? ColorScheme.dark(
                     primary: AppColor.primary,
                     onPrimary: Colors.white,
-                    surface: const Color(0xFF2A2A2A),
+                    surface: VhandarColors.dark.surfaceElevated,
                     onSurface: Colors.white,
                   )
                 : ColorScheme.light(

@@ -219,7 +219,7 @@ class _NavTuning {
   // Base color the translucent fill is made of. Light mode = white; nudge
   // toward a tint (e.g. a brand colour) if you want the bar to read coloured.
   static const Color fillColorLight = Colors.white;
-  static const Color fillColorDark = Color(0xFF1C1C1E);
+  static const Color fillColorDark = Color(0xFF1F2329);
 
   // Fill opacity. LOWER = more of the page behind shows through (more glassy /
   // background more visible). HIGHER = more solid. Kept low so content reads

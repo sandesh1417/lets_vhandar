@@ -475,7 +475,7 @@ class _ListCard extends StatelessWidget {
     }
 
     if (previews.length == 1) {
-      return _thumb(previews[0].imageUrl, 56.w, 12.r);
+      return _thumb(context, previews[0].imageUrl, 56.w, 12.r);
     }
 
     final rows = [
@@ -497,7 +497,8 @@ class _ListCard extends StatelessWidget {
                         .map((p) => Expanded(
                               child: Padding(
                                 padding: EdgeInsets.all(1.w),
-                                child: _thumb(p.imageUrl, double.infinity, 6.r),
+                                child:
+                                    _thumb(context, p.imageUrl, double.infinity, 6.r),
                               ),
                             ))
                         .toList(),
@@ -508,13 +509,16 @@ class _ListCard extends StatelessWidget {
     );
   }
 
-  Widget _thumb(String? url, double size, double radius) {
+  Widget _thumb(BuildContext context, String? url, double size, double radius) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: Container(
         width: size,
         height: size,
-        color: const Color(0xFFF5F5F5),
+        // Dark surface behind transparent product PNGs; light grey in light mode.
+        color: context.isDark
+            ? context.vColors.surfaceVariant
+            : const Color(0xFFF5F5F5),
         child: url != null
             ? CustomImageViewer(
                 path: url, fit: BoxFit.contain, borderRadius: radius)
