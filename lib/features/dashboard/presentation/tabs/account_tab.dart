@@ -8,7 +8,6 @@ import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/features/auth/providers/user_provider.dart';
-import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/dashboard/providers/dashboard_provider.dart';
 import 'package:lets_vhandar/widgets/custom_dialog.dart';
 import 'package:share_plus/share_plus.dart';
@@ -341,7 +340,6 @@ class _AccountTabState extends ConsumerState<AccountTab> {
       confirmLabel: 'Yes, Logout',
       showShadow: false,
       onConfirm: () async {
-        ref.read(cartProvider.notifier).clearCart();
         ref.invalidate(userProfileProvider);
         ref.invalidate(dashboardIndexProvider);
         ref.invalidate(visitedTabsProvider);
