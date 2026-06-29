@@ -55,6 +55,9 @@ class CustomDialog {
 
     /// Called when the user taps cancel (dialog dismisses automatically)
     VoidCallback? onCancel,
+
+    /// Whether to show the button's drop shadow
+    bool showShadow = true,
   }) {
     final effectiveIconColor = iconColor ?? AppColor.primary;
     final effectiveIconBg =
@@ -123,7 +126,9 @@ class CustomDialog {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  shadowColor: effectiveIconColor.withValues(alpha: 0.3),
+                  shadowColor: showShadow
+                      ? effectiveIconColor.withValues(alpha: 0.3)
+                      : null,
                   textColor: Colors.white,
                   onTap: () async {
                     Navigator.pop(dialogContext);

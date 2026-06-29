@@ -339,6 +339,7 @@ class _AccountTabState extends ConsumerState<AccountTab> {
       title: 'Logging Out',
       message: 'Are you sure you want to log out of your account?',
       confirmLabel: 'Yes, Logout',
+      showShadow: false,
       onConfirm: () async {
         ref.read(cartProvider.notifier).clearCart();
         ref.invalidate(userProfileProvider);
