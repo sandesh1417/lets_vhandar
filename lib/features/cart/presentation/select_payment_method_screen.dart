@@ -82,7 +82,6 @@ class _SelectPaymentMethodScreenState
   @override
   void initState() {
     super.initState();
-    // Auto-select COD since it is the only available payment method
     _selectedMethod = 'cod';
   }
 
@@ -123,6 +122,7 @@ class _SelectPaymentMethodScreenState
     final vc = context.vColors;
     final isBusiness = ref.watch(isBusinessUserProvider);
     final selectedSlotId = ref.watch(selectedDeliverySlotProvider);
+    final billSummary = ref.watch(cartBillSummaryProvider);
     final slots = ref.watch(timeSlotProvider).valueOrNull ?? [];
     final selectedSlotObj =
         slots.where((s) => s.id == selectedSlotId).firstOrNull;
@@ -278,7 +278,6 @@ class _SelectPaymentMethodScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // ── Top: icon + type + name + Change ──────
                               Row(
                                 children: [
                                   Container(
@@ -329,7 +328,6 @@ class _SelectPaymentMethodScreenState
                               SizedBox(height: 12.h),
                               Divider(height: 1, color: vc.divider),
                               SizedBox(height: 12.h),
-                              // ── Address row ───────────────────────────
                               _AddressRow(
                                 icon: Icons.location_on_outlined,
                                 text: [
@@ -347,7 +345,6 @@ class _SelectPaymentMethodScreenState
                                     .where((e) => e != null && e.isNotEmpty)
                                     .join(', '),
                               ),
-                              // ── Phone row ─────────────────────────────
                               if (selectedAddress.phoneNumber != null &&
                                   selectedAddress.phoneNumber!.isNotEmpty) ...[
                                 SizedBox(height: 8.h),
@@ -364,13 +361,10 @@ class _SelectPaymentMethodScreenState
                     ],
 
                     // ─── My Cart (Items Summary) ───────────────────────────────────
-                    Text(
-                      'My Cart (${cartItems.length} Items)',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: vc.onSurface,
-                      ),
+                    _DeliveryCardHeader(
+                      label:
+                          'My Cart (${cartItems.length} ${cartItems.length == 1 ? 'Item' : 'Items'})',
+                      icon: Icons.shopping_bag_outlined,
                     ),
                     SizedBox(height: 10.h),
                     Container(
@@ -451,160 +445,54 @@ class _SelectPaymentMethodScreenState
                     SizedBox(height: 20.h),
 
                     // ─── Select Payment Method ─────────────────────────────────────
-                    Text(
-                      'Select Payment Method',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: vc.onSurface,
-                      ),
+                    const _DeliveryCardHeader(
+                      label: 'Payment Method',
+                      icon: Icons.payment_rounded,
                     ),
                     SizedBox(height: 10.h),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: vc.surface,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: InkWell(
-                        onTap: () => setState(() {
-                          _selectedMethod =
-                              _selectedMethod == 'cod' ? null : 'cod';
-                          _showPaymentHint = false;
-                        }),
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 16.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 20.w,
-                                height: 20.w,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _selectedMethod == 'cod'
-                                        ? AppColor.primary
-                                        : Colors.grey.shade400,
-                                    width: 2.w,
-                                  ),
-                                ),
-                                child: _selectedMethod == 'cod'
-                                    ? Center(
-                                        child: Container(
-                                          width: 10.w,
-                                          height: 10.w,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: AppColor.primary,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              SizedBox(width: 14.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Cash On Delivery',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: vc.onSurface,
-                                      ),
-                                    ),
-                                    SizedBox(height: 2.h),
-                                    Text(
-                                      'Pay with cash/card/QR code upon delivery',
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: AppColor.textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SvgPicture.asset(
-                                'assets/images/cash on delivery.svg',
-                                width: 56.w,
-                                height: 56.w,
-                              ),
-                            ],
+                    _PaymentMethodCard(
+                      selected: _selectedMethod == 'cod',
+                      onTap: () => setState(() {
+                        _selectedMethod = 'cod';
+                        _showPaymentHint = false;
+                      }),
+                    ),
+                    SizedBox(height: 12.h),
+                    // Security note
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.lock_outline_rounded,
+                            size: 13.sp, color: vc.onSurfaceMuted),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'All transactions are safe & encrypted',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: vc.onSurfaceMuted,
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(height: 80.h),
+                    SizedBox(height: 180.h),
                   ],
                 ),
               ),
             ),
       bottomNavigationBar: cartItems.isEmpty
           ? null
-          : Container(
-              padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 0),
-              decoration: BoxDecoration(
-                color: vc.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_showPaymentHint && _selectedMethod == null)
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 8.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.info_outline,
-                                size: 14.sp, color: Colors.orange.shade600),
-                            SizedBox(width: 6.w),
-                            Text(
-                              'Please select a payment method to continue',
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.orange.shade700,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48.h,
-                      child: CustomElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                if (_selectedMethod == null) {
-                                  setState(() => _showPaymentHint = true);
-                                  return;
-                                }
-                                _placeOrder(context);
-                              },
-                        isLoading: isLoading,
-                        loaderSize: 20.w,
-                        backgroundColor: _selectedMethod == null
-                            ? Colors.grey.shade300
-                            : AppColor.primary,
-                        text: 'Place Order',
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                  ],
-                ),
-              ),
+          : _StickyCheckoutBar(
+              grandTotal: billSummary.grandTotal,
+              isLoading: isLoading,
+              selectedMethod: _selectedMethod,
+              showHint: _showPaymentHint,
+              onPlaceOrder: () {
+                if (_selectedMethod == null) {
+                  setState(() => _showPaymentHint = true);
+                  return;
+                }
+                _placeOrder(context);
+              },
             ),
     );
   }
@@ -655,7 +543,6 @@ class _SelectPaymentMethodScreenState
       };
     }).toList();
 
-    // Business orders use business location from profile; personal orders use selected address
     final bd = loginState.user?.businessDetail;
     final location = isBusiness
         ? {
@@ -709,10 +596,6 @@ class _SelectPaymentMethodScreenState
       ref.read(cartProvider.notifier).clearCart();
       ref.read(appliedCouponProvider.notifier).removeCoupon();
 
-      // Switch the underlying screen straight to the dashboard's orders tab
-      // FIRST, then cover it with the celebration as an overlay. This way the
-      // emptied cart / payment screens are never revealed — dismissing the
-      // celebration drops you directly onto the dashboard.
       final overlay = Navigator.of(context, rootNavigator: true).overlay;
       ref.read(visitedTabsProvider.notifier).update((s) => {...s, 2});
       ref.read(dashboardIndexProvider.notifier).state = 2;
@@ -721,7 +604,6 @@ class _SelectPaymentMethodScreenState
       if (overlay != null) {
         late OverlayEntry entry;
         entry = OverlayEntry(
-          // Branded celebration: checkmark + confetti + status stepper.
           builder: (_) => OrderSuccessScreen(
             onContinue: () => entry.remove(),
           ),
@@ -734,6 +616,260 @@ class _SelectPaymentMethodScreenState
     }
   }
 }
+
+// ─── Sticky checkout bar ────────────────────────────────────────────────────
+
+class _StickyCheckoutBar extends StatelessWidget {
+  final double grandTotal;
+  final bool isLoading;
+  final String? selectedMethod;
+  final bool showHint;
+  final VoidCallback onPlaceOrder;
+
+  const _StickyCheckoutBar({
+    required this.grandTotal,
+    required this.isLoading,
+    required this.selectedMethod,
+    required this.showHint,
+    required this.onPlaceOrder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return Container(
+      decoration: BoxDecoration(
+        color: vc.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Grand total row
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 14.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Grand Total',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color: vc.onSurface,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'Incl. all taxes & charges',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: vc.onSurfaceMuted,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Rs. ${grandTotal.toInt()}',
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColor.primary,
+                      letterSpacing: -0.5,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, thickness: 1, color: vc.divider),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (showHint && selectedMethod == null)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.info_outline,
+                              size: 14.sp, color: Colors.orange.shade600),
+                          SizedBox(width: 6.w),
+                          Text(
+                            'Please select a payment method to continue',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.orange.shade700,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50.h,
+                    child: CustomElevatedButton(
+                      onPressed: isLoading ? null : onPlaceOrder,
+                      isLoading: isLoading,
+                      loaderSize: 20.w,
+                      backgroundColor: selectedMethod == null
+                          ? Colors.grey.shade300
+                          : AppColor.primary,
+                      text: 'Place Order',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Payment method tile ────────────────────────────────────────────────────
+
+class _PaymentMethodCard extends StatelessWidget {
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PaymentMethodCard({required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        color: vc.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: selected ? AppColor.primary : vc.divider,
+          width: selected ? 1.5 : 1,
+        ),
+        boxShadow: selected
+            ? [
+                BoxShadow(
+                  color: AppColor.primary.withValues(alpha: 0.10),
+                  blurRadius: 12,
+                  offset: const Offset(0, 3),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14.r),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          child: Row(
+            children: [
+              // Check indicator
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 22.w,
+                height: 22.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected ? AppColor.primary : Colors.transparent,
+                  border: Border.all(
+                    color: selected ? AppColor.primary : Colors.grey.shade400,
+                    width: 2,
+                  ),
+                ),
+                child: selected
+                    ? Icon(Icons.check_rounded,
+                        size: 13.sp, color: Colors.white)
+                    : null,
+              ),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Cash On Delivery',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: vc.onSurface,
+                          ),
+                        ),
+                        if (selected) ...[
+                          SizedBox(width: 8.w),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 2.h),
+                            decoration: BoxDecoration(
+                              color: AppColor.primary.withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            child: Text(
+                              'Selected',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColor.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    SizedBox(height: 3.h),
+                    Text(
+                      'Pay with cash/card/QR code upon delivery',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColor.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 12.w),
+              SvgPicture.asset(
+                'assets/images/cash on delivery.svg',
+                width: 52.w,
+                height: 52.w,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shared section header ──────────────────────────────────────────────────
 
 class _DeliveryCardHeader extends StatelessWidget {
   final String label;
@@ -767,6 +903,8 @@ class _DeliveryCardHeader extends StatelessWidget {
     );
   }
 }
+
+// ─── Address row ────────────────────────────────────────────────────────────
 
 class _AddressRow extends StatelessWidget {
   final IconData icon;
