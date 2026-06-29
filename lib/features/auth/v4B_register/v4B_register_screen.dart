@@ -200,26 +200,11 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
     final isLoading = ref.watch(registrationProvider).isLoading;
     final vc = context.vColors;
 
+    final topInset = MediaQuery.paddingOf(context).top;
+
     return CustomScaffoldWrapper(
       backgroundColor: vc.scaffoldBg,
-      appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        backgroundColor: AppColor.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Vhandar For Business',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
-            fontFamily: 'Inter',
-          ),
-        ),
-      ),
+      extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -229,39 +214,70 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Green hero header ───────────────────────────────────────
-              Container(
-                width: double.infinity,
-                color: AppColor.primary,
-                padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 36.h),
-                child: Column(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/V4B_logo.svg',
-                      height: 44.h,
-                      fit: BoxFit.contain,
+              // ── Immersive green hero — single branding element ──────────
+              Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    color: AppColor.primary,
+                    padding:
+                        EdgeInsets.fromLTRB(16.w, topInset + 56.h, 16.w, 36.h),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/V4B_logo.svg',
+                          height: 72.h,
+                          fit: BoxFit.contain,
+                        ),
+                        SizedBox(height: 16.h),
+                        Text(
+                          'Create Business Account',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w800,
+                            fontFamily: 'Inter',
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          'Fill in your details to get started',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      'Create Business Account',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Inter',
-                        color: Colors.white,
+                  ),
+
+                  // Floating back button — no duplicate title
+                  Positioned(
+                    top: topInset + 8.h,
+                    left: 8.w,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 40.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 22.sp,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      'Fill in your details to get started',
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.white.withValues(alpha: 0.85),
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               // ── Light form area (rises over the green hero) ─────────────

@@ -73,7 +73,7 @@ class VhandarForBusinessScreen extends StatelessWidget {
                         Container(
                           width: double.infinity,
                           padding: EdgeInsets.fromLTRB(
-                              24.w, topPadding + 24.h, 24.w, 32.h),
+                              24.w, topPadding + 56.h, 24.w, 32.h),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
