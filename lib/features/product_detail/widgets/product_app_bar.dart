@@ -13,7 +13,8 @@ import 'package:lets_vhandar/widgets/custom_image_viewer.dart';
 /// image at the top, fading into the primary colour with the product's
 /// thumbnail/name/price as you scroll down. The fade is purely visual and driven
 /// off [scrollOffset], so it lives with the AppBar UI.
-class ProductDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
+class ProductDetailAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const ProductDetailAppBar({
     super.key,
     required this.scrollOffset,
@@ -38,108 +39,126 @@ class ProductDetailAppBar extends StatelessWidget implements PreferredSizeWidget
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
     return ValueListenableBuilder<double>(
       valueListenable: scrollOffset,
       builder: (context, offset, _) {
+        final m = (offset / 120.h).clamp(0.0, 1.0);
         final ratio = ((offset - 50.h) / (150.h - 50.h)).clamp(0.0, 1.0);
         final curved = Curves.easeInOut.transform(ratio);
-        return AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          backgroundColor: AppColor.primary.withValues(alpha: curved),
+
+        final currentTopPadding = 10.h + m * topInset;
+
+        return Material(
+          color: AppColor.primary.withValues(alpha: curved),
           elevation: curved * 2,
           shadowColor: Colors.black.withValues(alpha: 0.06),
-          automaticallyImplyLeading: false,
-          // Nudged toward the bottom of the toolbar (not dead-center) so it sits
-          // lower, clear of the status bar — with the hero image full-bleed
-          // behind it, a button glued to the very top edge made the Hero flight
-          // read as a boxy resize instead of a photo sliding into place.
-          leading: Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 6.h),
-              child: _GlassButton(
-                icon: Icons.keyboard_arrow_down_rounded,
-                isGlass: ratio < 0.5,
-                size: 42,
-                iconSize: 26,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.pop();
-                },
-              ),
-            ),
-          ),
-          titleSpacing: 0,
-          title: Opacity(
-            opacity: curved,
-            child: Transform.translate(
-              offset: Offset(0, (1 - curved) * 12.h),
-              child: Row(
-                children: [
-                  if (product.images?.isNotEmpty == true)
-                    Container(
-                      width: 32.w,
-                      height: 32.w,
-                      margin: EdgeInsets.only(right: 8.w),
-                      child: CustomImageViewer(
-                        path: product.images!.first.url,
-                        borderRadius: 6.r,
-                        fit: BoxFit.cover,
-                      ),
+          child: Padding(
+            padding: EdgeInsets.only(top: currentTopPadding),
+            child: SizedBox(
+              height: preferredSize.height,
+              child: AppBar(
+                primary: false,
+                systemOverlayStyle: SystemUiOverlayStyle.light,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                automaticallyImplyLeading: false,
+                // Nudged toward the bottom of the toolbar (not dead-center) so it sits
+                // lower, clear of the status bar — with the hero image full-bleed
+                // behind it, a button glued to the very top edge made the Hero flight
+                // read as a boxy resize instead of a photo sliding into place.
+                leading: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 6.h),
+                    child: _GlassButton(
+                      icon: Icons.keyboard_arrow_down_rounded,
+                      isGlass: ratio < 0.5,
+                      size: 42,
+                      iconSize: 26,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        context.pop();
+                      },
                     ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                ),
+                titleSpacing: 0,
+                title: Opacity(
+                  opacity: curved,
+                  child: Transform.translate(
+                    offset: Offset(0, (1 - curved) * 12.h),
+                    child: Row(
                       children: [
-                        Text(
-                          product.name ?? '',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 1.h),
-                        Text(
-                          'Rs. ${price.toInt()}',
-                          style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.85),
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.bold),
+                        if (product.images?.isNotEmpty == true)
+                          Container(
+                            width: 32.w,
+                            height: 32.w,
+                            margin: EdgeInsets.only(right: 8.w),
+                            child: CustomImageViewer(
+                              path: product.images!.first.url,
+                              borderRadius: 6.r,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                product.name ?? '',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 1.h),
+                              Text(
+                                'Rs. ${price.toInt()}',
+                                style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 12.w, bottom: 6.h),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _GlassButton(
+                            svgAsset: 'assets/icons/search-active.svg',
+                            isGlass: ratio < 0.5,
+                            onTap: () =>
+                                context.push(LVRoute.searchScreen.route),
+                          ),
+                          SizedBox(width: 8.w),
+                          _GlassButton(
+                            icon: Icons.ios_share_rounded,
+                            isGlass: ratio < 0.5,
+                            onTap: onShare,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          actions: [
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(right: 12.w, bottom: 6.h),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _GlassButton(
-                      svgAsset: 'assets/icons/search-active.svg',
-                      isGlass: ratio < 0.5,
-                      onTap: () => context.push(LVRoute.searchScreen.route),
-                    ),
-                    SizedBox(width: 8.w),
-                    _GlassButton(
-                      icon: Icons.ios_share_rounded,
-                      isGlass: ratio < 0.5,
-                      onTap: onShare,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         );
       },
     );

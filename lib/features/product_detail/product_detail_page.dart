@@ -158,12 +158,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
       backgroundColor: context.vColors.scaffoldBg,
       isScrollable: false,
       extendBodyBehindAppBar: true,
-      appBar: ProductDetailAppBar(
-        scrollOffset: _scrollOffset,
-        product: product,
-        price: price,
-        onShare: _shareProduct,
-      ),
+      appBar: null,
       bottomNavigationBar: ProductAddToCartBar(product: product),
       body: Stack(
         children: [
@@ -215,6 +210,19 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
               child: CartFloatingBadge(
                 onTap: () => context.push(LVRoute.cartScreen.route),
               ),
+            ),
+          ),
+
+          // ── Floating Scroll-fade AppBar ──────────────────────────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ProductDetailAppBar(
+              scrollOffset: _scrollOffset,
+              product: product,
+              price: price,
+              onShare: _shareProduct,
             ),
           ),
         ],
