@@ -11,6 +11,7 @@ import 'package:lets_vhandar/features/order/providers/order_provider.dart';
 import 'package:lets_vhandar/features/auth/login/providers/login_provider.dart';
 import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/widgets/animated_counter.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class CartCheckoutBar extends ConsumerWidget {
   const CartCheckoutBar({super.key});
@@ -75,86 +76,60 @@ class CartCheckoutBar extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(
           16.w, 8.h, 16.w, 16.h + MediaQuery.of(context).padding.bottom),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Total amount',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    color: mutedColor,
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total amount',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: mutedColor,
+                  fontFamily: 'Inter',
                 ),
-                SizedBox(height: 2.h),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedCounter(
-                      value: finalPrice,
-                      prefix: 'Rs. ',
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (couponDiscount > 0) ...[
+                    Text(
+                      'Rs. ${priceBeforeCoupon.toStringAsFixed(0)}',
                       style: TextStyle(
-                        fontSize: 19.sp,
-                        fontWeight: FontWeight.w800,
-                        color: AppColor.primary,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: mutedColor,
+                        decoration: TextDecoration.lineThrough,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                    if (couponDiscount > 0) ...[
-                      SizedBox(width: 8.w),
-                      Flexible(
-                        child: Text(
-                          'Rs. ${priceBeforeCoupon.toStringAsFixed(0)}',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w500,
-                            color: mutedColor,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      ),
-                    ],
+                    SizedBox(width: 8.w),
                   ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 12.w),
-          InkWell(
-            onTap: isLoading ? null : onTap,
-            borderRadius: BorderRadius.circular(28.r),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: AppColor.primary,
-                borderRadius: BorderRadius.circular(28.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.primary.withValues(alpha: 0.35),
-                    blurRadius: 14,
-                    offset: const Offset(0, 5),
+                  AnimatedCounter(
+                    value: finalPrice,
+                    prefix: 'Rs. ',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColor.primary,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ],
               ),
-              child: isLoading
-                  ? SizedBox(
-                      width: 18.w,
-                      height: 18.h,
-                      child: const CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : Text(
-                      ctaText,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          SizedBox(
+            width: double.infinity,
+            height: 50.h,
+            child: CustomElevatedButton(
+              onPressed: isLoading ? null : onTap,
+              isLoading: isLoading,
+              loaderSize: 20.w,
+              text: ctaText,
             ),
           ),
         ],
