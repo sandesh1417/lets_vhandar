@@ -106,6 +106,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
     // below. `dragDetails != null` keeps ballistic bounce-backs (no finger) out.
     if (n is ScrollUpdateNotification &&
         n.dragDetails != null &&
+        n.dragDetails!.delta.dy > 0 &&
         n.metrics.pixels < n.metrics.minScrollExtent) {
       final drag = -(n.scrollDelta ?? 0);
       if (drag > 0) {
@@ -115,6 +116,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator>
       }
     } else if (n is OverscrollNotification &&
         n.dragDetails != null &&
+        n.dragDetails!.delta.dy > 0 &&
         n.overscroll < 0) {
       setState(() {
         _pull = (_pull + (-n.overscroll) / _triggerDistance).clamp(0.0, 1.0);
