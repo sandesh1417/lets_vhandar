@@ -339,7 +339,6 @@ class _CartStickyBottom extends ConsumerWidget {
             ),
           ],
           const CartCheckoutBar(),
-          SizedBox(height: 8.h),
         ],
       ),
     );

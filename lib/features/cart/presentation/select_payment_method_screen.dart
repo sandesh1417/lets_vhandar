@@ -640,103 +640,94 @@ class _StickyCheckoutBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: vc.surface,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.10),
-            blurRadius: 20,
-            offset: const Offset(0, -6),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+            16.w, 8.h, 16.w, 16.h + MediaQuery.of(context).padding.bottom),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Grand total row
-            Padding(
-              padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 14.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Grand Total',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: vc.onSurface,
-                          fontFamily: 'Inter',
-                        ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Grand Total',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: vc.onSurface,
+                        fontFamily: 'Inter',
                       ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        'Incl. all taxes & charges',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: vc.onSurfaceMuted,
-                          fontFamily: 'Inter',
-                        ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      'Incl. all taxes & charges',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: vc.onSurfaceMuted,
+                        fontFamily: 'Inter',
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                Text(
+                  'Rs. ${grandTotal.toInt()}',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w800,
+                    color: AppColor.primary,
+                    fontFamily: 'Inter',
                   ),
+                ),
+              ],
+            ),
+            if (showHint && selectedMethod == null) ...[
+              SizedBox(height: 8.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_outline,
+                      size: 14.sp, color: Colors.orange.shade600),
+                  SizedBox(width: 6.w),
                   Text(
-                    'Rs. ${grandTotal.toInt()}',
+                    'Please select a payment method to continue',
                     style: TextStyle(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w800,
-                      color: AppColor.primary,
-                      letterSpacing: -0.5,
+                      fontSize: 12.sp,
+                      color: Colors.orange.shade700,
+                      fontWeight: FontWeight.w500,
                       fontFamily: 'Inter',
                     ),
                   ),
                 ],
               ),
-            ),
-            Divider(height: 1, thickness: 1, color: vc.divider),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (showHint && selectedMethod == null)
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 8.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.info_outline,
-                              size: 14.sp, color: Colors.orange.shade600),
-                          SizedBox(width: 6.w),
-                          Text(
-                            'Please select a payment method to continue',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.orange.shade700,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50.h,
-                    child: CustomElevatedButton(
-                      onPressed: isLoading ? null : onPlaceOrder,
-                      isLoading: isLoading,
-                      loaderSize: 20.w,
-                      backgroundColor: selectedMethod == null
-                          ? Colors.grey.shade300
-                          : AppColor.primary,
-                      text: 'Place Order',
-                    ),
-                  ),
-                ],
+            ],
+            SizedBox(height: 12.h),
+            SizedBox(
+              width: double.infinity,
+              height: 50.h,
+              child: CustomElevatedButton(
+                onPressed: isLoading ? null : onPlaceOrder,
+                isLoading: isLoading,
+                loaderSize: 20.w,
+                backgroundColor: selectedMethod == null
+                    ? Colors.grey.shade300
+                    : AppColor.primary,
+                text: 'Place Order',
               ),
             ),
           ],
