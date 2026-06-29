@@ -224,7 +224,7 @@ class AccountGuestView extends ConsumerWidget {
             const AccountSupportCard(),
             SizedBox(height: 22.h),
             AccountVersionFooter(version: appVersion),
-            SizedBox(height: MediaQuery.of(context).padding.bottom + 16.h),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 80.h),
           ],
         ),
       ),
