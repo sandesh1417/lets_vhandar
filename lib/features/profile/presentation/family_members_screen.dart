@@ -119,7 +119,6 @@ class _HeroBanner extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 21.sp,
-            fontFamily: 'Inter',
             fontWeight: FontWeight.w800,
             color: context.vColors.onSurface,
             height: 1.3,
@@ -131,7 +130,6 @@ class _HeroBanner extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 13.sp,
-            fontFamily: 'Inter',
             color: context.vColors.onSurfaceMuted,
             height: 1.6,
           ),
@@ -160,7 +158,6 @@ class _CompactHero extends StatelessWidget {
                 'Family Account',
                 style: TextStyle(
                   fontSize: 16.sp,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w700,
                   color: context.vColors.onSurface,
                 ),
@@ -170,7 +167,6 @@ class _CompactHero extends StatelessWidget {
                 'Collaborate with friends and family on Vhandar.',
                 style: TextStyle(
                   fontSize: 12.sp,
-                  fontFamily: 'Inter',
                   color: context.vColors.onSurfaceMuted,
                 ),
               ),
@@ -260,7 +256,6 @@ class _BenefitRow extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 13.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
               color: context.vColors.onSurface,
             ),
@@ -286,7 +281,6 @@ class _SectionLabel extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14.sp,
-            fontFamily: 'Inter',
             fontWeight: FontWeight.w700,
             color: context.vColors.onSurface,
           ),
@@ -303,7 +297,6 @@ class _SectionLabel extends StatelessWidget {
               '$badge',
               style: TextStyle(
                 fontSize: 10.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
@@ -376,7 +369,6 @@ class _ReceivedRequestTile extends StatelessWidget {
                       name,
                       style: TextStyle(
                         fontSize: 13.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         color: context.vColors.onSurface,
                       ),
@@ -403,7 +395,6 @@ class _ReceivedRequestTile extends StatelessWidget {
                     relation,
                     style: TextStyle(
                       fontSize: 10.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       color: Colors.orange.shade700,
                     ),
@@ -428,7 +419,6 @@ class _ReceivedRequestTile extends StatelessWidget {
                     'Decline',
                     style: TextStyle(
                       fontSize: 12.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       color: context.vColors.onSurfaceMuted,
                     ),
@@ -505,7 +495,6 @@ class _MemberTile extends StatelessWidget {
                   name,
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: context.vColors.onSurface,
                   ),
@@ -534,7 +523,6 @@ class _MemberTile extends StatelessWidget {
                 relation,
                 style: TextStyle(
                   fontSize: 10.sp,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
                   color: accepted ? AppColor.primary : Colors.orange.shade700,
                 ),
@@ -621,7 +609,6 @@ class _RemoveConfirmSheet extends StatelessWidget {
             name.isNotEmpty ? 'Remove $name?' : 'Remove member?',
             style: TextStyle(
               fontSize: 16.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
               color: vc.onSurface,
             ),
@@ -632,7 +619,6 @@ class _RemoveConfirmSheet extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12.sp,
-              fontFamily: 'Inter',
               color: vc.onSurfaceMuted,
             ),
           ),
@@ -653,7 +639,6 @@ class _RemoveConfirmSheet extends StatelessWidget {
                     'Cancel',
                     style: TextStyle(
                       fontSize: 13.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       color: vc.onSurfaceMuted,
                     ),
@@ -718,7 +703,6 @@ class _AcceptRequestSheetState extends ConsumerState<_AcceptRequestSheet> {
               'Accept Request',
               style: TextStyle(
                 fontSize: 17.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: vc.onSurface,
               ),
@@ -729,7 +713,6 @@ class _AcceptRequestSheetState extends ConsumerState<_AcceptRequestSheet> {
               style: TextStyle(
                 fontSize: 12.sp,
                 color: vc.onSurfaceMuted,
-                fontFamily: 'Inter',
               ),
             ),
             SizedBox(height: 16.h),
@@ -793,7 +776,6 @@ class _AddMemberButton extends StatelessWidget {
               'Add Family Member',
               style: TextStyle(
                 fontSize: 13.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 color: AppColor.primary,
               ),
@@ -847,7 +829,6 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
               'Add Family Member',
               style: TextStyle(
                 fontSize: 17.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: vc.onSurface,
               ),
@@ -858,7 +839,6 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
               style: TextStyle(
                 fontSize: 12.sp,
                 color: vc.onSurfaceMuted,
-                fontFamily: 'Inter',
                 height: 1.5,
               ),
             ),
@@ -905,7 +885,6 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                 'Your relation',
                 style: TextStyle(
                   fontSize: 13.sp,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
                   color: vc.onSurface,
                 ),
@@ -980,7 +959,6 @@ class _RelationPicker extends StatelessWidget {
               rel,
               style: TextStyle(
                 fontSize: 12.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 color: isSelected ? Colors.white : AppColor.primary,
               ),
@@ -1005,7 +983,7 @@ class _PhoneField extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.phone,
       style:
-          TextStyle(fontSize: 14.sp, fontFamily: 'Inter', color: vc.onSurface),
+          TextStyle(fontSize: 14.sp, color: vc.onSurface),
       decoration: InputDecoration(
         hintText: '98XXXXXXXX',
         hintStyle: TextStyle(fontSize: 13.sp, color: vc.onSurfaceMuted),
@@ -1055,7 +1033,6 @@ class _SearchErrorCard extends StatelessWidget {
               message,
               style: TextStyle(
                 fontSize: 12.sp,
-                fontFamily: 'Inter',
                 color: Colors.red.shade700,
               ),
             ),
@@ -1109,7 +1086,6 @@ class _FoundUserCard extends StatelessWidget {
                   name,
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: context.vColors.onSurface,
                   ),
@@ -1141,7 +1117,6 @@ class _FoundUserCard extends StatelessWidget {
                   'Found',
                   style: TextStyle(
                     fontSize: 10.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: AppColor.primary,
                   ),

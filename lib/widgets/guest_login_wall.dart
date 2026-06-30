@@ -41,7 +41,6 @@ class GuestLoginWall extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: vc.onSurface,
                 height: 1.3,
@@ -53,7 +52,6 @@ class GuestLoginWall extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 color: vc.onSurfaceMuted,
                 height: 1.5,

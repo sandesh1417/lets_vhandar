@@ -120,7 +120,6 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                                     color: context.isDark
                                         ? Colors.white
                                         : Colors.black87,
-                                    fontFamily: 'Inter',
                                   ),
                                   decoration: InputDecoration(
                                     hintText: brandAsync.maybeWhen(
@@ -133,7 +132,6 @@ class _BrandDetailScreenState extends ConsumerState<BrandDetailScreen> {
                                       color: context.isDark
                                           ? Colors.white54
                                           : Colors.grey.shade400,
-                                      fontFamily: 'Inter',
                                     ),
                                     border: InputBorder.none,
                                     isDense: true,

@@ -134,7 +134,6 @@ class _PointsCard extends StatelessWidget {
                           '$points',
                           style: TextStyle(
                             fontSize: 44.sp,
-                            fontFamily: 'Inter',
                             fontWeight: FontWeight.w900,
                             color: _dark,
                             height: 1,
@@ -145,7 +144,6 @@ class _PointsCard extends StatelessWidget {
                           'POINTS',
                           style: TextStyle(
                             fontSize: 10.sp,
-                            fontFamily: 'Inter',
                             fontWeight: FontWeight.w700,
                             color: _dark.withValues(alpha: 0.55),
                             letterSpacing: 2,
@@ -166,7 +164,6 @@ class _PointsCard extends StatelessWidget {
                                   'CARD HOLDER',
                                   style: TextStyle(
                                     fontSize: 8.sp,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     color: _dark.withValues(alpha: 0.5),
                                     letterSpacing: 1.5,
@@ -177,7 +174,6 @@ class _PointsCard extends StatelessWidget {
                                   (userName ?? 'Vhandar User').toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 13.sp,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w700,
                                     color: _dark,
                                     letterSpacing: 0.5,
@@ -192,7 +188,6 @@ class _PointsCard extends StatelessWidget {
                                   'WORTH',
                                   style: TextStyle(
                                     fontSize: 8.sp,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     color: _dark.withValues(alpha: 0.5),
                                     letterSpacing: 1.5,
@@ -203,7 +198,6 @@ class _PointsCard extends StatelessWidget {
                                   'Rs. ${(points * 0.1).toStringAsFixed(0)}',
                                   style: TextStyle(
                                     fontSize: 13.sp,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w700,
                                     color: _dark,
                                   ),
@@ -237,7 +231,6 @@ class _HowToEarnSection extends StatelessWidget {
             'How to Earn Points',
             style: TextStyle(
               fontSize: 16.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
               color: context.vColors.onSurface,
             ),
@@ -296,7 +289,6 @@ class _HowToUseSection extends StatelessWidget {
             'How to Use Points',
             style: TextStyle(
               fontSize: 16.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
               color: context.vColors.onSurface,
             ),
@@ -376,7 +368,6 @@ class _EarnItem extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 13.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         color: context.vColors.onSurface,
                       ),
@@ -386,7 +377,6 @@ class _EarnItem extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 12.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: context.vColors.onSurfaceMuted,
                       ),

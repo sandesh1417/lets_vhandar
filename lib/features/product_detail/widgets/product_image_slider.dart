@@ -424,7 +424,6 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                       color: Colors.white,
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
                     ),
                   ),
                 ),

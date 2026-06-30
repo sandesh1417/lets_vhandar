@@ -95,7 +95,6 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                       'Appearance',
                       style: TextStyle(
                         fontSize: 17.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
                         color: vc.onSurface,
                       ),
@@ -104,7 +103,6 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                       'Choose how Vhandar looks on this device',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        fontFamily: 'Inter',
                         color: vc.onSurfaceMuted,
                       ),
                     ),
@@ -145,7 +143,6 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                             opt.label,
                             style: TextStyle(
                               fontSize: 13.sp,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               color:
                                   isSelected ? Colors.white : vc.onSurfaceMuted,

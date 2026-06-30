@@ -149,7 +149,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
-              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -183,7 +182,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
-              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -204,7 +202,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
                     color: context.vColors.onSurface,
                     height: 1.3,
@@ -216,7 +213,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w400,
                     color: context.vColors.onSurfaceMuted,
                     height: 1.5,
@@ -261,7 +257,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
-            fontFamily: 'Inter',
           ),
         ),
         bottom: PreferredSize(
@@ -357,7 +352,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
                         color: context.vColors.onSurface,
                         height: 1.3,
@@ -369,7 +363,6 @@ class _ReorderScreenState extends ConsumerState<ReorderScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: context.vColors.onSurfaceMuted,
                         height: 1.5,

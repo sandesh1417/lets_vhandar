@@ -67,7 +67,6 @@ class CustomScreenHeader extends StatelessWidget
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
-              fontFamily: 'Inter',
             ),
           ),
         ],

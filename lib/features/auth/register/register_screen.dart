@@ -84,7 +84,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 fontSize: 22.sp,
                 color: context.vColors.onSurface,
                 fontWeight: FontWeight.w800,
-                fontFamily: 'Inter',
               ),
             ),
             SizedBox(height: 4.h),
@@ -94,7 +93,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 fontSize: 16.sp,
                 color: context.vColors.onSurface,
                 fontWeight: FontWeight.w500,
-                fontFamily: 'Inter',
               ),
             ),
             SizedBox(height: 20.h),
@@ -208,7 +206,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       color: context.vColors.onSurfaceMuted,
                       fontWeight: FontWeight.w500,
                       fontSize: 12.sp,
-                      fontFamily: 'Inter',
                     ),
                   ),
                 ),
@@ -237,7 +234,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style: TextStyle(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Inter',
                     color: const Color(0xFF3B9171),
                   ),
                 ),
@@ -256,7 +252,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       fontSize: 12.sp,
                       color: context.vColors.onSurfaceMuted,
                       fontWeight: FontWeight.w300,
-                      fontFamily: 'Inter',
                     ),
                   ),
                   Row(
@@ -272,7 +267,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             fontSize: 12.sp,
                             color: AppColor.primary,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
                           ),
                         ),
                       ),
@@ -281,7 +275,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: context.vColors.onSurfaceMuted,
-                          fontFamily: 'Inter',
                         ),
                       ),
                       GestureDetector(
@@ -293,7 +286,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             fontSize: 12.sp,
                             color: AppColor.primary,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
                           ),
                         ),
                       ),

@@ -130,7 +130,6 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                     'Category',
                     style: TextStyle(
                       fontSize: 11.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       color: AppColor.primary,
                       letterSpacing: 0.8,
@@ -270,7 +269,6 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                         'Subcategory',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           color: AppColor.primary,
                           letterSpacing: 0.8,
@@ -395,7 +393,6 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                                     color: context.isDark
                                         ? Colors.white
                                         : Colors.black87,
-                                    fontFamily: 'Inter',
                                   ),
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
@@ -404,7 +401,6 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                                       color: context.isDark
                                           ? Colors.white54
                                           : Colors.grey.shade400,
-                                      fontFamily: 'Inter',
                                     ),
                                     border: InputBorder.none,
                                     isDense: true,

@@ -545,7 +545,6 @@ class _FormCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'Inter',
                     color: vc.onSurface,
                   ),
                 ),
@@ -581,7 +580,6 @@ class _FieldLabel extends StatelessWidget {
         fontSize: 12.sp,
         fontWeight: FontWeight.w600,
         color: vc.onSurfaceMuted,
-        fontFamily: 'Inter',
         letterSpacing: 0.2,
       ),
     );
@@ -616,7 +614,6 @@ class _ReadOnlyField extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14.sp,
                 color: vc.onSurfaceMuted,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -668,7 +665,6 @@ class _CategoryButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: selected != null ? vc.onSurface : vc.onSurfaceMuted,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -724,7 +720,6 @@ class _LocationButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   color: hasLocation ? vc.onSurface : vc.onSurfaceMuted,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w500,
                 ),
                 maxLines: 2,
@@ -814,7 +809,6 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'Inter',
                     color: vc.onSurface,
                   ),
                 ),
@@ -859,7 +853,6 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                             cat,
                             style: TextStyle(
                               fontSize: 14.sp,
-                              fontFamily: 'Inter',
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
@@ -950,7 +943,6 @@ class _ToggleChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
             color: selected ? AppColor.primary : vc.onSurfaceMuted,
           ),
         ),
@@ -998,7 +990,6 @@ class _GenderSelector extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'Inter',
                   color: isSelected ? AppColor.primary : vc.onSurfaceMuted,
                 ),
               ),

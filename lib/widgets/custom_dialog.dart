@@ -43,7 +43,7 @@ class CustomDialog {
     required String confirmLabel,
 
     /// Explicit gradient colors for the confirm button.
-    /// If null, a gradient from [iconColor] to [iconColor].withOpacity(0.8) is used.
+    /// If null, a gradient from [iconColor] to [iconColor].withValues(alpha: 0.8) is used.
     List<Color>? confirmGradient,
 
     /// Called when the user taps the confirm button.

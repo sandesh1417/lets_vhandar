@@ -62,7 +62,6 @@ class ListDetailScreen extends ConsumerWidget {
                         list.name,
                         style: TextStyle(
                           fontSize: 18.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
@@ -74,7 +73,6 @@ class ListDetailScreen extends ConsumerWidget {
                             : '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          fontFamily: 'Inter',
                           color: Colors.white.withValues(alpha: 0.75),
                         ),
                       ),
@@ -134,7 +132,6 @@ class ListDetailScreen extends ConsumerWidget {
             'List is Empty',
             style: TextStyle(
               fontSize: 18.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
               color: vc.onSurface,
             ),
@@ -145,7 +142,6 @@ class ListDetailScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13.sp,
-              fontFamily: 'Inter',
               color: vc.onSurfaceMuted,
               height: 1.6,
             ),
@@ -251,7 +247,6 @@ class _ProductTile extends StatelessWidget {
                   product.name ?? 'Product',
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: vc.onSurface,
                   ),
@@ -271,7 +266,6 @@ class _ProductTile extends StatelessWidget {
                     'Rs. ${product.price!.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontSize: 13.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,
                       color: AppColor.primary,
                     ),
@@ -368,7 +362,6 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                           'Add Products',
                           style: TextStyle(
                             fontSize: 17.sp,
-                            fontFamily: 'Inter',
                             fontWeight: FontWeight.w700,
                             color: vc.onSurface,
                           ),
@@ -377,7 +370,6 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                           'to "${widget.list.name}"',
                           style: TextStyle(
                             fontSize: 12.sp,
-                            fontFamily: 'Inter',
                             color: vc.onSurfaceMuted,
                           ),
                         ),
@@ -474,7 +466,6 @@ class _AddProductSheetState extends ConsumerState<_AddProductSheet> {
                                 style: TextStyle(
                                   fontSize: 13.sp,
                                   color: vc.onSurfaceMuted,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ],
@@ -562,7 +553,6 @@ class _SearchResultTile extends ConsumerWidget {
                   product.name ?? '',
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: vc.onSurface,
                   ),
@@ -621,7 +611,6 @@ class _SearchResultTile extends ConsumerWidget {
                 isAdded ? 'Added' : 'Add',
                 style: TextStyle(
                   fontSize: 12.sp,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w700,
                   color: isAdded ? Colors.white : vc.onSurface,
                 ),

@@ -89,7 +89,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w600,
-                            color: Colors.red.shade500,
+                            color: vc.danger,
                           ),
                         ),
                       ] else if (showMrp) ...[
@@ -114,7 +114,7 @@ class ProductAddToCartBar extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 10.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF2E7D32),
+                                  color: vc.success,
                                 ),
                               ),
                             ),
@@ -132,14 +132,14 @@ class ProductAddToCartBar extends ConsumerWidget {
                   child: isOutOfStock
                       ? Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
+                            color: vc.outOfStockBg,
                             borderRadius: BorderRadius.circular(11.r),
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             'Out of Stock',
                             style: TextStyle(
-                              color: Colors.grey.shade500,
+                              color: vc.outOfStockFg,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                             ),

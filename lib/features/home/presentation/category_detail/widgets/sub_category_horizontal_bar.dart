@@ -172,7 +172,6 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
                   'Subcategory',
                   style: TextStyle(
                     fontSize: 11.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                     color: AppColor.primary,
                     letterSpacing: 0.8,
@@ -183,7 +182,6 @@ class _HorizontalTabItemState extends ConsumerState<_HorizontalTabItem>
                   widget.title,
                   style: TextStyle(
                     fontSize: 18.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w800,
                     color: vc.onSurface,
                   ),

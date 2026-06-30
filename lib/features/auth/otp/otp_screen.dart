@@ -176,7 +176,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                         fontSize: 22.sp,
                         fontWeight: FontWeight.w800,
                         color: vc.onSurface,
-                        fontFamily: 'Inter',
                       ),
                     ),
 
@@ -188,7 +187,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                       style: TextStyle(
                         fontSize: 13.sp,
                         color: vc.onSurfaceMuted,
-                        fontFamily: 'Inter',
                       ),
                     ),
 
@@ -214,7 +212,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w700,
                               color: AppColor.primary,
-                              fontFamily: 'Inter',
                             ),
                           ),
                         ],
@@ -249,7 +246,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: vc.onSurfaceMuted,
-                            fontFamily: 'Inter',
                           ),
                         ),
                         GestureDetector(
@@ -261,7 +257,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                                     fontSize: 13.sp,
                                     fontWeight: FontWeight.w700,
                                     color: AppColor.primary,
-                                    fontFamily: 'Inter',
                                   ),
                                 )
                               : Container(
@@ -277,7 +272,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w600,
                                       color: vc.onSurfaceMuted,
-                                      fontFamily: 'Inter',
                                     ),
                                   ),
                                 ),

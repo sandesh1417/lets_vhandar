@@ -204,7 +204,6 @@ class _SlotPickerSheet extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w800,
-                        fontFamily: 'Inter',
                         color: vc.onSurface,
                       ),
                     ),
@@ -213,7 +212,6 @@ class _SlotPickerSheet extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: vc.onSurfaceMuted,
-                        fontFamily: 'Inter',
                       ),
                     ),
                   ],
@@ -272,7 +270,6 @@ class _SlotPickerSheet extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Inter',
                               color: isSelected ? Colors.white : vc.onSurface,
                             ),
                           ),

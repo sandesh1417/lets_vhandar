@@ -28,6 +28,7 @@ import 'package:lets_vhandar/widgets/custom_snackbar.dart';
 import 'package:lets_vhandar/widgets/app_bottom_sheet.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
+import 'package:lets_vhandar/widgets/v_app_bar.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -43,40 +44,8 @@ class CartScreen extends ConsumerWidget {
       isScrollable: false,
       bottomSafeArea: false,
       backgroundColor: context.vColors.scaffoldBg,
-      appBar: AppBar(
-        backgroundColor: AppColor.primary,
-        elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.12),
-        scrolledUnderElevation: 2,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16.w,
-        title: Row(
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.pop();
-              },
-              child: Container(
-                width: 44.w,
-                height: 44.h,
-                alignment: Alignment.centerLeft,
-                child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'My Cart',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20.sp,
-                fontFamily: 'Inter',
-              ),
-            ),
-          ],
-        ),
+      appBar: VAppBar(
+        title: 'My Cart',
         actions: cartItems.isNotEmpty
             ? [
                 Padding(
@@ -99,7 +68,6 @@ class CartScreen extends ConsumerWidget {
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                           fontSize: 12.sp,
-                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -238,7 +206,6 @@ class CartScreen extends ConsumerWidget {
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 color: context.vColors.onSurface,
-                fontFamily: 'Inter',
               ),
             ),
             SizedBox(height: 6.h),
@@ -248,7 +215,6 @@ class CartScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 color: AppColor.hintText,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -310,14 +276,14 @@ class _CartStickyBottom extends ConsumerWidget {
                 child: Row(
                   children: [
                     Icon(Icons.error_outline,
-                        color: Colors.red.shade600, size: 15.sp),
+                        color: context.vColors.danger, size: 15.sp),
                     SizedBox(width: 6.w),
                     Text(
                       'Please select a delivery address to continue',
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
-                        color: Colors.red.shade600,
+                        color: context.vColors.danger,
                       ),
                     ),
                   ],
@@ -384,7 +350,7 @@ class _NoAddressBanner extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withValues(alpha: 0.35),
+                    color: vc.danger.withValues(alpha: 0.35),
                     blurRadius: 12,
                     spreadRadius: 1,
                   ),
@@ -393,7 +359,7 @@ class _NoAddressBanner extends StatelessWidget {
             : null,
         child: CustomPaint(
           painter: _DashedBorderPainter(
-            color: isError ? Colors.red : AppColor.primary,
+            color: isError ? vc.danger : AppColor.primary,
             radius: 14.r,
             dashWidth: 6,
             dashGap: 4,
@@ -402,7 +368,7 @@ class _NoAddressBanner extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: isError ? Colors.red.withValues(alpha: 0.04) : vc.surface,
+              color: isError ? vc.danger.withValues(alpha: 0.04) : vc.surface,
               borderRadius: BorderRadius.circular(14.r),
             ),
             child: Row(
@@ -751,29 +717,23 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
-                          color: context.isDark
-                              ? const Color(0xFF4A0000).withValues(alpha: 0.5)
-                              : Colors.red.shade50,
+                          color: vc.dangerBg,
                           borderRadius: BorderRadius.circular(8.r),
                           border: Border.all(
-                            color: context.isDark
-                                ? const Color(0xFF8B0000).withValues(alpha: 0.6)
-                                : Colors.red.shade100,
+                            color: vc.danger.withValues(alpha: 0.4),
                           ),
                         ),
                         child: Row(
                           children: [
                             Icon(Icons.error_outline,
-                                color: Colors.red.shade300, size: 16.sp),
+                                color: vc.danger, size: 16.sp),
                             SizedBox(width: 8.w),
                             Expanded(
                               child: Text(
                                 sheetError!,
                                 style: TextStyle(
                                   fontSize: 12.sp,
-                                  color: context.isDark
-                                      ? Colors.red.shade300
-                                      : Colors.red.shade800,
+                                  color: vc.danger,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -815,7 +775,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
           },
         );
       },
-    );
+    ).whenComplete(textController.dispose);
   }
 
   Future<String?> _applyCouponCode(BuildContext context, String code) async {
@@ -962,7 +922,7 @@ class _CouponBannerState extends ConsumerState<_CouponBanner> {
                     style: TextStyle(
                       fontSize: 11.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red.shade600,
+                      color: context.vColors.danger,
                     ),
                   ),
                 ),

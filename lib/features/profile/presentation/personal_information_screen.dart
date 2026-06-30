@@ -45,7 +45,6 @@ class PersonalInformationScreen extends ConsumerWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -125,7 +124,6 @@ class PersonalInformationScreen extends ConsumerWidget {
                           displayName,
                           style: TextStyle(
                             fontSize: 20.sp,
-                            fontFamily: 'Inter',
                             fontWeight: FontWeight.w800,
                             color: ctx.vColors.onSurface,
                           ),
@@ -156,7 +154,6 @@ class PersonalInformationScreen extends ConsumerWidget {
                         _capitalize(category),
                         style: TextStyle(
                           fontSize: 12.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF856404),
                         ),
@@ -167,7 +164,6 @@ class PersonalInformationScreen extends ConsumerWidget {
                       phone,
                       style: TextStyle(
                         fontSize: 13.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: Colors.grey.shade500,
                       ),
@@ -316,7 +312,6 @@ class PersonalInformationScreen extends ConsumerWidget {
                         'Delete Account',
                         style: TextStyle(
                           fontSize: 14.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           color: context.isDark
                               ? Colors.red.shade300
@@ -461,7 +456,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                           : 'Complete Your Profile',
                       style: TextStyle(
                         fontSize: 14.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
                         color: vc.onSurface,
                       ),
@@ -473,7 +467,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                           : '${missing.length} field${missing.length == 1 ? '' : 's'} left to complete',
                       style: TextStyle(
                         fontSize: 11.sp,
-                        fontFamily: 'Inter',
                         color: vc.onSurfaceMuted,
                       ),
                     ),
@@ -491,7 +484,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                   '${(percent * 100).toInt()}%',
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w800,
                     color: progressColor,
                   ),
@@ -528,7 +520,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                 '$filled / $total fields filled',
                 style: TextStyle(
                   fontSize: 10.sp,
-                  fontFamily: 'Inter',
                   color: vc.onSurfaceMuted,
                 ),
               ),
@@ -539,7 +530,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                     'Fill now →',
                     style: TextStyle(
                       fontSize: 10.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,
                       color: AppColor.primary,
                     ),
@@ -557,7 +547,6 @@ class _ProfileCompletionCard extends StatelessWidget {
               'What\'s missing',
               style: TextStyle(
                 fontSize: 11.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: vc.onSurfaceMuted,
                 letterSpacing: 0.3,
@@ -590,7 +579,6 @@ class _ProfileCompletionCard extends StatelessWidget {
                           f.label,
                           style: TextStyle(
                             fontSize: 11.sp,
-                            fontFamily: 'Inter',
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFFB07000),
                           ),
@@ -650,7 +638,6 @@ class _InfoRow extends StatelessWidget {
                       label,
                       style: TextStyle(
                         fontSize: 11.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,
                         color: vc.onSurfaceMuted,
                       ),
@@ -660,7 +647,6 @@ class _InfoRow extends StatelessWidget {
                       value,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         color: vc.onSurface,
                       ),

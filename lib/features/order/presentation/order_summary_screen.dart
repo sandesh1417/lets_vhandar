@@ -363,7 +363,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                   fontSize: 18.sp,
-                  fontFamily: 'Inter'),
+),
             ),
           ),
 

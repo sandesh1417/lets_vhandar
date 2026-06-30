@@ -74,7 +74,6 @@ class AccountGuestView extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 22.sp,
                       fontWeight: FontWeight.w800,
-                      fontFamily: 'Inter',
                       color: Colors.white,
                     ),
                   ),
@@ -84,7 +83,6 @@ class AccountGuestView extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      fontFamily: 'Inter',
                       color: Colors.white.withValues(alpha: 0.80),
                       height: 1.5,
                     ),

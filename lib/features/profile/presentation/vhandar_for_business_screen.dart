@@ -112,7 +112,6 @@ class VhandarForBusinessScreen extends StatelessWidget {
                                   fontSize: 17.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
-                                  fontFamily: 'Inter',
                                   height: 1.35,
                                 ),
                               ),
@@ -123,7 +122,6 @@ class VhandarForBusinessScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 12.sp,
                                   color: Colors.white.withValues(alpha: 0.80),
-                                  fontFamily: 'Inter',
                                   height: 1.55,
                                 ),
                               ),
@@ -206,7 +204,6 @@ class VhandarForBusinessScreen extends StatelessWidget {
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w700,
                                           color: vc.onSurface,
-                                          fontFamily: 'Inter',
                                         ),
                                       ),
                                       SizedBox(height: 3.h),
@@ -215,7 +212,6 @@ class VhandarForBusinessScreen extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           color: vc.onSurfaceMuted,
-                                          fontFamily: 'Inter',
                                           height: 1.4,
                                         ),
                                       ),

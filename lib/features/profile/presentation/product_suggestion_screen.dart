@@ -128,7 +128,6 @@ class _ProductSuggestionSheetState
                     fontSize: 24.sp,
                     fontWeight: FontWeight.w800,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                     height: 1.2,
                   ),
                 ),
@@ -146,7 +145,6 @@ class _ProductSuggestionSheetState
               fontSize: 24.sp,
               fontWeight: FontWeight.w800,
               color: vc.onSurface,
-              fontFamily: 'Inter',
               height: 1.2,
             ),
           ),
@@ -158,7 +156,6 @@ class _ProductSuggestionSheetState
             style: TextStyle(
               fontSize: 13.sp,
               color: vc.onSurfaceMuted,
-              fontFamily: 'Inter',
               height: 1.5,
             ),
           ),
@@ -180,7 +177,6 @@ class _ProductSuggestionSheetState
               style: TextStyle(
                 fontSize: 14.sp,
                 color: vc.onSurface,
-                fontFamily: 'Inter',
                 height: 1.5,
               ),
               decoration: InputDecoration(
@@ -189,7 +185,6 @@ class _ProductSuggestionSheetState
                 hintStyle: TextStyle(
                   fontSize: 13.sp,
                   color: vc.onSurfaceMuted,
-                  fontFamily: 'Inter',
                   height: 1.5,
                 ),
                 border: InputBorder.none,

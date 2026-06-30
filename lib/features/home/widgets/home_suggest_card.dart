@@ -35,7 +35,6 @@ class HomeSuggestCard extends StatelessWidget {
                         "Didn't find ",
                         style: TextStyle(
                           fontSize: 20.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w800,
                           color: context.isDark
                               ? const Color(0xFFB2DFCB)
@@ -55,7 +54,6 @@ class HomeSuggestCard extends StatelessWidget {
                   'what you were looking for?',
                   style: TextStyle(
                     fontSize: 20.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w800,
                     color: context.isDark
                         ? const Color(0xFFB2DFCB)
@@ -68,7 +66,6 @@ class HomeSuggestCard extends StatelessWidget {
                   "Suggest something & we'll look into it",
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w400,
                     color: vc.onSurfaceMuted,
                   ),
@@ -85,7 +82,6 @@ class HomeSuggestCard extends StatelessWidget {
                       EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                   textStyle: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
                   ),
                 ),

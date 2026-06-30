@@ -26,7 +26,6 @@ class WalletScreen extends StatelessWidget {
               'Transaction History',
               style: TextStyle(
                 fontSize: 16.sp,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
                 color: context.vColors.onSurface,
               ),
@@ -83,7 +82,6 @@ class _BalanceCard extends StatelessWidget {
             'Your Balance',
             style: TextStyle(
               fontSize: 13.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
               color: Colors.white.withValues(alpha: 0.6),
               letterSpacing: 0.3,
@@ -94,7 +92,6 @@ class _BalanceCard extends StatelessWidget {
             'Rs. 0',
             style: TextStyle(
               fontSize: 34.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: -0.5,
@@ -105,7 +102,6 @@ class _BalanceCard extends StatelessWidget {
             'Available to use on your next order',
             style: TextStyle(
               fontSize: 11.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w400,
               color: Colors.white.withValues(alpha: 0.45),
             ),
@@ -134,7 +130,6 @@ class _EmptyTransactions extends StatelessWidget {
             'No transactions found',
             style: TextStyle(
               fontSize: 15.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
               color: context.vColors.onSurface,
             ),
@@ -145,7 +140,6 @@ class _EmptyTransactions extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w400,
               color: context.vColors.onSurfaceMuted,
               height: 1.5,

@@ -133,7 +133,6 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                               child: IgnorePointer(
                                 ignoring: eased < 0.7,
                                 child: PremiumSearchBar(
-                                  controller: TextEditingController(),
                                   readOnly: true,
                                   onTap: () => context
                                       .pushNamed(LVRoute.searchScreen.route),
@@ -158,7 +157,6 @@ class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                     child: IgnorePointer(
                       ignoring: eased > 0.3,
                       child: PremiumSearchBar(
-                        controller: TextEditingController(),
                         readOnly: true,
                         onTap: () =>
                             context.pushNamed(LVRoute.searchScreen.route),

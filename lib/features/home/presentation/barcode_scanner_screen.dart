@@ -194,7 +194,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                         color: Colors.white,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Inter',
                       ),
                     ),
                     Row(
@@ -218,7 +217,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                 color: Colors.white,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Inter',
                               ),
                             ),
                           ),
@@ -289,7 +287,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                               .withValues(alpha: 0.75),
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
-                          fontFamily: 'Inter',
                         ),
                       ),
                     ],
@@ -314,7 +311,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.sp,
-                      fontFamily: 'Inter',
                     ),
                   ),
                 ],
@@ -365,7 +361,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                 color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Inter',
                                 height: 1.3,
                               ),
                             ),
@@ -380,7 +375,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                         .onSurface
                                         .withValues(alpha: 0.6),
                                     fontSize: 12.sp,
-                                    fontFamily: 'Inter',
                                   ),
                                 ),
                                 GestureDetector(
@@ -393,7 +387,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                           .colorScheme
                                           .onSurface,
                                       fontSize: 12.sp,
-                                      fontFamily: 'Inter',
                                       fontWeight: FontWeight.w600,
                                       decoration: TextDecoration.underline,
                                     ),
@@ -430,7 +423,7 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                 style: TextStyle(
                     color: Colors.white70,
                     fontSize: 15.sp,
-                    fontFamily: 'Inter'),
+),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24.h),
@@ -495,7 +488,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                         color: Colors.white,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Inter',
                       ),
                     ),
                   ],
@@ -542,7 +534,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                   color: cs.onSurface.withValues(alpha: 0.5),
                                   fontSize: 12.sp,
                                   fontWeight: FontWeight.w500,
-                                  fontFamily: 'Inter',
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -591,7 +582,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                   color: cs.onSurface,
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                               SizedBox(height: 12.h),
@@ -602,7 +592,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                 style: TextStyle(
                                   color: cs.onSurface,
                                   fontSize: 17.sp,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w500,
                                   letterSpacing: 1.2,
                                 ),
@@ -611,7 +600,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                   hintStyle: TextStyle(
                                     color: cs.onSurface.withValues(alpha: 0.4),
                                     fontSize: 15.sp,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w400,
                                     letterSpacing: 0,
                                   ),
@@ -644,7 +632,6 @@ class _BarcodeScannerScreenState extends ConsumerState<BarcodeScannerScreen> {
                                 style: TextStyle(
                                   color: cs.onSurface.withValues(alpha: 0.5),
                                   fontSize: 11.sp,
-                                  fontFamily: 'Inter',
                                   height: 1.5,
                                 ),
                               ),
@@ -848,7 +835,6 @@ class _ScanningTipsSheet extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w800,
-                      fontFamily: 'Inter',
                       color: cs.onSurface,
                     ),
                   ),
@@ -940,7 +926,6 @@ class _TipRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Inter',
                 color: cs.onSurface,
               ),
             ),
@@ -950,7 +935,6 @@ class _TipRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
-                fontFamily: 'Inter',
                 color: cs.onSurface.withValues(alpha: 0.6),
                 height: 1.5,
               ),

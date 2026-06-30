@@ -556,7 +556,6 @@ class _NavBarState extends State<_NavBar> with TickerProviderStateMixin {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: _NavTuning.labelSize.sp,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w500,
                                 color: isSelected
                                     ? AppColor.primary

@@ -55,7 +55,6 @@ class HelpSupportScreen extends StatelessWidget {
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: vc.onSurface,
-                  fontFamily: 'Inter',
                 ),
               ),
             ),
@@ -107,7 +106,6 @@ class HelpSupportScreen extends StatelessWidget {
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: vc.onSurface,
-                  fontFamily: 'Inter',
                 ),
               ),
             ),
@@ -222,7 +220,6 @@ class _HeroBanner extends StatelessWidget {
                   RichText(
                     text: TextSpan(
                       style: TextStyle(
-                        fontFamily: 'Inter',
                         fontSize: 19.sp,
                         fontWeight: FontWeight.w800,
                         height: 1.25,
@@ -249,7 +246,6 @@ class _HeroBanner extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           color: Colors.white70,
-                          fontFamily: 'Inter',
                         ),
                       ),
                     ],
@@ -273,7 +269,6 @@ class _HeroBanner extends StatelessWidget {
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF1A1A1A),
-                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -336,7 +331,6 @@ class _QuickContactButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: color,
-                  fontFamily: 'Inter',
                 ),
               ),
             ],
@@ -421,7 +415,6 @@ class _InfoCard extends StatelessWidget {
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -430,7 +423,6 @@ class _InfoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: vc.onSurfaceMuted,
-                      fontFamily: 'Inter',
                       height: 1.5,
                     ),
                     children: [
@@ -445,7 +437,6 @@ class _InfoCard extends StatelessWidget {
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w700,
                                 color: AppColor.primary,
-                                fontFamily: 'Inter',
                               ),
                             ),
                           ),
@@ -462,7 +453,6 @@ class _InfoCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: vc.onSurfaceMuted,
-                        fontFamily: 'Inter',
                         height: 1.5,
                       ),
                       children: [
@@ -478,7 +468,6 @@ class _InfoCard extends StatelessWidget {
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w700,
                                 color: AppColor.primary,
-                                fontFamily: 'Inter',
                               ),
                             ),
                           ),
@@ -548,7 +537,6 @@ class _PhoneCard extends StatelessWidget {
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                   ),
                 ),
                 SizedBox(height: 8.h),
@@ -568,7 +556,6 @@ class _PhoneCard extends StatelessWidget {
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColor.primary,
-                                fontFamily: 'Inter',
                               ),
                             ),
                           ],
@@ -633,7 +620,6 @@ class _AddressCard extends StatelessWidget {
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -642,7 +628,6 @@ class _AddressCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: vc.onSurfaceMuted,
-                    fontFamily: 'Inter',
                   ),
                 ),
                 SizedBox(height: 2.h),
@@ -652,7 +637,6 @@ class _AddressCard extends StatelessWidget {
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                   ),
                 ),
               ],

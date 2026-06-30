@@ -43,7 +43,6 @@ class HomeBackToTopButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Inter',
                     color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),

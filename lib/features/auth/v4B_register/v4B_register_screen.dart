@@ -235,7 +235,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w800,
-                            fontFamily: 'Inter',
                             color: Colors.white,
                           ),
                         ),
@@ -245,7 +244,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Colors.white.withValues(alpha: 0.85),
-                            fontFamily: 'Inter',
                           ),
                         ),
                       ],
@@ -316,7 +314,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
                                   color: vc.onSurface,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ),
@@ -416,7 +413,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                 style: TextStyle(
                                   fontSize: 11.sp,
                                   color: Theme.of(context).colorScheme.error,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ),
@@ -475,7 +471,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                 style: TextStyle(
                                   fontSize: 11.sp,
                                   color: Theme.of(context).colorScheme.error,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ),
@@ -492,7 +487,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                   style: TextStyle(
                                     fontSize: 11.sp,
                                     color: vc.onSurfaceMuted,
-                                    fontFamily: 'Inter',
                                   ),
                                 ),
                               ],
@@ -522,7 +516,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: vc.onSurfaceMuted,
-                                fontFamily: 'Inter',
                               ),
                             ),
                             Row(
@@ -538,7 +531,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                       fontSize: 12.sp,
                                       color: AppColor.primary,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Inter',
                                     ),
                                   ),
                                 ),
@@ -547,7 +539,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     color: vc.onSurfaceMuted,
-                                    fontFamily: 'Inter',
                                   ),
                                 ),
                                 GestureDetector(
@@ -559,7 +550,6 @@ class V4BRegistrationScreenState extends ConsumerState<V4BRegistrationScreen> {
                                       fontSize: 12.sp,
                                       color: AppColor.primary,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Inter',
                                     ),
                                   ),
                                 ),
@@ -631,7 +621,6 @@ class _SectionCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'Inter',
                     color: vc.onSurface,
                   ),
                 ),
@@ -667,7 +656,6 @@ class _Label extends StatelessWidget {
         fontSize: 12.sp,
         fontWeight: FontWeight.w600,
         color: vc.onSurfaceMuted,
-        fontFamily: 'Inter',
         letterSpacing: 0.2,
       ),
     );
@@ -754,7 +742,6 @@ class _TapField extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: hasValue ? vc.onSurface : vc.onSurfaceMuted,
-                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -832,7 +819,6 @@ class _Chip extends StatelessWidget {
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
             color: selected ? AppColor.primary : vc.onSurfaceMuted,
           ),
         ),
@@ -899,7 +885,6 @@ class _CategorySheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Inter',
                           color: vc.onSurface,
                         ),
                       ),
@@ -908,7 +893,6 @@ class _CategorySheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           color: vc.onSurfaceMuted,
-                          fontFamily: 'Inter',
                         ),
                       ),
                     ],
@@ -985,7 +969,6 @@ class _CategorySheet extends StatelessWidget {
                           entry.name,
                           style: TextStyle(
                             fontSize: 14.sp,
-                            fontFamily: 'Inter',
                             fontWeight:
                                 isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected ? AppColor.primary : vc.onSurface,
@@ -1109,7 +1092,6 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w800,
-                fontFamily: 'Inter',
                 color: vc.onSurface,
               ),
             ),
@@ -1119,7 +1101,6 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
               style: TextStyle(
                 fontSize: 13.sp,
                 color: vc.onSurfaceMuted,
-                fontFamily: 'Inter',
               ),
             ),
             SizedBox(height: 24.h),
@@ -1171,7 +1152,6 @@ class _OtpSheetState extends ConsumerState<_OtpSheet> {
                   style: TextStyle(
                     fontSize: 13.sp,
                     color: vc.onSurfaceMuted,
-                    fontFamily: 'Inter',
                   ),
                   children: [
                     TextSpan(

@@ -290,7 +290,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       Text(
                         'Vhandar Merchandise Pvt Ltd',
                         style: TextStyle(
-                          fontFamily: 'Inter',
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
@@ -300,7 +299,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       Text(
                         'v${AppInfo.version}',
                         style: TextStyle(
-                          fontFamily: 'Inter',
                           fontSize: 11.sp,
                           color: Colors.white.withValues(alpha: 0.6),
                         ),

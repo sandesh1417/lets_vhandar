@@ -52,7 +52,6 @@ class AccountFeatureTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Inter',
                           color: vc.onSurface,
                         ),
                       ),
@@ -61,7 +60,6 @@ class AccountFeatureTile extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 11.sp,
-                          fontFamily: 'Inter',
                           color: vc.onSurfaceMuted,
                         ),
                       ),

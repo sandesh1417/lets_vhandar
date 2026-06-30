@@ -263,7 +263,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
                       color:
                           selected ? Colors.white : context.vColors.onSurface,
                     ),
@@ -304,7 +303,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         style: TextStyle(
                           fontSize: 17.sp,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
                           color: context.vColors.onSurface,
                         ),
                       ),
@@ -324,7 +322,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                             style: TextStyle(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'Inter',
                               color: Colors.red.shade500,
                             ),
                           ),
@@ -339,7 +336,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Inter',
                       color: context.vColors.onSurfaceMuted,
                     ),
                   ),
@@ -368,7 +364,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Inter',
                       color: context.vColors.onSurfaceMuted,
                     ),
                   ),
@@ -392,7 +387,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Inter',
                       color: context.vColors.onSurfaceMuted,
                     ),
                   ),
@@ -429,7 +423,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Inter',
                                 color: sheetDateRange != null
                                     ? AppColor.primary
                                     : context.vColors.onSurfaceMuted,
@@ -505,7 +498,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
-              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -548,7 +540,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20.sp,
-              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -569,7 +560,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
                     color: context.vColors.onSurface,
                     height: 1.3,
@@ -581,7 +571,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w400,
                     color: context.vColors.onSurfaceMuted,
                     height: 1.5,
@@ -626,7 +615,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
-            fontFamily: 'Inter',
           ),
         ),
         bottom: PreferredSize(
@@ -796,7 +784,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
                         color: context.vColors.onSurface,
                         height: 1.3,
@@ -808,7 +795,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: context.vColors.onSurfaceMuted,
                         height: 1.5,

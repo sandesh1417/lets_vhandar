@@ -37,7 +37,9 @@ const _kSearchHints = [
 ];
 
 class PremiumSearchBar extends StatefulWidget {
-  final TextEditingController controller;
+  // Optional: read-only / tap-only search bars (e.g. the home header) don't need
+  // a controller. Don't allocate one just to satisfy this widget.
+  final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final String hintText;
@@ -49,7 +51,7 @@ class PremiumSearchBar extends StatefulWidget {
 
   const PremiumSearchBar({
     super.key,
-    required this.controller,
+    this.controller,
     this.onChanged,
     this.onSubmitted,
     this.hintText = 'Search for products...',
@@ -68,12 +70,12 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(_onTextChanged);
+    widget.controller?.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_onTextChanged);
+    widget.controller?.removeListener(_onTextChanged);
     super.dispose();
   }
 
@@ -140,10 +142,10 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> {
                     ),
                   ),
           ),
-          if (!widget.readOnly && widget.controller.text.isNotEmpty)
+          if (!widget.readOnly && (widget.controller?.text.isNotEmpty ?? false))
             GestureDetector(
               onTap: () {
-                widget.controller.clear();
+                widget.controller?.clear();
                 widget.onChanged?.call('');
               },
               child: Padding(

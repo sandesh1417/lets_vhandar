@@ -127,7 +127,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           fontSize: 22.sp,
                           color: context.vColors.onSurface,
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'Inter',
                         ),
                       ),
                       SizedBox(height: 4.h),
@@ -137,7 +136,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           fontSize: 16.sp,
                           color: context.vColors.onSurface,
                           fontWeight: FontWeight.w500,
-                          fontFamily: 'Inter',
                         ),
                       ),
                       SizedBox(height: 30.h),
@@ -204,7 +202,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     fontSize: 13.sp,
                                     color: context.vColors.onSurfaceMuted,
                                     fontWeight: FontWeight.w400,
-                                    fontFamily: 'Inter',
                                   ),
                                 ),
                               ],
@@ -219,7 +216,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 fontSize: 13.sp,
                                 color: AppColor.primary,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Inter',
                               ),
                             ),
                           ),
@@ -264,7 +260,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: TextStyle(
                               color: context.vColors.onSurfaceMuted,
                               fontSize: 14.sp,
-                              fontFamily: 'Inter',
                             ),
                             children: <TextSpan>[
                               TextSpan(
@@ -273,7 +268,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   color: AppColor.primary,
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ],
@@ -298,7 +292,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontSize: 12.sp,
                         color: context.vColors.onSurfaceMuted,
                         fontWeight: FontWeight.w300,
-                        fontFamily: 'Inter',
                       ),
                     ),
                     Row(
@@ -314,7 +307,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontSize: 12.sp,
                               color: AppColor.primary,
                               fontWeight: FontWeight.w500,
-                              fontFamily: 'Inter',
                             ),
                           ),
                         ),
@@ -323,7 +315,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: context.vColors.onSurfaceMuted,
-                            fontFamily: 'Inter',
                           ),
                         ),
                         GestureDetector(
@@ -335,7 +326,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontSize: 12.sp,
                               color: AppColor.primary,
                               fontWeight: FontWeight.w500,
-                              fontFamily: 'Inter',
                             ),
                           ),
                         ),

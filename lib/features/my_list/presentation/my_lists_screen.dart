@@ -54,7 +54,6 @@ class MyListsScreen extends ConsumerWidget {
                         'My Lists',
                         style: TextStyle(
                           fontSize: 18.sp,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
@@ -67,7 +66,6 @@ class MyListsScreen extends ConsumerWidget {
                               : '${state.lists.length} list${state.lists.length == 1 ? '' : 's'}',
                           style: TextStyle(
                             fontSize: 11.sp,
-                            fontFamily: 'Inter',
                             color: Colors.white.withValues(alpha: 0.75),
                           ),
                         ),
@@ -172,7 +170,6 @@ class MyListsScreen extends ConsumerWidget {
             'No Lists Yet',
             style: TextStyle(
               fontSize: 20.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
               color: vc.onSurface,
             ),
@@ -183,7 +180,6 @@ class MyListsScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13.sp,
-              fontFamily: 'Inter',
               color: vc.onSurfaceMuted,
               height: 1.6,
             ),
@@ -210,7 +206,6 @@ class MyListsScreen extends ConsumerWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -262,7 +257,6 @@ class MyListsScreen extends ConsumerWidget {
         title: Text(
           'Delete List',
           style: TextStyle(
-            fontFamily: 'Inter',
             fontWeight: FontWeight.w700,
             fontSize: 16.sp,
             color: context.vColors.onSurface,
@@ -385,7 +379,6 @@ class _ListCard extends StatelessWidget {
                                 list.name,
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
                                   color: vc.onSurface,
                                 ),
@@ -405,7 +398,6 @@ class _ListCard extends StatelessWidget {
                                         : '${list.products.length} item${list.products.length == 1 ? '' : 's'}',
                                     style: TextStyle(
                                       fontSize: 12.sp,
-                                      fontFamily: 'Inter',
                                       color: vc.onSurfaceMuted,
                                     ),
                                   ),
@@ -619,7 +611,6 @@ class _NewListSheetState extends State<_NewListSheet> {
                     widget.title,
                     style: TextStyle(
                       fontSize: 18.sp,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w800,
                       color: vc.onSurface,
                     ),
@@ -628,7 +619,6 @@ class _NewListSheetState extends State<_NewListSheet> {
                     'Give your list a name.',
                     style: TextStyle(
                         fontSize: 12.sp,
-                        fontFamily: 'Inter',
                         color: vc.onSurfaceMuted),
                   ),
                 ],
@@ -641,14 +631,14 @@ class _NewListSheetState extends State<_NewListSheet> {
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
             style: TextStyle(
-                fontSize: 15.sp, fontFamily: 'Inter', color: vc.onSurface),
+                fontSize: 15.sp, color: vc.onSurface),
             onSubmitted: (_) => _submit(),
             decoration: InputDecoration(
               hintText: 'e.g. Weekly Groceries',
               hintStyle: TextStyle(
                   fontSize: 14.sp,
                   color: vc.onSurfaceMuted,
-                  fontFamily: 'Inter'),
+),
               filled: true,
               fillColor: vc.surfaceVariant,
               border: OutlineInputBorder(

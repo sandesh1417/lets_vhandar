@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:lets_vhandar/core/api/api_client.dart';
 import 'package:lets_vhandar/core/config/api_endpoints.dart';
 import 'package:lets_vhandar/core/error/failure.dart';
@@ -314,8 +315,7 @@ class AuthRepositoryImpl {
           }
           // Unknown shape — log in debug so we can see what the backend returns
           assert(() {
-            // ignore: avoid_print
-            print('[searchUserByPhone] unexpected payload type: '
+            debugPrint('[searchUserByPhone] unexpected payload type: '
                 '${payload.runtimeType} — $payload');
             return true;
           }());

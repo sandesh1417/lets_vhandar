@@ -82,7 +82,6 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
                         fontSize: 14.sp,
                         color: vc.onSurfaceMuted,
                         fontWeight: FontWeight.w400,
-                        fontFamily: 'Inter',
                         height: 1.5,
                       ),
                     ),

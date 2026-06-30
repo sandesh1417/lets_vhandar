@@ -88,7 +88,6 @@ class CartCheckoutBar extends ConsumerWidget {
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   color: mutedColor,
-                  fontFamily: 'Inter',
                 ),
               ),
               Row(
@@ -102,7 +101,6 @@ class CartCheckoutBar extends ConsumerWidget {
                         fontWeight: FontWeight.w500,
                         color: mutedColor,
                         decoration: TextDecoration.lineThrough,
-                        fontFamily: 'Inter',
                       ),
                     ),
                     SizedBox(width: 8.w),
@@ -114,7 +112,6 @@ class CartCheckoutBar extends ConsumerWidget {
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w800,
                       color: AppColor.primary,
-                      fontFamily: 'Inter',
                     ),
                   ),
                 ],

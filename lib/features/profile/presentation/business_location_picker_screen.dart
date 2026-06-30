@@ -182,7 +182,6 @@ class _BusinessLocationPickerScreenState
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Inter',
             color: Colors.white,
           ),
         ),
@@ -257,7 +256,6 @@ class _BusinessLocationPickerScreenState
                             style: TextStyle(
                               fontSize: 11.sp,
                               color: vc.onSurfaceMuted,
-                              fontFamily: 'Inter',
                             ),
                           ),
                           SizedBox(height: 2.h),
@@ -267,7 +265,6 @@ class _BusinessLocationPickerScreenState
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
                               color: vc.onSurface,
-                              fontFamily: 'Inter',
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

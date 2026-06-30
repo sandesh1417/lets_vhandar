@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_vhandar/core/constants/app_constants.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
@@ -20,6 +20,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_vhandar/widgets/custom_button.dart';
 import 'package:lets_vhandar/widgets/custom_scaffold_wrapper.dart';
 import 'package:lets_vhandar/widgets/custom_snackbar.dart';
+import 'package:lets_vhandar/widgets/empty_state.dart';
+import 'package:lets_vhandar/widgets/v_app_bar.dart';
 
 class SelectPaymentMethodScreen extends ConsumerStatefulWidget {
   const SelectPaymentMethodScreen({super.key});
@@ -43,15 +45,16 @@ class _ProductImage extends StatelessWidget {
           color: context.vColors.surfaceVariant,
           borderRadius: BorderRadius.circular(8.r),
         ),
-        child: Icon(Icons.image, color: Colors.grey.shade400, size: 24.sp),
+        child:
+            Icon(Icons.image, color: context.vColors.onSurfaceFaint, size: 24.sp),
       );
     }
 
     final String fullUrl = imageUrl!.startsWith('http')
         ? imageUrl!
         : imageUrl!.startsWith('/')
-            ? 'https://vhandar.sgp1.digitaloceanspaces.com/$imageUrl'
-            : 'https://vhandar.sgp1.digitaloceanspaces.com//$imageUrl';
+            ? '${AppConstants.cdnBaseUrl}/$imageUrl'
+            : '${AppConstants.cdnBaseUrl}//$imageUrl';
 
     return Container(
       width: 52.w,
@@ -67,7 +70,7 @@ class _ProductImage extends StatelessWidget {
           imageUrl: fullUrl,
           fit: BoxFit.cover,
           errorWidget: (context, _, __) => Icon(Icons.broken_image,
-              color: Colors.grey.shade400, size: 24.sp),
+              color: context.vColors.onSurfaceFaint, size: 24.sp),
         ),
       ),
     );
@@ -76,8 +79,9 @@ class _ProductImage extends StatelessWidget {
 
 class _SelectPaymentMethodScreenState
     extends ConsumerState<SelectPaymentMethodScreen> {
+  // COD is currently the only payment method (always selected). When more
+  // methods are added, reintroduce a "no method selected" guard here.
   String? _selectedMethod;
-  bool _showPaymentHint = false;
 
   @override
   void initState() {
@@ -132,59 +136,11 @@ class _SelectPaymentMethodScreenState
 
     return CustomScaffoldWrapper(
       backgroundColor: context.vColors.scaffoldBg,
-      appBar: AppBar(
-        backgroundColor: AppColor.primary,
-        elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.12),
-        scrolledUnderElevation: 2,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16.w,
-        title: Row(
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.pop();
-              },
-              child: Container(
-                width: 44.w,
-                height: 44.h,
-                alignment: Alignment.centerLeft,
-                child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'Checkout',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20.sp,
-                fontFamily: 'Inter',
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: const VAppBar(title: 'Checkout'),
       body: cartItems.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 70.h),
-                  Icon(Icons.shopping_bag_outlined,
-                      size: 64.sp, color: vc.onSurfaceMuted),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Your cart is empty',
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: vc.onSurfaceMuted,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
+          ? const EmptyState(
+              icon: Icons.shopping_bag_outlined,
+              title: 'Your cart is empty',
             )
           : SingleChildScrollView(
               child: Padding(
@@ -452,10 +408,7 @@ class _SelectPaymentMethodScreenState
                     SizedBox(height: 10.h),
                     _PaymentMethodCard(
                       selected: _selectedMethod == 'cod',
-                      onTap: () => setState(() {
-                        _selectedMethod = 'cod';
-                        _showPaymentHint = false;
-                      }),
+                      onTap: () => setState(() => _selectedMethod = 'cod'),
                     ),
                     SizedBox(height: 12.h),
                     // Security note
@@ -484,15 +437,7 @@ class _SelectPaymentMethodScreenState
           : _StickyCheckoutBar(
               grandTotal: billSummary.grandTotal,
               isLoading: isLoading,
-              selectedMethod: _selectedMethod,
-              showHint: _showPaymentHint,
-              onPlaceOrder: () {
-                if (_selectedMethod == null) {
-                  setState(() => _showPaymentHint = true);
-                  return;
-                }
-                _placeOrder(context);
-              },
+              onPlaceOrder: () => _placeOrder(context),
             ),
     );
   }
@@ -622,15 +567,11 @@ class _SelectPaymentMethodScreenState
 class _StickyCheckoutBar extends StatelessWidget {
   final double grandTotal;
   final bool isLoading;
-  final String? selectedMethod;
-  final bool showHint;
   final VoidCallback onPlaceOrder;
 
   const _StickyCheckoutBar({
     required this.grandTotal,
     required this.isLoading,
-    required this.selectedMethod,
-    required this.showHint,
     required this.onPlaceOrder,
   });
 
@@ -671,7 +612,6 @@ class _StickyCheckoutBar extends StatelessWidget {
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
                         color: vc.onSurface,
-                        fontFamily: 'Inter',
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -680,7 +620,6 @@ class _StickyCheckoutBar extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10.sp,
                         color: vc.onSurfaceMuted,
-                        fontFamily: 'Inter',
                       ),
                     ),
                   ],
@@ -691,31 +630,10 @@ class _StickyCheckoutBar extends StatelessWidget {
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w800,
                     color: AppColor.primary,
-                    fontFamily: 'Inter',
                   ),
                 ),
               ],
             ),
-            if (showHint && selectedMethod == null) ...[
-              SizedBox(height: 8.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.info_outline,
-                      size: 14.sp, color: Colors.orange.shade600),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Please select a payment method to continue',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.orange.shade700,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ],
-              ),
-            ],
             SizedBox(height: 12.h),
             SizedBox(
               width: double.infinity,
@@ -724,9 +642,7 @@ class _StickyCheckoutBar extends StatelessWidget {
                 onPressed: isLoading ? null : onPlaceOrder,
                 isLoading: isLoading,
                 loaderSize: 20.w,
-                backgroundColor: selectedMethod == null
-                    ? Colors.grey.shade300
-                    : AppColor.primary,
+                backgroundColor: AppColor.primary,
                 text: 'Place Order',
               ),
             ),
@@ -790,7 +706,7 @@ class _PaymentMethodCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: selected ? AppColor.primary : Colors.transparent,
                   border: Border.all(
-                    color: selected ? AppColor.primary : Colors.grey.shade400,
+                    color: selected ? AppColor.primary : vc.onSurfaceFaint,
                     width: 2,
                   ),
                 ),
@@ -848,7 +764,7 @@ class _PaymentMethodCard extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               SvgPicture.asset(
-                'assets/images/cash on delivery.svg',
+                'assets/images/cash_on_delivery.svg',
                 width: 52.w,
                 height: 52.w,
               ),

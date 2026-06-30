@@ -118,7 +118,6 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
-            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -382,14 +381,12 @@ class _FeedbackPanel extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: vc.onSurface,
-                    fontFamily: 'Inter',
                   ),
                   decoration: InputDecoration(
                     hintText: 'Please tell us more (Max 300 characters)',
                     hintStyle: TextStyle(
                       fontSize: 13.sp,
                       color: vc.onSurfaceMuted,
-                      fontFamily: 'Inter',
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(14.w),
@@ -404,7 +401,6 @@ class _FeedbackPanel extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: vc.onSurfaceMuted,
-                    fontFamily: 'Inter',
                   ),
                 ),
               ),
@@ -462,7 +458,6 @@ class _CategoryChips extends StatelessWidget {
               cat,
               style: TextStyle(
                 fontSize: 13.sp,
-                fontFamily: 'Inter',
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: vc.onSurface,
               ),
