@@ -5,6 +5,7 @@ import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/constants/image_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
 import 'package:lets_vhandar/features/profile/presentation/product_suggestion_screen.dart';
+import 'package:lets_vhandar/widgets/custom_button.dart';
 
 class HomeSuggestCard extends StatelessWidget {
   const HomeSuggestCard({super.key});
@@ -73,24 +74,19 @@ class HomeSuggestCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                OutlinedButton(
+                CustomElevatedButton(
                   onPressed: () => showProductSuggestionSheet(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColor.secondary,
-                    side: BorderSide(color: AppColor.secondary, width: 1.5),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Suggest a Product',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                    ),
+                  backgroundColor: AppColor.secondary,
+                  icon: Icons.lightbulb_outline_rounded,
+                  iconSize: 16,
+                  text: 'Suggest a Product',
+                  borderRadius: 10,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                  textStyle: TextStyle(
+                    fontSize: 13.sp,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
