@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets_vhandar/core/services/notification_service.dart';
 import 'package:lets_vhandar/core/services/update_service.dart';
+import 'package:lets_vhandar/core/utils/age_verification.dart';
 import 'package:lets_vhandar/core/utils/app_info.dart';
 import 'package:lets_vhandar/di/service_locator.dart';
 import 'package:lets_vhandar/firebase_options.dart';
@@ -34,6 +35,10 @@ void main() async {
   setUpDependenciesInjection();
 
   await AppInfo.initialize();
+  // Age-gate for alcohol/tobacco is asked at most once per session — clear the
+  // flag on every cold start so a fresh launch re-asks before the first
+  // restricted item is added to the cart.
+  await AgeVerification.resetForColdStart();
   await NotificationService.instance.initialize();
   await UpdateService.instance.initialize();
 

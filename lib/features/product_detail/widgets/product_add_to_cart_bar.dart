@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/age_verification.dart';
 import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -146,9 +147,14 @@ class ProductAddToCartBar extends ConsumerWidget {
                         )
                       : cartCount == 0
                           ? GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 // Guests can add to cart; login is only
                                 // required at checkout.
+                                // Age-gate alcohol/tobacco (once per session).
+                                if (!await ensureAgeVerified(
+                                    context, product)) {
+                                  return;
+                                }
                                 HapticFeedback.mediumImpact();
                                 ref
                                     .read(cartProvider.notifier)
@@ -237,10 +243,18 @@ class ProductAddToCartBar extends ConsumerWidget {
                                     icon: Icons.add,
                                     color: Colors.white,
                                     disabled: cartCount >= maxQty,
-                                    onTap: () => ref
-                                        .read(cartProvider.notifier)
-                                        .updateQuantity(
-                                            product.id!, cartCount + 1),
+                                    onTap: () async {
+                                      // Age-gate increments too (cart can
+                                      // persist across a verification reset).
+                                      if (!await ensureAgeVerified(
+                                          context, product)) {
+                                        return;
+                                      }
+                                      ref
+                                          .read(cartProvider.notifier)
+                                          .updateQuantity(
+                                              product.id!, cartCount + 1);
+                                    },
                                   ),
                                 ],
                               ),

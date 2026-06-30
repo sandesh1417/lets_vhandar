@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/router/app_router.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/age_verification.dart';
 import 'package:lets_vhandar/features/cart/providers/cart_provider.dart';
 import 'package:lets_vhandar/features/cart/widgets/cart_fly_animator.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
@@ -757,7 +758,7 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                 .getCartItemCount(product.id!);
                             if (cartCount == 0) {
                               return GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   // Guests can add to cart; login is only
                                   // required at checkout.
                                   // Open variant popup for variant products
@@ -767,6 +768,12 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                     _showVariantBottomSheet();
                                     return;
                                   }
+                                  // Age-gate alcohol/tobacco (once per session).
+                                  if (!await ensureAgeVerified(
+                                      context, product)) {
+                                    return;
+                                  }
+                                  if (!context.mounted) return;
                                   AppHaptics.addToCart();
                                   CartFlyAnimator.fly(
                                     context,
@@ -845,7 +852,14 @@ class _ProductItemCardState extends ConsumerState<ProductItemCard> {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
+                                        // Age-gate increments too: a restricted
+                                        // item may persist in the cart across a
+                                        // cold start (which clears verification).
+                                        if (!await ensureAgeVerified(
+                                            context, product)) {
+                                          return;
+                                        }
                                         AppHaptics.light();
                                         ref
                                             .read(cartProvider.notifier)
@@ -893,8 +907,9 @@ class _VariantCartButton extends ConsumerWidget {
       // Same compact gradient pill used on the product card / detail bar — it
       // sizes to its content, so it never overflows the variant row.
       return GestureDetector(
-        onTap: () {
+        onTap: () async {
           // Guests can add to cart; login is only required at checkout.
+          if (!await ensureAgeVerified(context, product)) return;
           AppHaptics.addToCart();
           ref.read(cartProvider.notifier).addToCart(product);
         },
@@ -951,7 +966,8 @@ class _VariantCartButton extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 13.sp)),
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              if (!await ensureAgeVerified(context, product)) return;
               AppHaptics.light();
               ref
                   .read(cartProvider.notifier)
