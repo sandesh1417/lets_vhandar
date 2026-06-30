@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lets_vhandar/core/constants/color_constant.dart';
 import 'package:lets_vhandar/core/theme/vhandar_colors.dart';
+import 'package:lets_vhandar/core/utils/app_haptics.dart';
 import 'package:lets_vhandar/features/home/domain/models/product_modal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,6 +118,10 @@ Future<bool> ensureAgeVerified(
   if (!isRestrictedProduct(product)) return true;
   if (await AgeVerification._isVerified()) return true;
   if (!context.mounted) return false;
+
+  // Strong buzz the moment the gate opens — this is a validation checkpoint,
+  // so it should feel more deliberate than a normal add-to-cart tick.
+  AppHaptics.heavy();
 
   final confirmed = await _showAgeVerificationDialog(context) ?? false;
   if (confirmed) await AgeVerification._markVerified();
