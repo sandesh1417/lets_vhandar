@@ -55,7 +55,8 @@ bool isRestrictedProduct(ProductData product) {
   }
 
   // 2. Keyword match on the product name + keyword text.
-  final haystack = '${product.name ?? ''} ${product.keyword ?? ''}'.toLowerCase();
+  final haystack =
+      '${product.name ?? ''} ${product.keyword ?? ''}'.toLowerCase();
   for (final word in kRestrictedKeywords) {
     if (haystack.contains(word)) return true;
   }
@@ -122,111 +123,275 @@ Future<bool> ensureAgeVerified(
   return confirmed;
 }
 
-/// The age-gate dialog. Dismissible (tap-outside / Cancel return `null` /
-/// `false`); confirming returns `true`. Styled to match the app's existing
-/// [CustomDialog] language — rounded card, tinted icon circle, stacked
-/// primary + secondary buttons — with a warm amber accent for identity.
+// ---------------------------------------------------------------------------
+// The age-gate dialog — playful, on-brand, and dismissible.
+//
+// Pops in with a gentle scale/fade, shows a festive gradient header with a
+// softly bobbing wine-glass badge, friendly copy, and a "we'll only ask once"
+// reassurance chip. Tap-outside / "Not now" returns false; confirming returns
+// true.
+// ---------------------------------------------------------------------------
 Future<bool?> _showAgeVerificationDialog(BuildContext context) {
-  const accent = Color(0xFFE8A33D); // warm amber — caution, not alarm
-
-  return showDialog<bool>(
+  return showGeneralDialog<bool>(
     context: context,
-    barrierColor: Colors.black.withValues(alpha: 0.5),
-    builder: (dialogContext) {
-      final vc = dialogContext.vColors;
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        insetPadding: EdgeInsets.symmetric(horizontal: 28.w),
-        child: Padding(
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ── Icon ──────────────────────────────────────
-              Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.verified_user_outlined,
-                  color: accent,
-                  size: 32.sp,
-                ),
-              ),
-
-              SizedBox(height: 16.h),
-
-              // ── Title ─────────────────────────────────────
-              Text(
-                '🍷 Before You Continue',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: vc.onSurface,
-                ),
-              ),
-
-              SizedBox(height: 10.h),
-
-              // ── Message ───────────────────────────────────
-              Text(
-                'This item is age-restricted. By continuing, you confirm '
-                'you are 18 years or older — the legal drinking age in Nepal.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: vc.onSurfaceMuted,
-                  height: 1.5,
-                ),
-              ),
-
-              SizedBox(height: 24.h),
-
-              // ── Confirm (primary) ─────────────────────────
-              _AgeDialogButton(
-                label: "I'm 18 or older — Continue",
-                gradient: const LinearGradient(
-                  colors: AppColor.primaryGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                textColor: Colors.white,
-                onTap: () => Navigator.pop(dialogContext, true),
-              ),
-
-              SizedBox(height: 10.h),
-
-              // ── Cancel (secondary) ────────────────────────
-              _AgeDialogButton(
-                label: 'Cancel',
-                backgroundColor: vc.surfaceVariant,
-                textColor: vc.onSurface,
-                onTap: () => Navigator.pop(dialogContext, false),
-              ),
-            ],
-          ),
+    barrierDismissible: true,
+    barrierLabel: 'Age check',
+    barrierColor: Colors.black.withValues(alpha: 0.55),
+    transitionDuration: const Duration(milliseconds: 360),
+    pageBuilder: (_, __, ___) => const _AgeGateDialog(),
+    transitionBuilder: (_, anim, __, child) {
+      final pop = CurvedAnimation(parent: anim, curve: Curves.easeOutBack);
+      return Opacity(
+        opacity: anim.value.clamp(0.0, 1.0),
+        child: Transform.scale(
+          scale: 0.75 + 0.25 * pop.value, // subtle overshoot "pop"
+          child: child,
         ),
       );
     },
   );
 }
 
-class _AgeDialogButton extends StatelessWidget {
+class _AgeGateDialog extends StatefulWidget {
+  const _AgeGateDialog();
+
+  @override
+  State<_AgeGateDialog> createState() => _AgeGateDialogState();
+}
+
+class _AgeGateDialogState extends State<_AgeGateDialog>
+    with SingleTickerProviderStateMixin {
+  // Slow, reversing loop that gives the wine-glass badge a little life.
+  late final AnimationController _bob;
+
+  @override
+  void initState() {
+    super.initState();
+    _bob = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _bob.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vc = context.vColors;
+
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 28.w),
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 360.w),
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: vc.surface,
+              borderRadius: BorderRadius.circular(26.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.28),
+                  blurRadius: 32,
+                  offset: const Offset(0, 14),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeader(),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(22.w, 18.h, 22.w, 18.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ── Title ────────────────────────────────
+                      Text(
+                        'Quick age check 🍷',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 19.sp,
+                          fontWeight: FontWeight.w800,
+                          color: vc.onSurface,
+                        ),
+                      ),
+
+                      SizedBox(height: 10.h),
+
+                      // ── Message ──────────────────────────────
+                      Text(
+                        "This item is age-restricted. Tap below to confirm "
+                        "you're 18 or older — the legal drinking age in Nepal.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: vc.onSurfaceMuted,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      SizedBox(height: 14.h),
+
+                      // ── "Only once" reassurance chip ─────────
+                      // Container(
+                      //   padding: EdgeInsets.symmetric(
+                      //       horizontal: 12.w, vertical: 6.h),
+                      //   decoration: BoxDecoration(
+                      //     color: vc.surfaceVariant,
+                      //     borderRadius: BorderRadius.circular(30.r),
+                      //   ),
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Icon(Icons.lock_outline,
+                      //           size: 13.sp, color: vc.onSurfaceMuted),
+                      //       // SizedBox(width: 6.w),
+                      //       // Text(
+                      //       //   "We'll only ask once",
+                      //       //   style: TextStyle(
+                      //       //     fontSize: 11.sp,
+                      //       //     fontWeight: FontWeight.w600,
+                      //       //     color: vc.onSurfaceMuted,
+                      //       //   ),
+                      //       // ),
+                      //     ],
+                      //   ),
+                      // ),
+
+                      SizedBox(height: 20.h),
+
+                      // ── Confirm (primary) ────────────────────
+                      _GateButton(
+                        label: "Yes, I'm 18 or older",
+                        icon: Icons.check_circle_rounded,
+                        gradient: const LinearGradient(
+                          colors: AppColor.primaryGradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        textColor: Colors.white,
+                        onTap: () => Navigator.pop(context, true),
+                      ),
+
+                      SizedBox(height: 4.h),
+
+                      // ── Decline (secondary) ──────────────────
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(
+                          'Not now',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: vc.onSurfaceMuted,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Festive gradient banner with floating "bubbles" and a bobbing glass badge.
+  Widget _buildHeader() {
+    return SizedBox(
+      height: 116.h,
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Warm, drink-y gradient.
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFEFA94A), Color(0xFFD9663B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SizedBox.expand(),
+          ),
+          // Decorative translucent bubbles.
+          Positioned(top: -18.h, right: 26.w, child: _bubble(58)),
+          Positioned(bottom: -22.h, left: -12.w, child: _bubble(78)),
+          Positioned(top: 26.h, left: 34.w, child: _bubble(14)),
+          Positioned(bottom: 20.h, right: 40.w, child: _bubble(10)),
+          // Bobbing + tilting beer-mug badge.
+          AnimatedBuilder(
+            animation: _bob,
+            builder: (_, __) {
+              final t = Curves.easeInOut.transform(_bob.value);
+              return Transform.translate(
+                offset: Offset(0, -3 + 6 * t),
+                child: Transform.rotate(
+                  angle: (t - 0.5) * 0.16,
+                  child: Container(
+                    width: 68.w,
+                    height: 68.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('🍺', style: TextStyle(fontSize: 30.sp)),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bubble(double size, {IconData? icon}) => Container(
+        width: size.w,
+        height: size.w,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.16),
+        ),
+        child: icon == null
+            ? null
+            : Icon(
+                icon,
+                size: size.w * 0.5,
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
+      );
+}
+
+class _GateButton extends StatelessWidget {
   final String label;
-  final LinearGradient? gradient;
-  final Color? backgroundColor;
+  final IconData? icon;
+  final Gradient? gradient;
   final Color textColor;
   final VoidCallback onTap;
 
-  const _AgeDialogButton({
+  const _GateButton({
     required this.label,
+    this.icon,
     this.gradient,
-    this.backgroundColor,
     required this.textColor,
     required this.onTap,
   });
@@ -235,22 +400,42 @@ class _AgeDialogButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 14.h),
+      height: 50.h,
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
           decoration: BoxDecoration(
             gradient: gradient,
-            color: gradient == null ? backgroundColor : null,
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(14.r),
+            boxShadow: gradient != null
+                ? [
+                    BoxShadow(
+                      color: AppColor.primary.withValues(alpha: 0.28),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14.r),
+            onTap: onTap,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, color: textColor, size: 18.sp),
+                  SizedBox(width: 8.w),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
